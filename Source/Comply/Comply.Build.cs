@@ -20,8 +20,10 @@ public class Comply : ModuleRules
 			"UMG",
 			"Slate"
 		});
+		
+		PublicDependencyModuleNames.AddRange(new string[] { "GameplayAbilities" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { });
+		PrivateDependencyModuleNames.AddRange(new string[] { "GameplayTags", "GameplayTasks", "NavigationSystem", "Niagara" });
 
 		PublicIncludePaths.AddRange(new string[] {
 			"Comply",

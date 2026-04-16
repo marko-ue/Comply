@@ -27,4 +27,8 @@ void AComplyEnemyCharacter::BeginPlay()
 	
 	if (!IsValid(GetAbilitySystemComponent())) return;
 	GetAbilitySystemComponent()->InitAbilityActorInfo(this, this);
+	
+	if (!HasAuthority()) return;
+	
+	InitializeAttributes();
 }

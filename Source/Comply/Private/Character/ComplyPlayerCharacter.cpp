@@ -38,6 +38,7 @@ void AComplyPlayerCharacter::PossessedBy(AController* NewController)
 	if (!GetAbilitySystemComponent() || !HasAuthority()) return;
 	
 	GetAbilitySystemComponent()->InitAbilityActorInfo(GetPlayerState(), this);
+	InitializeAttributes();
 }
 
 // For clients, ASC ability actor info is initialized here

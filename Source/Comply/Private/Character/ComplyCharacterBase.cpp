@@ -3,6 +3,9 @@
 
 #include "Character/ComplyCharacterBase.h"
 
+#include "AbilitySystemComponent.h"
+#include "GameplayEffect.h"
+
 // Sets default values
 AComplyCharacterBase::AComplyCharacterBase()
 {
@@ -21,6 +24,15 @@ void AComplyCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void AComplyCharacterBase::InitializeAttributes() const
+{
+	checkf(IsValid(InitializeAttributesEffect), TEXT("InitializeAttributesEffect not set"));
+	
+	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(InitializeAttributesEffect, 1.f, ContextHandle);
+	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 }
 
 // Called every frame

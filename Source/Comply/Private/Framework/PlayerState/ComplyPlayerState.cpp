@@ -1,15 +1,18 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright © 2026 Marko. All rights reserved.
 
 
 #include "Framework/PlayerState/ComplyPlayerState.h"
 
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
+#include "AbilitySystem/ComplyAttributeSet.h"
 
 AComplyPlayerState::AComplyPlayerState()
 {
 	ASC = CreateDefaultSubobject<UComplyAbilitySystemComponent>("AbilitySystemComponent");
 	ASC->SetIsReplicated(true);
 	ASC->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
+	
+	AttributeSet = CreateDefaultSubobject<UComplyAttributeSet>("AttributeSet");
 }
 
 UAbilitySystemComponent* AComplyPlayerState::GetAbilitySystemComponent() const

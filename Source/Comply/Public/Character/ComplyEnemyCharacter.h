@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright © 2026 Marko. All rights reserved.
 
 #pragma once
 
@@ -6,6 +6,7 @@
 #include "Character/ComplyCharacterBase.h"
 #include "ComplyEnemyCharacter.generated.h"
 
+class UComplyAttributeSet;
 /**
  * 
  */
@@ -24,4 +25,6 @@ protected:
 private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> ASC;
+	
+	TObjectPtr<UComplyAttributeSet> AttributeSet;
 };

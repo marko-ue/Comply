@@ -1,15 +1,17 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright © 2026 Marko. All rights reserved.
 
 
 #include "Character/ComplyEnemyCharacter.h"
-
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
+#include "AbilitySystem/ComplyAttributeSet.h"
 
 AComplyEnemyCharacter::AComplyEnemyCharacter()
 {
 	ASC = CreateDefaultSubobject<UComplyAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	ASC->SetIsReplicated(true);
 	ASC->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
+	
+	AttributeSet = CreateDefaultSubobject<UComplyAttributeSet>("AttributeSet");
 }
 
 UAbilitySystemComponent* AComplyEnemyCharacter::GetAbilitySystemComponent() const

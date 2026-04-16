@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright © 2026 Marko. All rights reserved.
 
 #pragma once
 
@@ -7,6 +7,7 @@
 #include "AbilitySystemInterface.h"
 #include "ComplyPlayerState.generated.h"
 
+class UComplyAttributeSet;
 /**
  * 
  */
@@ -23,4 +24,6 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Abilities")
 	TObjectPtr<UAbilitySystemComponent> ASC;
+	
+	TObjectPtr<UComplyAttributeSet> AttributeSet;
 };

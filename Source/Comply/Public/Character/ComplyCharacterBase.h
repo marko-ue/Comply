@@ -1,15 +1,16 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright © 2026 Marko. All rights reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
+#include "ComplyCharacter.h"
 
 #include "ComplyCharacterBase.generated.h"
 
 UCLASS()
-class COMPLY_API AComplyCharacterBase : public ACharacter, public IAbilitySystemInterface
+class COMPLY_API AComplyCharacterBase : public AComplyCharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 

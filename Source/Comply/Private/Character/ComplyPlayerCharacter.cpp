@@ -1,9 +1,25 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// Copyright © 2026 Marko. All rights reserved.
 
 #include "Character/ComplyPlayerCharacter.h"
 #include "Framework/PlayerState/ComplyPlayerState.h"
+#include "EnhancedInputSubsystems.h"
+#include "EnhancedInputComponent.h"
 #include "AbilitySystemComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
+
+AComplyPlayerCharacter::AComplyPlayerCharacter()
+{
+	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	SpringArm->SetupAttachment(RootComponent);
+	SpringArm->TargetArmLength = 400.f;
+	SpringArm->bUsePawnControlRotation = true;
+
+	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
+	Camera->bUsePawnControlRotation = false;
+	
+}
 
 UAbilitySystemComponent* AComplyPlayerCharacter::GetAbilitySystemComponent() const
 {
@@ -34,3 +50,16 @@ void AComplyPlayerCharacter::OnRep_PlayerState()
 	
 	GetAbilitySystemComponent()->InitAbilityActorInfo(GetPlayerState(), this);
 }
+
+void AComplyPlayerCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void AComplyPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+
+

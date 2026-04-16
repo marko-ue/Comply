@@ -39,6 +39,7 @@ void AComplyPlayerCharacter::PossessedBy(AController* NewController)
 	
 	GetAbilitySystemComponent()->InitAbilityActorInfo(GetPlayerState(), this);
 	InitializeAttributes();
+	GiveStartupAbilities();
 }
 
 // For clients, ASC ability actor info is initialized here

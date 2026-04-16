@@ -2,9 +2,10 @@
 
 
 #include "Character/ComplyCharacterBase.h"
-
 #include "AbilitySystemComponent.h"
+#include "EnhancedInputComponent.h"
 #include "GameplayEffect.h"
+#include "AbilitySystem/ComplyTags.h"
 
 // Sets default values
 AComplyCharacterBase::AComplyCharacterBase()
@@ -23,7 +24,13 @@ UAbilitySystemComponent* AComplyCharacterBase::GetAbilitySystemComponent() const
 void AComplyCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
+}
+
+// Called every frame
+void AComplyCharacterBase::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
 }
 
 void AComplyCharacterBase::InitializeAttributes() const
@@ -35,17 +42,40 @@ void AComplyCharacterBase::InitializeAttributes() const
 	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 }
 
-// Called every frame
-void AComplyCharacterBase::Tick(float DeltaTime)
+void AComplyCharacterBase::GiveStartupAbilities()
 {
-	Super::Tick(DeltaTime);
-
+	if (!GetAbilitySystemComponent()) return;
+	
+	for (const FAbilitySet& Set: StartupAbilities)
+	{
+		FGameplayAbilitySpec AbilitySpec(Set.AbilityClass);
+		AbilitySpec.DynamicAbilityTags.AddTag(Set.InputTag);
+		GetAbilitySystemComponent()->GiveAbility(AbilitySpec);
+		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Green, TEXT("Ability given"));
+	}
 }
 
-// Called to bind functionality to input
 void AComplyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Started, this, &AComplyCharacterBase::PrimaryActionPressed);
+	}
 }
+
+void AComplyCharacterBase::PrimaryActionPressed()
+{
+	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
+	{
+		if (Spec.DynamicAbilityTags.HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_Primary))
+		{
+			GetAbilitySystemComponent()->TryActivateAbility(Spec.Handle);
+			break;
+		}
+	}
+}
+
+
 

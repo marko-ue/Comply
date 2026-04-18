@@ -21,6 +21,13 @@ class COMPLY_API UComplyAttributeSet : public UAttributeSet
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
+	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
+	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
+	
+	/* 
+	 * Primary Attributes
+	 */
+	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health)
 	FGameplayAttributeData Health;
 	
@@ -35,4 +42,13 @@ public:
 	
 	ATTRIBUTE_ACCESSORS(ThisClass, Health)
 	ATTRIBUTE_ACCESSORS(ThisClass, MaxHealth)
+	ATTRIBUTE_ACCESSORS(ThisClass, IncomingDamage);
+	
+	/*
+	 * Meta Attributes
+	 */
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
+	FGameplayAttributeData IncomingDamage;
+	
 };

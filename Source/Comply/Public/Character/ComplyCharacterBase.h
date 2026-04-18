@@ -55,6 +55,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* PrimaryAction;
 	
+	// Called for primary abilities
 	void PrimaryActionPressed();
 
 public:	
@@ -64,10 +65,10 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
-private:
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	TSubclassOf<UGameplayEffect> InitializeAttributesEffect;
-
+	
+private:
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TArray<FAbilitySet> StartupAbilities;
 };

@@ -26,5 +26,6 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> ASC;
 	
+	UPROPERTY()
 	TObjectPtr<UComplyAttributeSet> AttributeSet;
 };

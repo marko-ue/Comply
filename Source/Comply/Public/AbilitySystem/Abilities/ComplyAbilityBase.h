@@ -8,7 +8,7 @@
 
 
 
-UCLASS()
+UCLASS(Abstract)
 class COMPLY_API UComplyAbilityBase : public UGameplayAbility
 {
 	GENERATED_BODY()

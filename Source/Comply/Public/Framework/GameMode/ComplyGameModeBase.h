@@ -14,4 +14,7 @@ class COMPLY_API AComplyGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+public:
+	UPROPERTY(EditDefaultsOnly)
+	bool bFriendlyFire = false;
 };

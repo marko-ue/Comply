@@ -16,12 +16,14 @@ class COMPLY_API URangedWeaponAbilityBase : public UDamageAbilityBase
 {
 	GENERATED_BODY()
 	
+public:
+	void TraceToCrosshair(FHitResult& TraceHitResult, float TraceDistance);
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	FVector Start;
 	
 	UPROPERTY(EditDefaultsOnly)
-	float TraceRange = 10000.f;
+	float TraceDistance = 10000.f;
 	
 	UPROPERTY(EditDefaultsOnly)
 	FVector End;

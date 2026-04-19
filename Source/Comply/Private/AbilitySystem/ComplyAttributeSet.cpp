@@ -2,10 +2,12 @@
 
 
 #include "AbilitySystem/ComplyAttributeSet.h"
-
+#include "Framework/GameMode/ComplyGameModeBase.h"
 #include "GameplayEffectExtension.h"
 #include "Chaos/Deformable/MuscleActivationConstraints.h"
+#include "Interface/Player/PlayerInterface.h"
 #include "Net/UnrealNetwork.h"
+
 
 void UComplyAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -20,14 +22,61 @@ void UComplyAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute
 {
 	Super::PreAttributeChange(Attribute, NewValue);
 	
-	/** 
-	 * Clamps the health attribute to a minimum of 0 and maximum of max health
-	 * This doesn't permanently clamp, and instead just changes the value returned from querying the modification of the attribute instead of actually setting health
-	 * This means that further calculations will break the clamp, so clamping should also be done in PostGameplayEffectExecute
-	 */
 	if (Attribute == GetHealthAttribute())
 	{
 		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxHealth());
+	}
+}
+
+void UComplyAttributeSet::HandleIncomingDamage(const struct FGameplayEffectModCallbackData& Data)
+{
+	const float LocalIncomingDamage = GetIncomingDamage();
+	SetIncomingDamage(0);
+	if (LocalIncomingDamage > 0)
+	{
+		AComplyGameModeBase* GameMode = GetWorld()->GetAuthGameMode<AComplyGameModeBase>();
+		if (GameMode)
+		{
+			// If friendly fire is off, and the source and target of the gameplay effect context both implement the player interface, damage won't be dealt
+			if (GameMode->bFriendlyFire == false)
+			{
+				const AActor* SourceAvatarActor = nullptr;
+				const AActor* TargetAvatarActor = nullptr;
+			
+				const UAbilitySystemComponent* SourceASC = Data.EffectSpec.GetContext().GetInstigatorAbilitySystemComponent();
+				if (SourceASC && SourceASC->AbilityActorInfo && SourceASC->AbilityActorInfo->AvatarActor.IsValid())
+				{
+					SourceAvatarActor = SourceASC->AbilityActorInfo->AvatarActor.Get();
+				}
+			
+				if (Data.Target.AbilityActorInfo.IsValid() && Data.Target.AbilityActorInfo->AvatarActor.IsValid())
+				{
+					TargetAvatarActor = Data.Target.AbilityActorInfo->AvatarActor.Get();
+				}
+			
+				if (SourceAvatarActor && TargetAvatarActor)
+				{
+					if (SourceAvatarActor->Implements<UPlayerInterface>() && TargetAvatarActor->Implements<UPlayerInterface>()) return;
+				}
+			}
+		}
+		
+	   /** 
+		* Clamps the health attribute to a minimum of 0 and maximum of max health
+		* This doesn't permanently clamp, and instead just changes the value returned from querying the modification of the attribute instead of actually setting health
+		* This means that further calculations will break the clamp, so clamping should also be done in PostGameplayEffectExecute
+		* If friendly fire is on, damage will be dealt no matter what
+		*/
+		const float NewHealth = GetHealth() - LocalIncomingDamage;
+		SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
+			
+		UE_LOG(LogTemp, Warning, TEXT("Health after damage: %f"), GetHealth());
+			
+		const bool bFatal = NewHealth <= 0.f;
+		if (bFatal)
+		{
+			Data.Target.GetAvatarActor()->Destroy();
+		}
 	}
 }
 
@@ -41,19 +90,7 @@ void UComplyAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffect
 	 */
 	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
 	{
-		const float LocalIncomingDamage = GetIncomingDamage();
-		SetIncomingDamage(0);
-		if (LocalIncomingDamage > 0)
-		{
-			const float NewHealth = GetHealth() - LocalIncomingDamage;
-			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
-			UE_LOG(LogTemp, Warning, TEXT("Health after damage: %f"), GetHealth());
-			const bool bFatal = NewHealth <= 0.f;
-			if (bFatal)
-			{
-				Data.Target.GetAvatarActor()->Destroy();
-			}
-		}
+		HandleIncomingDamage(Data);
 	}
 	
 	// Clamps the attribute properly whenever a gameplay effect modifies it

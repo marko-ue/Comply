@@ -4,9 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Character/ComplyCharacterBase.h"
-#include "InputMappingContext.h"
-#include "InputAction.h"
-#include "InputActionValue.h"
+#include "Interface/Player/PlayerInterface.h"
 #include "ComplyPlayerCharacter.generated.h"
 
 
@@ -14,7 +12,7 @@ class UCameraComponent;
 class USpringArmComponent;
 
 UCLASS()
-class COMPLY_API AComplyPlayerCharacter : public AComplyCharacterBase
+class COMPLY_API AComplyPlayerCharacter : public AComplyCharacterBase, public IPlayerInterface
 {
 	GENERATED_BODY()
 	

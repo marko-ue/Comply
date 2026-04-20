@@ -65,7 +65,7 @@ void UComplyAttributeSet::HandleIncomingDamage(const struct FGameplayEffectModCa
 		* Clamps the health attribute to a minimum of 0 and maximum of max health
 		* This doesn't permanently clamp, and instead just changes the value returned from querying the modification of the attribute instead of actually setting health
 		* This means that further calculations will break the clamp, so clamping should also be done in PostGameplayEffectExecute
-		* If friendly fire is on, damage will be dealt no matter what
+		* If friendly fire is on, damage will be dealt no matter who's attacking and being attacked
 		*/
 		const float NewHealth = GetHealth() - LocalIncomingDamage;
 		SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));

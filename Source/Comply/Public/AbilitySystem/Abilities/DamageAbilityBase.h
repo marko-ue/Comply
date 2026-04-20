@@ -15,7 +15,8 @@ class COMPLY_API UDamageAbilityBase : public UComplyAbilityBase
 	GENERATED_BODY()
 	
 public:
-	void CauseDamage(AActor* TargetActor) const;
+	UFUNCTION(BlueprintCallable)
+	void CauseDamage(AActor* TargetActor);
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")

@@ -18,7 +18,7 @@ UExecCalc_Damage::UExecCalc_Damage()
 void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
                                               FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
 {
-	Super::Execute_Implementation(ExecutionParams, OutExecutionOutput);
+	//Super::Execute_Implementation(ExecutionParams, OutExecutionOutput);
 	
 	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
 	

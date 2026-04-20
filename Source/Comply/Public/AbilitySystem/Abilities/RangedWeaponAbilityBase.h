@@ -18,13 +18,20 @@ class COMPLY_API URangedWeaponAbilityBase : public UDamageAbilityBase
 	
 public:
 	void TraceToCrosshair(FHitResult& TraceHitResult, float TraceDistance);
+	
+	UPROPERTY(EditDefaultsOnly)
+	float TraceDistance = 10000.f;
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	FVector Start;
 	
 	UPROPERTY(EditDefaultsOnly)
-	float TraceDistance = 10000.f;
-	
-	UPROPERTY(EditDefaultsOnly)
 	FVector End;
+	
+	/*
+	 * Cached variables used to end the ability
+	 */
+	FGameplayAbilitySpecHandle CachedHandle;
+	const FGameplayAbilityActorInfo* CachedActorInfo;
+	FGameplayAbilityActivationInfo CachedActivationInfo;
 };

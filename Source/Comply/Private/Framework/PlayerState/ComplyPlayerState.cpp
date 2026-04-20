@@ -13,6 +13,8 @@ AComplyPlayerState::AComplyPlayerState()
 	ASC->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 	
 	AttributeSet = CreateDefaultSubobject<UComplyAttributeSet>("AttributeSet");
+	
+	NetUpdateFrequency = 100.f;
 }
 
 UAbilitySystemComponent* AComplyPlayerState::GetAbilitySystemComponent() const

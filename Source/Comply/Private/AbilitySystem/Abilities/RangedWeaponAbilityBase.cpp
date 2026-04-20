@@ -9,6 +9,7 @@
 
 class UComplyAttributeSet;
 
+// Traces to the middle of the screen
 void URangedWeaponAbilityBase::TraceToCrosshair(FHitResult& TraceHitResult, float TraceLength)
 {
 	const FGameplayAbilityActivationInfo ActivationInfo;
@@ -45,24 +46,12 @@ void URangedWeaponAbilityBase::TraceToCrosshair(FHitResult& TraceHitResult, floa
 		FCollisionQueryParams CollisionParams;
 		CollisionParams.AddIgnoredActor(Avatar);
 		
-		bool bHit = GetWorld()->LineTraceSingleByChannel(
+		GetWorld()->LineTraceSingleByChannel(
 			TraceHitResult,
 			Start,
 			End,
 			ECC_Pawn,
 			CollisionParams
 		);
-		
-		if (bHit) 
-		{
-			const UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TraceHitResult.GetActor());
-			if (TargetASC)
-			{
-				//if (HasAuthority(&ActivationInfo))
-				//{
-					CauseDamage(TraceHitResult.GetActor());
-				//}
-			}
-		}
 	}
 }

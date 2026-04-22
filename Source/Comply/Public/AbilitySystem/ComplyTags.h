@@ -19,4 +19,9 @@ namespace ComplyTags
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Damage_Physical);
 		}
 	}
+	
+	namespace States
+	{
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Aiming);
+	}
 }

@@ -17,10 +17,17 @@ class COMPLY_API URangedWeaponAbilityBase : public UDamageAbilityBase
 	GENERATED_BODY()
 	
 public:
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UAnimMontage> AbilityActivationMontageHip;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UAnimMontage> AbilityActivationMontageIronsights;
+	
 	void TraceToCrosshair(FHitResult& TraceHitResult, float TraceDistance);
 	
 	UPROPERTY(EditDefaultsOnly)
 	float TraceDistance = 10000.f;
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	FVector Start;

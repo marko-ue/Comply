@@ -5,6 +5,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/ComplyTags.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 
@@ -61,6 +62,37 @@ void AComplyPlayerCharacter::BeginPlay()
 void AComplyPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Started, this, &AComplyPlayerCharacter::PrimaryActionPressed);
+		EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Started, this, &AComplyPlayerCharacter::SecondaryActionPressed);
+		EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Completed, this, &AComplyPlayerCharacter::SecondaryActionReleased);
+	}
+}
+
+void AComplyPlayerCharacter::PrimaryActionPressed()
+{
+	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
+	{
+		if (Spec.DynamicAbilityTags.HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_Primary))
+		{
+			GetAbilitySystemComponent()->TryActivateAbility(Spec.Handle);
+			break;
+		}
+	}
+}
+
+void AComplyPlayerCharacter::SecondaryActionPressed()
+{
+	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(AimingEffectClass, 1.f, ContextHandle);
+	ActiveAimingEffectHandle = GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+}
+
+void AComplyPlayerCharacter::SecondaryActionReleased()
+{
+	GetAbilitySystemComponent()->RemoveActiveGameplayEffect(ActiveAimingEffectHandle);
 }
 
 

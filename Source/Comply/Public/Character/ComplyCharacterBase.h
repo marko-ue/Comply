@@ -32,7 +32,6 @@ class COMPLY_API AComplyCharacterBase : public AComplyCharacter, public IAbility
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	AComplyCharacterBase();
 	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
@@ -48,21 +47,11 @@ protected:
 	// Gives each ability in the StartupAbilities TArray to the character's ASC, and sets its input tag (server only)
 	void GiveStartupAbilities();
 	
-	/* 
-	 * Input
-	*/
 	
-	UPROPERTY(EditAnywhere, Category="Input")
-	UInputAction* PrimaryAction;
-	
-	// Called for primary abilities
-	void PrimaryActionPressed();
 
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
+	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")

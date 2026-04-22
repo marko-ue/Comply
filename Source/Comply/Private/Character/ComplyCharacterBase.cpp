@@ -26,6 +26,8 @@ void AComplyCharacterBase::BeginPlay()
 	Super::BeginPlay();
 }
 
+
+
 // Called every frame
 void AComplyCharacterBase::Tick(float DeltaTime)
 {
@@ -58,24 +60,9 @@ void AComplyCharacterBase::GiveStartupAbilities()
 void AComplyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
-	{
-		EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Started, this, &AComplyCharacterBase::PrimaryActionPressed);
-	}
 }
 
-void AComplyCharacterBase::PrimaryActionPressed()
-{
-	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
-	{
-		if (Spec.DynamicAbilityTags.HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_Primary))
-		{
-			GetAbilitySystemComponent()->TryActivateAbility(Spec.Handle);
-			break;
-		}
-	}
-}
+
 
 
 

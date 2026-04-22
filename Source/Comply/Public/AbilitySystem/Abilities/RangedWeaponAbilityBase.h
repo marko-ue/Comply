@@ -11,6 +11,14 @@ class UCameraComponent;
 /**
  * 
  */
+
+UENUM(BlueprintType)
+enum class ERangedWeaponType : uint8
+{
+	Automatic,
+	Manual
+};
+
 UCLASS(Abstract)
 class COMPLY_API URangedWeaponAbilityBase : public UDamageAbilityBase
 {
@@ -25,8 +33,15 @@ public:
 	
 	void TraceToCrosshair(FHitResult& TraceHitResult, float TraceDistance);
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 	float TraceDistance = 10000.f;
+	
+	UPROPERTY(EditAnywhere)
+	float FireInterval = 60.f;
+	
+	UPROPERTY(EditDefaultsOnly)
+	ERangedWeaponType RangedWeaponType = ERangedWeaponType::Automatic;
+	
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
@@ -35,10 +50,27 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	FVector End;
 	
+	UFUNCTION()
+	virtual void OnTargetDataReceived(const FGameplayAbilityTargetDataHandle& DataHandle);
+	
 	/*
 	 * Cached variables used to end the ability
 	 */
 	FGameplayAbilitySpecHandle CachedHandle;
 	const FGameplayAbilityActorInfo* CachedActorInfo;
 	FGameplayAbilityActivationInfo CachedActivationInfo;
+	// End
+
+	/*
+	 * Functions for the delay task and firing
+	 */
+	UFUNCTION()
+	virtual void OnFireDelayFinished();
+	
+	virtual void Fire();
+	// End
+	
+	virtual void PlayMontageAndBindDelegates(const TObjectPtr<UAnimMontage>& AnimationToPlay);
+	virtual void PlayAnimationBasedOnState();
+	
 };

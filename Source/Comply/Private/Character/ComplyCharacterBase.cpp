@@ -51,7 +51,7 @@ void AComplyCharacterBase::GiveStartupAbilities()
 	for (const FAbilitySet& Set: StartupAbilities)
 	{
 		FGameplayAbilitySpec AbilitySpec(Set.AbilityClass);
-		AbilitySpec.DynamicAbilityTags.AddTag(Set.InputTag);
+		AbilitySpec.GetDynamicSpecSourceTags().AddTag(Set.InputTag);
 		GetAbilitySystemComponent()->GiveAbility(AbilitySpec);
 		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Green, TEXT("Ability given"));
 	}

@@ -21,6 +21,8 @@ class COMPLY_API AComplyPlayerCharacter : public AComplyCharacterBase, public IP
 public:
 	AComplyPlayerCharacter();
 	
+	virtual void Tick(float DeltaTime) override;
+	
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
@@ -32,6 +34,24 @@ public:
 	TSubclassOf<UGameplayEffect> AimingEffectClass;
 	
 	FActiveGameplayEffectHandle ActiveAimingEffectHandle = FActiveGameplayEffectHandle();
+	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UGameplayEffect> FiringEffectClass;
+	
+	FActiveGameplayEffectHandle ActiveFiringEffectHandle;
+	
+	/*
+	 * Zooming in/out
+	 */
+	
+	UPROPERTY(EditAnywhere, Category = "Camera")
+	float DefaultFOV = 90.f;
+
+	UPROPERTY(EditAnywhere, Category = "Camera")
+	float AimFOV = 60.f;
+
+	UPROPERTY(EditAnywhere, Category = "Camera")
+	float ZoomSpeed = 10.f;
 	
 
 	
@@ -56,8 +76,22 @@ protected:
 	
 	// Called for primary abilities
 	void PrimaryActionPressed();
+	void PrimaryActionReleased();
 	
 	// Called for secondary weapon actions
 	void SecondaryActionPressed();
 	void SecondaryActionReleased();
+	
+private:
+	/*
+	 * Aiming and zooming in/out
+	 */
+	// Whenever the tag for the Aiming State changes, call this function which will set a boolean to true or false depending on NewCount (whether it exists)
+	UFUNCTION()
+	void OnAimingTagChanged(const FGameplayTag Tag, int32 NewCount);
+	
+	void ZoomIn(float DeltaTime);
+	void ZoomOut(float DeltaTime);
+	
+	bool bIsAiming = false;
 };

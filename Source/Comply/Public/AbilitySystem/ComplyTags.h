@@ -23,5 +23,6 @@ namespace ComplyTags
 	namespace States
 	{
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Aiming);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Firing);
 	}
 }

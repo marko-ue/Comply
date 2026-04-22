@@ -2,7 +2,7 @@
 
 #include "Character/ComplyPlayerCharacter.h"
 #include "Framework/PlayerState/ComplyPlayerState.h"
-#include "EnhancedInputSubsystems.h"
+#include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "EnhancedInputComponent.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/ComplyTags.h"
@@ -20,6 +20,13 @@ AComplyPlayerCharacter::AComplyPlayerCharacter()
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;
 	
+}
+
+void AComplyPlayerCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	
+	bIsAiming ? ZoomIn(DeltaTime) : ZoomOut(DeltaTime);
 }
 
 UAbilitySystemComponent* AComplyPlayerCharacter::GetAbilitySystemComponent() const
@@ -41,6 +48,10 @@ void AComplyPlayerCharacter::PossessedBy(AController* NewController)
 	GetAbilitySystemComponent()->InitAbilityActorInfo(GetPlayerState(), this);
 	InitializeAttributes();
 	GiveStartupAbilities();
+	
+	GetAbilitySystemComponent()->RegisterGameplayTagEvent(
+	ComplyTags::States::State_Aiming,
+	EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AComplyPlayerCharacter::OnAimingTagChanged);
 }
 
 // For clients, ASC ability actor info is initialized here
@@ -52,6 +63,10 @@ void AComplyPlayerCharacter::OnRep_PlayerState()
 	if (!GetAbilitySystemComponent()) return;
 	
 	GetAbilitySystemComponent()->InitAbilityActorInfo(GetPlayerState(), this);
+	
+	GetAbilitySystemComponent()->RegisterGameplayTagEvent(
+	ComplyTags::States::State_Aiming,
+	EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AComplyPlayerCharacter::OnAimingTagChanged);
 }
 
 void AComplyPlayerCharacter::BeginPlay()
@@ -66,6 +81,7 @@ void AComplyPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Started, this, &AComplyPlayerCharacter::PrimaryActionPressed);
+		EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Completed, this, &AComplyPlayerCharacter::PrimaryActionReleased);
 		EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Started, this, &AComplyPlayerCharacter::SecondaryActionPressed);
 		EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Completed, this, &AComplyPlayerCharacter::SecondaryActionReleased);
 	}
@@ -75,16 +91,27 @@ void AComplyPlayerCharacter::PrimaryActionPressed()
 {
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
-		if (Spec.DynamicAbilityTags.HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_Primary))
+		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_Primary))
 		{
+			// Applies the effect that applies a State.Firing tag
+			FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+			FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(FiringEffectClass, 1.f, ContextHandle);
+			ActiveFiringEffectHandle = GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+			
 			GetAbilitySystemComponent()->TryActivateAbility(Spec.Handle);
 			break;
 		}
 	}
 }
 
+void AComplyPlayerCharacter::PrimaryActionReleased()
+{
+	GetAbilitySystemComponent()->RemoveActiveGameplayEffect(ActiveFiringEffectHandle);
+}
+
 void AComplyPlayerCharacter::SecondaryActionPressed()
 {
+	// Applies the effect that applies the State.Aiming tag
 	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
 	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(AimingEffectClass, 1.f, ContextHandle);
 	ActiveAimingEffectHandle = GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
@@ -93,6 +120,25 @@ void AComplyPlayerCharacter::SecondaryActionPressed()
 void AComplyPlayerCharacter::SecondaryActionReleased()
 {
 	GetAbilitySystemComponent()->RemoveActiveGameplayEffect(ActiveAimingEffectHandle);
+}
+
+void AComplyPlayerCharacter::OnAimingTagChanged(const FGameplayTag Tag, int32 NewCount)
+{
+	bIsAiming = NewCount > 0;
+}
+
+void AComplyPlayerCharacter::ZoomIn(float DeltaTime)
+{
+	UCameraComponent* CameraComp = FindComponentByClass<UCameraComponent>();
+	CameraComp->FieldOfView = FMath::FInterpTo(
+		CameraComp->FieldOfView, AimFOV, DeltaTime, ZoomSpeed);
+}
+
+void AComplyPlayerCharacter::ZoomOut(float DeltaTime)
+{
+	UCameraComponent* CameraComp = FindComponentByClass<UCameraComponent>();
+	CameraComp->FieldOfView = FMath::FInterpTo(
+		CameraComp->FieldOfView, DefaultFOV, DeltaTime, ZoomSpeed);
 }
 
 

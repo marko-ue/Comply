@@ -6,6 +6,7 @@
 #include "ActiveGameplayEffectHandle.h"
 #include "Character/ComplyCharacterBase.h"
 #include "Interface/Player/PlayerInterface.h"
+#include "GameplayEffectTypes.h"
 #include "ComplyPlayerCharacter.generated.h"
 
 
@@ -30,15 +31,11 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effects")
 	TSubclassOf<UGameplayEffect> AimingEffectClass;
-	
-	FActiveGameplayEffectHandle ActiveAimingEffectHandle = FActiveGameplayEffectHandle();
-	
-	UPROPERTY(EditDefaultsOnly)
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effects")
 	TSubclassOf<UGameplayEffect> FiringEffectClass;
-	
-	FActiveGameplayEffectHandle ActiveFiringEffectHandle;
 	
 	/*
 	 * Zooming in/out
@@ -53,7 +50,11 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Camera")
 	float ZoomSpeed = 10.f;
 	
-
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UGameplayAbility> ApplyAimEffectAbilityClass;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UGameplayAbility> ApplyFireEffectAbilityClass;
 	
 protected:
 	virtual void BeginPlay() override;

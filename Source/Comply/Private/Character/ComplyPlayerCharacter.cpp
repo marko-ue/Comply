@@ -2,7 +2,7 @@
 
 #include "Character/ComplyPlayerCharacter.h"
 #include "Framework/PlayerState/ComplyPlayerState.h"
-#include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
+#include "AbilitySystem/Abilities/ComplyAbilityBase.h"
 #include "EnhancedInputComponent.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/ComplyTags.h"
@@ -49,9 +49,8 @@ void AComplyPlayerCharacter::PossessedBy(AController* NewController)
 	InitializeAttributes();
 	GiveStartupAbilities();
 	
-	GetAbilitySystemComponent()->RegisterGameplayTagEvent(
-	ComplyTags::States::State_Aiming,
-	EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AComplyPlayerCharacter::OnAimingTagChanged);
+	GetAbilitySystemComponent()->RegisterGameplayTagEvent(ComplyTags::States::State_Aiming,
+		EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AComplyPlayerCharacter::OnAimingTagChanged);
 }
 
 // For clients, ASC ability actor info is initialized here
@@ -64,9 +63,8 @@ void AComplyPlayerCharacter::OnRep_PlayerState()
 	
 	GetAbilitySystemComponent()->InitAbilityActorInfo(GetPlayerState(), this);
 	
-	GetAbilitySystemComponent()->RegisterGameplayTagEvent(
-	ComplyTags::States::State_Aiming,
-	EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AComplyPlayerCharacter::OnAimingTagChanged);
+	GetAbilitySystemComponent()->RegisterGameplayTagEvent(ComplyTags::States::State_Aiming,
+		EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AComplyPlayerCharacter::OnAimingTagChanged);
 }
 
 void AComplyPlayerCharacter::BeginPlay()
@@ -93,33 +91,41 @@ void AComplyPlayerCharacter::PrimaryActionPressed()
 	{
 		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_Primary))
 		{
-			// Applies the effect that applies a State.Firing tag
-			FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
-			FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(FiringEffectClass, 1.f, ContextHandle);
-			ActiveFiringEffectHandle = GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-			
 			GetAbilitySystemComponent()->TryActivateAbility(Spec.Handle);
+			break;
+		}
+	}
+
+	GetAbilitySystemComponent()->TryActivateAbilityByClass(ApplyFireEffectAbilityClass);
+}
+
+void AComplyPlayerCharacter::PrimaryActionReleased()
+{
+	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
+	{
+		if (Spec.Ability->GetClass() == ApplyFireEffectAbilityClass)
+		{
+			GetAbilitySystemComponent()->CancelAbility(Spec.Ability);
 			break;
 		}
 	}
 }
 
-void AComplyPlayerCharacter::PrimaryActionReleased()
-{
-	GetAbilitySystemComponent()->RemoveActiveGameplayEffect(ActiveFiringEffectHandle);
-}
-
 void AComplyPlayerCharacter::SecondaryActionPressed()
 {
-	// Applies the effect that applies the State.Aiming tag
-	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
-	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(AimingEffectClass, 1.f, ContextHandle);
-	ActiveAimingEffectHandle = GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	GetAbilitySystemComponent()->TryActivateAbilityByClass(ApplyAimEffectAbilityClass);
 }
 
 void AComplyPlayerCharacter::SecondaryActionReleased()
 {
-	GetAbilitySystemComponent()->RemoveActiveGameplayEffect(ActiveAimingEffectHandle);
+	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
+	{
+		if (Spec.Ability->GetClass() == ApplyAimEffectAbilityClass)
+		{
+			GetAbilitySystemComponent()->CancelAbility(Spec.Ability);
+			break;
+		}
+	}
 }
 
 void AComplyPlayerCharacter::OnAimingTagChanged(const FGameplayTag Tag, int32 NewCount)
@@ -129,6 +135,7 @@ void AComplyPlayerCharacter::OnAimingTagChanged(const FGameplayTag Tag, int32 Ne
 
 void AComplyPlayerCharacter::ZoomIn(float DeltaTime)
 {
+	if (!IsLocallyControlled()) return;
 	UCameraComponent* CameraComp = FindComponentByClass<UCameraComponent>();
 	CameraComp->FieldOfView = FMath::FInterpTo(
 		CameraComp->FieldOfView, AimFOV, DeltaTime, ZoomSpeed);
@@ -136,6 +143,7 @@ void AComplyPlayerCharacter::ZoomIn(float DeltaTime)
 
 void AComplyPlayerCharacter::ZoomOut(float DeltaTime)
 {
+	if (!IsLocallyControlled()) return;
 	UCameraComponent* CameraComp = FindComponentByClass<UCameraComponent>();
 	CameraComp->FieldOfView = FMath::FInterpTo(
 		CameraComp->FieldOfView, DefaultFOV, DeltaTime, ZoomSpeed);

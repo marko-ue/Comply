@@ -13,10 +13,15 @@ class COMPLY_API UComplyAbilityBase : public UGameplayAbility
 {
 	GENERATED_BODY()
 	
+public:
+	
 protected:
 	UFUNCTION()
 	virtual void OnMontageCompleted();
 
 	UFUNCTION()
 	virtual void OnMontageCancelled();
+	
+private:
+
 };

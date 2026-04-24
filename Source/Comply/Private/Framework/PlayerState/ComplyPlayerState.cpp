@@ -14,7 +14,7 @@ AComplyPlayerState::AComplyPlayerState()
 	
 	AttributeSet = CreateDefaultSubobject<UComplyAttributeSet>("AttributeSet");
 	
-	NetUpdateFrequency = 100.f;
+	SetNetUpdateFrequency(100.f);
 }
 
 UAbilitySystemComponent* AComplyPlayerState::GetAbilitySystemComponent() const

@@ -5,6 +5,7 @@ namespace ComplyTags
 	namespace ComplyAbilities
 	{
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Primary, "ComplyTags.Abilities.Primary", "Primary ability asset tag")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Utility, "ComplyTags.Abilities.Utility", "Utility ability asset tag")
 		
 		namespace InputTags
 		{

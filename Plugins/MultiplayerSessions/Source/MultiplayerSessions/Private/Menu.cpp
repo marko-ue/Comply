@@ -98,21 +98,41 @@ void UMenu::OnCreateSession(bool bWasSuccessful)
 
 void UMenu::OnFindSessions(const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful)
 {
-	if (MultiplayerSessionsSubsystem == nullptr)
+	if (GEngine)
 	{
-		return;
+		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow,
+			FString::Printf(TEXT("FindSessions: success=%s, count=%d"),
+				bWasSuccessful ? TEXT("true") : TEXT("false"), SessionResults.Num()));
 	}
 
-	for (auto Result : SessionResults)
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::White,
+			FString::Printf(TEXT("My MatchType='%s' len=%d"), *MatchType, MatchType.Len()));
+	}
+
+	for (int32 i = 0; i < SessionResults.Num(); i++)
 	{
 		FString SettingsValue;
-		Result.Session.SessionSettings.Get(FName("MatchType"), SettingsValue);
+		SessionResults[i].Session.SessionSettings.Get(FName("MatchType"), SettingsValue);
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan,
+				FString::Printf(TEXT("Result[%d] MatchType='%s' len=%d PingMs=%d Owner=%s"),
+					i,
+					*SettingsValue,
+					SettingsValue.Len(),
+					SessionResults[i].PingInMs,
+					*SessionResults[i].Session.OwningUserName));
+		}
+
 		if (SettingsValue == MatchType)
 		{
-			MultiplayerSessionsSubsystem->JoinSession(Result);
+			MultiplayerSessionsSubsystem->JoinSession(SessionResults[i]);
 			return;
 		}
 	}
+
 	if (!bWasSuccessful || SessionResults.Num() == 0)
 	{
 		JoinButton->SetIsEnabled(true);
@@ -121,6 +141,13 @@ void UMenu::OnFindSessions(const TArray<FOnlineSessionSearchResult>& SessionResu
 
 void UMenu::OnJoinSession(EOnJoinSessionCompleteResult::Type Result)
 {
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow,
+			FString::Printf(TEXT("JoinSession result: %d"), (int32)Result));
+		// 0=Success, 1=SessionIsFull, 2=SessionDoesNotExist, 3=CouldNotRetrieveAddress, 4=AlreadyInSession, 5=UnknownError
+	}
+
 	IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();
 	if (Subsystem)
 	{
@@ -128,11 +155,22 @@ void UMenu::OnJoinSession(EOnJoinSessionCompleteResult::Type Result)
 		if (SessionInterface.IsValid())
 		{
 			FString Address;
-			SessionInterface->GetResolvedConnectString(NAME_GameSession, Address);
+			bool bGotAddress = SessionInterface->GetResolvedConnectString(NAME_GameSession, Address);
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 15.f, bGotAddress ? FColor::Green : FColor::Red,
+					FString::Printf(TEXT("ResolvedAddress: '%s', got=%s"),
+						*Address, bGotAddress ? TEXT("true") : TEXT("false")));
+			}
 
 			APlayerController* PlayerController = GetGameInstance()->GetFirstLocalPlayerController();
 			if (PlayerController)
 			{
+				if (GEngine)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Green,
+						TEXT("Calling ClientTravel..."));
+				}
 				PlayerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
 			}
 		}

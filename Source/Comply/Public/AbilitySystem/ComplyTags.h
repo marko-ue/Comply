@@ -8,6 +8,7 @@ namespace ComplyTags
 	namespace ComplyAbilities
 	{
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Primary);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Utility);
 		
 		namespace InputTags
 		{

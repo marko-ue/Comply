@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "DamageAbilityBase.h"
-#include "Camera/CameraComponent.h"
 #include "RangedWeaponAbilityBase.generated.h"
 
 class UCameraComponent;

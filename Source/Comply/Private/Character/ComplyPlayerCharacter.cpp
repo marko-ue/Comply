@@ -78,10 +78,11 @@ void AComplyPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Started, this, &AComplyPlayerCharacter::PrimaryActionPressed);
-		EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Completed, this, &AComplyPlayerCharacter::PrimaryActionReleased);
-		EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Started, this, &AComplyPlayerCharacter::SecondaryActionPressed);
-		EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Completed, this, &AComplyPlayerCharacter::SecondaryActionReleased);
+		EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Started, this, &ThisClass::PrimaryActionPressed);
+		EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Completed, this, &ThisClass::PrimaryActionReleased);
+		EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Started, this, &ThisClass::SecondaryActionPressed);
+		EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Completed, this, &ThisClass::SecondaryActionReleased);
+		EnhancedInputComponent->BindAction(UseUtilityAction, ETriggerEvent::Started, this, &ThisClass::UseUtilityActionPressed);
 	}
 }
 
@@ -123,6 +124,18 @@ void AComplyPlayerCharacter::SecondaryActionReleased()
 		if (Spec.Ability->GetClass() == ApplyAimEffectAbilityClass)
 		{
 			GetAbilitySystemComponent()->CancelAbility(Spec.Ability);
+			break;
+		}
+	}
+}
+
+void AComplyPlayerCharacter::UseUtilityActionPressed()
+{
+	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
+	{
+		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_OneShotUtility))
+		{
+			GetAbilitySystemComponent()->TryActivateAbility(Spec.Handle);
 			break;
 		}
 	}

@@ -75,6 +75,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* SecondaryAction;
 	
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* UseUtilityAction;
+	
 	// Called for primary abilities
 	void PrimaryActionPressed();
 	void PrimaryActionReleased();
@@ -82,6 +85,9 @@ protected:
 	// Called for secondary weapon actions
 	void SecondaryActionPressed();
 	void SecondaryActionReleased();
+	
+	// Called for utility
+	void UseUtilityActionPressed();
 	
 private:
 	/*

@@ -22,6 +22,15 @@ protected:
 	UFUNCTION()
 	virtual void OnMontageCancelled();
 	
+	/*
+	* Cached variables used to end the ability
+	*/
+	FGameplayAbilitySpecHandle CachedHandle;
+	const FGameplayAbilityActorInfo* CachedActorInfo;
+	FGameplayAbilityActivationInfo CachedActivationInfo;
+	// End
+	
+	
 private:
 
 };

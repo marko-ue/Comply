@@ -52,13 +52,7 @@ protected:
 	UFUNCTION()
 	virtual void OnTargetDataReceived(const FGameplayAbilityTargetDataHandle& DataHandle);
 	
-	/*
-	 * Cached variables used to end the ability
-	 */
-	FGameplayAbilitySpecHandle CachedHandle;
-	const FGameplayAbilityActorInfo* CachedActorInfo;
-	FGameplayAbilityActivationInfo CachedActivationInfo;
-	// End
+
 
 	/*
 	 * Functions for the delay task and firing

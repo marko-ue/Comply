@@ -13,4 +13,13 @@ UCLASS()
 class COMPLY_API UUtility_Ranger : public UUtilityAbilityBase
 {
 	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AActor> ShieldActorClass;
+	
+protected:
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	
+	virtual void Use() override;
 };

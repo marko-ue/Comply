@@ -13,6 +13,7 @@ namespace ComplyTags
 		namespace InputTags
 		{
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Input_Primary);
+			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Input_OneShotUtility);
 		}
 		
 		namespace DamageTypes

@@ -18,8 +18,6 @@ UExecCalc_Damage::UExecCalc_Damage()
 void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
                                               FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
 {
-	//Super::Execute_Implementation(ExecutionParams, OutExecutionOutput);
-	
 	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
 	
 	float Damage = Spec.GetSetByCallerMagnitude(ComplyTags::ComplyAbilities::DamageTypes::Damage_Physical);

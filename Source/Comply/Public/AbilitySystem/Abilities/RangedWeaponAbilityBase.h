@@ -6,6 +6,7 @@
 #include "DamageAbilityBase.h"
 #include "RangedWeaponAbilityBase.generated.h"
 
+class UHitscanTargetData;
 class UCameraComponent;
 /**
  * 
@@ -30,7 +31,7 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UAnimMontage> AbilityActivationMontageIronsights;
 	
-	void TraceToCrosshair(FHitResult& TraceHitResult, float TraceDistance);
+	void TraceToCrosshair(FHitResult& TraceHitResult, float TraceDistance, bool& OutPassedThroughShield);
 	
 	UPROPERTY(EditAnywhere)
 	float TraceDistance = 10000.f;
@@ -42,6 +43,9 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	ERangedWeaponType RangedWeaponType = ERangedWeaponType::Automatic;
 	
+	UPROPERTY(EditAnywhere, Category = "Upgrades")
+	float ShieldShotDamageMultiplier = 1.5f;
+
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
@@ -52,8 +56,6 @@ protected:
 	
 	UFUNCTION()
 	virtual void OnTargetDataReceived(const FGameplayAbilityTargetDataHandle& DataHandle);
-	
-
 
 	/*
 	 * Functions for the delay task and firing
@@ -67,4 +69,7 @@ protected:
 	virtual void PlayMontageAndBindDelegates(const TObjectPtr<UAnimMontage>& AnimationToPlay);
 	virtual void PlayAnimationBasedOnState();
 	
+private:
+	UPROPERTY()
+	UHitscanTargetData* HitscanTargetDataTask;
 };

@@ -13,7 +13,7 @@
 class UComplyAttributeSet;
 
 // Traces to the middle of the screen
-void URangedWeaponAbilityBase::TraceToCrosshair(FHitResult& TraceHitResult, float TraceLength)
+void URangedWeaponAbilityBase::TraceToCrosshair(FHitResult& TraceHitResult, float TraceLength, bool& OutPassedThroughShield)
 {
 	const FGameplayAbilityActivationInfo ActivationInfo;
 	AActor* Owner = GetOwningActorFromActorInfo();
@@ -47,23 +47,46 @@ void URangedWeaponAbilityBase::TraceToCrosshair(FHitResult& TraceHitResult, floa
 		FCollisionQueryParams CollisionParams;
 		CollisionParams.AddIgnoredActor(Avatar);
 		
-		GetWorld()->LineTraceSingleByChannel(
-			TraceHitResult,
+		// A multi trace is used because overlap events are required, as well as direct hits for applying damage
+		TArray<FHitResult> MultiHitResults;
+		GetWorld()->LineTraceMultiByChannel(
+			MultiHitResults,
 			Start,
 			End,
 			ECC_Pawn,
 			CollisionParams
 		);
+		
+		for (const FHitResult& Hit : MultiHitResults)
+		{
+			AActor* HitActor = Hit.GetActor();
+			if (!HitActor) continue;
+
+			if (HitActor->ActorHasTag(FName("Shield")))
+			{
+				// An out parameter boolean is set to true if the overlapping actor is the dome shield
+				OutPassedThroughShield = true;
+				continue;
+			}
+
+			// The trace hit result is also stored here
+			TraceHitResult = Hit;
+			return;
+		}
 	}
 }
 
 void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTargetDataHandle& DataHandle)
 {
-	// Takes the actor hit by the trace and causes damage (server)
 	AActor* TargetActor = DataHandle.Data[0]->GetHitResult()->GetActor();
-	if (TargetActor)
+	
+	const FGameplayAbilityActivationInfo ActivationInfo = GetCurrentActivationInfo();
+	if (TargetActor && HasAuthority(&ActivationInfo))
 	{
-		CauseDamage(TargetActor);
+		// A multiplier parameter is used on the CauseDamage function
+		// In this case, the multiplier is affected by whether the hit passed through a shield
+		const float Multiplier = HitscanTargetDataTask->bPassedThroughShield ? ShieldShotDamageMultiplier : 1.f;
+		CauseDamage(TargetActor, Multiplier);
 	}
 }
 
@@ -83,7 +106,10 @@ void URangedWeaponAbilityBase::OnFireDelayFinished()
 
 void URangedWeaponAbilityBase::Fire()
 {
-	
+	// Creates the task, binds the delegate which will trigger when data is received to the server, and activates it
+	HitscanTargetDataTask = UHitscanTargetData::CreateHitScanData(this);
+	HitscanTargetDataTask->ValidData.AddDynamic(this, &ThisClass::OnTargetDataReceived);
+	HitscanTargetDataTask->ReadyForActivation();
 }
 
 void URangedWeaponAbilityBase::PlayAnimationBasedOnState()

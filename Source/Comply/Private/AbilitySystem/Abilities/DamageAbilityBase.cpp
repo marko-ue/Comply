@@ -10,10 +10,14 @@
  * It will be called wherever damage is meant to be dealt, passing in the target actor
  * The damage is set through blueprint using a curve
  */
-void UDamageAbilityBase::CauseDamage(AActor* TargetActor)
+void UDamageAbilityBase::CauseDamage(AActor* TargetActor, float DamageMultiplier)
 {
 	FGameplayEffectSpecHandle DamageSpecHandle = MakeOutgoingGameplayEffectSpec(DamageEffectClass, 1.f);
-	const float ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel());
+	// The damage multiplier is used here to multiply the original source damage, and this calculation's result is passed along
+	const float ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel()) * DamageMultiplier;
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageSpecHandle, DamageType, ScaledDamage);
-	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(*DamageSpecHandle.Data.Get(), UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor));
+
+	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(
+		*DamageSpecHandle.Data.Get(), 
+		UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor));
 }

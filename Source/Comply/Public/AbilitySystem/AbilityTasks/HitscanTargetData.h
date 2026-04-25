@@ -25,6 +25,9 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FHitscanTargetDataSignature ValidData;
 	
+	UPROPERTY()
+	bool bPassedThroughShield;
+	
 private:
 	virtual void Activate() override;
 	void OnTargetDataReplicatedCallback(const FGameplayAbilityTargetDataHandle& DataHandle, FGameplayTag ActivationTag);

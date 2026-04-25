@@ -36,22 +36,23 @@ void UHitscanTargetData::Activate()
 void UHitscanTargetData::SendHitscanTargetData(float TraceDistance)
 {
 	FScopedPredictionWindow ScopedPrediction(AbilitySystemComponent.Get());
-	
+    
+	// A member boolean variable is created that will be populated with the result of if the hit was through a shield or not
 	FHitResult HitscanHit;
-	Cast<URangedWeaponAbilityBase>(Ability)->TraceToCrosshair(HitscanHit, 10000.f);
-	
+	Cast<URangedWeaponAbilityBase>(Ability)->TraceToCrosshair(HitscanHit, 10000.f, bPassedThroughShield);
+    
 	FGameplayAbilityTargetDataHandle DataHandle;
 	FGameplayAbilityTargetData_SingleTargetHit* Data = new FGameplayAbilityTargetData_SingleTargetHit();
 	Data->HitResult = HitscanHit;
 	DataHandle.Add(Data);
-	
+    
 	AbilitySystemComponent->ServerSetReplicatedTargetData(
 		GetAbilitySpecHandle(),
 		GetActivationPredictionKey(),
 		DataHandle,
 		FGameplayTag(),
 		AbilitySystemComponent->ScopedPredictionKey);
-	
+    
 	if (ShouldBroadcastAbilityTaskDelegates())
 	{
 		ValidData.Broadcast(DataHandle);

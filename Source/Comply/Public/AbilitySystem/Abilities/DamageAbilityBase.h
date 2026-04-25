@@ -16,7 +16,7 @@ class COMPLY_API UDamageAbilityBase : public UComplyAbilityBase
 	
 public:
 	UFUNCTION(BlueprintCallable)
-	void CauseDamage(AActor* TargetActor);
+	void CauseDamage(AActor* TargetActor, float DamageMultiplier);
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")

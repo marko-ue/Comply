@@ -12,25 +12,11 @@ UCLASS(Abstract)
 class COMPLY_API UComplyAbilityBase : public UGameplayAbility
 {
 	GENERATED_BODY()
-	
-public:
-	
+
 protected:
 	UFUNCTION()
 	virtual void OnMontageCompleted();
 
 	UFUNCTION()
 	virtual void OnMontageCancelled();
-	
-	/*
-	* Cached variables used to end the ability
-	*/
-	FGameplayAbilitySpecHandle CachedHandle;
-	const FGameplayAbilityActorInfo* CachedActorInfo;
-	FGameplayAbilityActivationInfo CachedActivationInfo;
-	// End
-	
-	
-private:
-
 };

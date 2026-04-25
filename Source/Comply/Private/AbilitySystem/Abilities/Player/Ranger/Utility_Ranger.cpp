@@ -3,36 +3,61 @@
 
 #include "AbilitySystem/Abilities/Player/Ranger/Utility_Ranger.h"
 
+#include "Abilities/Tasks/AbilityTask_WaitDelay.h"
+
 
 void UUtility_Ranger::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-	const FGameplayEventData* TriggerEventData)
+                                      const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+                                      const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
-	if (!CommitAbility(Handle, ActorInfo, ActivationInfo)) return;
-	
-	CachedHandle = Handle;
-	CachedActorInfo = ActorInfo;
-	CachedActivationInfo = ActivationInfo;
+	if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+		return;
+	}
 	
 	Use();
 	
-	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+	UAbilityTask_WaitDelay* WaitDelayTask = UAbilityTask_WaitDelay::WaitDelay(this, ShieldLifetime);
+	WaitDelayTask->OnFinish.AddDynamic(this, &ThisClass::OnShieldExpired);
+	WaitDelayTask->ReadyForActivation();
 }
-
 
 void UUtility_Ranger::Use()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Ranger utility activated"));
 	
-	AActor* Avatar = CachedActorInfo->AvatarActor.Get();
+	TraceAndSpawnShield();
+}
+
+void UUtility_Ranger::OnShieldExpired()
+{
+	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+}
+
+void UUtility_Ranger::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+{
+	if (SpawnedActor.IsValid())
+	{
+		SpawnedActor->Destroy();
+		SpawnedActor = nullptr;
+	}
+
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+}
+
+void UUtility_Ranger::TraceAndSpawnShield()
+{
+	AActor* Avatar = GetCurrentActorInfo()->AvatarActor.Get();
 	if (!Avatar) return;
 
 	FVector Forward = Avatar->GetActorForwardVector();
 	FVector Start = Avatar->GetActorLocation() + Forward * 150.f;
 
-	// trace to ground
+	// Trace to ground
 	FHitResult Hit;
 	FVector End = Start - FVector(0, 0, 500.f);
 
@@ -50,8 +75,9 @@ void UUtility_Ranger::Use()
 	SpawnParams.Owner = Avatar;
 	SpawnParams.Instigator = Cast<APawn>(Avatar);
 
-	if (HasAuthority(&CachedActivationInfo))
+	const FGameplayAbilityActivationInfo ActivationInfo = GetCurrentActivationInfo();
+	if (HasAuthority(&ActivationInfo))
 	{
-		GetWorld()->SpawnActor<AActor>(ShieldActorClass, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
+		SpawnedActor = GetWorld()->SpawnActor<AActor>(ShieldActorClass, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
 	}
 }

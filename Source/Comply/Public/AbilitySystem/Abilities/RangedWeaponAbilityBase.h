@@ -35,6 +35,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	float TraceDistance = 10000.f;
 	
+	// This will be a scalable float in the future for upgrades
 	UPROPERTY(EditAnywhere)
 	float FireInterval = 60.f;
 	

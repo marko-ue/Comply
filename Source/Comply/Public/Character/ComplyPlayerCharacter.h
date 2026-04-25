@@ -31,12 +31,6 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effects")
-	TSubclassOf<UGameplayEffect> AimingEffectClass;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effects")
-	TSubclassOf<UGameplayEffect> FiringEffectClass;
-	
 	/*
 	 * Zooming in/out
 	 */

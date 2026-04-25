@@ -7,8 +7,13 @@ namespace ComplyTags
 {
 	namespace ComplyAbilities
 	{
-		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Primary);
-		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Utility);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Primary_Ranger);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Utility_Ranger);
+		
+		namespace AssetTags
+		{
+			UE_DECLARE_GAMEPLAY_TAG_EXTERN(ApplyShieldedEffectAbility);
+		}
 		
 		namespace InputTags
 		{
@@ -26,5 +31,6 @@ namespace ComplyTags
 	{
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Aiming);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Firing);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Shielded)
 	}
 }

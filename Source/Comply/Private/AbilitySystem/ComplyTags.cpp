@@ -4,8 +4,13 @@ namespace ComplyTags
 {
 	namespace ComplyAbilities
 	{
-		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Primary, "ComplyTags.Abilities.Primary", "Primary ability asset tag")
-		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Utility, "ComplyTags.Abilities.Utility", "Utility ability asset tag")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Primary_Ranger, "ComplyTags.Abilities.Ranger.Primary", "Primary ability asset tag")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Utility_Ranger, "ComplyTags.Abilities.Ranger.Utility", "Utility ability asset tag")
+		
+		namespace AssetTags
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(ApplyShieldedEffectAbility, "ComplyTags.Abilities.Ranger.ApplyShieldedEffectAbility", "Apply shielded effect ability asset tag")
+		}
 		
 		namespace InputTags
 		{
@@ -23,5 +28,6 @@ namespace ComplyTags
 	{
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Aiming, "ComplyTags.States.Aiming", "Is player aiming")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Firing, "ComplyTags.States.Firing", "Is player firing")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Shielded, "ComplyTags.States.Shielded", "Is player being shielded")
 	}
 }

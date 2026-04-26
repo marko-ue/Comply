@@ -4,7 +4,6 @@
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
-#include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "Kismet/GameplayStatics.h"
 #include "AbilitySystem/AbilityTasks/HitscanTargetData.h"
 #include "Character/ComplyCharacterBase.h"
@@ -88,6 +87,11 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
 		const float Multiplier = HitscanTargetDataTask->bPassedThroughShield ? ShieldShotDamageMultiplier : 1.f;
 		CauseDamage(TargetActor, Multiplier);
 	}
+	
+	// const FGameplayAbilityActivationInfo ActivationInfo = GetCurrentActivationInfo();
+	// AbilitySystemComponent->ConsumeClientReplicatedTargetData(
+	// 	GetCurrentAbilitySpecHandle(), 
+	// 	ActivationInfo.GetActivationPredictionKey());
 }
 
 void URangedWeaponAbilityBase::OnFireDelayFinished()
@@ -106,7 +110,12 @@ void URangedWeaponAbilityBase::OnFireDelayFinished()
 
 void URangedWeaponAbilityBase::Fire()
 {
-	// Creates the task, binds the delegate which will trigger when data is received to the server, and activates it
+	// Any previous running hit scan target data tasks must be ended so it's not triggered for each accumulated task
+	if (HitscanTargetDataTask)
+	{
+		HitscanTargetDataTask->EndTask();
+	}
+    
 	HitscanTargetDataTask = UHitscanTargetData::CreateHitScanData(this);
 	HitscanTargetDataTask->ValidData.AddDynamic(this, &ThisClass::OnTargetDataReceived);
 	HitscanTargetDataTask->ReadyForActivation();
@@ -137,12 +146,15 @@ void URangedWeaponAbilityBase::PlayAnimationBasedOnState()
 void URangedWeaponAbilityBase::PlayMontageAndBindDelegates(const TObjectPtr<UAnimMontage>& AnimationToPlay)
 {
 	checkf(AnimationToPlay, TEXT("Ability Activation Montage not set"));
-	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
+	
+	PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 	this, NAME_None, AnimationToPlay, 1.f, NAME_None, true);
+	
 	PlayMontageTask->OnCompleted.AddDynamic(this, &URangedWeaponAbilityBase::OnMontageCompleted);
 	PlayMontageTask->OnBlendOut.AddDynamic(this, &URangedWeaponAbilityBase::OnMontageCompleted);
 	PlayMontageTask->OnCancelled.AddDynamic(this, &URangedWeaponAbilityBase::OnMontageCancelled);
 	PlayMontageTask->OnInterrupted.AddDynamic(this, &URangedWeaponAbilityBase::OnMontageCancelled);
+	
 	PlayMontageTask->ReadyForActivation();
 }
 

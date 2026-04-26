@@ -6,6 +6,8 @@
 #include "DamageAbilityBase.h"
 #include "RangedWeaponAbilityBase.generated.h"
 
+class UAbilityTask_PlayMontageAndWait;
+class UAbilityTask_WaitDelay;
 class UHitscanTargetData;
 class UCameraComponent;
 /**
@@ -68,6 +70,10 @@ protected:
 	
 	virtual void PlayMontageAndBindDelegates(const TObjectPtr<UAnimMontage>& AnimationToPlay);
 	virtual void PlayAnimationBasedOnState();
+	
+	UPROPERTY()
+	TObjectPtr<UAbilityTask_WaitDelay> FireDelayTask;
+
 	
 private:
 	UPROPERTY()

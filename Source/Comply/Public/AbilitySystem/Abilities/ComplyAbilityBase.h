@@ -7,6 +7,7 @@
 #include "ComplyAbilityBase.generated.h"
 
 
+class UAbilityTask_PlayMontageAndWait;
 
 UCLASS(Abstract)
 class COMPLY_API UComplyAbilityBase : public UGameplayAbility
@@ -19,4 +20,7 @@ protected:
 
 	UFUNCTION()
 	virtual void OnMontageCancelled();
+	
+	UPROPERTY()
+	TObjectPtr<UAbilityTask_PlayMontageAndWait> PlayMontageTask;
 };

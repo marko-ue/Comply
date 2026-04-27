@@ -57,6 +57,10 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UGameplayEffect> ReloadStateEffectClass;
 	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UGameplayEffect> ReduceAmmoEffectClass;
+	
+	void HandleReload();
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	FVector Start;
@@ -77,7 +81,7 @@ protected:
 	// End
 	
 	virtual void PlayMontageAndBindDelegates(const TObjectPtr<UAnimMontage>& AnimationToPlay);
-	virtual void PlayAnimationBasedOnState(); 
+	virtual void PlayAnimationBasedOnState();
 	
 	UPROPERTY()
 	TObjectPtr<UAbilityTask_WaitDelay> FireDelayTask;
@@ -88,10 +92,9 @@ protected:
 	UFUNCTION()
 	virtual void OnReloadMontageCompleted();
 	
-	// Commits ability cost (spends ammo) and plays a montage if the mag is empty. The callback applies the reload GE
-	virtual bool SpendAmmoAndPlayMontageIfEmpty();
+	// Spends ammo and plays a montage if the mag is empty. The callback applies the reload GE
+	virtual bool SpendAmmoAndReload();
 
-	
 private:
 	UPROPERTY()
 	UHitscanTargetData* HitscanTargetDataTask;

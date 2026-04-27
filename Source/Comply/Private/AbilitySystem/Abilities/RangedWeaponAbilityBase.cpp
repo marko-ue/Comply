@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "AbilitySystem/AbilityTasks/HitscanTargetData.h"
 #include "AbilitySystem/ComplyTags.h"
+#include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
 #include "Character/ComplyPlayerCharacter.h"
 
 class UComplyAttributeSet;
@@ -75,6 +76,7 @@ void URangedWeaponAbilityBase::TraceToCrosshair(FHitResult& TraceHitResult, floa
 	}
 }
 
+
 void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTargetDataHandle& DataHandle)
 {
 	AActor* TargetActor = DataHandle.Data[0]->GetHitResult()->GetActor();
@@ -105,8 +107,7 @@ void URangedWeaponAbilityBase::OnFireDelayFinished()
 
 bool URangedWeaponAbilityBase::Fire()
 {
-	FGameplayTagContainer Tags;
-	if (!SpendAmmoAndPlayMontageIfEmpty()) return false;
+	if (!SpendAmmoAndReload()) return false;
 	
 	// Any previous running hit scan target data tasks must be ended so it's not triggered for each accumulated task
 	if (HitscanTargetDataTask)
@@ -123,7 +124,6 @@ bool URangedWeaponAbilityBase::Fire()
 
 void URangedWeaponAbilityBase::PlayAnimationBasedOnState()
 {
-	
 	FGameplayTagContainer Tags;
 	GetAbilitySystemComponentFromActorInfo()->GetOwnedGameplayTags(Tags);
 			
@@ -137,39 +137,51 @@ void URangedWeaponAbilityBase::PlayAnimationBasedOnState()
 	}
 }
 
-bool URangedWeaponAbilityBase::SpendAmmoAndPlayMontageIfEmpty()
+void URangedWeaponAbilityBase::HandleReload()
 {
-	// Pay cost and check for empty mag
-	if (!CommitAbilityCost(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo))
+	if (PlayActivationMontageTask)
 	{
-		if (PlayActivationMontageTask)
-		{
-			PlayActivationMontageTask->EndTask();
-			PlayActivationMontageTask = nullptr;
-		}
-		if (ReloadMontageTask)
-		{
-			ReloadMontageTask->EndTask();
-		}
+		PlayActivationMontageTask->EndTask();
+		PlayActivationMontageTask = nullptr;
+	}
+	if (ReloadMontageTask)
+	{
+		ReloadMontageTask->EndTask();
+	}
 		
-		// Play reload animation
-		ReloadMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-	this, NAME_None, ReloadMontage, 1.f, NAME_None, true);
+	// Play reload animation
+	ReloadMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
+		this, NAME_None, ReloadMontage, 1.f, NAME_None, true);
 		
-		ReloadMontageTask->OnCompleted.AddDynamic(this, &URangedWeaponAbilityBase::OnReloadMontageCompleted);
-		ReloadMontageTask->OnInterrupted.AddDynamic(this, &URangedWeaponAbilityBase::OnReloadMontageCompleted);
-		ReloadMontageTask->OnCancelled.AddDynamic(this, &URangedWeaponAbilityBase::OnReloadMontageCompleted);
-		ReloadMontageTask->OnBlendOut.AddDynamic(this, &URangedWeaponAbilityBase::OnReloadMontageCompleted);
+	ReloadMontageTask->OnCompleted.AddDynamic(this, &URangedWeaponAbilityBase::OnReloadMontageCompleted);
+	ReloadMontageTask->OnInterrupted.AddDynamic(this, &URangedWeaponAbilityBase::OnReloadMontageCompleted);
+	ReloadMontageTask->OnCancelled.AddDynamic(this, &URangedWeaponAbilityBase::OnReloadMontageCompleted);
+	ReloadMontageTask->OnBlendOut.AddDynamic(this, &URangedWeaponAbilityBase::OnReloadMontageCompleted);
 		
-		ReloadMontageTask->ReadyForActivation();
+	ReloadMontageTask->ReadyForActivation();
 		
-		// Effect that applies the reloading tag
-		FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
-		FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(ReloadStateEffectClass, 1.f, ContextHandle);
-		GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	// Effect that applies the reloading tag
+	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
+	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(ReloadStateEffectClass, 1.f, ContextHandle);
+	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+}
+
+bool URangedWeaponAbilityBase::SpendAmmoAndReload()
+{
+	const UWeaponAttributeSet* WeaponAS = GetAbilitySystemComponentFromActorInfo()->GetSet<UWeaponAttributeSet>();
+    
+	if (WeaponAS->GetRifleCurrentAmmo() <= 0.f)
+	{
+		HandleReload();
 		
 		return false;
 	}
+	
+	// Reduce ammo in mag by 1
+	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
+	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(ReduceAmmoEffectClass, 1.f, ContextHandle);
+	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	
 	return true;
 }
 

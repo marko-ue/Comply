@@ -6,6 +6,7 @@
 #include "EnhancedInputComponent.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/ComplyTags.h"
+#include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Net/UnrealNetwork.h"
@@ -84,6 +85,7 @@ void AComplyPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Started, this, &ThisClass::SecondaryActionPressed);
 		EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Completed, this, &ThisClass::SecondaryActionReleased);
 		EnhancedInputComponent->BindAction(UseUtilityAction, ETriggerEvent::Started, this, &ThisClass::UseUtilityActionPressed);
+		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Started, this, &ThisClass::ReloadActionPressed);
 	}
 }
 
@@ -143,6 +145,14 @@ void AComplyPlayerCharacter::UseUtilityActionPressed()
 			GetAbilitySystemComponent()->TryActivateAbility(Spec.Handle);
 			break;
 		}
+	}
+}
+
+void AComplyPlayerCharacter::ReloadActionPressed()
+{
+	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
+	{
+		
 	}
 }
 

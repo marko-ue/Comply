@@ -74,6 +74,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* UseUtilityAction;
 	
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* ReloadAction;
+	
 	// Called for primary abilities
 	void PrimaryActionPressed();
 	void PrimaryActionReleased();
@@ -84,6 +87,9 @@ protected:
 	
 	// Called for utility
 	void UseUtilityActionPressed();
+	
+	// Called for reloading
+	void ReloadActionPressed();
 	
 private:
 	/*

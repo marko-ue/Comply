@@ -7,6 +7,7 @@
 #include "AbilitySystemInterface.h"
 #include "ComplyPlayerState.generated.h"
 
+class UWeaponAttributeSet;
 class UComplyAttributeSet;
 /**
  * 
@@ -25,5 +26,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Abilities")
 	TObjectPtr<UAbilitySystemComponent> ASC;
 	
+	UPROPERTY()
 	TObjectPtr<UComplyAttributeSet> AttributeSet;
+	
+	UPROPERTY()
+	TObjectPtr<UWeaponAttributeSet> WeaponAttributeSet;
 };

@@ -22,5 +22,5 @@ protected:
 	virtual void OnMontageCancelled();
 	
 	UPROPERTY()
-	TObjectPtr<UAbilityTask_PlayMontageAndWait> PlayMontageTask;
+	TObjectPtr<UAbilityTask_PlayMontageAndWait> PlayActivationMontageTask;
 };

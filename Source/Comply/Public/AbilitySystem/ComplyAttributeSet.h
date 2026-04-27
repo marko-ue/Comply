@@ -43,7 +43,7 @@ public:
 	
 	ATTRIBUTE_ACCESSORS(ThisClass, Health)
 	ATTRIBUTE_ACCESSORS(ThisClass, MaxHealth)
-	ATTRIBUTE_ACCESSORS(ThisClass, IncomingDamage);
+	ATTRIBUTE_ACCESSORS(ThisClass, IncomingDamage)
 	
 	/*
 	 * Meta Attributes

@@ -8,6 +8,7 @@
 #include "AbilitySystem/ComplyTags.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AComplyPlayerCharacter::AComplyPlayerCharacter()
 {
@@ -98,6 +99,8 @@ void AComplyPlayerCharacter::PrimaryActionPressed()
 	}
 
 	GetAbilitySystemComponent()->TryActivateAbilityByClass(ApplyFireEffectAbilityClass);
+	
+	bFireInputHeld = true;
 }
 
 void AComplyPlayerCharacter::PrimaryActionReleased()
@@ -110,6 +113,8 @@ void AComplyPlayerCharacter::PrimaryActionReleased()
 			break;
 		}
 	}
+	
+	bFireInputHeld = false;
 }
 
 void AComplyPlayerCharacter::SecondaryActionPressed()

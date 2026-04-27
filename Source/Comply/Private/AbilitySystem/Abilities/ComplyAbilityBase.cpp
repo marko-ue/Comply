@@ -8,10 +8,10 @@
 
 void UComplyAbilityBase::OnMontageCompleted()
 {
-	PlayMontageTask->EndTask();
+	PlayActivationMontageTask->EndTask();
 }
 
 void UComplyAbilityBase::OnMontageCancelled()
 {
-	PlayMontageTask->EndTask();
+	PlayActivationMontageTask->EndTask();
 }

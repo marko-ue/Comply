@@ -6,15 +6,15 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Kismet/GameplayStatics.h"
 #include "AbilitySystem/AbilityTasks/HitscanTargetData.h"
-#include "Character/ComplyCharacterBase.h"
 #include "AbilitySystem/ComplyTags.h"
+#include "Character/ComplyPlayerCharacter.h"
 
 class UComplyAttributeSet;
+
 
 // Traces to the middle of the screen
 void URangedWeaponAbilityBase::TraceToCrosshair(FHitResult& TraceHitResult, float TraceLength, bool& OutPassedThroughShield)
 {
-	const FGameplayAbilityActivationInfo ActivationInfo;
 	AActor* Owner = GetOwningActorFromActorInfo();
 	AActor* Avatar = GetAvatarActorFromActorInfo();
 
@@ -87,11 +87,6 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
 		const float Multiplier = HitscanTargetDataTask->bPassedThroughShield ? ShieldShotDamageMultiplier : 1.f;
 		CauseDamage(TargetActor, Multiplier);
 	}
-	
-	// const FGameplayAbilityActivationInfo ActivationInfo = GetCurrentActivationInfo();
-	// AbilitySystemComponent->ConsumeClientReplicatedTargetData(
-	// 	GetCurrentAbilitySpecHandle(), 
-	// 	ActivationInfo.GetActivationPredictionKey());
 }
 
 void URangedWeaponAbilityBase::OnFireDelayFinished()
@@ -108,8 +103,11 @@ void URangedWeaponAbilityBase::OnFireDelayFinished()
 	}
 }
 
-void URangedWeaponAbilityBase::Fire()
+bool URangedWeaponAbilityBase::Fire()
 {
+	FGameplayTagContainer Tags;
+	if (!SpendAmmoAndPlayMontageIfEmpty()) return false;
+	
 	// Any previous running hit scan target data tasks must be ended so it's not triggered for each accumulated task
 	if (HitscanTargetDataTask)
 	{
@@ -119,27 +117,82 @@ void URangedWeaponAbilityBase::Fire()
 	HitscanTargetDataTask = UHitscanTargetData::CreateHitScanData(this);
 	HitscanTargetDataTask->ValidData.AddDynamic(this, &ThisClass::OnTargetDataReceived);
 	HitscanTargetDataTask->ReadyForActivation();
+	
+	return true;
 }
 
 void URangedWeaponAbilityBase::PlayAnimationBasedOnState()
 {
-	AComplyCharacterBase* Character = Cast<AComplyCharacterBase>(GetAvatarActorFromActorInfo());
-	if (Character)
-	{
-		if (Character)
-		{
-			FGameplayTagContainer Tags;
-			Character->GetAbilitySystemComponent()->GetOwnedGameplayTags(Tags);
+	
+	FGameplayTagContainer Tags;
+	GetAbilitySystemComponentFromActorInfo()->GetOwnedGameplayTags(Tags);
 			
-			if (Tags.HasTagExact(ComplyTags::States::State_Aiming))
-			{
-				PlayMontageAndBindDelegates(AbilityActivationMontageIronsights);
-			}
-			else
-			{
-				PlayMontageAndBindDelegates(AbilityActivationMontageHip);
-			}
+	if (Tags.HasTagExact(ComplyTags::States::State_Aiming))
+	{
+		PlayMontageAndBindDelegates(AbilityActivationMontageIronsights);
+	}
+	else
+	{
+		PlayMontageAndBindDelegates(AbilityActivationMontageHip);
+	}
+}
+
+bool URangedWeaponAbilityBase::SpendAmmoAndPlayMontageIfEmpty()
+{
+	// Pay cost and check for empty mag
+	if (!CommitAbilityCost(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo))
+	{
+		if (PlayActivationMontageTask)
+		{
+			PlayActivationMontageTask->EndTask();
+			PlayActivationMontageTask = nullptr;
 		}
+		if (ReloadMontageTask)
+		{
+			ReloadMontageTask->EndTask();
+		}
+		
+		// Play reload animation
+		ReloadMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
+	this, NAME_None, ReloadMontage, 1.f, NAME_None, true);
+		
+		ReloadMontageTask->OnCompleted.AddDynamic(this, &URangedWeaponAbilityBase::OnReloadMontageCompleted);
+		ReloadMontageTask->OnInterrupted.AddDynamic(this, &URangedWeaponAbilityBase::OnReloadMontageCompleted);
+		ReloadMontageTask->OnCancelled.AddDynamic(this, &URangedWeaponAbilityBase::OnReloadMontageCompleted);
+		ReloadMontageTask->OnBlendOut.AddDynamic(this, &URangedWeaponAbilityBase::OnReloadMontageCompleted);
+		
+		ReloadMontageTask->ReadyForActivation();
+		
+		// Effect that applies the reloading tag
+		FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
+		FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(ReloadStateEffectClass, 1.f, ContextHandle);
+		GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+		
+		return false;
+	}
+	return true;
+}
+
+void URangedWeaponAbilityBase::OnReloadMontageCompleted()
+{
+	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
+	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(ReloadEffectClass, 1.f, ContextHandle);
+	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	
+	// Remove reloading tag
+	FGameplayTagContainer Tags;
+	Tags.AddTag(ComplyTags::States::State_Reloading);
+	GetAbilitySystemComponentFromActorInfo()->RemoveActiveEffectsWithGrantedTags(Tags);
+	
+	// Resume firing if still holding, otherwise end the ability to allow future inputs (as it's instanced per actor)
+	GetAbilitySystemComponentFromActorInfo()->GetOwnedGameplayTags(Tags);
+	if (Tags.HasTagExact(ComplyTags::States::State_Firing))
+	{
+		Fire();
+	}
+	else
+	{
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 	}
 }
 
@@ -147,15 +200,13 @@ void URangedWeaponAbilityBase::PlayMontageAndBindDelegates(const TObjectPtr<UAni
 {
 	checkf(AnimationToPlay, TEXT("Ability Activation Montage not set"));
 	
-	PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
+	PlayActivationMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 	this, NAME_None, AnimationToPlay, 1.f, NAME_None, true);
 	
-	PlayMontageTask->OnCompleted.AddDynamic(this, &URangedWeaponAbilityBase::OnMontageCompleted);
-	PlayMontageTask->OnBlendOut.AddDynamic(this, &URangedWeaponAbilityBase::OnMontageCompleted);
-	PlayMontageTask->OnCancelled.AddDynamic(this, &URangedWeaponAbilityBase::OnMontageCancelled);
-	PlayMontageTask->OnInterrupted.AddDynamic(this, &URangedWeaponAbilityBase::OnMontageCancelled);
+	PlayActivationMontageTask->OnCompleted.AddDynamic(this, &URangedWeaponAbilityBase::OnMontageCompleted);
+	PlayActivationMontageTask->OnBlendOut.AddDynamic(this, &URangedWeaponAbilityBase::OnMontageCompleted);
+	PlayActivationMontageTask->OnCancelled.AddDynamic(this, &URangedWeaponAbilityBase::OnMontageCancelled);
+	PlayActivationMontageTask->OnInterrupted.AddDynamic(this, &URangedWeaponAbilityBase::OnMontageCancelled);
 	
-	PlayMontageTask->ReadyForActivation();
+	PlayActivationMontageTask->ReadyForActivation();
 }
-
-

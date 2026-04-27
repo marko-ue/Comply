@@ -32,5 +32,6 @@ namespace ComplyTags
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Aiming);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Firing);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Shielded)
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Reloading);
 	}
 }

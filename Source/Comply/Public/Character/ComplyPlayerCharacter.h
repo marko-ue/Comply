@@ -50,6 +50,8 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UGameplayAbility> ApplyFireEffectAbilityClass;
 	
+	bool bFireInputHeld = false;
+	
 protected:
 	virtual void BeginPlay() override;
 	

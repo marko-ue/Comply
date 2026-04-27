@@ -5,6 +5,7 @@
 
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "AbilitySystem/ComplyAttributeSet.h"
+#include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
 
 AComplyPlayerState::AComplyPlayerState()
 {
@@ -13,6 +14,7 @@ AComplyPlayerState::AComplyPlayerState()
 	ASC->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 	
 	AttributeSet = CreateDefaultSubobject<UComplyAttributeSet>("AttributeSet");
+	WeaponAttributeSet = CreateDefaultSubobject<UWeaponAttributeSet>("WeaponAttributeSet");
 	
 	SetNetUpdateFrequency(100.f);
 }

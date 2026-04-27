@@ -33,6 +33,9 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UAnimMontage> AbilityActivationMontageIronsights;
 	
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UAnimMontage> ReloadMontage;
+	
 	void TraceToCrosshair(FHitResult& TraceHitResult, float TraceDistance, bool& OutPassedThroughShield);
 	
 	UPROPERTY(EditAnywhere)
@@ -47,8 +50,13 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = "Upgrades")
 	float ShieldShotDamageMultiplier = 1.5f;
-
-
+	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UGameplayEffect> ReloadEffectClass;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UGameplayEffect> ReloadStateEffectClass;
+	
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	FVector Start;
@@ -65,14 +73,23 @@ protected:
 	UFUNCTION()
 	virtual void OnFireDelayFinished();
 	
-	virtual void Fire();
+	virtual bool Fire();
 	// End
 	
 	virtual void PlayMontageAndBindDelegates(const TObjectPtr<UAnimMontage>& AnimationToPlay);
-	virtual void PlayAnimationBasedOnState();
+	virtual void PlayAnimationBasedOnState(); 
 	
 	UPROPERTY()
 	TObjectPtr<UAbilityTask_WaitDelay> FireDelayTask;
+	
+	UPROPERTY()
+	TObjectPtr<UAbilityTask_PlayMontageAndWait> ReloadMontageTask;
+	
+	UFUNCTION()
+	virtual void OnReloadMontageCompleted();
+	
+	// Commits ability cost (spends ammo) and plays a montage if the mag is empty. The callback applies the reload GE
+	virtual bool SpendAmmoAndPlayMontageIfEmpty();
 
 	
 private:

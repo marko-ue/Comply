@@ -40,10 +40,15 @@ void AComplyCharacterBase::Tick(float DeltaTime)
 void AComplyCharacterBase::InitializeAttributes() const
 {
 	checkf(IsValid(InitializeAttributesEffect), TEXT("InitializeAttributesEffect not set"));
+	checkf(IsValid(InitializeWeaponAttributesEffect), TEXT("InitializeWeaponAttributesEffect not set"));
 	
-	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
-	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(InitializeAttributesEffect, 1.f, ContextHandle);
-	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	FGameplayEffectContextHandle AttributesContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+	FGameplayEffectSpecHandle AttributesSpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(InitializeAttributesEffect, 1.f, AttributesContextHandle);
+	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*AttributesSpecHandle.Data.Get());
+	
+	FGameplayEffectContextHandle WeaponAttributesContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+	FGameplayEffectSpecHandle WeaponAttributesSpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(InitializeWeaponAttributesEffect, 1.f, WeaponAttributesContextHandle);
+	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*WeaponAttributesSpecHandle.Data.Get());
 }
 
 void AComplyCharacterBase::GiveStartupAbilities()

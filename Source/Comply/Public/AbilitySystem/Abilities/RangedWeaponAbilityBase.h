@@ -6,6 +6,7 @@
 #include "DamageAbilityBase.h"
 #include "RangedWeaponAbilityBase.generated.h"
 
+class UWeaponAttributeSet;
 class UReloadAbility;
 class UAbilityTask_PlayMontageAndWait;
 class UAbilityTask_WaitDelay;
@@ -43,6 +44,9 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UGameplayEffect> ReduceAmmoEffectClass;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UGameplayEffect> ReduceReserveAmmoEffectClass;
 	
 	UPROPERTY(EditAnywhere)
 	float TraceDistance = 10000.f;

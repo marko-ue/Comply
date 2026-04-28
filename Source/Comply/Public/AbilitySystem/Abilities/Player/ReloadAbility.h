@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ComplyAbilityBase.h"
+#include "AbilitySystem/Abilities/ComplyAbilityBase.h"
 #include "ReloadAbility.generated.h"
 
 class URangedWeaponAbilityBase;

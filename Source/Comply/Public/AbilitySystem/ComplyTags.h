@@ -35,4 +35,9 @@ namespace ComplyTags
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Shielded)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Reloading);
 	}
+	
+	namespace SetByCaller
+	{
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(SBC_ReduceRifleReserveAmmo);
+	}
 }

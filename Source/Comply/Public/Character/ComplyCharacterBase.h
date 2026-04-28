@@ -57,6 +57,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	TSubclassOf<UGameplayEffect> InitializeAttributesEffect;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	TSubclassOf<UGameplayEffect> InitializeWeaponAttributesEffect;
+	
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TArray<FAbilitySet> StartupAbilities;

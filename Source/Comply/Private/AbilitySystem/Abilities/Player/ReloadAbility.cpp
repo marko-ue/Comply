@@ -1,8 +1,9 @@
 // Copyright © 2026 Marko. All rights reserved.
 
 
-#include "AbilitySystem/Abilities/ReloadAbility.h"
+#include "AbilitySystem/Abilities/Player/ReloadAbility.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
@@ -20,6 +21,13 @@ void UReloadAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 void UReloadAbility::HandleReload()
 {
+	const UWeaponAttributeSet* WeaponAS = GetAbilitySystemComponentFromActorInfo()->GetSet<UWeaponAttributeSet>();
+	if (WeaponAS && WeaponAS->GetRifleCurrentReserveAmmo() <= 0)
+	{
+		CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true);
+		return;
+	}
+	
 	if (PlayActivationMontageTask)
 	{
 		PlayActivationMontageTask->EndTask();
@@ -61,12 +69,24 @@ void UReloadAbility::HandleReload()
 
 void UReloadAbility::OnReloadMontageCompleted()
 {
-	// Effect that sets current ammo in mag to max ammo in amg
 	if (ActiveWeapon)
 	{
-		FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
-		FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(ActiveWeapon->ReloadEffectClass, 1.f, ContextHandle);
-		GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);
+		float AmmoSpent = 0.f;
+		if (const UWeaponAttributeSet* WeaponAS = GetAbilitySystemComponentFromActorInfo()->GetSet<UWeaponAttributeSet>())
+		{
+			AmmoSpent = WeaponAS->GetRifleMaxAmmo() - WeaponAS->GetRifleCurrentAmmo();
+		}
+		
+		// Effect that reduces reserve ammo by how much ammo was spent before reloading the current mag (amount of ammo spent)
+		FGameplayEffectContextHandle ReserveAmmoContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
+		FGameplayEffectSpecHandle ReserveAmmoSpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(ActiveWeapon->ReduceReserveAmmoEffectClass, 1.f, ReserveAmmoContextHandle);
+		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(ReserveAmmoSpecHandle, ComplyTags::SetByCaller::SBC_ReduceRifleReserveAmmo, -AmmoSpent);
+		GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*ReserveAmmoSpecHandle.Data.Get());
+		
+		// Effect that sets current ammo in mag to max ammo in mag
+		FGameplayEffectContextHandle CurrentAmmoContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
+		FGameplayEffectSpecHandle CurrentAmmoSpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(ActiveWeapon->ReloadEffectClass, 1.f, CurrentAmmoContextHandle);
+		GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*CurrentAmmoSpecHandle.Data);
 	}
 
 	// Remove reloading tag
@@ -74,7 +94,7 @@ void UReloadAbility::OnReloadMontageCompleted()
 	Tags.AddTag(ComplyTags::States::State_Reloading);
 	GetAbilitySystemComponentFromActorInfo()->RemoveActiveEffectsWithGrantedTags(Tags);
 
-	// Resume firing if still holding, otherwise end the ability to allow future inputs (as it's instanced per actor)
+	// Resume firing if still holding, otherwise end the ability to allow future inputs (as it's instanced per actor)dddd
 	GetAbilitySystemComponentFromActorInfo()->GetOwnedGameplayTags(Tags);
 	if (Tags.HasTagExact(ComplyTags::States::State_Firing) && ActiveWeapon)
 	{

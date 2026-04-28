@@ -34,12 +34,27 @@ public:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_RifleMaxAmmo)
 	FGameplayAttributeData RifleMaxAmmo;
 	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_RifleMaxAmmo)
+	FGameplayAttributeData RifleCurrentReserveAmmo;
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_RifleMaxAmmo)
+	FGameplayAttributeData RifleMaxReserveAmmo;
+	
 	UFUNCTION()
 	void OnRep_RifleCurrentAmmo(const FGameplayAttributeData& OldValue);
 	
 	UFUNCTION()
 	void OnRep_RifleMaxAmmo(const FGameplayAttributeData& OldValue);
 	
+	UFUNCTION()
+	void OnRep_RifleCurrentReserveAmmo(const FGameplayAttributeData& OldValue);
+	
+	UFUNCTION()
+	void OnRep_RifleMaxReserveAmmo(const FGameplayAttributeData& OldValue);
+	
 	ATTRIBUTE_ACCESSORS(ThisClass, RifleCurrentAmmo)
 	ATTRIBUTE_ACCESSORS(ThisClass, RifleMaxAmmo)
+	ATTRIBUTE_ACCESSORS(ThisClass, RifleCurrentReserveAmmo)
+	ATTRIBUTE_ACCESSORS(ThisClass, RifleMaxReserveAmmo)
+	
 };

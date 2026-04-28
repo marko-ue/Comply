@@ -6,6 +6,8 @@
 #include "EnhancedInputComponent.h"
 #include "GameplayEffect.h"
 #include "AbilitySystem/ComplyTags.h"
+#include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
+#include "Character/ComplyPlayerCharacter.h"
 
 // Sets default values
 AComplyCharacterBase::AComplyCharacterBase()
@@ -53,7 +55,14 @@ void AComplyCharacterBase::GiveStartupAbilities()
 		FGameplayAbilitySpec AbilitySpec(Set.AbilityClass);
 		AbilitySpec.GetDynamicSpecSourceTags().AddTag(Set.InputTag);
 		GetAbilitySystemComponent()->GiveAbility(AbilitySpec);
-		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Green, TEXT("Ability given"));
+		// Store equipped primary weapon class
+		if (Set.AbilityClass->IsChildOf(URangedWeaponAbilityBase::StaticClass()))
+		{
+			if (AComplyPlayerCharacter* PlayerCharacter = Cast<AComplyPlayerCharacter>(this))
+			{
+				PlayerCharacter->EquippedPrimaryWeaponClass = Set.AbilityClass;
+			}
+		}
 	}
 }
 

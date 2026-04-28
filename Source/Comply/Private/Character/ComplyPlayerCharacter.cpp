@@ -69,6 +69,23 @@ void AComplyPlayerCharacter::OnRep_PlayerState()
 		EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AComplyPlayerCharacter::OnAimingTagChanged);
 }
 
+URangedWeaponAbilityBase* AComplyPlayerCharacter::GetEquippedPrimaryWeapon() const
+{
+	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
+	{
+		if (Spec.Ability->GetClass() == EquippedPrimaryWeaponClass)
+		{
+			return Cast<URangedWeaponAbilityBase>(Spec.Ability);
+		}
+	}
+	return nullptr;
+}
+
+void AComplyPlayerCharacter::SetEquippedPrimaryWeapon(TSubclassOf<URangedWeaponAbilityBase> NewWeaponClass)
+{
+	EquippedPrimaryWeaponClass = NewWeaponClass;
+}
+
 void AComplyPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -152,7 +169,11 @@ void AComplyPlayerCharacter::ReloadActionPressed()
 {
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
-		
+		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_Reload))
+		{
+			GetAbilitySystemComponent()->TryActivateAbility(Spec.Handle);
+			break;
+		}
 	}
 }
 

@@ -10,6 +10,7 @@
 #include "ComplyPlayerCharacter.generated.h"
 
 
+class URangedWeaponAbilityBase;
 struct FActiveGameplayEffectHandle;
 class UCameraComponent;
 class USpringArmComponent;
@@ -51,6 +52,11 @@ public:
 	TSubclassOf<UGameplayAbility> ApplyFireEffectAbilityClass;
 	
 	bool bFireInputHeld = false;
+	
+	TSubclassOf<URangedWeaponAbilityBase> EquippedPrimaryWeaponClass;
+	
+	URangedWeaponAbilityBase* GetEquippedPrimaryWeapon() const;
+	void SetEquippedPrimaryWeapon(TSubclassOf<URangedWeaponAbilityBase> NewWeaponClass);
 	
 protected:
 	virtual void BeginPlay() override;

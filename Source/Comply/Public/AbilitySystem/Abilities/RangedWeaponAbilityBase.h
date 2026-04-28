@@ -6,6 +6,7 @@
 #include "DamageAbilityBase.h"
 #include "RangedWeaponAbilityBase.generated.h"
 
+class UReloadAbility;
 class UAbilityTask_PlayMontageAndWait;
 class UAbilityTask_WaitDelay;
 class UHitscanTargetData;
@@ -27,6 +28,10 @@ class COMPLY_API URangedWeaponAbilityBase : public UDamageAbilityBase
 	GENERATED_BODY()
 	
 public:
+	void TraceToCrosshair(FHitResult& TraceHitResult, float TraceDistance, bool& OutPassedThroughShield);
+	
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+	
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UAnimMontage> AbilityActivationMontageHip;
 	
@@ -36,7 +41,8 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UAnimMontage> ReloadMontage;
 	
-	void TraceToCrosshair(FHitResult& TraceHitResult, float TraceDistance, bool& OutPassedThroughShield);
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UGameplayEffect> ReduceAmmoEffectClass;
 	
 	UPROPERTY(EditAnywhere)
 	float TraceDistance = 10000.f;
@@ -50,17 +56,13 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = "Upgrades")
 	float ShieldShotDamageMultiplier = 1.5f;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UGameplayAbility> ReloadAbilityClass;
 	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UGameplayEffect> ReloadEffectClass;
-	
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UGameplayEffect> ReloadStateEffectClass;
-	
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UGameplayEffect> ReduceAmmoEffectClass;
-	
-	void HandleReload();
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	FVector Start;
@@ -85,15 +87,6 @@ protected:
 	
 	UPROPERTY()
 	TObjectPtr<UAbilityTask_WaitDelay> FireDelayTask;
-	
-	UPROPERTY()
-	TObjectPtr<UAbilityTask_PlayMontageAndWait> ReloadMontageTask;
-	
-	UFUNCTION()
-	virtual void OnReloadMontageCompleted();
-	
-	// Spends ammo and plays a montage if the mag is empty. The callback applies the reload GE
-	virtual bool SpendAmmoAndReload();
 
 private:
 	UPROPERTY()

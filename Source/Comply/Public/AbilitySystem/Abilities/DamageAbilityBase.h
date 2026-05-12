@@ -6,6 +6,7 @@
 #include "ComplyAbilityBase.h"
 #include "DamageAbilityBase.generated.h"
 
+struct FComplyGameplayEffectContext;
 /**
  * 
  */
@@ -15,8 +16,7 @@ class COMPLY_API UDamageAbilityBase : public UComplyAbilityBase
 	GENERATED_BODY()
 	
 public:
-	UFUNCTION(BlueprintCallable)
-	void CauseDamage(AActor* TargetActor, float DamageMultiplier);
+	void CauseDamage(AActor* TargetActor, FComplyGameplayEffectContext* Context = nullptr);
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")

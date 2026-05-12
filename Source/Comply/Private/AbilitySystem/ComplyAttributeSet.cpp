@@ -4,7 +4,6 @@
 #include "AbilitySystem/ComplyAttributeSet.h"
 #include "Framework/GameMode/ComplyGameModeBase.h"
 #include "GameplayEffectExtension.h"
-#include "Chaos/Deformable/MuscleActivationConstraints.h"
 #include "Interface/Player/PlayerInterface.h"
 #include "Net/UnrealNetwork.h"
 

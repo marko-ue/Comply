@@ -4,6 +4,7 @@
 #include "ExecCalc/ExecCalc_Damage.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/ComplyAbilityTypes.h"
 #include "AbilitySystem/ComplyAttributeSet.h"
 
 struct AuraDamageStatics
@@ -16,12 +17,23 @@ UExecCalc_Damage::UExecCalc_Damage()
 
 // TODO: When adding new damage types, make it so the set by caller tag can be passed in, as well as any resistances/advantages against that damage type, and general resistance attributes like Armor
 void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
-                                              FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
+											  FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
 {
 	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
-	
+
+	const FComplyGameplayEffectContext* Context = static_cast<const FComplyGameplayEffectContext*>(
+		Spec.GetContext().Get());
+
 	float Damage = Spec.GetSetByCallerMagnitude(ComplyTags::ComplyAbilities::DamageTypes::Damage_Physical);
+
+	float Multiplier = 0.f;
 	
-	const FGameplayModifierEvaluatedData EvaluatedData(UComplyAttributeSet::GetIncomingDamageAttribute(), EGameplayModOp::Additive, Damage);
+	if (Context && Context->bHitThroughShield)
+	{
+		Multiplier += Context->ShieldDamageMultiplier;
+	}
+
+	const FGameplayModifierEvaluatedData EvaluatedData(
+		UComplyAttributeSet::GetIncomingDamageAttribute(), EGameplayModOp::Additive, Damage * Multiplier);
 	OutExecutionOutput.AddOutputModifier(EvaluatedData);
 }

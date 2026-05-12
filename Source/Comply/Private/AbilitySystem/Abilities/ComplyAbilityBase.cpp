@@ -10,7 +10,7 @@ void UComplyAbilityBase::OnMontageCompleted()
 {
 	PlayActivationMontageTask->EndTask();
 }
-
+ 
 void UComplyAbilityBase::OnMontageCancelled()
 {
 	PlayActivationMontageTask->EndTask();

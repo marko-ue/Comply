@@ -4,6 +4,7 @@
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "AbilitySystem/ComplyAbilityTypes.h"
 #include "Kismet/GameplayStatics.h"
 #include "AbilitySystem/AbilityTasks/HitscanTargetData.h"
 #include "AbilitySystem/ComplyTags.h"
@@ -87,14 +88,15 @@ void URangedWeaponAbilityBase::EndAbility(const FGameplayAbilitySpecHandle Handl
 void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTargetDataHandle& DataHandle)
 {
 	AActor* TargetActor = DataHandle.Data[0]->GetHitResult()->GetActor();
-	
+    
+	// Context created, value set, and passed in
 	const FGameplayAbilityActivationInfo ActivationInfo = GetCurrentActivationInfo();
 	if (TargetActor && HasAuthority(&ActivationInfo))
 	{
-		// A multiplier parameter is used on the CauseDamage function
-		// In this case, the multiplier is affected by whether the hit passed through a shield
-		const float Multiplier = HitscanTargetDataTask->bPassedThroughShield ? ShieldShotDamageMultiplier : 1.f;
-		CauseDamage(TargetActor, Multiplier);
+		FComplyGameplayEffectContext* Context = new FComplyGameplayEffectContext();
+		Context->bHitThroughShield = HitscanTargetDataTask->bPassedThroughShield;
+		Context->ShieldDamageMultiplier = ShieldShotDamageMultiplier;
+		CauseDamage(TargetActor, Context);
 	}
 }
 

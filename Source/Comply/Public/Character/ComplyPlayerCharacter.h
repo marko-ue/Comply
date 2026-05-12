@@ -83,6 +83,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* ReloadAction;
 	
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* CancelPreviewAction;
+	
 	// Called for primary abilities
 	void PrimaryActionPressed();
 	void PrimaryActionReleased();
@@ -96,6 +99,9 @@ protected:
 	
 	// Called for reloading
 	void ReloadActionPressed();
+	
+	// Called for cancelling previews of certain abilities (cancels abilities)
+	void CancelPreviewActionPressed();
 	
 private:
 	/*

@@ -103,6 +103,7 @@ void AComplyPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Completed, this, &ThisClass::SecondaryActionReleased);
 		EnhancedInputComponent->BindAction(UseUtilityAction, ETriggerEvent::Started, this, &ThisClass::UseUtilityActionPressed);
 		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Started, this, &ThisClass::ReloadActionPressed);
+		EnhancedInputComponent->BindAction(CancelPreviewAction, ETriggerEvent::Started, this, &ThisClass::CancelPreviewActionPressed);
 	}
 }
 
@@ -112,6 +113,7 @@ void AComplyPlayerCharacter::PrimaryActionPressed()
 	{
 		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_Primary))
 		{
+			
 			GetAbilitySystemComponent()->TryActivateAbility(Spec.Handle);
 			break;
 		}
@@ -159,7 +161,17 @@ void AComplyPlayerCharacter::UseUtilityActionPressed()
 	{
 		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_OneShotUtility))
 		{
-			GetAbilitySystemComponent()->TryActivateAbility(Spec.Handle);
+			// If the ability is already active, confirm the input
+			// Confirming the input lets the ability continue with its functionality, the preview will now be removed
+			if (Spec.IsActive())
+			{
+				GetAbilitySystemComponent()->LocalInputConfirm();
+			}
+			else
+			{
+				GetAbilitySystemComponent()->TryActivateAbility(Spec.Handle);
+			}
+			
 			break;
 		}
 	}
@@ -172,6 +184,22 @@ void AComplyPlayerCharacter::ReloadActionPressed()
 		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_Reload))
 		{
 			GetAbilitySystemComponent()->TryActivateAbility(Spec.Handle);
+			break;
+		}
+	}
+}
+
+// If the ability is active and this input is pressed, cancel the input. This will properly cancel the ability client side and notify the server
+void AComplyPlayerCharacter::CancelPreviewActionPressed()
+{
+	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
+	{
+		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_OneShotUtility))
+		{
+			if (Spec.IsActive())
+			{
+				GetAbilitySystemComponent()->LocalInputCancel();
+			}
 			break;
 		}
 	}

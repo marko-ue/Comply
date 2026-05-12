@@ -6,6 +6,8 @@
 #include "AbilitySystem/Abilities/UtilityAbilityBase.h"
 #include "Utility_Ranger.generated.h"
 
+class AShieldDomePreview;
+
 /**
  * 
  */
@@ -15,8 +17,13 @@ class COMPLY_API UUtility_Ranger : public UUtilityAbilityBase
 	GENERATED_BODY()
 
 public:
+	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
+	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AActor> ShieldActorClass;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AShieldDomePreview> ShieldPreviewActorClass;
 	
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
@@ -29,7 +36,10 @@ protected:
 	
 private:
 	UPROPERTY()
-	TWeakObjectPtr<AActor> SpawnedActor = nullptr;
+	TWeakObjectPtr<AActor> SpawnedShieldActor = nullptr;
+	
+	UPROPERTY()
+	TObjectPtr<AShieldDomePreview> SpawnedShieldPreviewActor = nullptr;
 	
 	void TraceAndSpawnShield();
 	
@@ -40,4 +50,11 @@ private:
 	UPROPERTY(EditAnywhere)
 	float ShieldLifetime = 10.f;
 	
+	void SpawnPreview(const FGameplayAbilityActorInfo* ActorInfo);
+	
+	UFUNCTION()
+	void ConfirmPlacement();
+	
+	UFUNCTION()
+	void CancelPlacement();
 };

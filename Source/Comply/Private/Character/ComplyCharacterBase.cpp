@@ -3,7 +3,6 @@
 
 #include "Character/ComplyCharacterBase.h"
 #include "AbilitySystemComponent.h"
-#include "EnhancedInputComponent.h"
 #include "GameplayEffect.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
@@ -59,6 +58,7 @@ void AComplyCharacterBase::GiveStartupAbilities()
 	{
 		FGameplayAbilitySpec AbilitySpec(Set.AbilityClass);
 		AbilitySpec.GetDynamicSpecSourceTags().AddTag(Set.InputTag);
+		AbilitySpec.GetDynamicSpecSourceTags().AddTag(Set.AbilityTypeTag);
 		GetAbilitySystemComponent()->GiveAbility(AbilitySpec);
 		// Store equipped primary weapon class
 		if (Set.AbilityClass->IsChildOf(URangedWeaponAbilityBase::StaticClass()))
@@ -69,6 +69,27 @@ void AComplyCharacterBase::GiveStartupAbilities()
 			}
 		}
 	}
+}
+
+void AComplyCharacterBase::ActivateInitialAbility()
+{
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+	if (!ASC) return;
+
+	// Reset all block counts first
+	FGameplayTagContainer AllWeaponTags;
+	AllWeaponTags.AddTag(ComplyTags::ComplyAbilities::Primary);
+	AllWeaponTags.AddTag(ComplyTags::ComplyAbilities::Utility);
+	AllWeaponTags.AddTag(ComplyTags::ComplyAbilities::Throwable);
+	ASC->UnBlockAbilitiesWithTags(AllWeaponTags);
+
+	// Cancel everything, then block all except this ability
+	ASC->CancelAbilities(&AllWeaponTags, nullptr);
+
+	// Unblock the relevant ability related to this equip ability
+	FGameplayTagContainer TagsToBlock = AllWeaponTags;
+	TagsToBlock.RemoveTag(ComplyTags::ComplyAbilities::Primary);
+	ASC->BlockAbilitiesWithTags(TagsToBlock);
 }
 
 void AComplyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

@@ -3,7 +3,7 @@
 
 #include "Character/ComplyEnemyCharacter.h"
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
-#include "AbilitySystem/ComplyAttributeSet.h"
+#include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
 
 AComplyEnemyCharacter::AComplyEnemyCharacter()
 {

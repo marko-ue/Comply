@@ -7,8 +7,9 @@ namespace ComplyTags
 {
 	namespace ComplyAbilities
 	{
-		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Primary_Ranger);
-		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Utility_Ranger);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Primary);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Utility);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Throwable);
 		
 		namespace AssetTags
 		{

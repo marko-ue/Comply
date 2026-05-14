@@ -61,6 +61,15 @@ public:
 	URangedWeaponAbilityBase* GetEquippedPrimaryWeapon() const;
 	void SetEquippedPrimaryWeapon(TSubclassOf<URangedWeaponAbilityBase> NewWeaponClass);
 	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UGameplayAbility> EquipPrimaryAbilityClass;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UGameplayAbility> EquipUtilityAbilityClass;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UGameplayAbility> EquipThrowableAbilityClass;
+	
 protected:
 	virtual void BeginPlay() override;
 	
@@ -80,7 +89,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* SecondaryAction;
 	
-	UPROPERTY(EditAnywhere, Category="Input")
+	UPROPERTY(meta=(DeprecatedProperty, DeprecationMessage="PrimaryAction now used for activating utilities"), EditAnywhere, Category="Input")
 	UInputAction* UseUtilityAction;
 	
 	UPROPERTY(EditAnywhere, Category="Input")
@@ -88,6 +97,15 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* CancelPreviewAction;
+	
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* EquipPrimaryAction;
+	
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* EquipUtilityAction;
+	
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* EquipThrowableAction;
 	
 	// Called for primary abilities
 	void PrimaryActionPressed();
@@ -98,6 +116,7 @@ protected:
 	void SecondaryActionReleased();
 	
 	// Called for utility
+	[[deprecated("Utility is now activated with primary input")]]
 	void UseUtilityActionPressed();
 	
 	// Called for reloading
@@ -105,6 +124,15 @@ protected:
 	
 	// Called for cancelling previews of certain abilities (cancels abilities)
 	void CancelPreviewActionPressed();
+	
+	// Called for selecting the primary weapon
+	void EquipPrimaryActionPressed();
+	
+	// Called for selecting the utility
+	void EquipUtilityActionPressed();
+	
+	// Called for selecting the throwable
+	void EquipThrowableActionPressed();
 	
 private:
 	/*

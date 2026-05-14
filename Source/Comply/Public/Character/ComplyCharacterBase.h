@@ -24,6 +24,9 @@ struct FAbilitySet
 	
 	UPROPERTY(EditDefaultsOnly)
 	FGameplayTag InputTag;
+	
+	UPROPERTY(EditDefaultsOnly)
+	FGameplayTag AbilityTypeTag;
 };
 
 UCLASS()
@@ -47,7 +50,7 @@ protected:
 	// Gives each ability in the StartupAbilities TArray to the character's ASC, and sets its input tag (server only)
 	void GiveStartupAbilities();
 	
-	
+	void ActivateInitialAbility();
 
 public:	
 	virtual void Tick(float DeltaTime) override;

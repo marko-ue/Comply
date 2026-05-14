@@ -43,8 +43,8 @@ private:
 	
 	void TraceAndSpawnShield();
 	
-	UFUNCTION()
-	void OnShieldExpired();
+	//UFUNCTION()
+	//void OnShieldExpired();
 	
 	// This will be a scalable float in the future for upgrades
 	UPROPERTY(EditAnywhere)
@@ -57,4 +57,6 @@ private:
 	
 	UFUNCTION()
 	void CancelPlacement();
+	
+	FTimerHandle OnShieldExpiredTimerHandle;
 };

@@ -28,6 +28,7 @@ public:
 	
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 	
+	/* Rifle */
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_RifleCurrentAmmo)
 	FGameplayAttributeData RifleCurrentAmmo;
 	
@@ -56,5 +57,5 @@ public:
 	ATTRIBUTE_ACCESSORS(ThisClass, RifleMaxAmmo)
 	ATTRIBUTE_ACCESSORS(ThisClass, RifleCurrentReserveAmmo)
 	ATTRIBUTE_ACCESSORS(ThisClass, RifleMaxReserveAmmo)
-	
+	/* End Rifle */
 };

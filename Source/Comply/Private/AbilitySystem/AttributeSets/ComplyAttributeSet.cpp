@@ -1,7 +1,7 @@
 // Copyright © 2026 Marko. All rights reserved.
 
 
-#include "AbilitySystem/ComplyAttributeSet.h"
+#include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
 #include "Framework/GameMode/ComplyGameModeBase.h"
 #include "GameplayEffectExtension.h"
 #include "Interface/Player/PlayerInterface.h"

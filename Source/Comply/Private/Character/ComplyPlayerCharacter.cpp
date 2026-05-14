@@ -55,8 +55,10 @@ void AComplyPlayerCharacter::PossessedBy(AController* NewController)
 	if (!GetAbilitySystemComponent() || !HasAuthority()) return;
 	
 	GetAbilitySystemComponent()->InitAbilityActorInfo(GetPlayerState(), this);
+	
 	InitializeAttributes();
 	GiveStartupAbilities();
+	ActivateInitialAbility();
 	
 	GetAbilitySystemComponent()->RegisterGameplayTagEvent(ComplyTags::States::State_Aiming,
 		EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AComplyPlayerCharacter::OnAimingTagChanged);
@@ -71,6 +73,8 @@ void AComplyPlayerCharacter::OnRep_PlayerState()
 	if (!GetAbilitySystemComponent()) return;
 	
 	GetAbilitySystemComponent()->InitAbilityActorInfo(GetPlayerState(), this);
+	
+	ActivateInitialAbility();
 	
 	GetAbilitySystemComponent()->RegisterGameplayTagEvent(ComplyTags::States::State_Aiming,
 		EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AComplyPlayerCharacter::OnAimingTagChanged);
@@ -111,6 +115,9 @@ void AComplyPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		EnhancedInputComponent->BindAction(UseUtilityAction, ETriggerEvent::Started, this, &ThisClass::UseUtilityActionPressed);
 		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Started, this, &ThisClass::ReloadActionPressed);
 		EnhancedInputComponent->BindAction(CancelPreviewAction, ETriggerEvent::Started, this, &ThisClass::CancelPreviewActionPressed);
+		EnhancedInputComponent->BindAction(EquipPrimaryAction, ETriggerEvent::Started, this, &ThisClass::EquipPrimaryActionPressed);
+		EnhancedInputComponent->BindAction(EquipUtilityAction, ETriggerEvent::Started, this, &ThisClass::EquipUtilityActionPressed);
+		EnhancedInputComponent->BindAction(EquipThrowableAction, ETriggerEvent::Started, this, &ThisClass::EquipThrowableActionPressed);
 	}
 }
 
@@ -118,10 +125,20 @@ void AComplyPlayerCharacter::PrimaryActionPressed()
 {
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
+		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::Utility))
+		{
+			// If the ability is already active, confirm the input
+			// Confirming the input lets the ability continue with its functionality, the preview will now be removed
+			if (Spec.IsActive())
+			{
+				GetAbilitySystemComponent()->LocalInputConfirm();
+				break;
+			}
+		}
+		
 		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_Primary))
 		{
 			GetAbilitySystemComponent()->TryActivateAbility(Spec.Handle);
-			//break;
 		}
 	}
 
@@ -161,11 +178,12 @@ void AComplyPlayerCharacter::SecondaryActionReleased()
 	}
 }
 
+/* Deprecated - utility activation now handled via primary input */
 void AComplyPlayerCharacter::UseUtilityActionPressed()
 {
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
-		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_OneShotUtility))
+		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::Utility))
 		{
 			// If the ability is already active, confirm the input
 			// Confirming the input lets the ability continue with its functionality, the preview will now be removed
@@ -211,6 +229,23 @@ void AComplyPlayerCharacter::CancelPreviewActionPressed()
 	}
 }
 
+void AComplyPlayerCharacter::EquipPrimaryActionPressed()
+{
+	GetAbilitySystemComponent()->TryActivateAbilityByClass(EquipPrimaryAbilityClass);
+}
+
+void AComplyPlayerCharacter::EquipUtilityActionPressed()
+{
+	GetAbilitySystemComponent()->TryActivateAbilityByClass(EquipUtilityAbilityClass);
+	bool bActivated = GetAbilitySystemComponent()->TryActivateAbilityByClass(EquipUtilityAbilityClass);
+	UE_LOG(LogTemp, Warning, TEXT("EquipUtility activated: %d"), bActivated);
+}
+
+void AComplyPlayerCharacter::EquipThrowableActionPressed()
+{
+	GetAbilitySystemComponent()->TryActivateAbilityByClass(EquipThrowableAbilityClass);
+}
+
 void AComplyPlayerCharacter::OnAimingTagChanged(const FGameplayTag Tag, int32 NewCount)
 {
 	bIsAiming = NewCount > 0;
@@ -231,6 +266,3 @@ void AComplyPlayerCharacter::ZoomOut(float DeltaTime)
 	CameraComp->FieldOfView = FMath::FInterpTo(
 		CameraComp->FieldOfView, DefaultFOV, DeltaTime, ZoomSpeed);
 }
-
-
-

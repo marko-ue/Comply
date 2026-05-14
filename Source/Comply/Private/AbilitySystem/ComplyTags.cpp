@@ -4,8 +4,9 @@ namespace ComplyTags
 {
 	namespace ComplyAbilities
 	{
-		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Primary_Ranger, "ComplyTags.Abilities.Ranger.Primary", "Primary ability asset tag")
-		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Utility_Ranger, "ComplyTags.Abilities.Ranger.Utility", "Utility ability asset tag")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Primary, "ComplyTags.Abilities.AbilityTags.Primary", "Primary ability asset tag")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Utility, "ComplyTags.Abilities.AbilityTags.Utility", "Utility ability asset tag")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Throwable, "ComplyTags.Abilities.AbilityTags.Throwable", "Throwable ability asset tag")
 		
 		namespace AssetTags
 		{

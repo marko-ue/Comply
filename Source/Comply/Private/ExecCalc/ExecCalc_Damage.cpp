@@ -5,7 +5,7 @@
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/ComplyAbilityTypes.h"
-#include "AbilitySystem/ComplyAttributeSet.h"
+#include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
 
 struct AuraDamageStatics
 {

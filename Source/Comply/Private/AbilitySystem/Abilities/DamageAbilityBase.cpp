@@ -9,17 +9,20 @@
 /*
  * This function makes an outgoing gameplay effect spec that will be used in an execution calculation class
  * It will be called wherever damage is meant to be dealt, passing in the target actor and the custom context
- * The base scaled damage is set through blueprint using a curve
+ * The damage is passed in explicitly at call sites
  */
-void UDamageAbilityBase::CauseDamage(AActor* TargetActor, FComplyGameplayEffectContext* Context)
+void UDamageAbilityBase::CauseDamage(AActor* TargetActor, float ExplicitDamage, FComplyGameplayEffectContext* Context)
 {
 	FGameplayEffectSpecHandle DamageSpecHandle = MakeOutgoingGameplayEffectSpec(DamageEffectClass, 1.f);
-	const float ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel());
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageSpecHandle, DamageType, ScaledDamage);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageSpecHandle, DamageType, ExplicitDamage);
+	
+	FComplyGameplayEffectContext* EffectContext = static_cast<FComplyGameplayEffectContext*>(
+		DamageSpecHandle.Data->GetContext().Get());
 
-	if (Context)
+	if (EffectContext && Context)
 	{
-		DamageSpecHandle.Data->SetContext(FGameplayEffectContextHandle(Context));
+		EffectContext->bHitThroughShield = Context->bHitThroughShield;
+		EffectContext->ShieldDamageMultiplier = Context->ShieldDamageMultiplier;
 	}
 
 	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(

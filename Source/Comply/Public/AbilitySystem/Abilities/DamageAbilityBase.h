@@ -16,7 +16,7 @@ class COMPLY_API UDamageAbilityBase : public UComplyAbilityBase
 	GENERATED_BODY()
 	
 public:
-	void CauseDamage(AActor* TargetActor, FComplyGameplayEffectContext* Context = nullptr);
+	void CauseDamage(AActor* TargetActor, float ExplicitDamage, FComplyGameplayEffectContext* Context = nullptr);
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")

@@ -26,7 +26,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 
 	float Damage = Spec.GetSetByCallerMagnitude(ComplyTags::ComplyAbilities::DamageTypes::Damage_Physical);
 
-	float Multiplier = 0.f;
+	float Multiplier = 1.f;
 	
 	if (Context && Context->bHitThroughShield)
 	{

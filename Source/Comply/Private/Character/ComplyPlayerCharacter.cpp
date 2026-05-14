@@ -24,6 +24,13 @@ AComplyPlayerCharacter::AComplyPlayerCharacter()
 	
 }
 
+void AComplyPlayerCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(AComplyPlayerCharacter, EquippedPrimaryWeaponClass);
+}
+
 void AComplyPlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -75,7 +82,7 @@ URangedWeaponAbilityBase* AComplyPlayerCharacter::GetEquippedPrimaryWeapon() con
 	{
 		if (Spec.Ability->GetClass() == EquippedPrimaryWeaponClass)
 		{
-			return Cast<URangedWeaponAbilityBase>(Spec.Ability);
+			return Cast<URangedWeaponAbilityBase>(Spec.GetPrimaryInstance() ? Spec.GetPrimaryInstance() : Spec.Ability.Get());
 		}
 	}
 	return nullptr;
@@ -113,9 +120,8 @@ void AComplyPlayerCharacter::PrimaryActionPressed()
 	{
 		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_Primary))
 		{
-			
 			GetAbilitySystemComponent()->TryActivateAbility(Spec.Handle);
-			break;
+			//break;
 		}
 	}
 

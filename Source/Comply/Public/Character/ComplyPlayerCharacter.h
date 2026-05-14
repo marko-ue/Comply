@@ -23,6 +23,8 @@ class COMPLY_API AComplyPlayerCharacter : public AComplyCharacterBase, public IP
 public:
 	AComplyPlayerCharacter();
 	
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	
 	virtual void Tick(float DeltaTime) override;
 	
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
@@ -53,6 +55,7 @@ public:
 	
 	bool bFireInputHeld = false;
 	
+	UPROPERTY(Replicated)
 	TSubclassOf<URangedWeaponAbilityBase> EquippedPrimaryWeaponClass;
 	
 	URangedWeaponAbilityBase* GetEquippedPrimaryWeapon() const;

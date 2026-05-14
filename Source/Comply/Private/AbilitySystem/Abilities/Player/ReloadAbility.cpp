@@ -49,7 +49,7 @@ void UReloadAbility::HandleReload()
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 		return;
 	}
-		
+	
 	// Play reload animation
 	ReloadMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 		this, NAME_None, ActiveWeapon->ReloadMontage, 1.f, NAME_None, true);

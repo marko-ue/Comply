@@ -2,7 +2,7 @@
 
 bool FComplyGameplayEffectContext::NetSerialize(FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess)
 {
-	uint8 RepBits = 0;
+	uint16 RepBits = 0;
 	if (Ar.IsSaving())
 	{
 		if (bReplicateInstigator && Instigator.IsValid())
@@ -37,9 +37,13 @@ bool FComplyGameplayEffectContext::NetSerialize(FArchive& Ar, class UPackageMap*
 		{
 			RepBits |= 1 << 7;
 		}
+		if (ShieldDamageMultiplier != 1.f)
+		{
+			RepBits |= 1 << 8;
+		}
 	}
 	
-	Ar.SerializeBits(&RepBits, 7);
+	Ar.SerializeBits(&RepBits, 9);
 	
 	if (RepBits & (1 << 0))
 	{
@@ -90,8 +94,16 @@ bool FComplyGameplayEffectContext::NetSerialize(FArchive& Ar, class UPackageMap*
 	{
 		bHitThroughShield = false;
 	}
+	if (RepBits & (1 << 8))
+	{
+		Ar << ShieldDamageMultiplier;
+	}
+	else if (Ar.IsLoading())
+	{
+		ShieldDamageMultiplier = 1.f;
+	}
 	
-	Ar << ShieldDamageMultiplier;
+	//Ar << ShieldDamageMultiplier;
 	
 	if (Ar.IsLoading())
 	{

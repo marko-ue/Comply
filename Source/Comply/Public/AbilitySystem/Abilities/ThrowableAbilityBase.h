@@ -14,6 +14,13 @@ class COMPLY_API UThrowableAbilityBase : public UDamageAbilityBase
 {
 	GENERATED_BODY()
 	
+public:
+	virtual void ConfirmThrow();
+	
 protected:
 	virtual void Throw();
+	
+	
+	UPROPERTY(EditAnywhere)
+	float ThrowSpeed = 1000.f;
 };

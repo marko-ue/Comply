@@ -3,7 +3,10 @@
 
 #include "AbilitySystem/Abilities/Player/Ranger/Throwable_Ranger.h"
 
+#include "Abilities/Tasks/AbilityTask_WaitConfirm.h"
 #include "Actors/PlasmaGrenade/PlasmaGrenade.h"
+#include "Actors/PlasmaGrenade/PlasmaGrenadePreview.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 void UThrowable_Ranger::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -12,16 +15,38 @@ void UThrowable_Ranger::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
-	Throw();
+	SpawnPreview();
 }
 
-void UThrowable_Ranger::Throw()
+void UThrowable_Ranger::SpawnPreview()
 {
+	APawn* InstigatorPawn = Cast<APawn>(GetAvatarActorFromActorInfo());
+	FTransform SpawnTransform = FTransform(
+		InstigatorPawn->GetActorRotation(),
+		InstigatorPawn->GetActorLocation()
+	);
+	
+	SpawnedGrenadePreview = GetWorld()->SpawnActorDeferred<APlasmaGrenadePreview>(
+		GrenadePreviewActorClass, SpawnTransform, GetOwningActorFromActorInfo(), InstigatorPawn, ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+	);
+	
+	// Information needed to predict the path correctly
+	SpawnedGrenadePreview->ActorsToIgnore.Add(InstigatorPawn);
+	SpawnedGrenadePreview->OwningPawn = InstigatorPawn;
+	SpawnedGrenadePreview->ThrowSpeed = ThrowSpeed;
+	
+	UGameplayStatics::FinishSpawningActor(SpawnedGrenadePreview, SpawnTransform);
+}
+
+void UThrowable_Ranger::ConfirmThrow()
+{
+	if (SpawnedGrenadePreview) SpawnedGrenadePreview->Destroy();
+	
 	APawn* InstigatorPawn = Cast<APawn>(GetAvatarActorFromActorInfo());
 	
 	FTransform SpawnTransform = FTransform(
 		InstigatorPawn->GetActorRotation(),
-	InstigatorPawn->GetActorLocation() + FVector(0, 0, 50.f)
+		InstigatorPawn->GetActorLocation()
 	);
 	
 	APlasmaGrenade* Grenade = GetWorld()->SpawnActorDeferred<APlasmaGrenade>(
@@ -34,6 +59,9 @@ void UThrowable_Ranger::Throw()
 	Grenade->SourceASC = GetAbilitySystemComponentFromActorInfo();
 	Grenade->DamageEffectClass = DamageEffectClass;
 	Grenade->DamageTypeTag = DamageType;
+	
+	FVector LaunchVelocity = GetAvatarActorFromActorInfo()->GetActorLocation().ForwardVector * ThrowSpeed;
+	Grenade->ProjectileMovementComp->Velocity = LaunchVelocity;
 	
 	UGameplayStatics::FinishSpawningActor(Grenade, SpawnTransform);
 	

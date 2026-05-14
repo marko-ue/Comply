@@ -2,11 +2,11 @@
 
 #include "Character/ComplyPlayerCharacter.h"
 #include "Framework/PlayerState/ComplyPlayerState.h"
-#include "AbilitySystem/Abilities/ComplyAbilityBase.h"
 #include "EnhancedInputComponent.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
+#include "AbilitySystem/Abilities/ThrowableAbilityBase.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Net/UnrealNetwork.h"
@@ -125,6 +125,11 @@ void AComplyPlayerCharacter::PrimaryActionPressed()
 {
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
+		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::Throwable))
+		{
+			GetAbilitySystemComponent()->TryActivateAbility(Spec.Handle);
+		}
+		
 		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::Utility))
 		{
 			// If the ability is already active, confirm the input
@@ -143,12 +148,22 @@ void AComplyPlayerCharacter::PrimaryActionPressed()
 	}
 
 	GetAbilitySystemComponent()->TryActivateAbilityByClass(ApplyFireEffectAbilityClass);
-	
 	bFireInputHeld = true;
 }
 
 void AComplyPlayerCharacter::PrimaryActionReleased()
 {
+	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
+	{
+		// Confirm the throw of the throwable once the primary input is released, removing the preview path
+		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::Throwable) && Spec.IsActive())
+		{
+			UThrowableAbilityBase* ThrowableAbility = Cast<UThrowableAbilityBase>(Spec.GetPrimaryInstance());
+			if (ThrowableAbility) ThrowableAbility->ConfirmThrow();
+			return;
+		}
+	}
+
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
 		if (Spec.Ability->GetClass() == ApplyFireEffectAbilityClass)
@@ -157,7 +172,7 @@ void AComplyPlayerCharacter::PrimaryActionReleased()
 			break;
 		}
 	}
-	
+
 	bFireInputHeld = false;
 }
 
@@ -237,8 +252,6 @@ void AComplyPlayerCharacter::EquipPrimaryActionPressed()
 void AComplyPlayerCharacter::EquipUtilityActionPressed()
 {
 	GetAbilitySystemComponent()->TryActivateAbilityByClass(EquipUtilityAbilityClass);
-	bool bActivated = GetAbilitySystemComponent()->TryActivateAbilityByClass(EquipUtilityAbilityClass);
-	UE_LOG(LogTemp, Warning, TEXT("EquipUtility activated: %d"), bActivated);
 }
 
 void AComplyPlayerCharacter::EquipThrowableActionPressed()

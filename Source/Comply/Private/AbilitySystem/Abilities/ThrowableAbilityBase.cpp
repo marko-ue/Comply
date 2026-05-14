@@ -6,3 +6,7 @@
 void UThrowableAbilityBase::Throw()
 {
 }
+
+void UThrowableAbilityBase::ConfirmThrow()
+{
+}

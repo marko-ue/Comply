@@ -58,4 +58,21 @@ public:
 	ATTRIBUTE_ACCESSORS(ThisClass, RifleCurrentReserveAmmo)
 	ATTRIBUTE_ACCESSORS(ThisClass, RifleMaxReserveAmmo)
 	/* End Rifle */
+	
+	/* Plasma Grenade */
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_RifleCurrentAmmo)
+	FGameplayAttributeData PlasmaGrenadeCurrentCharges;
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_RifleMaxAmmo)
+	FGameplayAttributeData PlasmaGrenadeMaxCharges;
+	
+	UFUNCTION()
+    void OnRep_PlasmaGrenadeCurrentCharges(const FGameplayAttributeData& OldValue);
+    	
+    UFUNCTION()
+    void OnRep_PlasmaGrenadeMaxCharges(const FGameplayAttributeData& OldValue);
+	
+	ATTRIBUTE_ACCESSORS(ThisClass, PlasmaGrenadeCurrentCharges)
+	ATTRIBUTE_ACCESSORS(ThisClass, PlasmaGrenadeMaxCharges)
+	/* End Plasma Grenade */
 };

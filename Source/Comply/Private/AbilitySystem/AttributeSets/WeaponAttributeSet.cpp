@@ -15,6 +15,8 @@ void UWeaponAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimePrope
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, RifleMaxAmmo, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, RifleCurrentReserveAmmo, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, RifleMaxReserveAmmo, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, PlasmaGrenadeCurrentCharges, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, PlasmaGrenadeMaxCharges, COND_None, REPNOTIFY_Always);
 }
 
 void UWeaponAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -28,6 +30,10 @@ void UWeaponAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute
 	if (Attribute == GetRifleCurrentReserveAmmoAttribute())
 	{
 		NewValue = FMath::Clamp(NewValue, 0.f, GetRifleMaxReserveAmmo());
+	}
+	if (Attribute == GetPlasmaGrenadeCurrentChargesAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.f, GetPlasmaGrenadeMaxCharges());
 	}
 }
 
@@ -43,6 +49,10 @@ void UWeaponAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffect
 	if (Data.EvaluatedData.Attribute == GetRifleCurrentReserveAmmoAttribute())
 	{
 		SetRifleCurrentReserveAmmo(FMath::Clamp(GetRifleCurrentReserveAmmo(), 0.f, GetRifleMaxReserveAmmo()));
+	}
+	if (Data.EvaluatedData.Attribute == GetPlasmaGrenadeCurrentChargesAttribute())
+	{
+		SetPlasmaGrenadeCurrentCharges(FMath::Clamp(GetPlasmaGrenadeCurrentCharges(), 0.f, GetPlasmaGrenadeMaxCharges()));
 	}
 }
 
@@ -65,4 +75,14 @@ void UWeaponAttributeSet::OnRep_RifleCurrentReserveAmmo(const FGameplayAttribute
 void UWeaponAttributeSet::OnRep_RifleMaxReserveAmmo(const FGameplayAttributeData& OldValue)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, RifleMaxReserveAmmo, OldValue);
+}
+
+void UWeaponAttributeSet::OnRep_PlasmaGrenadeCurrentCharges(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, PlasmaGrenadeCurrentCharges, OldValue);
+}
+
+void UWeaponAttributeSet::OnRep_PlasmaGrenadeMaxCharges(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, PlasmaGrenadeMaxCharges, OldValue);
 }

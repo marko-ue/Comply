@@ -4,6 +4,7 @@
 #include "AbilitySystem/Abilities/Player/Ranger/Throwable_Ranger.h"
 
 #include "Abilities/Tasks/AbilityTask_WaitConfirm.h"
+#include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
 #include "Actors/PlasmaGrenade/PlasmaGrenade.h"
 #include "Actors/PlasmaGrenade/PlasmaGrenadePreview.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -38,8 +39,29 @@ void UThrowable_Ranger::SpawnPreview()
 	UGameplayStatics::FinishSpawningActor(SpawnedGrenadePreview, SpawnTransform);
 }
 
+void UThrowable_Ranger::CancelAbility(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+	bool bReplicateCancelAbility)
+{
+	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
+	
+	if (SpawnedGrenadePreview) SpawnedGrenadePreview->Destroy();
+}
+
+// This function is overridden so ability costs can be handled manually
+// The charge would usually get consumed when the input is pressed, doing it manually allows the player to use all charges
+bool UThrowable_Ranger::CommitAbilityCost(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+	FGameplayTagContainer* OptionalRelevantTags)
+{
+	return true;
+}
+
 void UThrowable_Ranger::ConfirmThrow()
 {
+	FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(CostEffectClass, 1.f);
+	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	
 	if (SpawnedGrenadePreview) SpawnedGrenadePreview->Destroy();
 	
 	APawn* InstigatorPawn = Cast<APawn>(GetAvatarActorFromActorInfo());

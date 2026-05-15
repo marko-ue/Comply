@@ -77,7 +77,7 @@ void UThrowable_Ranger::ConfirmThrow()
 	
 	// TODO: Turn both into a scalable float to make it upgradeable
 	Grenade->ExplosionRadius = 1000.f;
-	Grenade->MaxDamage = 100.f;
+	Grenade->MaxDamage = 150.f;
 	Grenade->SourceASC = GetAbilitySystemComponentFromActorInfo();
 	Grenade->DamageEffectClass = DamageEffectClass;
 	Grenade->DamageTypeTag = DamageType;

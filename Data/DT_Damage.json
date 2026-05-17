@@ -1,0 +1,14 @@
+[
+
+    {
+        "Name": "Ranger.Primary.Damage",
+        "1": 10,
+        "5": 50
+    },
+
+    {
+        "Name": "Enforcer.Primary.Damage",
+        "1": 50,
+        "5": 250
+    }
+]

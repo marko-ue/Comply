@@ -20,7 +20,7 @@ UENUM(BlueprintType)
 enum class ERangedWeaponType : uint8
 {
 	Automatic,
-	Manual
+	SemiAutomatic
 };
 
 UCLASS(Abstract)

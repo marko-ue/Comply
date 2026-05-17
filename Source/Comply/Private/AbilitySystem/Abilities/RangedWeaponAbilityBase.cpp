@@ -9,6 +9,7 @@
 #include "AbilitySystem/AbilityTasks/HitscanTargetData.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
+#include "Character/ComplyCharacterBase.h"
 
 
 class UComplyAttributeSet;
@@ -145,21 +146,33 @@ bool URangedWeaponAbilityBase::Fire()
 
 void URangedWeaponAbilityBase::PlayAnimationBasedOnState()
 {
-	FGameplayTagContainer Tags;
-	GetAbilitySystemComponentFromActorInfo()->GetOwnedGameplayTags(Tags);
+	AComplyCharacterBase* Character = Cast<AComplyCharacterBase>(GetAvatarActorFromActorInfo());
+	if (Character)
+	{
+		if (Character)
+		{
+			FGameplayTagContainer Tags;
+			Character->GetAbilitySystemComponent()->GetOwnedGameplayTags(Tags);
 			
-	if (Tags.HasTagExact(ComplyTags::States::State_Aiming))
-	{
-		PlayMontageAndBindDelegates(AbilityActivationMontageIronsights);
-	}
-	else
-	{
-		PlayMontageAndBindDelegates(AbilityActivationMontageHip);
+			if (Tags.HasTagExact(ComplyTags::States::State_Aiming))
+			{
+				PlayMontageAndBindDelegates(AbilityActivationMontageIronsights);
+			}
+			else
+			{
+				PlayMontageAndBindDelegates(AbilityActivationMontageHip);
+			}
+		}
 	}
 }
 
 void URangedWeaponAbilityBase::PlayMontageAndBindDelegates(const TObjectPtr<UAnimMontage>& AnimationToPlay)
 {
+	if (PlayActivationMontageTask)
+	{
+		PlayActivationMontageTask->EndTask();
+	}
+	
 	checkf(AnimationToPlay, TEXT("Ability Activation Montage not set"));
 	
 	PlayActivationMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(

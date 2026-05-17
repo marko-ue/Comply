@@ -75,4 +75,10 @@ public:
 	ATTRIBUTE_ACCESSORS(ThisClass, PlasmaGrenadeCurrentCharges)
 	ATTRIBUTE_ACCESSORS(ThisClass, PlasmaGrenadeMaxCharges)
 	/* End Plasma Grenade */
+	
+	/* Magnum */
+	
+	
+	
+	/* End Magnum */
 };

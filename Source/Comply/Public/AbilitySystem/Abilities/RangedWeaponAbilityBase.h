@@ -31,8 +31,6 @@ class COMPLY_API URangedWeaponAbilityBase : public UDamageAbilityBase
 public:
 	void TraceToCrosshair(FHitResult& TraceHitResult, float TraceDistance, bool& OutPassedThroughShield);
 	
-	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
-	
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UAnimMontage> AbilityActivationMontageHip;
 	
@@ -66,8 +64,17 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UGameplayEffect> ReloadEffectClass;
+	
+	// Each weapon will return its own data
+	// This is mostly used to handle reloading more cleanly
+	FORCEINLINE virtual FGameplayAttribute GetCurrentAmmoAttribute() const { return FGameplayAttribute(); }
+	FORCEINLINE virtual FGameplayAttribute GetMaxAmmoAttribute() const { return FGameplayAttribute(); }
+	FORCEINLINE virtual FGameplayTag GetReduceReserveAmmoTag() const { return FGameplayTag(); }
+	FORCEINLINE virtual FGameplayAttribute GetCurrentReserveAmmoAttribute() const { return FGameplayAttribute(); }
 
 protected:
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+	
 	UPROPERTY(EditDefaultsOnly)
 	FVector Start;
 	
@@ -95,4 +102,8 @@ protected:
 private:
 	UPROPERTY()
 	UHitscanTargetData* HitscanTargetDataTask;
+	
+	UPROPERTY()
+	URangedWeaponAbilityBase* ActiveWeapon;
+	
 };

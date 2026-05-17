@@ -15,8 +15,14 @@ void UWeaponAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimePrope
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, RifleMaxAmmo, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, RifleCurrentReserveAmmo, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, RifleMaxReserveAmmo, COND_None, REPNOTIFY_Always);
+	
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, PlasmaGrenadeCurrentCharges, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, PlasmaGrenadeMaxCharges, COND_None, REPNOTIFY_Always);
+	
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, MagnumCurrentAmmo, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, MagnumMaxAmmo, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, MagnumCurrentReserveAmmo, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, MagnumMaxReserveAmmo, COND_None, REPNOTIFY_Always);
 }
 
 void UWeaponAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -31,9 +37,19 @@ void UWeaponAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute
 	{
 		NewValue = FMath::Clamp(NewValue, 0.f, GetRifleMaxReserveAmmo());
 	}
+	
 	if (Attribute == GetPlasmaGrenadeCurrentChargesAttribute())
 	{
 		NewValue = FMath::Clamp(NewValue, 0.f, GetPlasmaGrenadeMaxCharges());
+	}
+	
+	if (Attribute == GetMagnumCurrentAmmoAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.f, GetMagnumMaxAmmo());
+	}
+	if (Attribute == GetMagnumCurrentReserveAmmoAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.f, GetMagnumMaxReserveAmmo());
 	}
 }
 
@@ -50,9 +66,19 @@ void UWeaponAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffect
 	{
 		SetRifleCurrentReserveAmmo(FMath::Clamp(GetRifleCurrentReserveAmmo(), 0.f, GetRifleMaxReserveAmmo()));
 	}
+	
 	if (Data.EvaluatedData.Attribute == GetPlasmaGrenadeCurrentChargesAttribute())
 	{
 		SetPlasmaGrenadeCurrentCharges(FMath::Clamp(GetPlasmaGrenadeCurrentCharges(), 0.f, GetPlasmaGrenadeMaxCharges()));
+	}
+	
+	if (Data.EvaluatedData.Attribute == GetMagnumCurrentAmmoAttribute())
+	{
+		SetMagnumCurrentAmmo(FMath::Clamp(GetMagnumCurrentAmmo(), 0.f, GetMagnumMaxAmmo()));
+	}
+	if (Data.EvaluatedData.Attribute == GetMagnumCurrentReserveAmmoAttribute())
+	{
+		SetMagnumCurrentReserveAmmo(FMath::Clamp(GetMagnumCurrentReserveAmmo(), 0.f, GetMagnumMaxReserveAmmo()));
 	}
 }
 
@@ -85,4 +111,24 @@ void UWeaponAttributeSet::OnRep_PlasmaGrenadeCurrentCharges(const FGameplayAttri
 void UWeaponAttributeSet::OnRep_PlasmaGrenadeMaxCharges(const FGameplayAttributeData& OldValue)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, PlasmaGrenadeMaxCharges, OldValue);
+}
+
+void UWeaponAttributeSet::OnRep_MagnumCurrentAmmo(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, MagnumCurrentAmmo, OldValue);
+}
+
+void UWeaponAttributeSet::OnRep_MagnumMaxAmmo(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, MagnumMaxAmmo, OldValue);
+}
+
+void UWeaponAttributeSet::OnRep_MagnumCurrentReserveAmmo(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, MagnumCurrentReserveAmmo, OldValue);
+}
+
+void UWeaponAttributeSet::OnRep_MagnumMaxReserveAmmo(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, MagnumMaxReserveAmmo, OldValue);
 }

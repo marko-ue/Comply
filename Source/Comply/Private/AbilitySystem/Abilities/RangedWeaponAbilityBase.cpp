@@ -10,6 +10,7 @@
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
 #include "Character/ComplyCharacterBase.h"
+#include "Character/ComplyPlayerCharacter.h"
 
 
 class UComplyAttributeSet;
@@ -117,9 +118,13 @@ void URangedWeaponAbilityBase::OnFireDelayFinished()
 
 bool URangedWeaponAbilityBase::Fire()
 {
-	const UWeaponAttributeSet* WeaponAS = GetAbilitySystemComponentFromActorInfo()->GetSet<UWeaponAttributeSet>();
-    
-	if (WeaponAS->GetRifleCurrentAmmo() <= 0.f)
+	// Find the active ranged weapon to get its current ammo
+	const AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
+	ActiveWeapon = Character->GetEquippedPrimaryWeapon();
+	
+	bool bFound = false;
+	float CurrentAmmo = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(ActiveWeapon->GetCurrentAmmoAttribute(), bFound);
+	if (CurrentAmmo <= 0.f)
 	{
 		GetAbilitySystemComponentFromActorInfo()->TryActivateAbilityByClass(ReloadAbilityClass);
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);

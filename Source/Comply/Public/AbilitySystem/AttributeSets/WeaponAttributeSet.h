@@ -78,7 +78,34 @@ public:
 	
 	/* Magnum */
 	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MagnumCurrentAmmo)
+	FGameplayAttributeData MagnumCurrentAmmo;
 	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MagnumMaxAmmo)
+	FGameplayAttributeData MagnumMaxAmmo;
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MagnumMaxAmmo)
+	FGameplayAttributeData MagnumCurrentReserveAmmo;
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MagnumMaxAmmo)
+	FGameplayAttributeData MagnumMaxReserveAmmo;
+	
+	UFUNCTION()
+	void OnRep_MagnumCurrentAmmo(const FGameplayAttributeData& OldValue);
+	
+	UFUNCTION()
+	void OnRep_MagnumMaxAmmo(const FGameplayAttributeData& OldValue);
+	
+	UFUNCTION()
+	void OnRep_MagnumCurrentReserveAmmo(const FGameplayAttributeData& OldValue);
+	
+	UFUNCTION()
+	void OnRep_MagnumMaxReserveAmmo(const FGameplayAttributeData& OldValue);
+	
+	ATTRIBUTE_ACCESSORS(ThisClass, MagnumCurrentAmmo)
+	ATTRIBUTE_ACCESSORS(ThisClass, MagnumMaxAmmo)
+	ATTRIBUTE_ACCESSORS(ThisClass, MagnumCurrentReserveAmmo)
+	ATTRIBUTE_ACCESSORS(ThisClass, MagnumMaxReserveAmmo)
 	
 	/* End Magnum */
 };

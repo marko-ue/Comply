@@ -37,5 +37,6 @@ namespace ComplyTags
 	namespace SetByCaller
 	{
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(SBC_ReduceRifleReserveAmmo, "ComplyTags.SetByCaller.Weapons.Rifle", "Set by caller tag for reducing rifle reserve ammo")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(SBC_ReduceMagnumReserveAmmo, "ComplyTags.SetByCaller.Weapons.Magnum", "Set by caller tag for reducing magnum reserve ammo")
 	}
 }

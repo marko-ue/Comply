@@ -1,13 +1,13 @@
 // Copyright © 2026 Marko. All rights reserved.
 
 
-#include "AbilitySystem/Abilities/Player/EquipThrowableAbility.h"
+#include "AbilitySystem/Abilities/Player/EquipAbilities/EquipPrimaryAbility.h"
 #include "AbilitySystemComponent.h"
+#include "GameplayTagContainer.h"
 #include "AbilitySystem/ComplyTags.h"
 
-void UEquipThrowableAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-                                             const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-                                             const FGameplayEventData* TriggerEventData)
+void UEquipPrimaryAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+									const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
@@ -26,8 +26,9 @@ void UEquipThrowableAbility::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 
 	// Unblock the relevant ability related to this equip ability
 	FGameplayTagContainer TagsToBlock = AllWeaponTags;
-	TagsToBlock.RemoveTag(ComplyTags::ComplyAbilities::Throwable);
+	TagsToBlock.RemoveTag(ComplyTags::ComplyAbilities::Primary);
 	ASC->BlockAbilitiesWithTags(TagsToBlock);
 
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }
+

@@ -1,6 +1,6 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-#include "Actors/ShieldDome.h"
+#include "Actors/ShieldDome/ShieldDome.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
 #include "AbilitySystem/ComplyTags.h"

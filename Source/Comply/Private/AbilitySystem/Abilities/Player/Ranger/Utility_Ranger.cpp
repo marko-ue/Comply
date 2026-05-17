@@ -2,7 +2,7 @@
 
 #include "AbilitySystem/Abilities/Player/Ranger/Utility_Ranger.h"
 #include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
-#include "Actors/ShieldDomePreview.h"
+#include "Actors/ShieldDome/ShieldDomePreview.h"
 #include "GameFramework/Character.h"
 
 void UUtility_Ranger::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)

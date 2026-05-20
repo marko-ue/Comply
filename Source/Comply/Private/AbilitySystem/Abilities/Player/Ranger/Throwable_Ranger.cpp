@@ -27,16 +27,16 @@ void UThrowable_Ranger::SpawnPreview()
 		InstigatorPawn->GetActorLocation()
 	);
 	
-	SpawnedGrenadePreview = GetWorld()->SpawnActorDeferred<APlasmaGrenadePreview>(
+	SpawnedGrenadePreviewActor = GetWorld()->SpawnActorDeferred<APlasmaGrenadePreview>(
 		GrenadePreviewActorClass, SpawnTransform, GetOwningActorFromActorInfo(), InstigatorPawn, ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 	);
 	
 	// Information needed to predict the path correctly
-	SpawnedGrenadePreview->ActorsToIgnore.Add(InstigatorPawn);
-	SpawnedGrenadePreview->OwningPawn = InstigatorPawn;
-	SpawnedGrenadePreview->ThrowSpeed = ThrowSpeed;
+	SpawnedGrenadePreviewActor->ActorsToIgnore.Add(InstigatorPawn);
+	SpawnedGrenadePreviewActor->OwningPawn = InstigatorPawn;
+	SpawnedGrenadePreviewActor->ThrowSpeed = ThrowSpeed;
 	
-	UGameplayStatics::FinishSpawningActor(SpawnedGrenadePreview, SpawnTransform);
+	UGameplayStatics::FinishSpawningActor(SpawnedGrenadePreviewActor, SpawnTransform);
 }
 
 void UThrowable_Ranger::CancelAbility(const FGameplayAbilitySpecHandle Handle,
@@ -45,7 +45,7 @@ void UThrowable_Ranger::CancelAbility(const FGameplayAbilitySpecHandle Handle,
 {
 	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
 	
-	if (SpawnedGrenadePreview) SpawnedGrenadePreview->Destroy();
+	if (SpawnedGrenadePreviewActor) SpawnedGrenadePreviewActor->Destroy();
 }
 
 // This function is overridden so ability costs can be handled manually
@@ -62,7 +62,7 @@ void UThrowable_Ranger::ConfirmThrow()
 	FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(CostEffectClass, 1.f);
 	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	
-	if (SpawnedGrenadePreview) SpawnedGrenadePreview->Destroy();
+	if (SpawnedGrenadePreviewActor) SpawnedGrenadePreviewActor->Destroy();
 	
 	APawn* InstigatorPawn = Cast<APawn>(GetAvatarActorFromActorInfo());
 	

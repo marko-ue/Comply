@@ -24,7 +24,7 @@ public:
 	virtual void ConfirmThrow() override;
 	
 	UPROPERTY()
-	TObjectPtr<APlasmaGrenadePreview> SpawnedGrenadePreview;
+	TObjectPtr<APlasmaGrenadePreview> SpawnedGrenadePreviewActor;
 	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UGameplayEffect> CostEffectClass;
@@ -32,7 +32,7 @@ public:
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	
-	void SpawnPreview();
+	virtual void SpawnPreview() override;
 	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AActor> GrenadeActorClass;

@@ -41,7 +41,7 @@ void UUtility_Ranger::SpawnPreview(const FGameplayAbilityActorInfo* ActorInfo)
 	SpawnParams.Owner = Avatar;
 	SpawnParams.Instigator = Cast<APawn>(Avatar);
 
-	SpawnedShieldPreviewActor = GetWorld()->SpawnActor<AShieldDomePreview>(ShieldPreviewActorClass, Start, FRotator::ZeroRotator, SpawnParams);
+	SpawnedShieldPreviewActor = GetWorld()->SpawnActor<AShieldDomePreview>(ShieldPreviewActorClass, GetAvatarActorFromActorInfo()->GetActorLocation(), FRotator::ZeroRotator, SpawnParams);
 
 	if (SpawnedShieldPreviewActor)
 	{

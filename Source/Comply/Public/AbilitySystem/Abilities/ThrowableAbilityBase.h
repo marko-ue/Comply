@@ -17,9 +17,15 @@ class COMPLY_API UThrowableAbilityBase : public UDamageAbilityBase
 public:
 	virtual void ConfirmThrow();
 	
+	UPROPERTY(EditDefaultsOnly)
+	bool bConfirmOnRelease = true;
+	
 protected:
 	virtual void Throw();
 	
+	virtual void SpawnPreview();
+	
+	virtual void CancelThrow();
 	
 	UPROPERTY(EditAnywhere)
 	float ThrowSpeed = 1000.f;

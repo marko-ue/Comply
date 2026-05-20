@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Character/ComplyCharacterBase.h"
+#include "Interface/Enemy/EnemyInterface.h"
 #include "ComplyEnemyCharacter.generated.h"
 
 class UComplyAttributeSet;
@@ -11,7 +12,7 @@ class UComplyAttributeSet;
  * 
  */
 UCLASS()
-class COMPLY_API AComplyEnemyCharacter : public AComplyCharacterBase
+class COMPLY_API AComplyEnemyCharacter : public AComplyCharacterBase, public IEnemyInterface
 {
 	GENERATED_BODY()
 

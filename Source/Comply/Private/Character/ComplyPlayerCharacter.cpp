@@ -127,7 +127,18 @@ void AComplyPlayerCharacter::PrimaryActionPressed()
 	{
 		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::Throwable))
 		{
-			GetAbilitySystemComponent()->TryActivateAbility(Spec.Handle);
+			// If the ability is already active, confirm the input
+			// Confirming the input lets the ability continue with its functionality, the preview will now be removed
+			if (Spec.IsActive())
+			{
+				GetAbilitySystemComponent()->LocalInputConfirm();
+				break;
+			}
+			else
+			{
+				GetAbilitySystemComponent()->TryActivateAbility(Spec.Handle);
+				break;
+			}
 		}
 		
 		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::Utility))
@@ -159,7 +170,7 @@ void AComplyPlayerCharacter::PrimaryActionReleased()
 		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::Throwable) && Spec.IsActive())
 		{
 			UThrowableAbilityBase* ThrowableAbility = Cast<UThrowableAbilityBase>(Spec.GetPrimaryInstance());
-			if (ThrowableAbility) ThrowableAbility->ConfirmThrow();
+			if (ThrowableAbility && ThrowableAbility->bConfirmOnRelease) ThrowableAbility->ConfirmThrow();
 			return;
 		}
 	}

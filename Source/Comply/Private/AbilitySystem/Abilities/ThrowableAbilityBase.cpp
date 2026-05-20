@@ -7,6 +7,14 @@ void UThrowableAbilityBase::Throw()
 {
 }
 
+void UThrowableAbilityBase::SpawnPreview()
+{
+}
+
+void UThrowableAbilityBase::CancelThrow()
+{
+}
+
 void UThrowableAbilityBase::ConfirmThrow()
 {
 }

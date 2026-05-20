@@ -5,15 +5,18 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "GameFramework/Actor.h"
+#include "Interface/TargetableInterface.h"
+#include "AbilitySystemInterface.h"
 #include "DeployableTurret.generated.h"
 
+class UComplyAttributeSet;
 class UArrowComponent;
 class UGameplayEffect;
 class UAbilitySystemComponent;
 class USphereComponent;
 
 UCLASS()
-class COMPLY_API ADeployableTurret : public AActor
+class COMPLY_API ADeployableTurret : public AActor, public ITargetableInterface, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -30,14 +33,24 @@ public:
 
 	UPROPERTY()
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
+	
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	UPROPERTY()
 	FGameplayTag DamageTypeTag;
+	
+	FORCEINLINE virtual UAbilitySystemComponent* GetTargetASC() const override { return GetAbilitySystemComponent(); }
 
 protected:
 	virtual void BeginPlay() override;
 	
 private:
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UAbilitySystemComponent> ASC;
+	
+	UPROPERTY()
+	TObjectPtr<UComplyAttributeSet> AttributeSet;
+	
 	UFUNCTION()
 	void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

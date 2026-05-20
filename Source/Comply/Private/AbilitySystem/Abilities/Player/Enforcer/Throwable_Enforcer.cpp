@@ -156,7 +156,7 @@ void UThrowable_Enforcer::PlaceTurret()
 			if (Turret)
 			{
 				// TODO: Turn into a scalable float to make it upgradeable
-				Turret->Damage = 10.f;
+				Turret->Damage = 20.f;
 				Turret->SetLifeSpan(TurretLifetime);
 				Turret->SourceASC = GetAbilitySystemComponentFromActorInfo();
 				Turret->DamageEffectClass = DamageEffectClass;

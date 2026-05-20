@@ -7,6 +7,7 @@
 #include "Character/ComplyCharacterBase.h"
 #include "Interface/Player/PlayerInterface.h"
 #include "GameplayEffectTypes.h"
+#include "Interface/TargetableInterface.h"
 #include "ComplyPlayerCharacter.generated.h"
 
 
@@ -16,7 +17,7 @@ class UCameraComponent;
 class USpringArmComponent;
 
 UCLASS()
-class COMPLY_API AComplyPlayerCharacter : public AComplyCharacterBase, public IPlayerInterface
+class COMPLY_API AComplyPlayerCharacter : public AComplyCharacterBase, public IPlayerInterface, public ITargetableInterface
 {
 	GENERATED_BODY()
 	
@@ -33,6 +34,8 @@ public:
 	
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
+	
+	FORCEINLINE virtual UAbilitySystemComponent* GetTargetASC() const override { return GetAbilitySystemComponent(); }
 	
 	/*
 	 * Zooming in/out

@@ -23,6 +23,9 @@ void UWeaponAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimePrope
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, MagnumMaxAmmo, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, MagnumCurrentReserveAmmo, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, MagnumMaxReserveAmmo, COND_None, REPNOTIFY_Always);
+	
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, TurretCurrentCharges, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, TurretMaxCharges, COND_None, REPNOTIFY_Always);
 }
 
 void UWeaponAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -50,6 +53,11 @@ void UWeaponAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute
 	if (Attribute == GetMagnumCurrentReserveAmmoAttribute())
 	{
 		NewValue = FMath::Clamp(NewValue, 0.f, GetMagnumMaxReserveAmmo());
+	}
+	
+	if (Attribute == GetTurretCurrentChargesAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.f, GetTurretMaxCharges());
 	}
 }
 
@@ -79,6 +87,11 @@ void UWeaponAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffect
 	if (Data.EvaluatedData.Attribute == GetMagnumCurrentReserveAmmoAttribute())
 	{
 		SetMagnumCurrentReserveAmmo(FMath::Clamp(GetMagnumCurrentReserveAmmo(), 0.f, GetMagnumMaxReserveAmmo()));
+	}
+	
+	if (Data.EvaluatedData.Attribute == GetTurretCurrentChargesAttribute())
+	{
+		SetTurretCurrentCharges(FMath::Clamp(GetTurretCurrentCharges(), 0.f, GetTurretMaxCharges()));
 	}
 }
 
@@ -131,4 +144,14 @@ void UWeaponAttributeSet::OnRep_MagnumCurrentReserveAmmo(const FGameplayAttribut
 void UWeaponAttributeSet::OnRep_MagnumMaxReserveAmmo(const FGameplayAttributeData& OldValue)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, MagnumMaxReserveAmmo, OldValue);
+}
+
+void UWeaponAttributeSet::OnRep_TurretCurrentCharges(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, TurretCurrentCharges, OldValue);
+}
+
+void UWeaponAttributeSet::OnRep_TurretMaxCharges(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, TurretMaxCharges, OldValue);
 }

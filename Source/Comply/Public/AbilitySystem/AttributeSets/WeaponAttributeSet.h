@@ -108,4 +108,23 @@ public:
 	ATTRIBUTE_ACCESSORS(ThisClass, MagnumMaxReserveAmmo)
 	
 	/* End Magnum */
+	
+	/* Turret */
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MagnumCurrentAmmo)
+	FGameplayAttributeData TurretCurrentCharges;
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MagnumMaxAmmo)
+	FGameplayAttributeData TurretMaxCharges;
+	
+	UFUNCTION()
+	void OnRep_TurretCurrentCharges(const FGameplayAttributeData& OldValue);
+	
+	UFUNCTION()
+	void OnRep_TurretMaxCharges(const FGameplayAttributeData& OldValue);
+	
+	ATTRIBUTE_ACCESSORS(ThisClass, TurretCurrentCharges)
+	ATTRIBUTE_ACCESSORS(ThisClass, TurretMaxCharges)
+	
+	/* End Turret */
 };

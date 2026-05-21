@@ -40,6 +40,11 @@ public:
 	FGameplayTag DamageTypeTag;
 	
 	FORCEINLINE virtual UAbilitySystemComponent* GetTargetASC() const override { return GetAbilitySystemComponent(); }
+	
+	virtual void Destroyed() override;
+	
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UGameplayEffect> RechargeTurretChargeClass;
 
 protected:
 	virtual void BeginPlay() override;

@@ -6,6 +6,7 @@
 #include "AbilitySystem/Abilities/ThrowableAbilityBase.h"
 #include "Throwable_Enforcer.generated.h"
 
+class ADeployableTurret;
 class ADeployableTurretPreview;
 /**
  * 
@@ -32,7 +33,7 @@ protected:
 	void SpawnPreview(const FGameplayAbilityActorInfo* ActorInfo);
 	
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<AActor> TurretActorClass;
+	TSubclassOf<ADeployableTurret> TurretActorClass;
 	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AActor> TurretPreviewActorClass;

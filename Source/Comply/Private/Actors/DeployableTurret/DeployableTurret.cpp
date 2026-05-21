@@ -41,6 +41,29 @@ UAbilitySystemComponent* ADeployableTurret::GetAbilitySystemComponent() const
 	return ASC;
 }
 
+// When the actor is destroyed, the player will be able to spawn another turret after 30 seconds
+void ADeployableTurret::Destroyed()
+{
+	if (SourceASC)
+	{
+		// The weak pointer ensures if the player disconnects or the ASC is gone before 30 seconds the lambda just skips
+		TWeakObjectPtr<UAbilitySystemComponent> WeakASC = SourceASC;
+		TSubclassOf<UGameplayEffect> EffectClass = RechargeTurretChargeClass;
+
+		FTimerHandle RechargeTimer;
+		GetWorld()->GetTimerManager().SetTimer(RechargeTimer, [WeakASC, EffectClass]()
+		{
+			if (WeakASC.IsValid() && EffectClass)
+			{
+				FGameplayEffectSpecHandle SpecHandle = WeakASC->MakeOutgoingSpec(EffectClass, 1.f, WeakASC->MakeEffectContext());
+				WeakASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+			}
+		}, 30.f, false);
+	}
+
+	Super::Destroyed();
+}
+
 void ADeployableTurret::BeginPlay()
 {
 	Super::BeginPlay();
@@ -103,6 +126,8 @@ void ADeployableTurret::TryFire()
 
 void ADeployableTurret::Fire(AActor* TargetActor)
 {
+	if (!SourceASC || !DamageEffectClass) return;
+
 	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
 	if (!TargetASC) return;
 

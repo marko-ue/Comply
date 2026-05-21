@@ -71,6 +71,7 @@ void UThrowable_Ranger::ConfirmThrow()
 		InstigatorPawn->GetActorLocation()
 	);
 	
+	// TODO: Only spawn the grenade on the server
 	APlasmaGrenade* Grenade = GetWorld()->SpawnActorDeferred<APlasmaGrenade>(
 		GrenadeActorClass, SpawnTransform, GetOwningActorFromActorInfo(), InstigatorPawn, ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 	);

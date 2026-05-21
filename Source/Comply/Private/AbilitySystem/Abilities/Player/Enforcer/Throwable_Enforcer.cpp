@@ -3,8 +3,10 @@
 
 #include "AbilitySystem/Abilities/Player/Enforcer/Throwable_Enforcer.h"
 
+#include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
-#include "Actors/DeployableTurret/DeployableTurret.h"
+#include "AbilitySystem/ComplyAbilitySystemComponent.h"
+#include "AbilitySystem/AbilityTasks/HitscanTargetData.h"
 #include "Actors/DeployableTurret/DeployableTurretPreview.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
@@ -36,6 +38,7 @@ void UThrowable_Enforcer::Throw()
 
 void UThrowable_Enforcer::SpawnPreview(const FGameplayAbilityActorInfo* ActorInfo)
 {
+	
 	AActor* Avatar = GetCurrentActorInfo()->AvatarActor.Get();
 	if (!Avatar) return;
 
@@ -143,27 +146,11 @@ void UThrowable_Enforcer::PlaceTurret()
 		
 		const FGameplayAbilityActivationInfo ActivationInfo = GetCurrentActivationInfo();
 
-		if (HasAuthority(&ActivationInfo))
+		// A server RPC is used to handle spawning the turret
+		UComplyAbilitySystemComponent* ASC = Cast<UComplyAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
+		if (ASC)
 		{
-			APawn* InstigatorPawn = Cast<APawn>(GetAvatarActorFromActorInfo());
-			
-			FTransform SpawnTransform = FTransform(
-			SpawnRotation,
-			SpawnLocation
-		);
-			
-			ADeployableTurret* Turret = GetWorld()->SpawnActorDeferred<ADeployableTurret>(TurretActorClass, SpawnTransform, GetOwningActorFromActorInfo(), InstigatorPawn, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-			if (Turret)
-			{
-				// TODO: Turn into a scalable float to make it upgradeable
-				Turret->Damage = 20.f;
-				Turret->SetLifeSpan(TurretLifetime);
-				Turret->SourceASC = GetAbilitySystemComponentFromActorInfo();
-				Turret->DamageEffectClass = DamageEffectClass;
-				Turret->DamageTypeTag = DamageType;
-				
-				UGameplayStatics::FinishSpawningActor(Turret, SpawnTransform);
-			}
+			ASC->Server_PlaceTurret(SpawnLocation, SpawnRotation, TurretActorClass, DamageEffectClass, DamageType, 20.f, TurretLifetime);
 		}
 	}
 }

@@ -26,6 +26,11 @@ void UWeaponAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimePrope
 	
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, TurretCurrentCharges, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, TurretMaxCharges, COND_None, REPNOTIFY_Always);
+	
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, ShotgunCurrentAmmo, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, ShotgunMaxAmmo, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, ShotgunCurrentReserveAmmo, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, ShotgunMaxReserveAmmo, COND_None, REPNOTIFY_Always);
 }
 
 void UWeaponAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -58,6 +63,15 @@ void UWeaponAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute
 	if (Attribute == GetTurretCurrentChargesAttribute())
 	{
 		NewValue = FMath::Clamp(NewValue, 0.f, GetTurretMaxCharges());
+	}
+	
+	if (Attribute == GetShotgunCurrentAmmoAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.f, GetShotgunMaxAmmo());
+	}
+	if (Attribute == GetShotgunCurrentReserveAmmoAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.f, GetShotgunMaxReserveAmmo());
 	}
 }
 
@@ -92,6 +106,15 @@ void UWeaponAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffect
 	if (Data.EvaluatedData.Attribute == GetTurretCurrentChargesAttribute())
 	{
 		SetTurretCurrentCharges(FMath::Clamp(GetTurretCurrentCharges(), 0.f, GetTurretMaxCharges()));
+	}
+	
+	if (Data.EvaluatedData.Attribute == GetShotgunCurrentAmmoAttribute())
+	{
+		SetShotgunCurrentAmmo(FMath::Clamp(GetShotgunCurrentAmmo(), 0.f, GetShotgunMaxAmmo()));
+	}
+	if (Data.EvaluatedData.Attribute == GetShotgunCurrentReserveAmmoAttribute())
+	{
+		SetShotgunCurrentReserveAmmo(FMath::Clamp(GetShotgunCurrentReserveAmmo(), 0.f, GetShotgunMaxReserveAmmo()));
 	}
 }
 
@@ -154,4 +177,24 @@ void UWeaponAttributeSet::OnRep_TurretCurrentCharges(const FGameplayAttributeDat
 void UWeaponAttributeSet::OnRep_TurretMaxCharges(const FGameplayAttributeData& OldValue)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, TurretMaxCharges, OldValue);
+}
+
+void UWeaponAttributeSet::OnRep_ShotgunCurrentAmmo(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, ShotgunCurrentAmmo, OldValue);
+}
+
+void UWeaponAttributeSet::OnRep_ShotgunMaxAmmo(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, ShotgunMaxAmmo, OldValue);
+}
+
+void UWeaponAttributeSet::OnRep_ShotgunCurrentReserveAmmo(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, ShotgunCurrentReserveAmmo, OldValue);
+}
+
+void UWeaponAttributeSet::OnRep_ShotgunMaxReserveAmmo(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, ShotgunMaxReserveAmmo, OldValue);
 }

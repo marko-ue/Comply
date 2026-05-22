@@ -77,7 +77,6 @@ public:
 	/* End Plasma Grenade */
 	
 	/* Magnum */
-	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MagnumCurrentAmmo)
 	FGameplayAttributeData MagnumCurrentAmmo;
 	
@@ -106,11 +105,9 @@ public:
 	ATTRIBUTE_ACCESSORS(ThisClass, MagnumMaxAmmo)
 	ATTRIBUTE_ACCESSORS(ThisClass, MagnumCurrentReserveAmmo)
 	ATTRIBUTE_ACCESSORS(ThisClass, MagnumMaxReserveAmmo)
-	
 	/* End Magnum */
 	
 	/* Turret */
-	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MagnumCurrentAmmo)
 	FGameplayAttributeData TurretCurrentCharges;
 	
@@ -125,6 +122,36 @@ public:
 	
 	ATTRIBUTE_ACCESSORS(ThisClass, TurretCurrentCharges)
 	ATTRIBUTE_ACCESSORS(ThisClass, TurretMaxCharges)
-	
 	/* End Turret */
+	
+	/* Shotgun */
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ShotgunCurrentAmmo)
+	FGameplayAttributeData ShotgunCurrentAmmo;
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ShotgunMaxAmmo)
+	FGameplayAttributeData ShotgunMaxAmmo;
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ShotgunMaxAmmo)
+	FGameplayAttributeData ShotgunCurrentReserveAmmo;
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ShotgunMaxAmmo)
+	FGameplayAttributeData ShotgunMaxReserveAmmo;
+	
+	UFUNCTION()
+	void OnRep_ShotgunCurrentAmmo(const FGameplayAttributeData& OldValue);
+	
+	UFUNCTION()
+	void OnRep_ShotgunMaxAmmo(const FGameplayAttributeData& OldValue);
+	
+	UFUNCTION()
+	void OnRep_ShotgunCurrentReserveAmmo(const FGameplayAttributeData& OldValue);
+	
+	UFUNCTION()
+	void OnRep_ShotgunMaxReserveAmmo(const FGameplayAttributeData& OldValue);
+	
+	ATTRIBUTE_ACCESSORS(ThisClass, ShotgunCurrentAmmo)
+	ATTRIBUTE_ACCESSORS(ThisClass, ShotgunMaxAmmo)
+	ATTRIBUTE_ACCESSORS(ThisClass, ShotgunCurrentReserveAmmo)
+	ATTRIBUTE_ACCESSORS(ThisClass, ShotgunMaxReserveAmmo)
+	/* End Shotgun */
 };

@@ -4,6 +4,7 @@
 #include "AbilitySystem/Abilities/Player/Ranger/Throwable_Ranger.h"
 
 #include "Abilities/Tasks/AbilityTask_WaitConfirm.h"
+#include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
 #include "Actors/PlasmaGrenade/PlasmaGrenade.h"
 #include "Actors/PlasmaGrenade/PlasmaGrenadePreview.h"
@@ -64,29 +65,13 @@ void UThrowable_Ranger::ConfirmThrow()
 	
 	if (SpawnedGrenadePreviewActor) SpawnedGrenadePreviewActor->Destroy();
 	
-	APawn* InstigatorPawn = Cast<APawn>(GetAvatarActorFromActorInfo());
-	
-	FTransform SpawnTransform = FTransform(
-		InstigatorPawn->GetActorRotation(),
-		InstigatorPawn->GetActorLocation()
-	);
-	
-	// TODO: Only spawn the grenade on the server
-	APlasmaGrenade* Grenade = GetWorld()->SpawnActorDeferred<APlasmaGrenade>(
-		GrenadeActorClass, SpawnTransform, GetOwningActorFromActorInfo(), InstigatorPawn, ESpawnActorCollisionHandlingMethod::AlwaysSpawn
-	);
-	
-	// TODO: Turn both into a scalable float to make it upgradeable
-	Grenade->ExplosionRadius = 1000.f;
-	Grenade->MaxDamage = 150.f;
-	Grenade->SourceASC = GetAbilitySystemComponentFromActorInfo();
-	Grenade->DamageEffectClass = DamageEffectClass;
-	Grenade->DamageTypeTag = DamageType;
-	
-	FVector LaunchVelocity = GetAvatarActorFromActorInfo()->GetActorLocation().ForwardVector * ThrowSpeed;
-	Grenade->ProjectileMovementComp->Velocity = LaunchVelocity;
-	
-	UGameplayStatics::FinishSpawningActor(Grenade, SpawnTransform);
-	
-	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	// A server RPC is used to handle spawning the grenade
+	UComplyAbilitySystemComponent* ASC = Cast<UComplyAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
+	if (ASC)
+	{
+		APawn* InstigatorPawn = Cast<APawn>(GetAvatarActorFromActorInfo());
+		FVector LaunchVelocity = GetAvatarActorFromActorInfo()->GetActorLocation().ForwardVector * ThrowSpeed;
+		ASC->Server_ThrowGrenade(GetCurrentAbilitySpecHandle(), InstigatorPawn->GetActorLocation(), InstigatorPawn->GetActorRotation(), LaunchVelocity);
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	}
 }

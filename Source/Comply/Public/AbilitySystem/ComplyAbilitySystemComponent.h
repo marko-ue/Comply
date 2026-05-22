@@ -24,6 +24,8 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 	UFUNCTION(Server, Reliable)
-	void Server_PlaceTurret(FVector SpawnLocation, FRotator SpawnRotation, TSubclassOf<ADeployableTurret> TurretClass, TSubclassOf<UGameplayEffect> InDamageEffectClass, FGameplayTag InDamageTypeTag, float InDamage, float InLifeSpan);
+	void Server_PlaceTurret(FGameplayAbilitySpecHandle AbilityHandle, FVector SpawnLocation, FRotator SpawnRotation);
 	
+	UFUNCTION(Server, Reliable)
+	void Server_ThrowGrenade(FGameplayAbilitySpecHandle AbilityHandle, FVector SpawnLocation, FRotator SpawnRotation, FVector InLaunchVelocity);
 };

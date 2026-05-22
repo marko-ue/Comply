@@ -6,9 +6,10 @@
 #include "AbilitySystem/Abilities/ThrowableAbilityBase.h"
 #include "Throwable_Ranger.generated.h"
 
+class APlasmaGrenade;
 class APlasmaGrenadePreview;
 /**
- * 
+ * TODO: Make damage a scalable float for upgrades
  */
 UCLASS()
 class COMPLY_API UThrowable_Ranger : public UThrowableAbilityBase
@@ -29,13 +30,17 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UGameplayEffect> CostEffectClass;
 	
+	// This will be a scalable float in the future for upgrades
+	UPROPERTY(EditAnywhere)
+	float ExplosionRadius = 1000.f;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<APlasmaGrenade> GrenadeActorClass;
+	
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	
 	virtual void SpawnPreview() override;
-	
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<AActor> GrenadeActorClass;
 	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AActor> GrenadePreviewActorClass;

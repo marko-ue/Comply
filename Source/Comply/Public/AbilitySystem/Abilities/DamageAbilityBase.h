@@ -18,7 +18,6 @@ class COMPLY_API UDamageAbilityBase : public UComplyAbilityBase
 public:
 	void CauseDamage(AActor* TargetActor, float ExplicitDamage, FComplyGameplayEffectContext* Context = nullptr);
 	
-protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	FScalableFloat Damage;
 	

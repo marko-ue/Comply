@@ -143,14 +143,12 @@ void UThrowable_Enforcer::PlaceTurret()
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = Avatar;
 		SpawnParams.Instigator = Cast<APawn>(Avatar);
-		
-		const FGameplayAbilityActivationInfo ActivationInfo = GetCurrentActivationInfo();
 
 		// A server RPC is used to handle spawning the turret
 		UComplyAbilitySystemComponent* ASC = Cast<UComplyAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
 		if (ASC)
 		{
-			ASC->Server_PlaceTurret(SpawnLocation, SpawnRotation, TurretActorClass, DamageEffectClass, DamageType, 20.f, TurretLifetime);
+			ASC->Server_PlaceTurret(GetCurrentAbilitySpecHandle(), SpawnLocation, SpawnRotation);
 		}
 	}
 }

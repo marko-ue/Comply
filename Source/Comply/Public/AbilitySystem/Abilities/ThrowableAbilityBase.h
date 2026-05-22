@@ -20,6 +20,9 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	bool bConfirmOnRelease = true;
 	
+	UPROPERTY(EditAnywhere)
+	float ThrowSpeed = 1000.f;
+	
 protected:
 	virtual void Throw();
 	
@@ -27,6 +30,5 @@ protected:
 	
 	virtual void CancelThrow();
 	
-	UPROPERTY(EditAnywhere)
-	float ThrowSpeed = 1000.f;
+	
 };

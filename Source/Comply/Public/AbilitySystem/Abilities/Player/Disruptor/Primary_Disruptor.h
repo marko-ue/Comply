@@ -29,7 +29,7 @@ public:
 	
 	// TODO: Turn into a scalable float for upgrades
 	UPROPERTY(EditAnywhere)
-	float SpreadAngle = 45.f;
+	float SpreadAngle = 75.f;
 	
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;

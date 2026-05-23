@@ -9,7 +9,7 @@
 class ADeployableTurret;
 class ADeployableTurretPreview;
 /**
- * TODO: Make damage a scalable float for upgrades
+ *
  */
 UCLASS()
 class COMPLY_API UThrowable_Enforcer : public UThrowableAbilityBase

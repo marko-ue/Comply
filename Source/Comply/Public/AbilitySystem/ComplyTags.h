@@ -14,6 +14,7 @@ namespace ComplyTags
 		namespace AssetTags
 		{
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(ApplyShieldedEffectAbility);
+			UE_DECLARE_GAMEPLAY_TAG_EXTERN(ApplyConfusedEffectAbility);
 		}
 		
 		namespace InputTags
@@ -35,6 +36,7 @@ namespace ComplyTags
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Firing);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Shielded)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Reloading);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Confused)
 	}
 	
 	namespace SetByCaller

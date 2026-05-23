@@ -4,8 +4,10 @@
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "Actors/PlasmaGrenade/PlasmaGrenade.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystem/Abilities/Player/Disruptor/Utility_Disruptor.h"
 #include "AbilitySystem/Abilities/Player/Enforcer/Throwable_Enforcer.h"
 #include "AbilitySystem/Abilities/Player/Ranger/Throwable_Ranger.h"
+#include "Actors/ConfusionBeacon/ConfusionBeacon.h"
 #include "Actors/DeployableTurret/DeployableTurret.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -28,6 +30,25 @@ void UComplyAbilitySystemComponent::TickComponent(float DeltaTime, ELevelTick Ti
                                                   FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+}
+
+void UComplyAbilitySystemComponent::Server_PlaceBeacon_Implementation(FGameplayAbilitySpecHandle AbilityHandle,
+	FVector SpawnLocation, float BeaconLifetime)
+{
+	const FGameplayAbilitySpec* Spec = FindAbilitySpecFromHandle(AbilityHandle);
+	const UUtility_Disruptor* Ability = Cast<UUtility_Disruptor>(Spec->GetPrimaryInstance());
+	
+	if (!Spec || !Ability) return;
+	
+	APawn* InstigatorPawn = Cast<APawn>(GetAvatarActor());
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Instigator = Cast<APawn>(InstigatorPawn);
+
+	AConfusionBeacon* Beacon = GetWorld()->SpawnActor<AConfusionBeacon>(Ability->BeaconActorClass, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
+	if (Beacon)
+	{
+		Beacon->SetLifeSpan(BeaconLifetime);
+	}
 }
 
 void UComplyAbilitySystemComponent::Server_ThrowGrenade_Implementation(FGameplayAbilitySpecHandle AbilityHandle, FVector SpawnLocation, FRotator SpawnRotation, FVector InLaunchVelocity)

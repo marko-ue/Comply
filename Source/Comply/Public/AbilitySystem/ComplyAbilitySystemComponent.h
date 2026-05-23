@@ -28,4 +28,7 @@ public:
 	
 	UFUNCTION(Server, Reliable)
 	void Server_ThrowGrenade(FGameplayAbilitySpecHandle AbilityHandle, FVector SpawnLocation, FRotator SpawnRotation, FVector InLaunchVelocity);
+	
+	UFUNCTION(Server, Reliable)
+	void Server_PlaceBeacon(FGameplayAbilitySpecHandle AbilityHandle, FVector SpawnLocation, float BeaconLifetime);
 };

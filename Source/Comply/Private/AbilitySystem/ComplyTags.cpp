@@ -11,6 +11,7 @@ namespace ComplyTags
 		namespace AssetTags
 		{
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(ApplyShieldedEffectAbility, "ComplyTags.Abilities.Ranger.ApplyShieldedEffectAbility", "Apply shielded effect ability asset tag")
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(ApplyConfusedEffectAbility, "ComplyTags.Abilities.Disruptor.ApplyConfusedEffectAbility", "Apply confused effect ability asset tag")
 		}
 		
 		namespace InputTags
@@ -32,6 +33,7 @@ namespace ComplyTags
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Firing, "ComplyTags.States.Firing", "Is player firing")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Shielded, "ComplyTags.States.Shielded", "Is player being shielded")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Reloading, "ComplyTags.States.Reloading", "Is player reloading")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Confused, "ComplyTags.States.Confused", "Is enemy confused")
 	}
 	
 	namespace SetByCaller

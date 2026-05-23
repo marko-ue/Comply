@@ -13,8 +13,6 @@ void UUtility_Ranger::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 
 void UUtility_Ranger::Use()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Ranger utility activated"));
-
 	// The preview for the shield will be shown only on the owning client
 	if (GetCurrentActorInfo()->IsLocallyControlled())
 	{

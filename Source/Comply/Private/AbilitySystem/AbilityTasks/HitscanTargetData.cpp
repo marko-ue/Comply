@@ -4,6 +4,7 @@
 #include "AbilitySystem/AbilityTasks/HitscanTargetData.h"
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/Abilities/Player/Disruptor/Primary_Disruptor.h"
 
 
 UHitscanTargetData* UHitscanTargetData::CreateHitScanData(UGameplayAbility* OwningAbility)
@@ -36,16 +37,34 @@ void UHitscanTargetData::Activate()
 void UHitscanTargetData::SendHitscanTargetData(float TraceDistance)
 {
 	FScopedPredictionWindow ScopedPrediction(AbilitySystemComponent.Get());
-    
-	// A member boolean variable is created that will be populated with the result of if the hit was through a shield or not
-	FHitResult HitscanHit;
-	Cast<URangedWeaponAbilityBase>(Ability)->TraceToCrosshair(HitscanHit, 10000.f, bPassedThroughShield);
-    
-	FGameplayAbilityTargetDataHandle DataHandle;
-	FGameplayAbilityTargetData_SingleTargetHit* Data = new FGameplayAbilityTargetData_SingleTargetHit();
-	Data->HitResult = HitscanHit;
-	DataHandle.Add(Data);
-    
+	URangedWeaponAbilityBase* RangedWeaponBase = Cast<URangedWeaponAbilityBase>(Ability);
+	
+	if (RangedWeaponBase->DoesWeaponUseCrosshairTrace())
+	{
+		FHitResult CrosshairHitscanHit;
+		RangedWeaponBase->TraceToCrosshair(CrosshairHitscanHit, 10000.f, bPassedThroughShield);
+		FGameplayAbilityTargetData_SingleTargetHit* Data = new FGameplayAbilityTargetData_SingleTargetHit();
+		Data->HitResult = CrosshairHitscanHit;
+		DataHandle.Add(Data);
+	}
+	else // If weapon does not use a simple crosshair trace (shotgun)
+	{
+		UPrimary_Disruptor* PrimaryDisruptor = Cast<UPrimary_Disruptor>(Ability);
+		if (PrimaryDisruptor)
+		{
+			TArray<FHitResult> ShotgunHitscanHits;
+			PrimaryDisruptor->PerformShotgunTraces(ShotgunHitscanHits, PrimaryDisruptor->NumberOfPellets, 10000.f, bPassedThroughShield);
+
+			// Send data for each shotgun hit, damage is applied per hit individually
+			for (const FHitResult& Hit : ShotgunHitscanHits)
+			{
+				FGameplayAbilityTargetData_SingleTargetHit* Data = new FGameplayAbilityTargetData_SingleTargetHit();
+				Data->HitResult = Hit;
+				DataHandle.Add(Data);
+			}
+		}
+	}
+
 	AbilitySystemComponent->ServerSetReplicatedTargetData(
 		GetAbilitySpecHandle(),
 		GetActivationPredictionKey(),
@@ -60,13 +79,13 @@ void UHitscanTargetData::SendHitscanTargetData(float TraceDistance)
 }
 
 // Consumes the sent data when received
-void UHitscanTargetData::OnTargetDataReplicatedCallback(const FGameplayAbilityTargetDataHandle& DataHandle,
+void UHitscanTargetData::OnTargetDataReplicatedCallback(const FGameplayAbilityTargetDataHandle& InDataHandle,
 	FGameplayTag ActivationTag)
 {
 	AbilitySystemComponent->ConsumeClientReplicatedTargetData(GetAbilitySpecHandle(), GetActivationPredictionKey());
 	
 	if (ShouldBroadcastAbilityTaskDelegates())
 	{
-		ValidData.Broadcast(DataHandle);
+		ValidData.Broadcast(InDataHandle);
 	}
 }

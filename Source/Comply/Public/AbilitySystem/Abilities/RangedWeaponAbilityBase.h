@@ -29,7 +29,8 @@ class COMPLY_API URangedWeaponAbilityBase : public UDamageAbilityBase
 	GENERATED_BODY()
 	
 public:
-	void TraceToCrosshair(FHitResult& TraceHitResult, float TraceDistance, bool& OutPassedThroughShield);
+	void TraceToCrosshair(FHitResult& TraceHitResult, const float TraceLength, bool& OutPassedThroughShield);
+	void PerformShotgunTraces(TArray<FHitResult>& OutHitResults, const int32 NumPellets, const float TraceLength, bool& OutPassedThroughShield);
 	
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UAnimMontage> AbilityActivationMontageHip;
@@ -65,12 +66,20 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UGameplayEffect> ReloadEffectClass;
 	
+	// If the ranged weapon uses a simple line trace to the crosshair
+	UPROPERTY(EditDefaultsOnly)
+	bool bUsesSingleCrosshairTrace = true;
+	
 	// Each weapon will return its own data
 	// This is mostly used to handle reloading more cleanly
 	FORCEINLINE virtual FGameplayAttribute GetCurrentAmmoAttribute() const { return FGameplayAttribute(); }
 	FORCEINLINE virtual FGameplayAttribute GetMaxAmmoAttribute() const { return FGameplayAttribute(); }
 	FORCEINLINE virtual FGameplayTag GetReduceReserveAmmoTag() const { return FGameplayTag(); }
 	FORCEINLINE virtual FGameplayAttribute GetCurrentReserveAmmoAttribute() const { return FGameplayAttribute(); }
+	FORCEINLINE virtual bool DoesWeaponUseCrosshairTrace() const { return bUsesSingleCrosshairTrace; }
+	
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UAnimMontage> InsertShellMontage;
 
 protected:
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
@@ -105,5 +114,4 @@ private:
 	
 	UPROPERTY()
 	URangedWeaponAbilityBase* ActiveWeapon;
-	
 };

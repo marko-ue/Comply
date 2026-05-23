@@ -1,7 +1,7 @@
 // Copyright © 2026 Marko. All rights reserved.
 
 
-#include "AbilitySystem/Abilities/Player/ReloadAbility.h"
+#include "AbilitySystem/Abilities/Player/ReloadAbilities/ReloadAbility.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"

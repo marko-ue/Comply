@@ -25,10 +25,13 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FHitscanTargetDataSignature ValidData;
 	
+	// A member boolean variable is created that will be populated with the result of if the hit was through a shield or not
 	UPROPERTY()
 	bool bPassedThroughShield;
 	
 private:
 	virtual void Activate() override;
-	void OnTargetDataReplicatedCallback(const FGameplayAbilityTargetDataHandle& DataHandle, FGameplayTag ActivationTag);
+	void OnTargetDataReplicatedCallback(const FGameplayAbilityTargetDataHandle& InDataHandle, FGameplayTag ActivationTag);
+	
+	FGameplayAbilityTargetDataHandle DataHandle;
 };

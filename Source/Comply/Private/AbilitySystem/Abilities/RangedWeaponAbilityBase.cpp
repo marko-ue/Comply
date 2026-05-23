@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "AbilitySystem/AbilityTasks/HitscanTargetData.h"
 #include "AbilitySystem/ComplyTags.h"
+#include "AbilitySystem/Abilities/Player/Disruptor/Primary_Disruptor.h"
 #include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
 #include "Character/ComplyCharacterBase.h"
 #include "Character/ComplyPlayerCharacter.h"
@@ -17,7 +18,8 @@ class UComplyAttributeSet;
 
 
 // Traces to the middle of the screen
-void URangedWeaponAbilityBase::TraceToCrosshair(FHitResult& TraceHitResult, float TraceLength, bool& OutPassedThroughShield)
+// This function is called in HitscanTargetData for transferring hitscan data from client to server
+void URangedWeaponAbilityBase::TraceToCrosshair(FHitResult& TraceHitResult, const float TraceLength, bool& OutPassedThroughShield)
 {
 	AActor* Owner = GetOwningActorFromActorInfo();
 	AActor* Avatar = GetAvatarActorFromActorInfo();
@@ -52,13 +54,7 @@ void URangedWeaponAbilityBase::TraceToCrosshair(FHitResult& TraceHitResult, floa
 		
 		// A multi trace is used because overlap events are required, as well as direct hits for applying damage
 		TArray<FHitResult> MultiHitResults;
-		GetWorld()->LineTraceMultiByChannel(
-			MultiHitResults,
-			Start,
-			End,
-			ECC_Pawn,
-			CollisionParams
-		);
+		GetWorld()->LineTraceMultiByChannel(MultiHitResults, Start, End, ECC_Pawn, CollisionParams);
 		
 		for (const FHitResult& Hit : MultiHitResults)
 		{
@@ -79,9 +75,68 @@ void URangedWeaponAbilityBase::TraceToCrosshair(FHitResult& TraceHitResult, floa
 	}
 }
 
+void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitResults, const int32 NumPellets, const float TraceLength, bool& OutPassedThroughShield)
+{
+	AActor* Owner = GetOwningActorFromActorInfo();
+	AActor* Avatar = GetAvatarActorFromActorInfo();
+
+	const UPrimary_Disruptor* Ability = Cast<UPrimary_Disruptor>(GetCurrentAbilitySpec()->GetPrimaryInstance());
+
+	if (!Avatar || !Owner || !Ability) return;
+	
+	FVector2D ViewportSize = FVector2D();
+	if (GEngine && GEngine->GameViewport)
+	{
+		GEngine->GameViewport->GetViewportSize(ViewportSize);
+	}
+	
+	const FVector2D CrosshairLocation(ViewportSize.X / 2, ViewportSize.Y / 2);
+	FVector CrosshairWorldPosition;
+	FVector CrosshairWorldDirection;
+	const bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(UGameplayStatics::GetPlayerController(
+		this, 0), CrosshairLocation, CrosshairWorldPosition, CrosshairWorldDirection);
+	if (bScreenToWorld)
+	{
+		Start = CrosshairWorldPosition;
+		
+		if (Avatar)
+		{
+			float DistanceToCharacter = (Avatar->GetActorLocation() - Start).Size();
+			Start += CrosshairWorldDirection * (DistanceToCharacter + 100);
+		}
+		
+		End = Start + CrosshairWorldDirection * TraceLength;
+		
+		FCollisionQueryParams CollisionParams;
+		CollisionParams.AddIgnoredActor(Avatar);
+		
+		// A multi trace is used because overlap events are required, as well as direct hits for applying damage
+		for (int32 i = 0; i < NumPellets; i++)
+		{
+			const FVector PelletDirection = FMath::VRandCone(CrosshairWorldDirection, FMath::DegreesToRadians(Ability->SpreadAngle));
+			const FVector PelletEnd = Start + PelletDirection * TraceLength;
+
+			TArray<FHitResult> MultiHitResults;
+			GetWorld()->LineTraceMultiByChannel(MultiHitResults, Start, PelletEnd, ECC_Pawn, CollisionParams);
+
+			for (const FHitResult& Hit : MultiHitResults)
+			{
+				if (!Hit.GetActor()) continue;
+				if (Hit.GetActor()->ActorHasTag(FName("Shield")))
+				{
+					OutPassedThroughShield = true;
+					continue;
+				}
+				OutHitResults.Add(Hit);
+				break; // Stop at first solid hit per pellet
+			}
+		}
+	}
+}
+
 void URangedWeaponAbilityBase::EndAbility(const FGameplayAbilitySpecHandle Handle,
-	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-	bool bReplicateEndAbility, bool bWasCancelled)
+                                          const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+                                          bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
@@ -89,16 +144,20 @@ void URangedWeaponAbilityBase::EndAbility(const FGameplayAbilitySpecHandle Handl
 
 void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTargetDataHandle& DataHandle)
 {
-	AActor* TargetActor = DataHandle.Data[0]->GetHitResult()->GetActor();
-    
-	// Context created, value set, and passed in
 	const FGameplayAbilityActivationInfo ActivationInfo = GetCurrentActivationInfo();
-	if (TargetActor && HasAuthority(&ActivationInfo))
+
+	for (const TSharedPtr<FGameplayAbilityTargetData>& Data : DataHandle.Data)
 	{
-		FComplyGameplayEffectContext* Context = new FComplyGameplayEffectContext();
-		Context->bHitThroughShield = HitscanTargetDataTask->bPassedThroughShield;
-		Context->ShieldDamageMultiplier = ShieldShotDamageMultiplier;
-		CauseDamage(TargetActor, Damage.GetValueAtLevel(GetAbilityLevel()), Context);
+		if (!Data.IsValid()) continue;
+
+		AActor* TargetActor = Data->GetHitResult()->GetActor();
+		if (TargetActor && HasAuthority(&ActivationInfo))
+		{
+			FComplyGameplayEffectContext* Context = new FComplyGameplayEffectContext();
+			Context->bHitThroughShield = HitscanTargetDataTask->bPassedThroughShield;
+			Context->ShieldDamageMultiplier = ShieldShotDamageMultiplier;
+			CauseDamage(TargetActor, Damage.GetValueAtLevel(GetAbilityLevel()), Context);
+		}
 	}
 }
 

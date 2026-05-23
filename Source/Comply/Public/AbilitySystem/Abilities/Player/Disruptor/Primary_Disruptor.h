@@ -24,6 +24,13 @@ public:
 	FORCEINLINE virtual FGameplayTag GetReduceReserveAmmoTag() const override { return ComplyTags::SetByCaller::SBC_ReduceShotgunReserveAmmo; }
 	FORCEINLINE virtual FGameplayAttribute GetCurrentReserveAmmoAttribute() const override { return UWeaponAttributeSet::GetShotgunCurrentReserveAmmoAttribute(); }
 	
+	UPROPERTY(EditAnywhere)
+	int32 NumberOfPellets = 8;
+	
+	// TODO: Turn into a scalable float for upgrades
+	UPROPERTY(EditAnywhere)
+	float SpreadAngle = 45.f;
+	
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual bool Fire() override;

@@ -33,10 +33,9 @@ void UComplyAbilitySystemComponent::TickComponent(float DeltaTime, ELevelTick Ti
 void UComplyAbilitySystemComponent::Server_ThrowGrenade_Implementation(FGameplayAbilitySpecHandle AbilityHandle, FVector SpawnLocation, FRotator SpawnRotation, FVector InLaunchVelocity)
 {
 	const FGameplayAbilitySpec* Spec = FindAbilitySpecFromHandle(AbilityHandle);
-	if (!Spec) return;
-
 	const UThrowable_Ranger* Ability = Cast<UThrowable_Ranger>(Spec->GetPrimaryInstance());
-	if (!Ability) return;
+	
+	if (!Spec || !Ability) return;
 	
 	APawn* InstigatorPawn = Cast<APawn>(GetAvatarActor());
 
@@ -62,10 +61,9 @@ void UComplyAbilitySystemComponent::Server_ThrowGrenade_Implementation(FGameplay
 void UComplyAbilitySystemComponent::Server_PlaceTurret_Implementation(FGameplayAbilitySpecHandle AbilityHandle, FVector SpawnLocation, FRotator SpawnRotation)
 {
 	const FGameplayAbilitySpec* Spec = FindAbilitySpecFromHandle(AbilityHandle);
-	if (!Spec) return;
-	
 	const UThrowable_Enforcer* Ability = Cast<UThrowable_Enforcer>(Spec->GetPrimaryInstance());
-	if (!Ability) return;
+	
+	if (!Spec || !Ability) return;
 	
 	APawn* InstigatorPawn = Cast<APawn>(GetAvatarActor());
 

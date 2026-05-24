@@ -31,6 +31,9 @@ void UWeaponAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimePrope
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, ShotgunMaxAmmo, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, ShotgunCurrentReserveAmmo, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, ShotgunMaxReserveAmmo, COND_None, REPNOTIFY_Always);
+	
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, DecoyGrenadeCurrentCharges, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, DecoyGrenadeMaxCharges, COND_None, REPNOTIFY_Always);
 }
 
 void UWeaponAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -72,6 +75,11 @@ void UWeaponAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute
 	if (Attribute == GetShotgunCurrentReserveAmmoAttribute())
 	{
 		NewValue = FMath::Clamp(NewValue, 0.f, GetShotgunMaxReserveAmmo());
+	}
+	
+	if (Attribute == GetDecoyGrenadeCurrentChargesAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.f, GetDecoyGrenadeMaxCharges());
 	}
 }
 
@@ -115,6 +123,11 @@ void UWeaponAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffect
 	if (Data.EvaluatedData.Attribute == GetShotgunCurrentReserveAmmoAttribute())
 	{
 		SetShotgunCurrentReserveAmmo(FMath::Clamp(GetShotgunCurrentReserveAmmo(), 0.f, GetShotgunMaxReserveAmmo()));
+	}
+	
+	if (Data.EvaluatedData.Attribute == GetDecoyGrenadeCurrentChargesAttribute())
+	{
+		SetDecoyGrenadeCurrentCharges(FMath::Clamp(GetDecoyGrenadeCurrentCharges(), 0.f, GetDecoyGrenadeMaxCharges()));
 	}
 }
 
@@ -197,4 +210,14 @@ void UWeaponAttributeSet::OnRep_ShotgunCurrentReserveAmmo(const FGameplayAttribu
 void UWeaponAttributeSet::OnRep_ShotgunMaxReserveAmmo(const FGameplayAttributeData& OldValue)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, ShotgunMaxReserveAmmo, OldValue);
+}
+
+void UWeaponAttributeSet::OnRep_DecoyGrenadeCurrentCharges(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, DecoyGrenadeCurrentCharges, OldValue);
+}
+
+void UWeaponAttributeSet::OnRep_DecoyGrenadeMaxCharges(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, DecoyGrenadeMaxCharges, OldValue);
 }

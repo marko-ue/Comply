@@ -167,7 +167,7 @@ void AComplyPlayerCharacter::PrimaryActionReleased()
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
 		// Confirm the throw of the throwable once the primary input is released, removing the preview path
-		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::Throwable) && Spec.IsActive())
+		if (Spec.Ability->AbilityTags.HasTagExact(ComplyTags::ComplyAbilities::Throwable) && Spec.IsActive())
 		{
 			UThrowableAbilityBase* ThrowableAbility = Cast<UThrowableAbilityBase>(Spec.GetPrimaryInstance());
 			if (ThrowableAbility && ThrowableAbility->bConfirmOnRelease) ThrowableAbility->ConfirmThrow();
@@ -244,7 +244,7 @@ void AComplyPlayerCharacter::CancelPreviewActionPressed()
 {
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
-		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_OneShotUtility))
+		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_Primary))
 		{
 			if (Spec.IsActive())
 			{

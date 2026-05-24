@@ -60,10 +60,10 @@ public:
 	/* End Rifle */
 	
 	/* Plasma Grenade */
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_RifleCurrentAmmo)
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_PlasmaGrenadeCurrentCharges)
 	FGameplayAttributeData PlasmaGrenadeCurrentCharges;
 	
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_RifleMaxAmmo)
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_PlasmaGrenadeMaxCharges)
 	FGameplayAttributeData PlasmaGrenadeMaxCharges;
 	
 	UFUNCTION()
@@ -154,4 +154,21 @@ public:
 	ATTRIBUTE_ACCESSORS(ThisClass, ShotgunCurrentReserveAmmo)
 	ATTRIBUTE_ACCESSORS(ThisClass, ShotgunMaxReserveAmmo)
 	/* End Shotgun */
+	
+	/* Plasma Grenade */
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_DecoyGrenadeCurrentCharges)
+	FGameplayAttributeData DecoyGrenadeCurrentCharges;
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_DecoyGrenadeMaxCharges)
+	FGameplayAttributeData DecoyGrenadeMaxCharges;
+	
+	UFUNCTION()
+	void OnRep_DecoyGrenadeCurrentCharges(const FGameplayAttributeData& OldValue);
+    	
+	UFUNCTION()
+	void OnRep_DecoyGrenadeMaxCharges(const FGameplayAttributeData& OldValue);
+	
+	ATTRIBUTE_ACCESSORS(ThisClass, DecoyGrenadeCurrentCharges)
+	ATTRIBUTE_ACCESSORS(ThisClass, DecoyGrenadeMaxCharges)
+	/* End Plasma Grenade */
 };

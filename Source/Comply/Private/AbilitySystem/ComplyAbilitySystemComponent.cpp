@@ -4,10 +4,12 @@
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "Actors/PlasmaGrenade/PlasmaGrenade.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystem/Abilities/Player/Disruptor/Throwable_Disruptor.h"
 #include "AbilitySystem/Abilities/Player/Disruptor/Utility_Disruptor.h"
 #include "AbilitySystem/Abilities/Player/Enforcer/Throwable_Enforcer.h"
 #include "AbilitySystem/Abilities/Player/Ranger/Throwable_Ranger.h"
 #include "Actors/ConfusionBeacon/ConfusionBeacon.h"
+#include "Actors/DecoyGrenade/DecoyGrenade.h"
 #include "Actors/DeployableTurret/DeployableTurret.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -32,8 +34,37 @@ void UComplyAbilitySystemComponent::TickComponent(float DeltaTime, ELevelTick Ti
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
+void UComplyAbilitySystemComponent::Server_ThrowDecoyGrenade_Implementation(FGameplayAbilitySpecHandle AbilityHandle,
+	FVector SpawnLocation, FRotator SpawnRotation, FVector InLaunchVelocity)
+{
+	const FGameplayAbilitySpec* Spec = FindAbilitySpecFromHandle(AbilityHandle);
+	const UThrowable_Disruptor* Ability = Cast<UThrowable_Disruptor>(Spec->GetPrimaryInstance());
+	
+	if (!Spec || !Ability) return;
+	
+	APawn* InstigatorPawn = Cast<APawn>(GetAvatarActor());
+
+	const FTransform SpawnTransform(SpawnRotation, SpawnLocation);
+	
+	ADecoyGrenade* DecoyGrenade = GetWorld()->SpawnActorDeferred<ADecoyGrenade>(Ability->DecoyGrenadeActorClass, SpawnTransform, GetOwnerActor(), InstigatorPawn, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	if (DecoyGrenade)
+	{
+		DecoyGrenade->PullRadius = Ability->PullRadius;
+		DecoyGrenade->DecoyGrenadeLifetime = Ability->DecoyGrenadeLifetime;
+		DecoyGrenade->SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActor());
+		DecoyGrenade->DamageEffectClass = Ability->DamageEffectClass;
+		DecoyGrenade->DamageTypeTag = Ability->DamageType;
+		
+		// Clamp to the throw speed to prevent cheating by the client passing in higher values
+		FVector SafeLaunchVelocity = InLaunchVelocity.GetClampedToMaxSize(Ability->ThrowSpeed);
+		DecoyGrenade->ProjectileMovementComp->Velocity = SafeLaunchVelocity;
+
+		UGameplayStatics::FinishSpawningActor(DecoyGrenade, SpawnTransform);
+	}
+}
+
 void UComplyAbilitySystemComponent::Server_PlaceBeacon_Implementation(FGameplayAbilitySpecHandle AbilityHandle,
-	FVector SpawnLocation, float BeaconLifetime)
+                                                                      FVector SpawnLocation, float BeaconLifetime)
 {
 	const FGameplayAbilitySpec* Spec = FindAbilitySpecFromHandle(AbilityHandle);
 	const UUtility_Disruptor* Ability = Cast<UUtility_Disruptor>(Spec->GetPrimaryInstance());

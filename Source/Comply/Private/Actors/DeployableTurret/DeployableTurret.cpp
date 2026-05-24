@@ -46,7 +46,6 @@ void ADeployableTurret::Destroyed()
 {
 	if (SourceASC)
 	{
-		// The weak pointer ensures if the player disconnects or the ASC is gone before 30 seconds the lambda just skips
 		TWeakObjectPtr<UAbilitySystemComponent> WeakASC = SourceASC;
 		TSubclassOf<UGameplayEffect> EffectClass = RechargeTurretChargeClass;
 

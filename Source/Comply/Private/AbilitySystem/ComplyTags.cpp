@@ -34,6 +34,7 @@ namespace ComplyTags
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Shielded, "ComplyTags.States.Shielded", "Is player being shielded")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Reloading, "ComplyTags.States.Reloading", "Is player reloading")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Confused, "ComplyTags.States.Confused", "Is enemy confused")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Distracted, "ComplyTags.States.Distracted", "Is enemy distracted")
 	}
 	
 	namespace SetByCaller

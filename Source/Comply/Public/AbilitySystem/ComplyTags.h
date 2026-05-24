@@ -37,6 +37,7 @@ namespace ComplyTags
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Shielded)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Reloading);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Confused)
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Distracted)
 	}
 	
 	namespace SetByCaller

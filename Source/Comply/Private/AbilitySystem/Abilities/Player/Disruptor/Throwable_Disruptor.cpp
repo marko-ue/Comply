@@ -47,9 +47,29 @@ void UThrowable_Disruptor::ConfirmThrow()
 	UComplyAbilitySystemComponent* ASC = Cast<UComplyAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
 	if (ASC)
 	{
+		AActor* Owner = GetOwningActorFromActorInfo();
+		AActor* Avatar = GetAvatarActorFromActorInfo();
+
+		if (!Avatar || !Owner) return;
+	
+		FVector2D ViewportSize = FVector2D();
+		if (GEngine && GEngine->GameViewport)
+		{
+			GEngine->GameViewport->GetViewportSize(ViewportSize);
+		}
+	
+		const FVector2D CrosshairLocation(ViewportSize.X / 2, ViewportSize.Y / 2);
+		FVector CrosshairWorldPosition;
+		FVector CrosshairWorldDirection;
+		const bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(UGameplayStatics::GetPlayerController(
+			this, 0), CrosshairLocation, CrosshairWorldPosition, CrosshairWorldDirection);
+		if (!bScreenToWorld) return;
+
+		const FVector LaunchVelocity = CrosshairWorldDirection * ThrowSpeed;
+		const FVector SpawnPosition = Avatar->GetActorLocation() + FVector(0.f, 0.f, 60.f) + CrosshairWorldDirection * 40.f;
+
 		APawn* InstigatorPawn = Cast<APawn>(GetAvatarActorFromActorInfo());
-		FVector LaunchVelocity = GetAvatarActorFromActorInfo()->GetActorLocation().ForwardVector * ThrowSpeed;
-		ASC->Server_ThrowDecoyGrenade(GetCurrentAbilitySpecHandle(), InstigatorPawn->GetActorLocation(), InstigatorPawn->GetActorRotation(), LaunchVelocity);
+		ASC->Server_ThrowDecoyGrenade(GetCurrentAbilitySpecHandle(), SpawnPosition, InstigatorPawn->GetActorRotation(), LaunchVelocity);
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
 }

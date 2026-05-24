@@ -22,10 +22,25 @@ void ADecoyGrenadePreview::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	FVector LaunchVelocity = OwningPawn->GetActorForwardVector() * ThrowSpeed;
+	FVector LaunchVelocity = FVector::ZeroVector;
+	FVector2D ViewportSize = FVector2D();
+	if (GEngine && GEngine->GameViewport)
+	{
+		GEngine->GameViewport->GetViewportSize(ViewportSize);
+	}
+	
+	const FVector2D CrosshairLocation(ViewportSize.X / 2, ViewportSize.Y / 2);
+	FVector CrosshairWorldPosition;
+	FVector CrosshairWorldDirection;
+	const bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(UGameplayStatics::GetPlayerController(
+		this, 0), CrosshairLocation, CrosshairWorldPosition, CrosshairWorldDirection);
+	if (bScreenToWorld)
+	{
+		LaunchVelocity = CrosshairWorldDirection * ThrowSpeed;
+	}
 
 	FPredictProjectilePathParams PredictParams;
-	PredictParams.StartLocation = OwningPawn->GetActorLocation();
+	PredictParams.StartLocation = OwningPawn->GetActorLocation() + FVector(0.f, 0.f, 60.f);
 	PredictParams.LaunchVelocity = LaunchVelocity;
 	PredictParams.ActorsToIgnore = ActorsToIgnore;
 	PredictParams.bTraceWithCollision = true;

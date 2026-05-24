@@ -18,6 +18,15 @@ class AComplyPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 	
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> FlashbangWidgetClass;
+	
+	UPROPERTY()
+	TObjectPtr<UUserWidget> FlashbangWidget;
+	
+	void ShowFlashbangEffect();
+	
 protected:
 
 	/** Input Mapping Contexts */

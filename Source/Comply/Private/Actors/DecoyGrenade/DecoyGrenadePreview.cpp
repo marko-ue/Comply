@@ -35,10 +35,13 @@ void ADecoyGrenadePreview::Tick(float DeltaTime)
 	FPredictProjectilePathResult PredictResult;
 	UGameplayStatics::PredictProjectilePath(GetWorld(), PredictParams, PredictResult);
 
-	// Draw debug spheres along the predicted projectile path for visualization
-	for (const FPredictProjectilePathPointData& PathPoint : PredictResult.PathData)
+	if (OwningPawn->IsLocallyControlled())
 	{
-		DrawDebugSphere(GetWorld(), PathPoint.Location, 8.f, 6, FColor::Green, false, -1.f);
+		// Draw debug spheres along the predicted projectile path for visualization
+		for (const FPredictProjectilePathPointData& PathPoint : PredictResult.PathData)
+		{
+			DrawDebugSphere(GetWorld(), PathPoint.Location, 8.f, 6, FColor::Green, false, -1.f);
+		}
 	}
 }
 

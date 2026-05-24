@@ -17,4 +17,7 @@ class COMPLY_API AComplyGameModeBase : public AGameModeBase
 public:
 	UPROPERTY(EditDefaultsOnly)
 	bool bFriendlyFire = false;
+	
+protected:
+	virtual void BeginPlay() override;
 };

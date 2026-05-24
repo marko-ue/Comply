@@ -149,4 +149,7 @@ private:
 	void ZoomOut(float DeltaTime);
 	
 	bool bIsAiming = false;
+	
+	UFUNCTION()
+	void OnDistractedTagChanged(const FGameplayTag Tag, int32 NewCount);
 };

@@ -4,11 +4,13 @@
 #include "Framework/PlayerState/ComplyPlayerState.h"
 #include "EnhancedInputComponent.h"
 #include "AbilitySystemComponent.h"
+#include "ComplyPlayerController.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "AbilitySystem/Abilities/ThrowableAbilityBase.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Framework/GameState/ComplyGameStateBase.h"
 #include "Net/UnrealNetwork.h"
 
 AComplyPlayerCharacter::AComplyPlayerCharacter()
@@ -62,6 +64,9 @@ void AComplyPlayerCharacter::PossessedBy(AController* NewController)
 	
 	GetAbilitySystemComponent()->RegisterGameplayTagEvent(ComplyTags::States::State_Aiming,
 		EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AComplyPlayerCharacter::OnAimingTagChanged);
+	
+	GetAbilitySystemComponent()->RegisterGameplayTagEvent(ComplyTags::States::State_Distracted,
+		EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AComplyPlayerCharacter::OnDistractedTagChanged);
 }
 
 // For clients, ASC ability actor info is initialized here
@@ -78,6 +83,9 @@ void AComplyPlayerCharacter::OnRep_PlayerState()
 	
 	GetAbilitySystemComponent()->RegisterGameplayTagEvent(ComplyTags::States::State_Aiming,
 		EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AComplyPlayerCharacter::OnAimingTagChanged);
+	
+	GetAbilitySystemComponent()->RegisterGameplayTagEvent(ComplyTags::States::State_Distracted,
+		EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AComplyPlayerCharacter::OnDistractedTagChanged);
 }
 
 URangedWeaponAbilityBase* AComplyPlayerCharacter::GetEquippedPrimaryWeapon() const
@@ -167,7 +175,7 @@ void AComplyPlayerCharacter::PrimaryActionReleased()
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
 		// Confirm the throw of the throwable once the primary input is released, removing the preview path
-		if (Spec.Ability->AbilityTags.HasTagExact(ComplyTags::ComplyAbilities::Throwable) && Spec.IsActive())
+		if (Spec.Ability->GetAssetTags().HasTagExact(ComplyTags::ComplyAbilities::Throwable) && Spec.IsActive())
 		{
 			UThrowableAbilityBase* ThrowableAbility = Cast<UThrowableAbilityBase>(Spec.GetPrimaryInstance());
 			if (ThrowableAbility && ThrowableAbility->bConfirmOnRelease) ThrowableAbility->ConfirmThrow();
@@ -289,4 +297,18 @@ void AComplyPlayerCharacter::ZoomOut(float DeltaTime)
 	UCameraComponent* CameraComp = FindComponentByClass<UCameraComponent>();
 	CameraComp->FieldOfView = FMath::FInterpTo(
 		CameraComp->FieldOfView, DefaultFOV, DeltaTime, ZoomSpeed);
+}
+
+// If friendly fire is on and the distracted tag was applied by the decoy grenade, apply flashbang effect to affected players
+void AComplyPlayerCharacter::OnDistractedTagChanged(const FGameplayTag Tag, int32 NewCount)
+{
+	if (NewCount <= 0) return;
+	if (!IsLocallyControlled()) return;
+	
+	AComplyGameStateBase* GS = GetWorld()->GetGameState<AComplyGameStateBase>();
+	if (GS && GS->bFriendlyFire)
+	{
+		AComplyPlayerController* PC = Cast<AComplyPlayerController>(GetController());
+		if (PC) PC->ShowFlashbangEffect();
+	}
 }

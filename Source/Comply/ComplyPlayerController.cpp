@@ -59,3 +59,12 @@ void AComplyPlayerController::SetupInputComponent()
 		}
 	}
 }
+
+void AComplyPlayerController::ShowFlashbangEffect()
+{
+	if (!FlashbangWidgetClass) return;
+    
+	// This widget displays a white image which fades out over 3 seconds, at which point the widget gets removed
+	FlashbangWidget = CreateWidget<UUserWidget>(this, FlashbangWidgetClass);
+	if (FlashbangWidget) FlashbangWidget->AddToViewport();
+}

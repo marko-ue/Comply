@@ -4,7 +4,9 @@
 #include "Actors/DecoyGrenade/DecoyGrenade.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "AIController.h"
 #include "Comply.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Engine/OverlapResult.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Interface/Enemy/EnemyInterface.h"
@@ -46,6 +48,12 @@ void ADecoyGrenade::Destroyed()
 		// Remove the distracted effect from all enemies as the grenade is now destroyed
 		if (AffectedASCs[i]) AffectedASCs[i]->RemoveActiveGameplayEffect(DistractedEffectHandles[i]);
 	}
+	
+	for (int32 i =0; i < AffectedBBs.Num(); i++)
+	{
+		// Clear the value of DistractionLocation so enemies can go back to chasing the player
+		if (AffectedBBs[i]) AffectedBBs[i]->ClearValue("DistractionLocation");
+	}
 	Super::Destroyed();
 }
 
@@ -71,6 +79,22 @@ void ADecoyGrenade::Explode()
 		// All ASCs affected by this effect and all active effects are stored in arrays so they can be accessed and cleared when the grenade is destroyed
 		AffectedASCs.Add(TargetASC);
 		DistractedEffectHandles.Add(Handle);
+		
+
+		// When the decoy grenade explodes, the blackboard key responsible for moving the enemy to a distraction is set
+		if (AAIController* AIC = Cast<AAIController>(HitActor->GetInstigatorController()))
+		{
+			UBlackboardComponent* BB = AIC->GetBlackboardComponent();
+			if (BB)
+			{
+				// Set the distraction location to this actor's location upon the explosion
+				// All enemies will now go to this location
+				// Also clear TargetActor so the only option for affected enemies is to go to the distraction location
+				BB->SetValueAsVector("DistractionLocation", GetActorLocation());
+				BB->ClearValue("TargetActor");
+				AffectedBBs.Add(BB);
+			}
+		}
 		
 		//GrenadeMesh->SetSimulatePhysics(false);
 		GrenadeMesh->SetCollisionResponseToChannel(ECC_Player, ECR_Ignore);

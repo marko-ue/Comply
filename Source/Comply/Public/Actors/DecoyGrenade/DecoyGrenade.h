@@ -8,6 +8,7 @@
 #include "GameFramework/Actor.h"
 #include "DecoyGrenade.generated.h"
 
+class UBlackboardComponent;
 class UProjectileMovementComponent;
 class UAbilitySystemComponent;
 class UGameplayEffect;
@@ -66,4 +67,7 @@ private:
 	TArray<UAbilitySystemComponent*> AffectedASCs;
 	
 	TArray<FActiveGameplayEffectHandle> DistractedEffectHandles;
+	
+	UPROPERTY()
+	TArray<UBlackboardComponent*> AffectedBBs;
 };

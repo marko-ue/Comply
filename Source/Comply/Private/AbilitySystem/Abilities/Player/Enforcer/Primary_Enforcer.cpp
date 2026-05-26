@@ -25,16 +25,6 @@ bool UPrimary_Enforcer::Fire()
 	return true;
 }
 
-void UPrimary_Enforcer::PlayAnimationBasedOnState()
-{
-	Super::PlayAnimationBasedOnState();
-}
-
-void UPrimary_Enforcer::PlayMontageAndBindDelegates(const TObjectPtr<UAnimMontage>& AnimationToPlay)
-{
-	Super::PlayMontageAndBindDelegates(AnimationToPlay);
-}
-
 void UPrimary_Enforcer::OnMontageCompleted()
 {
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
@@ -43,12 +33,4 @@ void UPrimary_Enforcer::OnMontageCompleted()
 void UPrimary_Enforcer::OnMontageCancelled()
 {
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
-}
-
-void UPrimary_Enforcer::InputReleased(const FGameplayAbilitySpecHandle Handle,
-                                      const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
-{
-	Super::InputReleased(Handle, ActorInfo, ActivationInfo);
-	
-	GetAbilitySystemComponentFromActorInfo()->RemoveReplicatedLooseGameplayTag(ComplyTags::States::State_Firing);
 }

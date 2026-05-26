@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class COMPLY_API UUtilityAbilityBase : public UComplyAbilityBase
 {
 	GENERATED_BODY()

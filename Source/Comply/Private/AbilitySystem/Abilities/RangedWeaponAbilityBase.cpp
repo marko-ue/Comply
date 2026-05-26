@@ -4,6 +4,7 @@
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "AbilitySystem/ComplyAbilityTypes.h"
 #include "Kismet/GameplayStatics.h"
 #include "AbilitySystem/AbilityTasks/HitscanTargetData.h"
@@ -159,6 +160,18 @@ bool URangedWeaponAbilityBase::Fire()
 	HitscanTargetDataTask->ValidData.AddDynamic(this, &ThisClass::OnTargetDataReceived);
 	HitscanTargetDataTask->ReadyForActivation();
 	
+	if (RangedWeaponType == ERangedWeaponType::Automatic)
+	{
+		if (FireDelayTask)
+		{
+			FireDelayTask->EndTask();
+		}
+
+		FireDelayTask = UAbilityTask_WaitDelay::WaitDelay(this, FireInterval);
+		FireDelayTask->OnFinish.AddDynamic(this, &ThisClass::OnFireDelayFinished);
+		FireDelayTask->ReadyForActivation();
+	}
+	
 	return true;
 }
 
@@ -235,6 +248,14 @@ void URangedWeaponAbilityBase::PlayMontageAndBindDelegates(const TObjectPtr<UAni
 	PlayActivationMontageTask->OnInterrupted.AddDynamic(this, &URangedWeaponAbilityBase::OnMontageCancelled);
 	
 	PlayActivationMontageTask->ReadyForActivation();
+}
+
+void URangedWeaponAbilityBase::InputReleased(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
+{
+	Super::InputReleased(Handle, ActorInfo, ActivationInfo);
+	
+	GetAbilitySystemComponentFromActorInfo()->RemoveReplicatedLooseGameplayTag(ComplyTags::States::State_Firing);
 }
 
 void URangedWeaponAbilityBase::EndAbility(const FGameplayAbilitySpecHandle Handle,

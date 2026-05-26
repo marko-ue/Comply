@@ -28,7 +28,7 @@ struct FAbilitySet
 	FGameplayTag AbilityTypeTag;
 };
 
-UCLASS()
+UCLASS(Abstract)
 class COMPLY_API AComplyCharacterBase : public AComplyCharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()

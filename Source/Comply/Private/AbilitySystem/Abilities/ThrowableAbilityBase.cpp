@@ -2,20 +2,3 @@
 
 
 #include "AbilitySystem/Abilities/ThrowableAbilityBase.h"
-
-
-void UThrowableAbilityBase::Throw()
-{
-}
-
-void UThrowableAbilityBase::SpawnPreview()
-{
-}
-
-void UThrowableAbilityBase::CancelThrow()
-{
-}
-
-void UThrowableAbilityBase::ConfirmThrow()
-{
-}

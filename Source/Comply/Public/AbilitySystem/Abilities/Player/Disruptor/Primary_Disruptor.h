@@ -21,9 +21,7 @@ public:
 	FORCEINLINE virtual FGameplayAttribute GetMaxAmmoAttribute() const override { return UWeaponAttributeSet::GetShotgunMaxAmmoAttribute(); }
 	FORCEINLINE virtual FGameplayTag GetReduceReserveAmmoTag() const override { return ComplyTags::SetByCaller::SBC_ReduceShotgunReserveAmmo; }
 	FORCEINLINE virtual FGameplayAttribute GetCurrentReserveAmmoAttribute() const override { return UWeaponAttributeSet::GetShotgunCurrentReserveAmmoAttribute(); }
-	
-	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
-	
+
 	UPROPERTY(EditAnywhere, Category = "Ability Properties")
 	int32 NumberOfPellets = 8;
 	
@@ -36,8 +34,6 @@ protected:
 	
 	virtual bool Fire() override;
 	
-	virtual void PlayAnimationBasedOnState() override;
-	virtual void PlayMontageAndBindDelegates(const TObjectPtr<UAnimMontage>& AnimationToPlay) override;
 	virtual void OnMontageCancelled() override;
 	virtual void OnMontageCompleted() override;
 };

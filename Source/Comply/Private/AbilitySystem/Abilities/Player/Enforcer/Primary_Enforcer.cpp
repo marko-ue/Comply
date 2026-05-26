@@ -5,7 +5,7 @@
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "AbilitySystem/ComplyTags.h"
-#include "Character/ComplyCharacterBase.h"
+
 
 void UPrimary_Enforcer::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                         const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
@@ -35,14 +35,14 @@ void UPrimary_Enforcer::PlayMontageAndBindDelegates(const TObjectPtr<UAnimMontag
 	Super::PlayMontageAndBindDelegates(AnimationToPlay);
 }
 
-void UPrimary_Enforcer::OnMontageCancelled()
-{
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
-}
-
 void UPrimary_Enforcer::OnMontageCompleted()
 {
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+}
+
+void UPrimary_Enforcer::OnMontageCancelled()
+{
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 }
 
 void UPrimary_Enforcer::InputReleased(const FGameplayAbilitySpecHandle Handle,

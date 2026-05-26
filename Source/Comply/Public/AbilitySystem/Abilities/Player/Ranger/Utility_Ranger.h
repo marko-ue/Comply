@@ -19,10 +19,10 @@ class COMPLY_API UUtility_Ranger : public UUtilityAbilityBase
 public:
 	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Actors")
 	TSubclassOf<AActor> ShieldActorClass;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Actors")
 	TSubclassOf<AShieldDomePreview> ShieldPreviewActorClass;
 	
 protected:
@@ -43,11 +43,8 @@ private:
 	
 	void TraceAndSpawnShield();
 	
-	//UFUNCTION()
-	//void OnShieldExpired();
-	
 	// This will be a scalable float in the future for upgrades
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Ability Properties")
 	float ShieldLifetime = 10.f;
 	
 	void SpawnPreview(const FGameplayAbilityActorInfo* ActorInfo);

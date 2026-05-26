@@ -27,6 +27,26 @@ void UComplyAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute
 	}
 }
 
+void UComplyAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
+{
+	Super::PostGameplayEffectExecute(Data);
+	
+	/** 
+	 * Lowers health by the incoming damage meta attribute and clamps again
+	 * The meta attribute is stored in a local variable and set to 0 at the start so the correct damage is applied. We also check if the damage is fatal
+	 */
+	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
+	{
+		HandleIncomingDamage(Data);
+	}
+	
+	// Clamps the attribute properly whenever a gameplay effect modifies it
+	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+	{
+		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
+	}
+}
+
 void UComplyAttributeSet::HandleIncomingDamage(const struct FGameplayEffectModCallbackData& Data)
 {
 	const float LocalIncomingDamage = GetIncomingDamage();
@@ -76,26 +96,6 @@ void UComplyAttributeSet::HandleIncomingDamage(const struct FGameplayEffectModCa
 		{
 			Data.Target.GetAvatarActor()->Destroy();
 		}
-	}
-}
-
-void UComplyAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
-{
-	Super::PostGameplayEffectExecute(Data);
-	
-	/** 
-	 * Lowers health by the incoming damage meta attribute and clamps again
-	 * The meta attribute is stored in a local variable and set to 0 at the start so the correct damage is applied. We also check if the damage is fatal
-	 */
-	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
-	{
-		HandleIncomingDamage(Data);
-	}
-	
-	// Clamps the attribute properly whenever a gameplay effect modifies it
-	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
-	{
-		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
 	}
 }
 

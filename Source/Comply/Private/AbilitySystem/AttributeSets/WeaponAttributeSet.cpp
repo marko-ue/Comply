@@ -2,7 +2,6 @@
 
 
 #include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
-
 #include "GameplayEffectExtension.h"
 #include "Net/UnrealNetwork.h"
 

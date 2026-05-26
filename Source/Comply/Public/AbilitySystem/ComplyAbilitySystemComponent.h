@@ -16,22 +16,20 @@ class COMPLY_API UComplyAbilitySystemComponent : public UAbilitySystemComponent
 
 public:
 	UComplyAbilitySystemComponent();
-
-protected:
+	
 	virtual void BeginPlay() override;
 
-public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
+	UFUNCTION(Server, Reliable)
+	void Server_ThrowPlasmaGrenade(FGameplayAbilitySpecHandle AbilityHandle, FVector SpawnLocation, FRotator SpawnRotation, FVector InLaunchVelocity);
+	
+	UFUNCTION(Server, Reliable)
+	void Server_ThrowDecoyGrenade(FGameplayAbilitySpecHandle AbilityHandle, FVector SpawnLocation, FRotator SpawnRotation, FVector InLaunchVelocity);
 	
 	UFUNCTION(Server, Reliable)
 	void Server_PlaceTurret(FGameplayAbilitySpecHandle AbilityHandle, FVector SpawnLocation, FRotator SpawnRotation);
 	
 	UFUNCTION(Server, Reliable)
-	void Server_ThrowGrenade(FGameplayAbilitySpecHandle AbilityHandle, FVector SpawnLocation, FRotator SpawnRotation, FVector InLaunchVelocity);
-	
-	UFUNCTION(Server, Reliable)
 	void Server_PlaceBeacon(FGameplayAbilitySpecHandle AbilityHandle, FVector SpawnLocation, float BeaconLifetime);
-	
-	UFUNCTION(Server, Reliable)
-	void Server_ThrowDecoyGrenade(FGameplayAbilitySpecHandle AbilityHandle, FVector SpawnLocation, FRotator SpawnRotation, FVector InLaunchVelocity);
 };

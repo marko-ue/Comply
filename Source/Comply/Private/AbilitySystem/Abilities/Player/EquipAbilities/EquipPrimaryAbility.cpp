@@ -6,6 +6,7 @@
 #include "GameplayTagContainer.h"
 #include "AbilitySystem/ComplyTags.h"
 
+
 void UEquipPrimaryAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 									const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {

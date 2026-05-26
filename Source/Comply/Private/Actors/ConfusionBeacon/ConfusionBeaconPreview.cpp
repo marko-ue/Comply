@@ -2,36 +2,30 @@
 
 
 #include "Actors/ConfusionBeacon/ConfusionBeaconPreview.h"
-
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 
 
-// Sets default values
 AConfusionBeaconPreview::AConfusionBeaconPreview()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-// Called when the game starts or when spawned
 void AConfusionBeaconPreview::BeginPlay()
 {
 	Super::BeginPlay();
-	
-}
-
-// Called every frame
-void AConfusionBeaconPreview::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	
-	UpdatePosition();
 }
 
 void AConfusionBeaconPreview::InitPreviewData(ACharacter* OwnerChar)
 {
 	OwnerCharacter = OwnerChar;
+}
+
+void AConfusionBeaconPreview::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	
+	UpdatePosition();
 }
 
 void AConfusionBeaconPreview::UpdatePosition()
@@ -100,4 +94,3 @@ void AConfusionBeaconPreview::UpdatePosition()
 		SetActorLocation(NewLocation);
 	}
 }
-

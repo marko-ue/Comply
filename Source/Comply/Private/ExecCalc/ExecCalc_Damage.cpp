@@ -7,9 +7,6 @@
 #include "AbilitySystem/ComplyAbilityTypes.h"
 #include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
 
-struct AuraDamageStatics
-{
-};
 
 UExecCalc_Damage::UExecCalc_Damage()
 {

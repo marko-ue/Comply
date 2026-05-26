@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/Abilities/Player/Disruptor/Primary_Disruptor.h"
 
+
 void UPrimary_Disruptor::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                          const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
                                          const FGameplayEventData* TriggerEventData)
@@ -31,14 +32,14 @@ void UPrimary_Disruptor::PlayMontageAndBindDelegates(const TObjectPtr<UAnimMonta
 	Super::PlayMontageAndBindDelegates(AnimationToPlay);
 }
 
-void UPrimary_Disruptor::OnMontageCancelled()
-{
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
-}
-
 void UPrimary_Disruptor::OnMontageCompleted()
 {
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+}
+
+void UPrimary_Disruptor::OnMontageCancelled()
+{
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 }
 
 void UPrimary_Disruptor::InputReleased(const FGameplayAbilitySpecHandle Handle,

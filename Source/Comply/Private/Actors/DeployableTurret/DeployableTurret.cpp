@@ -41,28 +41,6 @@ UAbilitySystemComponent* ADeployableTurret::GetAbilitySystemComponent() const
 	return ASC;
 }
 
-// When the actor is destroyed, the player will be able to spawn another turret after 30 seconds
-void ADeployableTurret::Destroyed()
-{
-	if (SourceASC)
-	{
-		TWeakObjectPtr<UAbilitySystemComponent> WeakASC = SourceASC;
-		TSubclassOf<UGameplayEffect> EffectClass = RechargeTurretChargeClass;
-
-		FTimerHandle RechargeTimer;
-		GetWorld()->GetTimerManager().SetTimer(RechargeTimer, [WeakASC, EffectClass]()
-		{
-			if (WeakASC.IsValid() && EffectClass)
-			{
-				FGameplayEffectSpecHandle SpecHandle = WeakASC->MakeOutgoingSpec(EffectClass, 1.f, WeakASC->MakeEffectContext());
-				WeakASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-			}
-		}, 30.f, false);
-	}
-
-	Super::Destroyed();
-}
-
 void ADeployableTurret::BeginPlay()
 {
 	Super::BeginPlay();
@@ -135,5 +113,24 @@ void ADeployableTurret::Fire(AActor* TargetActor)
 	SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
 }
 
+// When the actor is destroyed, the player will be able to spawn another turret after 30 seconds
+void ADeployableTurret::Destroyed()
+{
+	if (SourceASC)
+	{
+		TWeakObjectPtr<UAbilitySystemComponent> WeakASC = SourceASC;
+		TSubclassOf<UGameplayEffect> EffectClass = RechargeTurretChargeClass;
 
+		FTimerHandle RechargeTimer;
+		GetWorld()->GetTimerManager().SetTimer(RechargeTimer, [WeakASC, EffectClass]()
+		{
+			if (WeakASC.IsValid() && EffectClass)
+			{
+				FGameplayEffectSpecHandle SpecHandle = WeakASC->MakeOutgoingSpec(EffectClass, 1.f, WeakASC->MakeEffectContext());
+				WeakASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+			}
+		}, 30.f, false);
+	}
 
+	Super::Destroyed();
+}

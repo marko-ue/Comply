@@ -25,6 +25,13 @@ public:
 	
 	virtual void Tick(float DeltaTime) override;
 	
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	
+	FORCEINLINE virtual UAbilitySystemComponent* GetTargetASC() const override { return GetAbilitySystemComponent(); }
+	
+	UPROPERTY(EditAnywhere, Category = "Gameplay Effects")
+	TSubclassOf<UGameplayEffect> RechargeTurretChargeClass;
+	
 	UPROPERTY()
 	float Damage = 100.f;
 	
@@ -34,27 +41,23 @@ public:
 	UPROPERTY()
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
 	
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-
 	UPROPERTY()
 	FGameplayTag DamageTypeTag;
 	
-	FORCEINLINE virtual UAbilitySystemComponent* GetTargetASC() const override { return GetAbilitySystemComponent(); }
-	
 	virtual void Destroyed() override;
-	
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UGameplayEffect> RechargeTurretChargeClass;
 
 protected:
 	virtual void BeginPlay() override;
 	
 private:
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UAbilitySystemComponent> ASC;
+	UPROPERTY(EditAnywhere, Category = "Components")
+	USkeletalMeshComponent* TurretMesh;
 	
-	UPROPERTY()
-	TObjectPtr<UComplyAttributeSet> AttributeSet;
+	UPROPERTY(EditAnywhere, Category = "Components")
+	UArrowComponent* ArrowComp;
+	
+	UPROPERTY(EditAnywhere, Category = "Components")
+	USphereComponent* SphereComp;
 	
 	UFUNCTION()
 	void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -64,25 +67,22 @@ private:
 	void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	
-	UPROPERTY()
-	TArray<AActor*> TargetsInRange;
-	
-	FTimerHandle FireTimerHandle;
-	
-	UPROPERTY()
-	AActor* CurrentTarget = nullptr;
-	
 	UFUNCTION()
 	void TryFire();
 	
 	void Fire(AActor* TargetActor);
 	
-	UPROPERTY(EditAnywhere)
-	USkeletalMeshComponent* TurretMesh;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UAbilitySystemComponent> ASC;
 	
-	UPROPERTY(EditAnywhere)
-	UArrowComponent* ArrowComp;
+	UPROPERTY()
+	TObjectPtr<UComplyAttributeSet> AttributeSet;
 	
-	UPROPERTY(EditAnywhere)
-	USphereComponent* SphereComp;
+	UPROPERTY()
+	TArray<AActor*> TargetsInRange;
+	
+	UPROPERTY()
+	AActor* CurrentTarget = nullptr;
+	
+	FTimerHandle FireTimerHandle;
 };

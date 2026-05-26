@@ -9,13 +9,8 @@
 #include "AbilitySystem/AbilityTasks/HitscanTargetData.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/Abilities/Player/Disruptor/Primary_Disruptor.h"
-#include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
 #include "Character/ComplyCharacterBase.h"
 #include "Character/ComplyPlayerCharacter.h"
-
-
-class UComplyAttributeSet;
-
 
 // Traces to the middle of the screen
 // This function is called in HitscanTargetData for transferring hitscan data from client to server
@@ -134,13 +129,38 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 	}
 }
 
-void URangedWeaponAbilityBase::EndAbility(const FGameplayAbilitySpecHandle Handle,
-                                          const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-                                          bool bReplicateEndAbility, bool bWasCancelled)
+bool URangedWeaponAbilityBase::Fire()
 {
-	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+	// Find the active ranged weapon to get its current ammo
+	const AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
+	ActiveWeapon = Character->GetEquippedPrimaryWeapon();
+	
+	bool bFound = false;
+	float CurrentAmmo = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(ActiveWeapon->GetCurrentAmmoAttribute(), bFound);
+	if (CurrentAmmo <= 0.f)
+	{
+		GetAbilitySystemComponentFromActorInfo()->TryActivateAbilityByClass(ReloadAbilityClass);
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+		return false;
+	}
+	
+	// Reduce ammo in mag by 1
+	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
+	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(ReduceAmmoEffectClass, 1.f, ContextHandle);
+	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	
+	// Any previous running hit scan target data tasks must be ended so it's not triggered for each accumulated task
+	if (HitscanTargetDataTask)
+	{
+		HitscanTargetDataTask->EndTask();
+	}
+    
+	HitscanTargetDataTask = UHitscanTargetData::CreateHitScanData(this);
+	HitscanTargetDataTask->ValidData.AddDynamic(this, &ThisClass::OnTargetDataReceived);
+	HitscanTargetDataTask->ReadyForActivation();
+	
+	return true;
 }
-
 
 void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTargetDataHandle& DataHandle)
 {
@@ -173,39 +193,6 @@ void URangedWeaponAbilityBase::OnFireDelayFinished()
 	{
 		Fire();
 	}
-}
-
-bool URangedWeaponAbilityBase::Fire()
-{
-	// Find the active ranged weapon to get its current ammo
-	const AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
-	ActiveWeapon = Character->GetEquippedPrimaryWeapon();
-	
-	bool bFound = false;
-	float CurrentAmmo = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(ActiveWeapon->GetCurrentAmmoAttribute(), bFound);
-	if (CurrentAmmo <= 0.f)
-	{
-		GetAbilitySystemComponentFromActorInfo()->TryActivateAbilityByClass(ReloadAbilityClass);
-		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-		return false;
-	}
-	
-	// Reduce ammo in mag by 1
-	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
-	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(ReduceAmmoEffectClass, 1.f, ContextHandle);
-	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-	
-	// Any previous running hit scan target data tasks must be ended so it's not triggered for each accumulated task
-	if (HitscanTargetDataTask)
-	{
-		HitscanTargetDataTask->EndTask();
-	}
-    
-	HitscanTargetDataTask = UHitscanTargetData::CreateHitScanData(this);
-	HitscanTargetDataTask->ValidData.AddDynamic(this, &ThisClass::OnTargetDataReceived);
-	HitscanTargetDataTask->ReadyForActivation();
-	
-	return true;
 }
 
 void URangedWeaponAbilityBase::PlayAnimationBasedOnState()
@@ -248,4 +235,11 @@ void URangedWeaponAbilityBase::PlayMontageAndBindDelegates(const TObjectPtr<UAni
 	PlayActivationMontageTask->OnInterrupted.AddDynamic(this, &URangedWeaponAbilityBase::OnMontageCancelled);
 	
 	PlayActivationMontageTask->ReadyForActivation();
+}
+
+void URangedWeaponAbilityBase::EndAbility(const FGameplayAbilitySpecHandle Handle,
+										  const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+										  bool bReplicateEndAbility, bool bWasCancelled)
+{
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

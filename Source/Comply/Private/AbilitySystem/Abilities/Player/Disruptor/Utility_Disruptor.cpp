@@ -2,13 +2,12 @@
 
 
 #include "AbilitySystem/Abilities/Player/Disruptor/Utility_Disruptor.h"
-
 #include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
-#include "Actors/ConfusionBeacon/ConfusionBeacon.h"
 #include "Actors/ConfusionBeacon/ConfusionBeaconPreview.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
+
 
 void UUtility_Disruptor::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                          const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,

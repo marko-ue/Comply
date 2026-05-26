@@ -2,7 +2,6 @@
 
 
 #include "Actors/DeployableTurret/DeployableTurretPreview.h"
-
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -12,16 +11,16 @@ ADeployableTurretPreview::ADeployableTurretPreview()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void ADeployableTurretPreview::InitPreviewData(ACharacter* OwnerChar)
-{
-	OwnerCharacter = OwnerChar;
-}
-
 void ADeployableTurretPreview::BeginPlay()
 {
 	Super::BeginPlay();
 	
 	FindComponentByClass<USkeletalMeshComponent>()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+}
+
+void ADeployableTurretPreview::InitPreviewData(ACharacter* OwnerChar)
+{
+	OwnerCharacter = OwnerChar;
 }
 
 void ADeployableTurretPreview::Tick(float DeltaTime)

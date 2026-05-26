@@ -32,86 +32,83 @@ public:
 	void TraceToCrosshair(FHitResult& TraceHitResult, const float TraceLength, bool& OutPassedThroughShield);
 	void PerformShotgunTraces(TArray<FHitResult>& OutHitResults, const int32 NumPellets, const float TraceLength, bool& OutPassedThroughShield);
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Animations")
 	TObjectPtr<UAnimMontage> AbilityActivationMontageHip;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Animations")
 	TObjectPtr<UAnimMontage> AbilityActivationMontageIronsights;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Animations")
 	TObjectPtr<UAnimMontage> ReloadMontage;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Animations")
+	TObjectPtr<UAnimMontage> InsertShellMontage;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects|Reloading")
 	TSubclassOf<UGameplayEffect> ReduceAmmoEffectClass;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects|Reloading")
 	TSubclassOf<UGameplayEffect> ReduceReserveAmmoEffectClass;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects|Reloading")
+	TSubclassOf<UGameplayAbility> ReloadAbilityClass;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects|Reloading")
+	TSubclassOf<UGameplayEffect> ReloadEffectClass;
+	
+	UPROPERTY(EditAnywhere, Category = "Ability Properties|Trace")
 	float TraceDistance = 10000.f;
 	
 	// This will be a scalable float in the future for upgrades
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Ability Properties")
 	float FireInterval = 60.f;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Ability Properties|Types")
 	ERangedWeaponType RangedWeaponType = ERangedWeaponType::Automatic;
 	
-	UPROPERTY(EditAnywhere, Category = "Upgrades")
+	UPROPERTY(EditAnywhere, Category = "Ability Properties|Upgrades")
 	float ShieldShotDamageMultiplier = 1.5f;
-
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UGameplayAbility> ReloadAbilityClass;
-	
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UGameplayEffect> ReloadEffectClass;
 	
 	// If the ranged weapon uses a simple line trace to the crosshair
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Ability Properties|Types")
 	bool bUsesSingleCrosshairTrace = true;
 	
-	// Each weapon will return its own data
-	// This is mostly used to handle reloading more cleanly
+	// Derived weapon classes override these to expose their own attributes and tags
+	// The base class uses them to handle reloading generically
 	FORCEINLINE virtual FGameplayAttribute GetCurrentAmmoAttribute() const { return FGameplayAttribute(); }
 	FORCEINLINE virtual FGameplayAttribute GetMaxAmmoAttribute() const { return FGameplayAttribute(); }
 	FORCEINLINE virtual FGameplayTag GetReduceReserveAmmoTag() const { return FGameplayTag(); }
 	FORCEINLINE virtual FGameplayAttribute GetCurrentReserveAmmoAttribute() const { return FGameplayAttribute(); }
 	FORCEINLINE virtual bool DoesWeaponUseCrosshairTrace() const { return bUsesSingleCrosshairTrace; }
-	
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UAnimMontage> InsertShellMontage;
 
 protected:
-	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+	virtual bool Fire();
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Ability Properties|Trace")
 	FVector Start;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Ability Properties|Trace")
 	FVector End;
 	
 	UFUNCTION()
 	virtual void OnTargetDataReceived(const FGameplayAbilityTargetDataHandle& DataHandle);
 
-	/*
-	 * Functions for the delay task and firing
-	 */
+	// Function for the delay task
 	UFUNCTION()
 	virtual void OnFireDelayFinished();
 	
-	virtual bool Fire();
-	// End
+	UPROPERTY()
+	TObjectPtr<UAbilityTask_WaitDelay> FireDelayTask;
 	
 	virtual void PlayMontageAndBindDelegates(const TObjectPtr<UAnimMontage>& AnimationToPlay);
 	virtual void PlayAnimationBasedOnState();
 	
-	UPROPERTY()
-	TObjectPtr<UAbilityTask_WaitDelay> FireDelayTask;
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 private:
 	UPROPERTY()
-	UHitscanTargetData* HitscanTargetDataTask;
+	TObjectPtr<URangedWeaponAbilityBase> ActiveWeapon;
 	
 	UPROPERTY()
-	URangedWeaponAbilityBase* ActiveWeapon;
+	TObjectPtr<UHitscanTargetData> HitscanTargetDataTask;
 };

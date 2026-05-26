@@ -29,7 +29,6 @@ public:
 		return NewContext;
 	}
 
-
 public:
 	UPROPERTY()
 	bool bHitThroughShield = false;

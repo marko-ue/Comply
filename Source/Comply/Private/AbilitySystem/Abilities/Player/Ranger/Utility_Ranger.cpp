@@ -5,6 +5,7 @@
 #include "Actors/ShieldDome/ShieldDomePreview.h"
 #include "GameFramework/Character.h"
 
+
 void UUtility_Ranger::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
@@ -67,17 +68,6 @@ void UUtility_Ranger::ConfirmPlacement()
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
-void UUtility_Ranger::CancelPlacement()
-{
-	if (SpawnedShieldPreviewActor)
-	{
-		SpawnedShieldPreviewActor->Destroy();
-		SpawnedShieldPreviewActor = nullptr;
-	}
-
-	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, true);
-}
-
 void UUtility_Ranger::TraceAndSpawnShield()
 {
 	AActor* Avatar = GetCurrentActorInfo()->AvatarActor.Get();
@@ -115,7 +105,7 @@ void UUtility_Ranger::TraceAndSpawnShield()
 	}
 }
 
-void UUtility_Ranger::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+void UUtility_Ranger::CancelPlacement()
 {
 	if (SpawnedShieldPreviewActor)
 	{
@@ -123,7 +113,7 @@ void UUtility_Ranger::EndAbility(const FGameplayAbilitySpecHandle Handle, const 
 		SpawnedShieldPreviewActor = nullptr;
 	}
 
-	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, true);
 }
 
 void UUtility_Ranger::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility)
@@ -137,4 +127,15 @@ void UUtility_Ranger::CancelAbility(const FGameplayAbilitySpecHandle Handle, con
 	}
 
 	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
+}
+
+void UUtility_Ranger::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+{
+	if (SpawnedShieldPreviewActor)
+	{
+		SpawnedShieldPreviewActor->Destroy();
+		SpawnedShieldPreviewActor = nullptr;
+	}
+
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

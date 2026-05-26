@@ -5,6 +5,7 @@
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
 
+
 AComplyEnemyCharacter::AComplyEnemyCharacter()
 {
 	ASC = CreateDefaultSubobject<UComplyAbilitySystemComponent>(TEXT("AbilitySystemComponent"));

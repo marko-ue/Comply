@@ -2,11 +2,11 @@
 
 
 #include "AbilitySystem/Abilities/Player/Enforcer/Utility_Enforcer.h"
-
 #include "Abilities/Tasks/AbilityTask_ApplyRootMotionMoveToForce.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+
 
 void UUtility_Enforcer::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                         const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
@@ -61,22 +61,6 @@ void UUtility_Enforcer::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	MoveTask->OnTimedOutAndDestinationReached.AddDynamic(this, &UUtility_Enforcer::OnPullReachedDestination);
 	MoveTask->OnTimedOut.AddDynamic(this, &UUtility_Enforcer::OnPullTimedOut);
 	MoveTask->ReadyForActivation();
-}
-
-// Ensuring cleanup whenever the ability ends. Also ensures cleanup happens no matter how the ability was ended
-void UUtility_Enforcer::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
-{
-	if (ACharacter* Character = Cast<ACharacter>(ActorInfo->AvatarActor.Get()))
-	{
-		UCharacterMovementComponent* CMC = Character->GetCharacterMovement();
-		if (CMC && CMC->MovementMode == MOVE_Flying)
-		{
-			CMC->SetMovementMode(MOVE_Falling);
-		}
-	}
-
-	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
 bool UUtility_Enforcer::PerformGrappleTrace(FHitResult& OutHitResult, float GrappleRange)
@@ -145,4 +129,20 @@ void UUtility_Enforcer::FinishGrapple()
 
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(),
 			   GetCurrentActivationInfo(), true, false);
+}
+
+// Ensuring cleanup whenever the ability ends
+void UUtility_Enforcer::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+{
+	if (ACharacter* Character = Cast<ACharacter>(ActorInfo->AvatarActor.Get()))
+	{
+		UCharacterMovementComponent* CMC = Character->GetCharacterMovement();
+		if (CMC && CMC->MovementMode == MOVE_Flying)
+		{
+			CMC->SetMovementMode(MOVE_Falling);
+		}
+	}
+
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

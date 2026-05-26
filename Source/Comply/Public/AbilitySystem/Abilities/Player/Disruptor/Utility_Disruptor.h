@@ -17,10 +17,10 @@ class COMPLY_API UUtility_Disruptor : public UUtilityAbilityBase
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Actors")
 	TSubclassOf<AConfusionBeacon> BeaconActorClass;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Actors")
 	TSubclassOf<AConfusionBeaconPreview> BeaconPreviewActorClass;
 	
 	UPROPERTY()
@@ -28,13 +28,14 @@ public:
 	
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 	
 	virtual void Use() override;
 	
 private:
 	// This will be a scalable float in the future for upgrades
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Ability Properties")
 	float BeaconLifetime = 20.f;
 	
 	void SpawnPreview(const FGameplayAbilityActorInfo* ActorInfo);

@@ -15,15 +15,16 @@ public:
 	ADeployableTurretPreview();
 	
 	void InitPreviewData(ACharacter* OwnerChar);
-	void UpdatePosition();
 	
 	virtual void Tick(float DeltaTime) override;
 	
+	void UpdatePosition();
+	
 	bool bCanPlace = false;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Materials")
 	TObjectPtr<UMaterialInterface> ValidMaterial;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Materials")
 	TObjectPtr<UMaterialInterface> InvalidMaterial;
 
 protected:

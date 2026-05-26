@@ -7,7 +7,7 @@
 #include "EquipPrimaryAbility.generated.h"
 
 /**
- * Ability that handles activating/deactivating different abilities based on what the player chooses to equip
+ * 
  */
 UCLASS()
 class COMPLY_API UEquipPrimaryAbility : public UGameplayAbility

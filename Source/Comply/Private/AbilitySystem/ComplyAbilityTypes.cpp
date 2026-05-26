@@ -103,8 +103,6 @@ bool FComplyGameplayEffectContext::NetSerialize(FArchive& Ar, class UPackageMap*
 		ShieldDamageMultiplier = 1.f;
 	}
 	
-	//Ar << ShieldDamageMultiplier;
-	
 	if (Ar.IsLoading())
 	{
 		AddInstigator(Instigator.Get(), EffectCauser.Get()); // Just to initialize InstigatorAbilitySystemComponent

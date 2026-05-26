@@ -13,6 +13,7 @@
 #include "Framework/GameState/ComplyGameStateBase.h"
 #include "Net/UnrealNetwork.h"
 
+
 AComplyPlayerCharacter::AComplyPlayerCharacter()
 {
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
@@ -23,7 +24,11 @@ AComplyPlayerCharacter::AComplyPlayerCharacter()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;
-	
+}
+
+void AComplyPlayerCharacter::BeginPlay()
+{
+	Super::BeginPlay();
 }
 
 void AComplyPlayerCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -33,19 +38,22 @@ void AComplyPlayerCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimePr
 	DOREPLIFETIME(AComplyPlayerCharacter, EquippedPrimaryWeaponClass);
 }
 
-void AComplyPlayerCharacter::Tick(float DeltaTime)
+void AComplyPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	Super::Tick(DeltaTime);
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	
-	bIsAiming ? ZoomIn(DeltaTime) : ZoomOut(DeltaTime);
-}
-
-UAbilitySystemComponent* AComplyPlayerCharacter::GetAbilitySystemComponent() const
-{
-	AComplyPlayerState* ComplyPlayerState = Cast<AComplyPlayerState>(GetPlayerState());
-	if (!IsValid(ComplyPlayerState)) return nullptr;
-	
-	return ComplyPlayerState->GetAbilitySystemComponent();
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Started, this, &ThisClass::PrimaryActionPressed);
+		EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Completed, this, &ThisClass::PrimaryActionReleased);
+		EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Started, this, &ThisClass::SecondaryActionPressed);
+		EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Completed, this, &ThisClass::SecondaryActionReleased);
+		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Started, this, &ThisClass::ReloadActionPressed);
+		EnhancedInputComponent->BindAction(CancelPreviewAction, ETriggerEvent::Started, this, &ThisClass::CancelPreviewActionPressed);
+		EnhancedInputComponent->BindAction(EquipPrimaryAction, ETriggerEvent::Started, this, &ThisClass::EquipPrimaryActionPressed);
+		EnhancedInputComponent->BindAction(EquipUtilityAction, ETriggerEvent::Started, this, &ThisClass::EquipUtilityActionPressed);
+		EnhancedInputComponent->BindAction(EquipThrowableAction, ETriggerEvent::Started, this, &ThisClass::EquipThrowableActionPressed);
+	}
 }
 
 // For the server, ASC ability actor info is initialized here
@@ -88,6 +96,21 @@ void AComplyPlayerCharacter::OnRep_PlayerState()
 		EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AComplyPlayerCharacter::OnDistractedTagChanged);
 }
 
+void AComplyPlayerCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	
+	bIsAiming ? ZoomIn(DeltaTime) : ZoomOut(DeltaTime);
+}
+
+UAbilitySystemComponent* AComplyPlayerCharacter::GetAbilitySystemComponent() const
+{
+	AComplyPlayerState* ComplyPlayerState = Cast<AComplyPlayerState>(GetPlayerState());
+	if (!IsValid(ComplyPlayerState)) return nullptr;
+	
+	return ComplyPlayerState->GetAbilitySystemComponent();
+}
+
 URangedWeaponAbilityBase* AComplyPlayerCharacter::GetEquippedPrimaryWeapon() const
 {
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
@@ -103,30 +126,6 @@ URangedWeaponAbilityBase* AComplyPlayerCharacter::GetEquippedPrimaryWeapon() con
 void AComplyPlayerCharacter::SetEquippedPrimaryWeapon(TSubclassOf<URangedWeaponAbilityBase> NewWeaponClass)
 {
 	EquippedPrimaryWeaponClass = NewWeaponClass;
-}
-
-void AComplyPlayerCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-void AComplyPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	
-	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
-	{
-		EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Started, this, &ThisClass::PrimaryActionPressed);
-		EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Completed, this, &ThisClass::PrimaryActionReleased);
-		EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Started, this, &ThisClass::SecondaryActionPressed);
-		EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Completed, this, &ThisClass::SecondaryActionReleased);
-		EnhancedInputComponent->BindAction(UseUtilityAction, ETriggerEvent::Started, this, &ThisClass::UseUtilityActionPressed);
-		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Started, this, &ThisClass::ReloadActionPressed);
-		EnhancedInputComponent->BindAction(CancelPreviewAction, ETriggerEvent::Started, this, &ThisClass::CancelPreviewActionPressed);
-		EnhancedInputComponent->BindAction(EquipPrimaryAction, ETriggerEvent::Started, this, &ThisClass::EquipPrimaryActionPressed);
-		EnhancedInputComponent->BindAction(EquipUtilityAction, ETriggerEvent::Started, this, &ThisClass::EquipUtilityActionPressed);
-		EnhancedInputComponent->BindAction(EquipThrowableAction, ETriggerEvent::Started, this, &ThisClass::EquipThrowableActionPressed);
-	}
 }
 
 void AComplyPlayerCharacter::PrimaryActionPressed()
@@ -212,29 +211,6 @@ void AComplyPlayerCharacter::SecondaryActionReleased()
 	}
 }
 
-/* Deprecated - utility activation now handled via primary input */
-void AComplyPlayerCharacter::UseUtilityActionPressed()
-{
-	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
-	{
-		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::Utility))
-		{
-			// If the ability is already active, confirm the input
-			// Confirming the input lets the ability continue with its functionality, the preview will now be removed
-			if (Spec.IsActive())
-			{
-				GetAbilitySystemComponent()->LocalInputConfirm();
-			}
-			else
-			{
-				GetAbilitySystemComponent()->TryActivateAbility(Spec.Handle);
-			}
-			
-			break;
-		}
-	}
-}
-
 void AComplyPlayerCharacter::ReloadActionPressed()
 {
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
@@ -278,11 +254,6 @@ void AComplyPlayerCharacter::EquipThrowableActionPressed()
 	GetAbilitySystemComponent()->TryActivateAbilityByClass(EquipThrowableAbilityClass);
 }
 
-void AComplyPlayerCharacter::OnAimingTagChanged(const FGameplayTag Tag, int32 NewCount)
-{
-	bIsAiming = NewCount > 0;
-}
-
 void AComplyPlayerCharacter::ZoomIn(float DeltaTime)
 {
 	if (!IsLocallyControlled()) return;
@@ -297,6 +268,11 @@ void AComplyPlayerCharacter::ZoomOut(float DeltaTime)
 	UCameraComponent* CameraComp = FindComponentByClass<UCameraComponent>();
 	CameraComp->FieldOfView = FMath::FInterpTo(
 		CameraComp->FieldOfView, DefaultFOV, DeltaTime, ZoomSpeed);
+}
+
+void AComplyPlayerCharacter::OnAimingTagChanged(const FGameplayTag Tag, int32 NewCount)
+{
+	bIsAiming = NewCount > 0;
 }
 
 // If friendly fire is on and the distracted tag was applied by the decoy grenade, apply flashbang effect to affected players

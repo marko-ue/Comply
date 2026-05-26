@@ -17,10 +17,10 @@ class COMPLY_API UHitscanTargetData : public UAbilityTask
 	GENERATED_BODY()
 	
 public:
-	void SendHitscanTargetData(float TraceDistance);
-	
 	UFUNCTION(BlueprintCallable, Category="Ability|Tasks", meta = (DisplayName = "HitscanTargetData", HidePin = "OwningAbility", DefaultToSelf = "OwningAbility", BlueprintInternalUseOnly = "true"))
 	static UHitscanTargetData* CreateHitScanData(UGameplayAbility* OwningAbility);
+	
+	void SendHitscanTargetData(float TraceDistance);
 	
 	UPROPERTY(BlueprintAssignable)
 	FHitscanTargetDataSignature ValidData;
@@ -29,8 +29,10 @@ public:
 	UPROPERTY()
 	bool bPassedThroughShield;
 	
-private:
+protected:
 	virtual void Activate() override;
+	
+private:
 	void OnTargetDataReplicatedCallback(const FGameplayAbilityTargetDataHandle& InDataHandle, FGameplayTag ActivationTag);
 	
 	FGameplayAbilityTargetDataHandle DataHandle;

@@ -8,7 +8,7 @@
 
 class URangedWeaponAbilityBase;
 /**
- * This ability is called on ranged weapons whenever reloading
+ * This ability is called on some ranged weapons whenever reloading
  */
 UCLASS()
 class COMPLY_API UReloadAbility : public UComplyAbilityBase
@@ -16,7 +16,7 @@ class COMPLY_API UReloadAbility : public UComplyAbilityBase
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
 	TSubclassOf<UGameplayEffect> ReloadStateEffectClass;
 	
 	UPROPERTY()
@@ -24,6 +24,7 @@ public:
 
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	
 	void HandleReload();
 	
 private:

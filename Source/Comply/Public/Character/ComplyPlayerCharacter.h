@@ -24,11 +24,9 @@ class COMPLY_API AComplyPlayerCharacter : public AComplyCharacterBase, public IP
 public:
 	AComplyPlayerCharacter();
 	
+	virtual void BeginPlay() override;
+	
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
-	
-	virtual void Tick(float DeltaTime) override;
-	
-	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	
@@ -37,118 +35,103 @@ public:
 	
 	FORCEINLINE virtual UAbilitySystemComponent* GetTargetASC() const override { return GetAbilitySystemComponent(); }
 	
-	/*
-	 * Zooming in/out
-	 */
-	
-	UPROPERTY(EditAnywhere, Category = "Camera")
-	float DefaultFOV = 90.f;
-
-	UPROPERTY(EditAnywhere, Category = "Camera")
-	float AimFOV = 60.f;
-
-	UPROPERTY(EditAnywhere, Category = "Camera")
-	float ZoomSpeed = 10.f;
-	
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UGameplayAbility> ApplyAimEffectAbilityClass;
-	
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UGameplayAbility> ApplyFireEffectAbilityClass;
-	
-	bool bFireInputHeld = false;
+	virtual void Tick(float DeltaTime) override;
 	
 	UPROPERTY(Replicated)
 	TSubclassOf<URangedWeaponAbilityBase> EquippedPrimaryWeaponClass;
 	
-	URangedWeaponAbilityBase* GetEquippedPrimaryWeapon() const;
 	void SetEquippedPrimaryWeapon(TSubclassOf<URangedWeaponAbilityBase> NewWeaponClass);
+	URangedWeaponAbilityBase* GetEquippedPrimaryWeapon() const;
 	
-	UPROPERTY(EditDefaultsOnly)
+	// Zoom
+	UPROPERTY(EditAnywhere, Category = "Zoom")
+	float DefaultFOV = 90.f;
+
+	UPROPERTY(EditAnywhere, Category = "Zoom")
+	float AimFOV = 60.f;
+
+	UPROPERTY(EditAnywhere, Category = "Zoom")
+	float ZoomSpeed = 10.f;
+	// End Zoom
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilities|Effect Application")
+	TSubclassOf<UGameplayAbility> ApplyAimEffectAbilityClass;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilities|Effect Application")
+	TSubclassOf<UGameplayAbility> ApplyFireEffectAbilityClass;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilities|Equip")
 	TSubclassOf<UGameplayAbility> EquipPrimaryAbilityClass;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilities|Equip")
 	TSubclassOf<UGameplayAbility> EquipUtilityAbilityClass;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilities|Equip")
 	TSubclassOf<UGameplayAbility> EquipThrowableAbilityClass;
 	
-protected:
-	virtual void BeginPlay() override;
+	UPROPERTY(VisibleAnywhere)
+	bool bFireInputHeld = false;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USpringArmComponent> SpringArm;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UCameraComponent> Camera;
 	
-	/* 
-	 * Input
-	*/
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	
-	UPROPERTY(EditAnywhere, Category="Input")
+	// Input
+	UPROPERTY(EditAnywhere, Category="Input|Actions")
 	UInputAction* PrimaryAction;
 	
-	UPROPERTY(EditAnywhere, Category="Input")
+	UPROPERTY(EditAnywhere, Category="Input|Actions")
 	UInputAction* SecondaryAction;
 	
-	UPROPERTY(meta=(DeprecatedProperty, DeprecationMessage="PrimaryAction now used for activating utilities"), EditAnywhere, Category="Input")
-	UInputAction* UseUtilityAction;
-	
-	UPROPERTY(EditAnywhere, Category="Input")
+	UPROPERTY(EditAnywhere, Category="Input|Actions")
 	UInputAction* ReloadAction;
 	
-	UPROPERTY(EditAnywhere, Category="Input")
+	UPROPERTY(EditAnywhere, Category="Input|Actions")
 	UInputAction* CancelPreviewAction;
 	
-	UPROPERTY(EditAnywhere, Category="Input")
+	UPROPERTY(EditAnywhere, Category="Input|Actions")
 	UInputAction* EquipPrimaryAction;
 	
-	UPROPERTY(EditAnywhere, Category="Input")
+	UPROPERTY(EditAnywhere, Category="Input|Actions")
 	UInputAction* EquipUtilityAction;
 	
-	UPROPERTY(EditAnywhere, Category="Input")
+	UPROPERTY(EditAnywhere, Category="Input|Actions")
 	UInputAction* EquipThrowableAction;
-	
-	// Called for primary abilities
+
 	void PrimaryActionPressed();
 	void PrimaryActionReleased();
-	
-	// Called for secondary weapon actions
+
 	void SecondaryActionPressed();
 	void SecondaryActionReleased();
-	
-	// Called for utility
-	[[deprecated("Utility is now activated with primary input")]]
-	void UseUtilityActionPressed();
-	
-	// Called for reloading
+
 	void ReloadActionPressed();
 	
 	// Called for cancelling previews of certain abilities (cancels abilities)
 	void CancelPreviewActionPressed();
-	
-	// Called for selecting the primary weapon
+
 	void EquipPrimaryActionPressed();
-	
-	// Called for selecting the utility
+
 	void EquipUtilityActionPressed();
-	
-	// Called for selecting the throwable
+
 	void EquipThrowableActionPressed();
+	// End Input
 	
 private:
-	/*
-	 * Aiming and zooming in/out
-	 */
+	// Zoom
+	void ZoomIn(float DeltaTime);
+	void ZoomOut(float DeltaTime);
+	
 	// Whenever the tag for the Aiming State changes, call this function which will set a boolean to true or false depending on NewCount (whether it exists)
 	UFUNCTION()
 	void OnAimingTagChanged(const FGameplayTag Tag, int32 NewCount);
 	
-	void ZoomIn(float DeltaTime);
-	void ZoomOut(float DeltaTime);
-	
 	bool bIsAiming = false;
+	// End Zoom
 	
 	UFUNCTION()
 	void OnDistractedTagChanged(const FGameplayTag Tag, int32 NewCount);

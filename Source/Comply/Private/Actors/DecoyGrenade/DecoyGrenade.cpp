@@ -9,7 +9,6 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Engine/OverlapResult.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "Interface/Enemy/EnemyInterface.h"
 
 
 ADecoyGrenade::ADecoyGrenade()
@@ -39,22 +38,6 @@ void ADecoyGrenade::BeginPlay()
 void ADecoyGrenade::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-}
-
-void ADecoyGrenade::Destroyed()
-{
-	for (int32 i = 0; i < AffectedASCs.Num(); i++)
-	{
-		// Remove the distracted effect from all enemies as the grenade is now destroyed
-		if (AffectedASCs[i]) AffectedASCs[i]->RemoveActiveGameplayEffect(DistractedEffectHandles[i]);
-	}
-	
-	for (int32 i =0; i < AffectedBBs.Num(); i++)
-	{
-		// Clear the value of DistractionLocation so enemies can go back to chasing the player
-		if (AffectedBBs[i]) AffectedBBs[i]->ClearValue("DistractionLocation");
-	}
-	Super::Destroyed();
 }
 
 void ADecoyGrenade::Explode()
@@ -104,4 +87,20 @@ void ADecoyGrenade::Explode()
 	// The grenade will get destroyed after its lifetime passes, and it will stop pulling enemies at this point
 	GetWorld()->GetTimerManager().SetTimer(ExplosionTimerHandle, FTimerDelegate::CreateLambda([this]()
 	{ Destroy(); }), DecoyGrenadeLifetime, false);
+}
+
+void ADecoyGrenade::Destroyed()
+{
+	for (int32 i = 0; i < AffectedASCs.Num(); i++)
+	{
+		// Remove the distracted effect from all enemies as the grenade is now destroyed
+		if (AffectedASCs[i]) AffectedASCs[i]->RemoveActiveGameplayEffect(DistractedEffectHandles[i]);
+	}
+	
+	for (int32 i =0; i < AffectedBBs.Num(); i++)
+	{
+		// Clear the value of DistractionLocation so enemies can go back to chasing the player
+		if (AffectedBBs[i]) AffectedBBs[i]->ClearValue("DistractionLocation");
+	}
+	Super::Destroyed();
 }

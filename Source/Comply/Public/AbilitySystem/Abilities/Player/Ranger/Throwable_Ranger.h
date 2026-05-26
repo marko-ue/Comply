@@ -27,21 +27,21 @@ public:
 	UPROPERTY()
 	TObjectPtr<APlasmaGrenadePreview> SpawnedGrenadePreviewActor;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
 	TSubclassOf<UGameplayEffect> CostEffectClass;
 	
 	// This will be a scalable float in the future for upgrades
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Ability Properties")
 	float ExplosionRadius = 1000.f;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Actors")
 	TSubclassOf<APlasmaGrenade> GrenadeActorClass;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Actors")
+	TSubclassOf<AActor> GrenadePreviewActorClass;
 	
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	
 	virtual void SpawnPreview() override;
-	
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<AActor> GrenadePreviewActorClass;
 };

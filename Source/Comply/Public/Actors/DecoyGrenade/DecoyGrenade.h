@@ -23,22 +23,14 @@ public:
 	
 	virtual void Tick(float DeltaTime) override;
 	
-	virtual void Destroyed() override;
-	
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UGameplayEffect> ApplyDistractedEffectClass;
-	
-	UPROPERTY()
-	float PullRadius = 1000.f;
-	
-	UPROPERTY()
-	float DecoyGrenadeLifetime = 20.f;
-	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Components")
 	UProjectileMovementComponent* ProjectileMovementComp;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Components")
 	UStaticMeshComponent* GrenadeMesh;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
+	TSubclassOf<UGameplayEffect> ApplyDistractedEffectClass;
 	
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> SourceASC;
@@ -48,15 +40,19 @@ public:
 
 	UPROPERTY()
 	FGameplayTag DamageTypeTag;
+	
+	UPROPERTY()
+	float PullRadius = 1000.f;
+	
+	UPROPERTY()
+	float DecoyGrenadeLifetime = 20.f;
+	
+	virtual void Destroyed() override;
 
 protected:
 	virtual void BeginPlay() override;
 
 private:
-	FTimerHandle ExplosionTimerHandle;
-	
-	FTimerHandle DestroyDelayTimerHandle;
-	
 	UFUNCTION()
 	void Explode();
 	
@@ -66,8 +62,13 @@ private:
 	UPROPERTY()
 	TArray<UAbilitySystemComponent*> AffectedASCs;
 	
-	TArray<FActiveGameplayEffectHandle> DistractedEffectHandles;
-	
 	UPROPERTY()
 	TArray<UBlackboardComponent*> AffectedBBs;
+	
+	UPROPERTY()
+	TArray<FActiveGameplayEffectHandle> DistractedEffectHandles;
+	
+	FTimerHandle ExplosionTimerHandle;
+	
+	FTimerHandle DestroyDelayTimerHandle;
 };

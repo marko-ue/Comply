@@ -17,13 +17,14 @@ class COMPLY_API UUtility_Enforcer : public UUtilityAbilityBase
 	
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Grapple")
+	UPROPERTY(EditDefaultsOnly, Category = "Ability Properties")
 	float PullDuration = 0.8f;
 	
 	// Curve for the path (hook swing feel)
-	UPROPERTY(EditDefaultsOnly, Category = "Grapple")
+	UPROPERTY(EditDefaultsOnly, Category = "Ability Properties")
 	UCurveVector* PathOffsetCurve = nullptr;
 	
 private:

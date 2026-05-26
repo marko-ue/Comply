@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
 #include "ComplyCharacter.h"
 #include "GameplayTagContainer.h"
@@ -37,11 +36,12 @@ class COMPLY_API AComplyCharacterBase : public AComplyCharacter, public IAbility
 public:
 	AComplyCharacterBase();
 	
+	virtual void BeginPlay() override;
+	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 	// Applies the gameplay effect that initializes attribute values 
 	// The function will be implemented here and called on child classes after we know the ASC is valid (server only)
@@ -53,17 +53,15 @@ protected:
 	void ActivateInitialAbility();
 
 public:	
-	virtual void Tick(float DeltaTime) override;
-	
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
 	TSubclassOf<UGameplayEffect> InitializeAttributesEffect;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
 	TSubclassOf<UGameplayEffect> InitializeWeaponAttributesEffect;
 	
+	virtual void Tick(float DeltaTime) override;
+	
 private:
-	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilities")
 	TArray<FAbilitySet> StartupAbilities;
 };

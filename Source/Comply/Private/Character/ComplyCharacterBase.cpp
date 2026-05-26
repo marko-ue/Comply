@@ -8,12 +8,10 @@
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "Character/ComplyPlayerCharacter.h"
 
-// Sets default values
+
 AComplyCharacterBase::AComplyCharacterBase()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
 UAbilitySystemComponent* AComplyCharacterBase::GetAbilitySystemComponent() const
@@ -21,19 +19,14 @@ UAbilitySystemComponent* AComplyCharacterBase::GetAbilitySystemComponent() const
 	return nullptr;
 }
 
-// Called when the game starts or when spawned
 void AComplyCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-
-
-// Called every frame
 void AComplyCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void AComplyCharacterBase::InitializeAttributes() const
@@ -96,8 +89,3 @@ void AComplyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
-
-
-
-
-

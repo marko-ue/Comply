@@ -18,6 +18,7 @@ class COMPLY_API AComplyEnemyCharacter : public AComplyCharacterBase, public IEn
 
 public:
 	AComplyEnemyCharacter();
+	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	
 protected:

@@ -26,20 +26,21 @@ public:
 	TObjectPtr<ADeployableTurretPreview> SpawnedTurretPreviewActor = nullptr;
 	
 	// This will be a scalable float in the future for upgrades
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Ability Properties")
 	float TurretLifetime = 10.f;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Actors")
 	TSubclassOf<ADeployableTurret> TurretActorClass;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Actors")
+	TSubclassOf<AActor> TurretPreviewActorClass;
 
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 	
 	void SpawnPreview(const FGameplayAbilityActorInfo* ActorInfo);
-	
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<AActor> TurretPreviewActorClass;
 	
 	virtual void Throw() override;
 	

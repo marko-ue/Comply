@@ -2,13 +2,11 @@
 
 
 #include "Actors/ConfusionBeacon/ConfusionBeacon.h"
-
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "Components/SphereComponent.h"
 #include "Interface/Enemy/EnemyInterface.h"
-#include "Interface/Player/PlayerInterface.h"
 
 
 AConfusionBeacon::AConfusionBeacon()
@@ -30,7 +28,11 @@ AConfusionBeacon::AConfusionBeacon()
 void AConfusionBeacon::BeginPlay()
 {
 	Super::BeginPlay();
-	
+}
+
+void AConfusionBeacon::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
 }
 
 void AConfusionBeacon::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -69,9 +71,3 @@ void AConfusionBeacon::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AA
 		}
 	}
 }
-
-void AConfusionBeacon::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-

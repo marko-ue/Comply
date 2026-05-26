@@ -18,10 +18,10 @@ class COMPLY_API UDamageAbilityBase : public UComplyAbilityBase
 public:
 	void CauseDamage(AActor* TargetActor, float ExplicitDamage, FComplyGameplayEffectContext* Context = nullptr);
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	UPROPERTY(EditDefaultsOnly, Category = "Ability Properties|Damage")
 	FScalableFloat Damage;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	UPROPERTY(EditDefaultsOnly, Category = "Ability Properties|Damage")
 	FGameplayTag DamageType;
 	
 	// A damage gameplay effect that will use an execution calculation.

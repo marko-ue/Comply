@@ -7,6 +7,7 @@
 #include "Interface/Player/PlayerInterface.h"
 #include "Components/SphereComponent.h"
 
+
 AShieldDome::AShieldDome()
 {
 	PrimaryActorTick.bCanEverTick = false;
@@ -58,5 +59,3 @@ void AShieldDome::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor*
 		}
 	}
 }
-
-

@@ -15,15 +15,16 @@ public:
 	AConfusionBeaconPreview();
 	
 	void InitPreviewData(ACharacter* OwnerChar);
+	
+	virtual void Tick(float DeltaTime) override;
+	
 	void UpdatePosition();
 	
 	bool bCanPlace = false;
-
-	virtual void Tick(float DeltaTime) override;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Materials")
 	TObjectPtr<UMaterialInterface> ValidMaterial;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Materials")
 	TObjectPtr<UMaterialInterface> InvalidMaterial;
 
 protected:

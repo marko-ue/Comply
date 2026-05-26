@@ -17,10 +17,7 @@ class COMPLY_API UShotgunReload : public UComplyAbilityBase
 	GENERATED_BODY()
 	
 protected:
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-		const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayAbilityActivationInfo ActivationInfo,
-		const FGameplayEventData* TriggerEventData) override;
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
 private:
 	void LoadNextShell();
@@ -40,9 +37,9 @@ private:
 	UPROPERTY()
 	TObjectPtr<URangedWeaponAbilityBase> ActiveWeapon;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Reload")
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
 	TSubclassOf<UGameplayEffect> AddAmmoEffectClass;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Reload")
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
 	TSubclassOf<UGameplayEffect> ReloadStateEffectClass;
 };

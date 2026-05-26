@@ -2,8 +2,8 @@
 
 
 #include "Framework/GameState/ComplyGameStateBase.h"
-
 #include "Net/UnrealNetwork.h"
+
 
 void AComplyGameStateBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {

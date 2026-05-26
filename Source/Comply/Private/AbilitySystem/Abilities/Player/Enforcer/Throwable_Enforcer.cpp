@@ -2,7 +2,6 @@
 
 
 #include "AbilitySystem/Abilities/Player/Enforcer/Throwable_Enforcer.h"
-
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
@@ -10,6 +9,7 @@
 #include "Actors/DeployableTurret/DeployableTurretPreview.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
+
 
 void UThrowable_Enforcer::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                           const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
@@ -84,17 +84,6 @@ void UThrowable_Enforcer::ConfirmThrow()
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
-void UThrowable_Enforcer::CancelThrow()
-{
-	if (SpawnedTurretPreviewActor)
-	{
-		SpawnedTurretPreviewActor->Destroy();
-		SpawnedTurretPreviewActor = nullptr;
-	}
-
-	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, true);
-}
-
 void UThrowable_Enforcer::PlaceTurret()
 {
 	AActor* Avatar = GetAvatarActorFromActorInfo();
@@ -151,6 +140,17 @@ void UThrowable_Enforcer::PlaceTurret()
 			ASC->Server_PlaceTurret(GetCurrentAbilitySpecHandle(), SpawnLocation, SpawnRotation);
 		}
 	}
+}
+
+void UThrowable_Enforcer::CancelThrow()
+{
+	if (SpawnedTurretPreviewActor)
+	{
+		SpawnedTurretPreviewActor->Destroy();
+		SpawnedTurretPreviewActor = nullptr;
+	}
+
+	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, true);
 }
 
 void UThrowable_Enforcer::CancelAbility(const FGameplayAbilitySpecHandle Handle,

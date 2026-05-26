@@ -15,6 +15,8 @@ class COMPLY_API UThrowableAbilityBase : public UDamageAbilityBase
 	GENERATED_BODY()
 	
 public:
+	virtual void ConfirmThrow();
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Ability Properties|Types")
 	bool bConfirmOnRelease = true;
 	
@@ -23,7 +25,6 @@ public:
 	
 protected:
 	virtual void SpawnPreview();
-	virtual void ConfirmThrow();
 	virtual void Throw();
 	virtual void CancelThrow();
 };

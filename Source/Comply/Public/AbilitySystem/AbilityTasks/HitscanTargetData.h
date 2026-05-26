@@ -33,7 +33,7 @@ protected:
 	virtual void Activate() override;
 	
 private:
-	void OnTargetDataReplicatedCallback(const FGameplayAbilityTargetDataHandle& InDataHandle, FGameplayTag ActivationTag);
+	void OnTargetDataReplicatedCallback(const FGameplayAbilityTargetDataHandle& InDataHandle, FGameplayTag ActivationTag) const;
 	
 	FGameplayAbilityTargetDataHandle DataHandle;
 };

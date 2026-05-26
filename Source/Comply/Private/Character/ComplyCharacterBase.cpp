@@ -64,7 +64,7 @@ void AComplyCharacterBase::GiveStartupAbilities()
 	}
 }
 
-void AComplyCharacterBase::ActivateInitialAbility()
+void AComplyCharacterBase::ActivateInitialAbility() const
 {
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
 	if (!ASC) return;

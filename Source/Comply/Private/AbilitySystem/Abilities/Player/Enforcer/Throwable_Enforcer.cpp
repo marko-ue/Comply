@@ -84,7 +84,7 @@ void UThrowable_Enforcer::ConfirmThrow()
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
-void UThrowable_Enforcer::PlaceTurret()
+void UThrowable_Enforcer::PlaceTurret() const
 {
 	AActor* Avatar = GetAvatarActorFromActorInfo();
 	if (!Avatar) return;

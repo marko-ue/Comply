@@ -63,7 +63,7 @@ void UUtility_Enforcer::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	MoveTask->ReadyForActivation();
 }
 
-bool UUtility_Enforcer::PerformGrappleTrace(FHitResult& OutHitResult, float GrappleRange)
+bool UUtility_Enforcer::PerformGrappleTrace(FHitResult& OutHitResult, float GrappleRange) const
 {
 	AActor* Owner = GetOwningActorFromActorInfo();
 	AActor* Avatar = GetAvatarActorFromActorInfo();

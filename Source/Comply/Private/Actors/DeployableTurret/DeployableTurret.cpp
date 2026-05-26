@@ -101,7 +101,7 @@ void ADeployableTurret::TryFire()
 	CurrentTarget = nullptr; // Clear when no target in cone
 }
 
-void ADeployableTurret::Fire(AActor* TargetActor)
+void ADeployableTurret::Fire(AActor* TargetActor) const
 {
 	if (!SourceASC || !DamageEffectClass) return;
 

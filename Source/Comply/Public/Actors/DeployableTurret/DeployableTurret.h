@@ -70,7 +70,7 @@ private:
 	UFUNCTION()
 	void TryFire();
 	
-	void Fire(AActor* TargetActor);
+	void Fire(AActor* TargetActor) const;
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> ASC;

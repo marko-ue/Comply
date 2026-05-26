@@ -11,7 +11,7 @@
  * It will be called wherever damage is meant to be dealt, passing in the target actor and the custom context
  * The damage is passed in explicitly at call sites
  */
-void UDamageAbilityBase::CauseDamage(AActor* TargetActor, float ExplicitDamage, FComplyGameplayEffectContext* Context)
+void UDamageAbilityBase::CauseDamage(AActor* TargetActor, float ExplicitDamage, FComplyGameplayEffectContext* Context) const
 {
 	FGameplayEffectSpecHandle DamageSpecHandle = MakeOutgoingGameplayEffectSpec(DamageEffectClass, 1.f);
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageSpecHandle, DamageType, ExplicitDamage);

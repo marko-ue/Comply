@@ -80,7 +80,7 @@ void UHitscanTargetData::SendHitscanTargetData(float TraceDistance)
 
 // Consumes the sent data when received
 void UHitscanTargetData::OnTargetDataReplicatedCallback(const FGameplayAbilityTargetDataHandle& InDataHandle,
-	FGameplayTag ActivationTag)
+	FGameplayTag ActivationTag) const
 {
 	AbilitySystemComponent->ConsumeClientReplicatedTargetData(GetAbilitySpecHandle(), GetActivationPredictionKey());
 	

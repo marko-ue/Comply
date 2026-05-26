@@ -41,7 +41,7 @@ private:
 	UPROPERTY()
 	TObjectPtr<AShieldDomePreview> SpawnedShieldPreviewActor = nullptr;
 	
-	void TraceAndSpawnShield();
+	void TraceAndSpawnShield() const;
 	
 	// This will be a scalable float in the future for upgrades
 	UPROPERTY(EditAnywhere, Category = "Ability Properties")

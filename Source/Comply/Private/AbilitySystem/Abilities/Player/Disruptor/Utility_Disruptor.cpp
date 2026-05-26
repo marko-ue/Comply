@@ -81,7 +81,7 @@ void UUtility_Disruptor::ConfirmPlacement()
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
-void UUtility_Disruptor::TraceAndSpawnBeacon()
+void UUtility_Disruptor::TraceAndSpawnBeacon() const
 {
 	AActor* Avatar = GetAvatarActorFromActorInfo();
 	if (!Avatar) return;

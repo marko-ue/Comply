@@ -71,7 +71,7 @@ void UThrowable_Ranger::ConfirmThrow()
 		const FVector SpawnPosition = Avatar->GetActorLocation() + FVector(0.f, 0.f, 60.f) + CrosshairWorldDirection * 40.f;
 
 		APawn* InstigatorPawn = Cast<APawn>(GetAvatarActorFromActorInfo());
-		ASC->Server_ThrowGrenade(GetCurrentAbilitySpecHandle(), InstigatorPawn->GetActorLocation(), InstigatorPawn->GetActorRotation(), LaunchVelocity);
+		ASC->Server_ThrowPlasmaGrenade(GetCurrentAbilitySpecHandle(), InstigatorPawn->GetActorLocation(), InstigatorPawn->GetActorRotation(), LaunchVelocity);
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
 }

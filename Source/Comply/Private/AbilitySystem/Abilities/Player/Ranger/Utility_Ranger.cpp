@@ -68,7 +68,7 @@ void UUtility_Ranger::ConfirmPlacement()
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
-void UUtility_Ranger::TraceAndSpawnShield()
+void UUtility_Ranger::TraceAndSpawnShield() const
 {
 	AActor* Avatar = GetCurrentActorInfo()->AvatarActor.Get();
 	if (!Avatar) return;

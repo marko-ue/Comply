@@ -48,5 +48,5 @@ protected:
 	virtual void CancelThrow() override;
 	
 private:
-	void PlaceTurret();
+	void PlaceTurret() const;
 };

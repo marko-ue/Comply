@@ -50,7 +50,7 @@ protected:
 	// Gives each ability in the StartupAbilities TArray to the character's ASC, and sets its input tag (server only)
 	void GiveStartupAbilities();
 	
-	void ActivateInitialAbility();
+	void ActivateInitialAbility() const;
 
 public:	
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")

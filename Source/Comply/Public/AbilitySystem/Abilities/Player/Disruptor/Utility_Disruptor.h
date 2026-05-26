@@ -40,7 +40,7 @@ private:
 	
 	void SpawnPreview(const FGameplayAbilityActorInfo* ActorInfo);
 	
-	void TraceAndSpawnBeacon();
+	void TraceAndSpawnBeacon() const;
 	
 	UFUNCTION()
 	void ConfirmPlacement();

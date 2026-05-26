@@ -28,7 +28,7 @@ protected:
 	UCurveVector* PathOffsetCurve = nullptr;
 	
 private:
-	bool PerformGrappleTrace(FHitResult& OutHitResult, float GrappleRange = 3000.f);
+	bool PerformGrappleTrace(FHitResult& OutHitResult, float GrappleRange = 3000.f) const;
 	
 	UFUNCTION()
 	void OnPullReachedDestination();

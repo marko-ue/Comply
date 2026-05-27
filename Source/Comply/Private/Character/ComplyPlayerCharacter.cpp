@@ -11,6 +11,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Framework/GameState/ComplyGameStateBase.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -27,6 +28,9 @@ AComplyPlayerCharacter::AComplyPlayerCharacter()
 	
 	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
 	WeaponMesh->SetupAttachment(GetMesh(), TEXT("weapon_r"));
+	
+	bUseControllerRotationYaw = false;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
 }
 
 void AComplyPlayerCharacter::BeginPlay()
@@ -104,6 +108,9 @@ void AComplyPlayerCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	
 	bIsAiming ? ZoomIn(DeltaTime) : ZoomOut(DeltaTime);
+	
+	// Handles how the character should rotate depending on if the player is aiming and/or firing
+	UpdateRotationMode(DeltaTime);
 }
 
 UAbilitySystemComponent* AComplyPlayerCharacter::GetAbilitySystemComponent() const
@@ -276,6 +283,31 @@ void AComplyPlayerCharacter::ZoomOut(float DeltaTime)
 void AComplyPlayerCharacter::OnAimingTagChanged(const FGameplayTag Tag, int32 NewCount)
 {
 	bIsAiming = NewCount > 0;
+}
+
+void AComplyPlayerCharacter::UpdateRotationMode(float DeltaTime)
+{
+	if (!GetAbilitySystemComponent()) return;
+	
+	const bool bDoesAimingTagExist = GetAbilitySystemComponent()->HasMatchingGameplayTag(ComplyTags::States::State_Aiming);
+	const bool bDoesFiringTagExist = GetAbilitySystemComponent()->HasMatchingGameplayTag(ComplyTags::States::State_Firing);
+	const bool bShouldControlRotation = bDoesAimingTagExist || bDoesFiringTagExist;
+
+	FRotator TargetRotation;
+
+	if (bShouldControlRotation)
+	{
+		TargetRotation = FRotator(0.f, GetControlRotation().Yaw, 0.f);
+	}
+	else
+	{
+		const FVector Velocity = GetCharacterMovement()->Velocity;
+		if (Velocity.IsNearlyZero()) return;
+		TargetRotation = FRotator(0.f, Velocity.Rotation().Yaw, 0.f);
+	}
+
+	const FRotator NewRotation = FMath::RInterpTo(GetActorRotation(), TargetRotation, DeltaTime, 25.f);
+	SetActorRotation(NewRotation);
 }
 
 // If friendly fire is on and the distracted tag was applied by the decoy grenade, apply flashbang effect to affected players

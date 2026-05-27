@@ -139,6 +139,8 @@ private:
 	bool bIsAiming = false;
 	// End Zoom
 	
+	void UpdateRotationMode(float DeltaTime);
+	
 	UFUNCTION()
 	void OnDistractedTagChanged(const FGameplayTag Tag, int32 NewCount);
 };

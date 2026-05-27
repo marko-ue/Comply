@@ -72,6 +72,12 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	bool bFireInputHeld = false;
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool bIsFiring = false;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TObjectPtr<UStaticMeshComponent> WeaponMesh;
+	
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USpringArmComponent> SpringArm;

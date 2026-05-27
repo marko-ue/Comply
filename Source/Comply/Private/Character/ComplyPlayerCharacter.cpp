@@ -20,10 +20,13 @@ AComplyPlayerCharacter::AComplyPlayerCharacter()
 	SpringArm->SetupAttachment(RootComponent);
 	SpringArm->TargetArmLength = 400.f;
 	SpringArm->bUsePawnControlRotation = true;
-
+ 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;
+	
+	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
+	WeaponMesh->SetupAttachment(GetMesh(), TEXT("weapon_r"));
 }
 
 void AComplyPlayerCharacter::BeginPlay()

@@ -133,8 +133,12 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 bool URangedWeaponAbilityBase::Fire()
 {
 	// Find the active ranged weapon to get its current ammo
-	const AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
-	ActiveWeapon = Character->GetEquippedPrimaryWeapon();
+	AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
+	if (Character)
+	{
+		ActiveWeapon = Character->GetEquippedPrimaryWeapon();
+		Character->bIsFiring = true;
+	}
 	
 	bool bFound = false;
 	float CurrentAmmo = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(ActiveWeapon->GetCurrentAmmoAttribute(), bFound);
@@ -262,5 +266,8 @@ void URangedWeaponAbilityBase::EndAbility(const FGameplayAbilitySpecHandle Handl
 										  const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 										  bool bReplicateEndAbility, bool bWasCancelled)
 {
+	AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
+	if (Character) Character->bIsFiring = false;
+	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

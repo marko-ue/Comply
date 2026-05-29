@@ -369,7 +369,19 @@ void AComplyPlayerCharacter::OnWeaponEquipped(EWeaponSlot Slot)
 		case EWeaponSlot::Utility:   Montage = UtilityEquipMontage;   break;
 		case EWeaponSlot::Throwable: Montage = ThrowableEquipMontage; break;
 	}
-    
+	if (Montage) PlayAnimMontage(Montage);
+}
+
+void AComplyPlayerCharacter::OnRep_CurrentEquippedSlot()
+{
+	UAnimMontage* Montage = nullptr;
+	switch (CurrentEquippedSlot)
+	{
+		case EWeaponSlot::None:		 Montage = nullptr;
+		case EWeaponSlot::Primary:   Montage = PrimaryEquipMontage;   break;
+		case EWeaponSlot::Utility:   Montage = UtilityEquipMontage;   break;
+		case EWeaponSlot::Throwable: Montage = ThrowableEquipMontage; break;
+	}
 	if (Montage) PlayAnimMontage(Montage);
 }
 
@@ -377,7 +389,7 @@ void AComplyPlayerCharacter::OnWeaponEquipped(EWeaponSlot Slot)
 void AComplyPlayerCharacter::OnWeaponDrawn()
 {
 	GetAbilitySystemComponent()->RemoveLooseGameplayTag(ComplyTags::States::State_Equipping);
-	WeaponMesh->SetWorldScale3D(GetScaleForSlot(PendingEquipSlot));
-	WeaponMesh->SetStaticMesh(GetMeshForSlot(PendingEquipSlot));
+	WeaponMesh->SetWorldScale3D(GetScaleForSlot(CurrentEquippedSlot));
+	WeaponMesh->SetStaticMesh(GetMeshForSlot(CurrentEquippedSlot));
 	WeaponMesh->SetVisibility(true);
 }

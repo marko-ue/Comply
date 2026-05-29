@@ -106,7 +106,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Animations")
 	TObjectPtr<UAnimMontage> ThrowableEquipMontage;
 	
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CurrentEquippedSlot)
 	EWeaponSlot CurrentEquippedSlot = EWeaponSlot::Primary;
 	
 	UPROPERTY(BlueprintReadOnly)
@@ -179,6 +179,9 @@ private:
 	void OnDistractedTagChanged(const FGameplayTag Tag, int32 NewCount);
 	
 	virtual void OnWeaponEquipped(EWeaponSlot Slot) override;
+	
+	UFUNCTION()
+	void OnRep_CurrentEquippedSlot();
 	
 	virtual FVector GetScaleForSlot(EWeaponSlot Slot) override;
 	

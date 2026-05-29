@@ -120,6 +120,7 @@ void UUtility_Ranger::TraceAndSpawnShield()
 		}
 	}
 	
+	// Automatically equip the primary ability once the shield is thrown, as the player should not be able to equip the shield while it's on cooldown
 	GetAbilitySystemComponentFromActorInfo()->TryActivateAbilitiesByTag(
 				FGameplayTagContainer(ComplyTags::ComplyAbilities::AssetTags::Equip_Primary));
 	

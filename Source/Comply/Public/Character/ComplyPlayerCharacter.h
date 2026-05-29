@@ -8,6 +8,7 @@
 #include "Interface/Player/PlayerInterface.h"
 #include "GameplayEffectTypes.h"
 #include "Interface/TargetableInterface.h"
+#include "Interface/Player/WeaponInterface.h"
 #include "ComplyPlayerCharacter.generated.h"
 
 
@@ -17,7 +18,7 @@ class UCameraComponent;
 class USpringArmComponent;
 
 UCLASS()
-class COMPLY_API AComplyPlayerCharacter : public AComplyCharacterBase, public IPlayerInterface, public ITargetableInterface
+class COMPLY_API AComplyPlayerCharacter : public AComplyCharacterBase, public IPlayerInterface, public ITargetableInterface, public IWeaponInterface
 {
 	GENERATED_BODY()
 	
@@ -75,8 +76,41 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool bIsFiring = false;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Meshes")
 	TObjectPtr<UStaticMeshComponent> WeaponMesh;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Meshes")
+	TObjectPtr<UStaticMesh> PrimaryMesh;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Meshes")
+	TObjectPtr<UStaticMesh> UtilityMesh;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Meshes")
+	TObjectPtr<UStaticMesh> ThrowableMesh;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Meshes")
+	FVector PrimaryMeshScale = FVector(1.0f);
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Meshes")
+	FVector UtilityMeshScale = FVector(1.0f);
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Meshes")
+	FVector ThrowableMeshScale = FVector(1.0f);
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Animations")
+	TObjectPtr<UAnimMontage> PrimaryEquipMontage;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Animations")
+	TObjectPtr<UAnimMontage> UtilityEquipMontage;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Animations")
+	TObjectPtr<UAnimMontage> ThrowableEquipMontage;
+	
+	UPROPERTY(BlueprintReadOnly)
+	EWeaponSlot CurrentEquippedSlot = EWeaponSlot::Primary;
+	
+	UPROPERTY(BlueprintReadOnly)
+	EWeaponSlot PendingEquipSlot = EWeaponSlot::None;
 	
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -143,4 +177,14 @@ private:
 	
 	UFUNCTION()
 	void OnDistractedTagChanged(const FGameplayTag Tag, int32 NewCount);
+	
+	virtual void OnWeaponEquipped(EWeaponSlot Slot) override;
+	
+	virtual FVector GetScaleForSlot(EWeaponSlot Slot) override;
+	
+	UFUNCTION(BlueprintCallable)
+	UStaticMesh* GetMeshForSlot(EWeaponSlot Slot) override;
+	
+	UFUNCTION(BlueprintCallable)
+	void OnWeaponDrawn();
 };

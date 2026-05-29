@@ -4,10 +4,11 @@
 #include "AbilitySystem/Abilities/Player/EquipAbilities/EquipUtilityAbility.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/ComplyTags.h"
+#include "Interface/Player/WeaponInterface.h"
 
 
 void UEquipUtilityAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-									const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
+                                           const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
@@ -28,6 +29,13 @@ void UEquipUtilityAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	FGameplayTagContainer TagsToBlock = AllWeaponTags;
 	TagsToBlock.RemoveTag(ComplyTags::ComplyAbilities::Utility);
 	ASC->BlockAbilitiesWithTags(TagsToBlock);
+	
+	// Get the relevant weapon mesh from a weapon slot and set that weapon's mesh to be the new mesh
+	AActor* Avatar = GetAvatarActorFromActorInfo();
+	if (IWeaponInterface* WeaponOwner = Cast<IWeaponInterface>(Avatar))
+	{
+		WeaponOwner->OnWeaponEquipped(EWeaponSlot::Utility);
+	}
 
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }

@@ -6,13 +6,16 @@
 #include "Abilities/GameplayAbility.h"
 #include "ComplyAbilityBase.generated.h"
 
-
 class UAbilityTask_PlayMontageAndWait;
 
 UCLASS(Abstract)
 class COMPLY_API UComplyAbilityBase : public UGameplayAbility
 {
 	GENERATED_BODY()
+	
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon Properties")
+	TObjectPtr<UStaticMesh> WeaponMesh;
 
 protected:
 	UFUNCTION()

@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Abilities/GameplayAbility.h"
+#include "AbilitySystem/Abilities/ComplyAbilityBase.h"
 #include "EquipThrowableAbility.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class COMPLY_API UEquipThrowableAbility : public UGameplayAbility
+class COMPLY_API UEquipThrowableAbility : public UComplyAbilityBase
 {
 	GENERATED_BODY()
 	

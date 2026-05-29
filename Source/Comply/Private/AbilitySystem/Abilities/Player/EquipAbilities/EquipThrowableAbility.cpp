@@ -4,6 +4,7 @@
 #include "AbilitySystem/Abilities/Player/EquipAbilities/EquipThrowableAbility.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/ComplyTags.h"
+#include "Interface/Player/WeaponInterface.h"
 
 
 void UEquipThrowableAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -29,6 +30,13 @@ void UEquipThrowableAbility::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 	FGameplayTagContainer TagsToBlock = AllWeaponTags;
 	TagsToBlock.RemoveTag(ComplyTags::ComplyAbilities::Throwable);
 	ASC->BlockAbilitiesWithTags(TagsToBlock);
+	
+	// Get the relevant weapon mesh from a weapon slot and set that weapon's mesh to be the new mesh
+	AActor* Avatar = GetAvatarActorFromActorInfo();
+	if (IWeaponInterface* WeaponOwner = Cast<IWeaponInterface>(Avatar))
+	{
+		WeaponOwner->OnWeaponEquipped(EWeaponSlot::Throwable);
+	}
 
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }

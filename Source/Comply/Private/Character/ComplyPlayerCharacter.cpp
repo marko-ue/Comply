@@ -21,7 +21,7 @@ AComplyPlayerCharacter::AComplyPlayerCharacter()
 	SpringArm->SetupAttachment(RootComponent);
 	SpringArm->TargetArmLength = 400.f;
 	SpringArm->bUsePawnControlRotation = true;
- 
+	
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;
@@ -73,6 +73,8 @@ void AComplyPlayerCharacter::PossessedBy(AController* NewController)
 	
 	GetAbilitySystemComponent()->InitAbilityActorInfo(GetPlayerState(), this);
 	
+	WeaponMesh->SetStaticMesh(PrimaryMesh);
+	
 	InitializeAttributes();
 	GiveStartupAbilities();
 	ActivateInitialAbility();
@@ -93,6 +95,8 @@ void AComplyPlayerCharacter::OnRep_PlayerState()
 	if (!GetAbilitySystemComponent()) return;
 	
 	GetAbilitySystemComponent()->InitAbilityActorInfo(GetPlayerState(), this);
+	
+	WeaponMesh->SetStaticMesh(PrimaryMesh);
 	
 	ActivateInitialAbility();
 	
@@ -322,4 +326,58 @@ void AComplyPlayerCharacter::OnDistractedTagChanged(const FGameplayTag Tag, int3
 		AComplyPlayerController* PC = Cast<AComplyPlayerController>(GetController());
 		if (PC) PC->ShowFlashbangEffect();
 	}
+}
+
+FVector AComplyPlayerCharacter::GetScaleForSlot(EWeaponSlot Slot)
+{
+	switch (Slot)
+	{
+		case EWeaponSlot::None:		 return FVector::ZeroVector;
+		case EWeaponSlot::Primary:   return PrimaryMeshScale;
+		case EWeaponSlot::Utility:   return UtilityMeshScale;
+		case EWeaponSlot::Throwable: return ThrowableMeshScale;
+	}
+	return FVector::ZeroVector;
+}
+
+UStaticMesh* AComplyPlayerCharacter::GetMeshForSlot(EWeaponSlot Slot)
+{
+	switch (Slot)
+	{
+		case EWeaponSlot::None:		 return nullptr;
+		case EWeaponSlot::Primary:   return PrimaryMesh;
+		case EWeaponSlot::Utility:   return UtilityMesh;
+		case EWeaponSlot::Throwable: return ThrowableMesh;
+	}
+	return nullptr;
+}
+
+void AComplyPlayerCharacter::OnWeaponEquipped(EWeaponSlot Slot)
+{
+	if (Slot == CurrentEquippedSlot) return; // Already holding this weapon, return so the equip animation is not played again
+    
+	PendingEquipSlot = Slot; // This slot is used to delay showing the new mesh until the new weapon is pulled out
+	CurrentEquippedSlot = Slot; // This slot is used for guarding whether the weapon attempting to be equipped is already equipped
+	
+	GetAbilitySystemComponent()->AddLooseGameplayTag(ComplyTags::States::State_Equipping);
+    
+	UAnimMontage* Montage = nullptr;
+	switch (Slot)
+	{
+		case EWeaponSlot::None:		 Montage = nullptr;
+		case EWeaponSlot::Primary:   Montage = PrimaryEquipMontage;   break;
+		case EWeaponSlot::Utility:   Montage = UtilityEquipMontage;   break;
+		case EWeaponSlot::Throwable: Montage = ThrowableEquipMontage; break;
+	}
+    
+	if (Montage) PlayAnimMontage(Montage);
+}
+
+// Called in player ABP when the anim notify broadcasts
+void AComplyPlayerCharacter::OnWeaponDrawn()
+{
+	GetAbilitySystemComponent()->RemoveLooseGameplayTag(ComplyTags::States::State_Equipping);
+	WeaponMesh->SetWorldScale3D(GetScaleForSlot(PendingEquipSlot));
+	WeaponMesh->SetStaticMesh(GetMeshForSlot(PendingEquipSlot));
+	WeaponMesh->SetVisibility(true);
 }

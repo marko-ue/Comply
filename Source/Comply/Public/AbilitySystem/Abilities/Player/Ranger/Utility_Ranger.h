@@ -41,7 +41,8 @@ private:
 	UPROPERTY()
 	TObjectPtr<AShieldDomePreview> SpawnedShieldPreviewActor = nullptr;
 	
-	void TraceAndSpawnShield() const;
+	UFUNCTION()
+	void TraceAndSpawnShield();
 	
 	// This will be a scalable float in the future for upgrades
 	UPROPERTY(EditAnywhere, Category = "Ability Properties")
@@ -56,4 +57,7 @@ private:
 	void CancelPlacement();
 	
 	FTimerHandle OnShieldExpiredTimerHandle;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UAnimMontage> PlaceShieldMontage;
 };

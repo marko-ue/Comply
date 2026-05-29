@@ -1,9 +1,15 @@
 // Copyright © 2026 Marko. All rights reserved.
 
 #include "AbilitySystem/Abilities/Player/Ranger/Utility_Ranger.h"
+
+#include "AbilitySystemComponent.h"
+#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
+#include "AbilitySystem/ComplyTags.h"
+#include "Actors/ShieldDome/ShieldDome.h"
 #include "Actors/ShieldDome/ShieldDomePreview.h"
 #include "GameFramework/Character.h"
+#include "Kismet/GameplayStatics.h"
 
 
 void UUtility_Ranger::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -62,13 +68,14 @@ void UUtility_Ranger::ConfirmPlacement()
 		SpawnedShieldPreviewActor->Destroy();
 		SpawnedShieldPreviewActor = nullptr;
 	}
-
-	TraceAndSpawnShield();
-
-	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	
+	UAbilityTask_PlayMontageAndWait* PlaceShieldMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
+		this, NAME_None, PlaceShieldMontage, 1.f, NAME_None, true);
+	PlaceShieldMontageTask->OnCompleted.AddDynamic(this, &UUtility_Ranger::TraceAndSpawnShield);
+	PlaceShieldMontageTask->ReadyForActivation();
 }
 
-void UUtility_Ranger::TraceAndSpawnShield() const
+void UUtility_Ranger::TraceAndSpawnShield()
 {
 	AActor* Avatar = GetCurrentActorInfo()->AvatarActor.Get();
 	if (!Avatar) return;
@@ -97,12 +104,26 @@ void UUtility_Ranger::TraceAndSpawnShield() const
 
 	if (HasAuthority(&ActivationInfo))
 	{
-		AActor* Shield = GetWorld()->SpawnActor<AActor>(ShieldActorClass, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
+		AShieldDome* Shield = GetWorld()->SpawnActorDeferred<AShieldDome>(
+			ShieldActorClass, 
+			FTransform(FRotator::ZeroRotator, SpawnLocation),
+			Avatar,
+			Cast<APawn>(Avatar),
+			ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+		);
+    
 		if (Shield)
 		{
+			Shield->SourceASC = GetAbilitySystemComponentFromActorInfo();
+			UGameplayStatics::FinishSpawningActor(Shield, FTransform(FRotator::ZeroRotator, SpawnLocation));
 			Shield->SetLifeSpan(ShieldLifetime);
 		}
 	}
+	
+	GetAbilitySystemComponentFromActorInfo()->TryActivateAbilitiesByTag(
+				FGameplayTagContainer(ComplyTags::ComplyAbilities::AssetTags::Equip_Primary));
+	
+	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
 void UUtility_Ranger::CancelPlacement()

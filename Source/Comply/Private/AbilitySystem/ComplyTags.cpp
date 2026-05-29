@@ -13,6 +13,7 @@ namespace ComplyTags
 		{
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(ApplyShieldedEffectAbility, "ComplyTags.Abilities.Ranger.ApplyShieldedEffectAbility", "Apply shielded effect ability asset tag")
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(ApplyConfusedEffectAbility, "ComplyTags.Abilities.Disruptor.ApplyConfusedEffectAbility", "Apply confused effect ability asset tag")
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Equip_Primary, "ComplyTags.Abilities.Equip.Primary", "Primary weapon equip ability asset tag")
 		}
 		
 		namespace InputTags

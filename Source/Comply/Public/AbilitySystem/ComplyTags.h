@@ -15,6 +15,7 @@ namespace ComplyTags
 		{
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(ApplyShieldedEffectAbility);
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(ApplyConfusedEffectAbility);
+			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Equip_Primary)
 		}
 		
 		namespace InputTags

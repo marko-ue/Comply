@@ -7,6 +7,11 @@
 #include "Interface/Player/WeaponInterface.h"
 
 
+UEquipUtilityAbility::UEquipUtilityAbility()
+{
+	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("ComplyTags.Abilities.Cooldowns.RangerUtility")));
+}
+
 void UEquipUtilityAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
                                            const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {

@@ -14,6 +14,9 @@ class COMPLY_API UEquipUtilityAbility : public UComplyAbilityBase
 {
 	GENERATED_BODY()
 	
+public:
+	UEquipUtilityAbility();
+	
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 };

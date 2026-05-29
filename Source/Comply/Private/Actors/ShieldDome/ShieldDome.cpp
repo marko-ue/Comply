@@ -14,8 +14,11 @@ AShieldDome::AShieldDome()
 	
 	bReplicates = true;
 	
-	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(FName("ShieldMesh"));
-	SetRootComponent(StaticMeshComp);
+	ShieldStaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(FName("ShieldMesh"));
+	SetRootComponent(ShieldStaticMeshComp);
+	
+	ShieldObjectStaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(FName("ShieldObjectMesh"));
+	ShieldObjectStaticMeshComp->SetupAttachment(ShieldStaticMeshComp);
 	
 	SphereComp = CreateDefaultSubobject<USphereComponent>(FName("Sphere"));
 	SphereComp->SetupAttachment(GetRootComponent());
@@ -25,7 +28,7 @@ AShieldDome::AShieldDome()
 }
 
 void AShieldDome::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (IAbilitySystemInterface* ASCInterface = Cast<IAbilitySystemInterface>(OtherActor))
 	{

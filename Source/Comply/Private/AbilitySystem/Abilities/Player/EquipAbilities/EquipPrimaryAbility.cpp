@@ -9,6 +9,13 @@
 #include "Interface/Player/WeaponInterface.h"
 
 
+UEquipPrimaryAbility::UEquipPrimaryAbility()
+{
+	FGameplayTagContainer Tags;
+	Tags.AddTag(ComplyTags::ComplyAbilities::AssetTags::Equip_Primary);
+	SetAssetTags(Tags);
+}
+
 void UEquipPrimaryAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
                                            const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {

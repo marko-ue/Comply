@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "ShieldDome.generated.h"
 
+class UAbilitySystemComponent;
 class UGameplayAbility;
 class USphereComponent;
 class UNavModifierComponent;
@@ -19,13 +20,19 @@ public:
 	AShieldDome();
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<UStaticMeshComponent> StaticMeshComp;
+	TObjectPtr<UStaticMeshComponent> ShieldStaticMeshComp;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UStaticMeshComponent> ShieldObjectStaticMeshComp;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USphereComponent> SphereComp;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
 	TSubclassOf<UGameplayAbility> ApplyShieldedEffectAbilityClass;
+	
+	UPROPERTY()
+	TObjectPtr<UAbilitySystemComponent> SourceASC;
 	
 private:
 	UFUNCTION()

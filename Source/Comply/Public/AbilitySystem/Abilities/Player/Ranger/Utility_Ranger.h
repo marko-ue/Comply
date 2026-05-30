@@ -58,6 +58,6 @@ private:
 	
 	FTimerHandle OnShieldExpiredTimerHandle;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Animations")
 	TObjectPtr<UAnimMontage> PlaceShieldMontage;
 };

@@ -38,6 +38,10 @@ void UThrowable_Enforcer::Throw()
 
 void UThrowable_Enforcer::SpawnPreview(const FGameplayAbilityActorInfo* ActorInfo)
 {
+	// Input is confirmed when the primary input is released
+	UAbilityTask_WaitConfirmCancel* WaitConfirm = UAbilityTask_WaitConfirmCancel::WaitConfirmCancel(this);
+	WaitConfirm->OnConfirm.AddDynamic(this, &UThrowable_Enforcer::ConfirmThrow);
+	WaitConfirm->ReadyForActivation();
 	
 	AActor* Avatar = GetCurrentActorInfo()->AvatarActor.Get();
 	if (!Avatar) return;

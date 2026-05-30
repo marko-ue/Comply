@@ -109,9 +109,6 @@ public:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CurrentEquippedSlot)
 	EWeaponSlot CurrentEquippedSlot = EWeaponSlot::Primary;
 	
-	UPROPERTY(BlueprintReadOnly)
-	EWeaponSlot PendingEquipSlot = EWeaponSlot::None;
-	
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USpringArmComponent> SpringArm;
@@ -187,6 +184,8 @@ private:
 	
 	UFUNCTION(BlueprintCallable)
 	UStaticMesh* GetMeshForSlot(EWeaponSlot Slot) override;
+	
+	virtual void ClearEquippedWeapon() override;
 	
 	UFUNCTION(BlueprintCallable)
 	void OnWeaponDrawn();

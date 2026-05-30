@@ -7,6 +7,15 @@
 #include "Interface/Player/WeaponInterface.h"
 
 
+UEquipThrowableAbility::UEquipThrowableAbility()
+{
+	FGameplayTagContainer Tags;
+	Tags.AddTag(ComplyTags::ComplyAbilities::AssetTags::Equip_Throwable);
+	SetAssetTags(Tags);
+	
+	ActivationBlockedTags.AddTag(ComplyTags::States::State_NoThrowables);
+}
+
 void UEquipThrowableAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                              const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
                                              const FGameplayEventData* TriggerEventData)

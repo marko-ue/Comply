@@ -190,9 +190,8 @@ void AComplyPlayerCharacter::PrimaryActionReleased()
 		// Confirm the throw of the throwable once the primary input is released, removing the preview path
 		if (Spec.Ability->GetAssetTags().HasTagExact(ComplyTags::ComplyAbilities::Throwable) && Spec.IsActive())
 		{
-			UThrowableAbilityBase* ThrowableAbility = Cast<UThrowableAbilityBase>(Spec.GetPrimaryInstance());
-			if (ThrowableAbility && ThrowableAbility->bConfirmOnRelease) ThrowableAbility->ConfirmThrow();
-			return;
+			GetAbilitySystemComponent()->LocalInputConfirm();
+			break;
 		}
 	}
 
@@ -355,8 +354,7 @@ UStaticMesh* AComplyPlayerCharacter::GetMeshForSlot(EWeaponSlot Slot)
 void AComplyPlayerCharacter::OnWeaponEquipped(EWeaponSlot Slot)
 {
 	if (Slot == CurrentEquippedSlot) return; // Already holding this weapon, return so the equip animation is not played again
-    
-	PendingEquipSlot = Slot; // This slot is used to delay showing the new mesh until the new weapon is pulled out
+	
 	CurrentEquippedSlot = Slot; // This slot is used for guarding whether the weapon attempting to be equipped is already equipped
 	
 	GetAbilitySystemComponent()->AddLooseGameplayTag(ComplyTags::States::State_Equipping);
@@ -372,6 +370,7 @@ void AComplyPlayerCharacter::OnWeaponEquipped(EWeaponSlot Slot)
 	if (Montage) PlayAnimMontage(Montage);
 }
 
+// OnRep handles playing the equip animation for clients
 void AComplyPlayerCharacter::OnRep_CurrentEquippedSlot()
 {
 	UAnimMontage* Montage = nullptr;
@@ -392,4 +391,10 @@ void AComplyPlayerCharacter::OnWeaponDrawn()
 	WeaponMesh->SetWorldScale3D(GetScaleForSlot(CurrentEquippedSlot));
 	WeaponMesh->SetStaticMesh(GetMeshForSlot(CurrentEquippedSlot));
 	WeaponMesh->SetVisibility(true);
+}
+
+void AComplyPlayerCharacter::ClearEquippedWeapon()
+{
+	CurrentEquippedSlot = EWeaponSlot::None;
+	WeaponMesh->SetVisibility(false);
 }

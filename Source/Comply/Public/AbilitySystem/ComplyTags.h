@@ -16,6 +16,7 @@ namespace ComplyTags
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(ApplyShieldedEffectAbility);
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(ApplyConfusedEffectAbility);
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Equip_Primary)
+			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Equip_Throwable)
 		}
 		
 		namespace InputTags
@@ -40,6 +41,8 @@ namespace ComplyTags
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Confused)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Distracted)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Equipping)
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_ThrowablePreparing)
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_NoThrowables)
 	}
 	
 	namespace SetByCaller

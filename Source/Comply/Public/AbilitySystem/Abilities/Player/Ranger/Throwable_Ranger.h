@@ -39,9 +39,20 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Actors")
 	TSubclassOf<AActor> GrenadePreviewActorClass;
+
 	
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	
 	virtual void SpawnPreview() override;
+	
+private:
+	UPROPERTY(EditDefaultsOnly, Category = "Animations")
+	TObjectPtr<UAnimMontage> ThrowGrenadeMontage;
+	
+	UPROPERTY()
+	UAbilityTask_PlayMontageAndWait* PrepareGrenadeMontageTask;
+	
+	UFUNCTION()
+	void OnThrowMontageCompleted();
 };

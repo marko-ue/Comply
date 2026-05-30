@@ -2,6 +2,7 @@
 
 
 #include "AbilitySystem/Abilities/Player/Disruptor/Throwable_Disruptor.h"
+#include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "Actors/DecoyGrenade/DecoyGrenadePreview.h"
 #include "Kismet/GameplayStatics.h"
@@ -18,6 +19,11 @@ void UThrowable_Disruptor::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 
 void UThrowable_Disruptor::SpawnPreview()
 {
+	// Input is confirmed when the primary input is released
+	UAbilityTask_WaitConfirmCancel* WaitConfirm = UAbilityTask_WaitConfirmCancel::WaitConfirmCancel(this);
+	WaitConfirm->OnConfirm.AddDynamic(this, &UThrowable_Disruptor::ConfirmThrow);
+	WaitConfirm->ReadyForActivation();
+	
 	APawn* InstigatorPawn = Cast<APawn>(GetAvatarActorFromActorInfo());
 	FTransform SpawnTransform = FTransform(
 		InstigatorPawn->GetActorRotation(),

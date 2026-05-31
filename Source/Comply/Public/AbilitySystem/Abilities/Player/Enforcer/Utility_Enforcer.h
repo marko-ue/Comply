@@ -6,6 +6,7 @@
 #include "AbilitySystem/Abilities/UtilityAbilityBase.h"
 #include "Utility_Enforcer.generated.h"
 
+class AEnforcerCharacter;
 class UCableComponent;
 class AComplyPlayerCharacter;
 class UCurveVector;
@@ -44,7 +45,7 @@ private:
 	void OnTargetDataReceived(const FGameplayAbilityTargetDataHandle& DataHandle, FGameplayTag ApplicationTag);
 
 	UPROPERTY()
-	TObjectPtr<AComplyPlayerCharacter> Player;
+	TObjectPtr<AEnforcerCharacter> Player;
 
 	UPROPERTY()
 	TObjectPtr<UCableComponent> Cable;

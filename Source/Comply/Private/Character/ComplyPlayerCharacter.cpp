@@ -27,22 +27,11 @@ AComplyPlayerCharacter::AComplyPlayerCharacter()
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;
 	
-	GrappleAnchorPoint = CreateDefaultSubobject<USceneComponent>(TEXT("GrappleAnchorPoint"));
-	GrappleAnchorPoint->SetupAttachment(RootComponent);
-	
 	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
 	WeaponMesh->SetupAttachment(GetMesh(), TEXT("weapon_r"));
 	
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
-	
-	GrappleCable = CreateDefaultSubobject<UCableComponent>(TEXT("GrappleCable"));
-	GrappleCable->SetupAttachment(GetMesh(), FName("weapon_r")); // Tip of the hook device
-	GrappleCable->SetVisibility(false); // Hidden until fired
-	GrappleCable->bAttachEnd = false; // The end point will be set manually
-	GrappleCable->CableLength = 0.f;
-	GrappleCable->NumSegments = 1;
-	GrappleCable->SolverIterations = 8;
 }
 
 void AComplyPlayerCharacter::BeginPlay()

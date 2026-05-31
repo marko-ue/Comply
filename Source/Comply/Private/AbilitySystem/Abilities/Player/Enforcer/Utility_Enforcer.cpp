@@ -7,6 +7,7 @@
 #include "CableComponent.h"
 #include "Abilities/Tasks/AbilityTask_ApplyRootMotionMoveToForce.h"
 #include "Character/ComplyPlayerCharacter.h"
+#include "Character/Player/EnforcerCharacter.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -118,7 +119,7 @@ void UUtility_Enforcer::OnTargetDataReceived(const FGameplayAbilityTargetDataHan
 
 	Character->GetCharacterMovement()->SetMovementMode(MOVE_Flying);
 
-	Player = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
+	Player = Cast<AEnforcerCharacter>(GetAvatarActorFromActorInfo());
 	if (Player)
 	{
 		Cable = Player->GrappleCable;
@@ -180,7 +181,7 @@ void UUtility_Enforcer::EndAbility(const FGameplayAbilitySpecHandle Handle, cons
 		}
 	}
 	
-	Player = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
+	Player = Cast<AEnforcerCharacter>(GetAvatarActorFromActorInfo());
 	if (Player)
 	{
 		Cable = Player->GrappleCable;

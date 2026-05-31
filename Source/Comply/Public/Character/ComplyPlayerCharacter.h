@@ -12,7 +12,6 @@
 #include "ComplyPlayerCharacter.generated.h"
 
 
-class UCableComponent;
 class URangedWeaponAbilityBase;
 struct FActiveGameplayEffectHandle;
 class UCameraComponent;
@@ -109,13 +108,6 @@ public:
 	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CurrentEquippedSlot)
 	EWeaponSlot CurrentEquippedSlot = EWeaponSlot::Primary;
-	
-	// This cable component is driven by the Enforcer utility
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<UCableComponent> GrappleCable;
-	
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<USceneComponent> GrappleAnchorPoint;
 	
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")

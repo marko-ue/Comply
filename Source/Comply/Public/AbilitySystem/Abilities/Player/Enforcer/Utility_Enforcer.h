@@ -6,6 +6,8 @@
 #include "AbilitySystem/Abilities/UtilityAbilityBase.h"
 #include "Utility_Enforcer.generated.h"
 
+class UCableComponent;
+class AComplyPlayerCharacter;
 class UCurveVector;
 /**
  * 
@@ -37,4 +39,17 @@ private:
 	void OnPullTimedOut();
 
 	void FinishGrapple();
+	
+	UFUNCTION()
+	void OnTargetDataReceived(const FGameplayAbilityTargetDataHandle& DataHandle, FGameplayTag ApplicationTag);
+
+	UPROPERTY()
+	TObjectPtr<AComplyPlayerCharacter> Player;
+
+	UPROPERTY()
+	TObjectPtr<UCableComponent> Cable;
+	
+	FVector GrappleWorldTarget;
+	
+	FTimerHandle CableUpdateTimer;
 };

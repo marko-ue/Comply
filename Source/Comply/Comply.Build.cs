@@ -22,6 +22,8 @@ public class Comply : ModuleRules
 		});
 		
 		PublicDependencyModuleNames.AddRange(new string[] { "GameplayAbilities" });
+		
+		PrivateDependencyModuleNames.AddRange(new string[] { "CableComponent" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "GameplayTags", "GameplayTasks", "NavigationSystem", "Niagara" });
 

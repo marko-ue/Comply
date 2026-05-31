@@ -2,7 +2,11 @@
 
 
 #include "AbilitySystem/Abilities/Player/Enforcer/Utility_Enforcer.h"
+
+#include "AbilitySystemComponent.h"
+#include "CableComponent.h"
 #include "Abilities/Tasks/AbilityTask_ApplyRootMotionMoveToForce.h"
+#include "Character/ComplyPlayerCharacter.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -20,47 +24,35 @@ void UUtility_Enforcer::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		return;
 	}
 
-	FHitResult GrappleHit;
-	if (!PerformGrappleTrace(GrappleHit))
+	// Target data must be used so the client is pulled to the correct position
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
+	ASC->AbilityTargetDataSetDelegate(Handle, ActivationInfo.GetActivationPredictionKey())
+		.AddUObject(this, &UUtility_Enforcer::OnTargetDataReceived);
+
+	if (ActorInfo->IsLocallyControlled())
 	{
-		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
-		return;
-	}
+		// Grapple trace is performed first to get the GrappleHit
+		FHitResult GrappleHit;
+		if (!PerformGrappleTrace(GrappleHit))
+		{
+			EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+			return;
+		}
 
-	ACharacter* Character = Cast<ACharacter>(ActorInfo->AvatarActor.Get());
-	if (!Character)
-	{
-		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
-		return;
-	}
-
-	// Set the character's movement mode to flying so gravity is disabled while pulling
-	// This makes the trajectory straight to the target location
-	Character->GetCharacterMovement()->SetMovementMode(MOVE_Flying);
-
-	/* 
-	 * The task simply moves this ability's owning actor to the target location smoothly
-	 * It also allows for further customization
-	 * All this is handled through the character movement component, so replication is handled through it
-	*/
-	UAbilityTask_ApplyRootMotionMoveToForce* MoveTask =
-		UAbilityTask_ApplyRootMotionMoveToForce::ApplyRootMotionMoveToForce(
-			this,
-			FName("GrapplePull"),
-			GrappleHit.ImpactPoint, // Will pull towards the impact point of the grapple trace (hitscan from camera)
-			PullDuration, // The player will be pulled for at most the pull duration, before the pull is stopped
-			false,
-			MOVE_Flying,
-			false,
-			PathOffsetCurve, // Curve to give a swing instead of a straight pull
-			ERootMotionFinishVelocityMode::ClampVelocity,
-			FVector::ZeroVector,
-			500.f
+		// The grapple hit is passed into target data 
+		FGameplayAbilityTargetDataHandle DataHandle;
+		DataHandle.Add(new FGameplayAbilityTargetData_SingleTargetHit(GrappleHit));
+		
+		ASC->ServerSetReplicatedTargetData(
+			Handle,
+			ActivationInfo.GetActivationPredictionKey(),
+			DataHandle,
+			FGameplayTag(),
+			ASC->ScopedPredictionKey
 		);
 
-	MoveTask->OnTimedOutAndDestinationReached.AddDynamic(this, &UUtility_Enforcer::OnPullReachedDestination);
-	MoveTask->OnTimedOut.AddDynamic(this, &UUtility_Enforcer::OnPullTimedOut);
-	MoveTask->ReadyForActivation();
+		OnTargetDataReceived(DataHandle, FGameplayTag());
+	}
 }
 
 bool UUtility_Enforcer::PerformGrappleTrace(FHitResult& OutHitResult, float GrappleRange) const
@@ -108,6 +100,50 @@ bool UUtility_Enforcer::PerformGrappleTrace(FHitResult& OutHitResult, float Grap
 	return false;
 }
 
+// Now location related things can be used, as the server gets correct information from the client via target data
+void UUtility_Enforcer::OnTargetDataReceived(const FGameplayAbilityTargetDataHandle& DataHandle, FGameplayTag ApplicationTag)
+{
+	GetAbilitySystemComponentFromActorInfo()->ConsumeClientReplicatedTargetData(
+		GetCurrentAbilitySpecHandle(),
+		GetCurrentActivationInfo().GetActivationPredictionKey()
+	);
+
+	if (!DataHandle.IsValid(0)) return;
+
+	const FHitResult* HitResult = DataHandle.Get(0)->GetHitResult();
+	if (!HitResult) { EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false); return; }
+
+	ACharacter* Character = Cast<ACharacter>(GetCurrentActorInfo()->AvatarActor.Get());
+	if (!Character) { EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false); return; }
+
+	Character->GetCharacterMovement()->SetMovementMode(MOVE_Flying);
+
+	Player = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
+	if (Player)
+	{
+		Cable = Player->GrappleCable;
+		if (Cable)
+		{
+			Player->GrappleAnchorPoint->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+			Player->GrappleAnchorPoint->SetWorldLocation(HitResult->ImpactPoint);
+			Cable->SetAttachEndToComponent(Player->GrappleAnchorPoint);
+			Cable->bAttachEnd = true;
+			Cable->SetVisibility(true);
+		}
+	}
+
+	UAbilityTask_ApplyRootMotionMoveToForce* MoveTask =
+		UAbilityTask_ApplyRootMotionMoveToForce::ApplyRootMotionMoveToForce(
+			this, FName("GrapplePull"), HitResult->ImpactPoint, PullDuration,
+			false, MOVE_Flying, false, PathOffsetCurve,
+			ERootMotionFinishVelocityMode::ClampVelocity, FVector::ZeroVector, 500.f
+		);
+
+	MoveTask->OnTimedOutAndDestinationReached.AddDynamic(this, &UUtility_Enforcer::OnPullReachedDestination);
+	MoveTask->OnTimedOut.AddDynamic(this, &UUtility_Enforcer::OnPullTimedOut);
+	MoveTask->ReadyForActivation();
+}
+
 void UUtility_Enforcer::OnPullReachedDestination()
 {
 	FinishGrapple();
@@ -143,6 +179,18 @@ void UUtility_Enforcer::EndAbility(const FGameplayAbilitySpecHandle Handle, cons
 			CMC->SetMovementMode(MOVE_Falling);
 		}
 	}
+	
+	Player = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
+	if (Player)
+	{
+		Cable = Player->GrappleCable;
+		if (Cable)
+		{
+			Cable->SetVisibility(false);
+		}
+	}
+	
+	GetWorld()->GetTimerManager().ClearTimer(CableUpdateTimer);
 
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

@@ -76,6 +76,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool bIsFiring = false;
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool bIsReloading = false;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Meshes")
 	TObjectPtr<UStaticMeshComponent> WeaponMesh;
 	

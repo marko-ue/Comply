@@ -18,9 +18,13 @@ void UShotgunReload::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 {
     Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-    const AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
-    ActiveWeapon = Character->GetEquippedPrimaryWeapon();
-
+    AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
+    if (Character)
+    {
+        ActiveWeapon = Character->GetEquippedPrimaryWeapon();
+        Character->bIsReloading = true;
+    }
+    
     if (!ActiveWeapon)
     {
         EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
@@ -38,6 +42,18 @@ void UShotgunReload::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
     WaitFiringTagTask->ReadyForActivation();
 
     LoadNextShell();
+}
+
+void UShotgunReload::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+    const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+{
+    AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
+    if (Character)
+    {
+        Character->bIsReloading = false;
+    }
+    
+    Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
 void UShotgunReload::LoadNextShell()

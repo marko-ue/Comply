@@ -22,8 +22,12 @@ void UReloadAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 void UReloadAbility::HandleReload()
 {
 	// Find the active ranged weapon to get its montage, ammo reload effect and to activate it later
-	const AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
-	ActiveWeapon = Character->GetEquippedPrimaryWeapon();
+	AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
+	if (Character)
+	{
+		ActiveWeapon = Character->GetEquippedPrimaryWeapon();
+		Character->bIsReloading = true;
+	}
 	
 	const UWeaponAttributeSet* WeaponAS = GetAbilitySystemComponentFromActorInfo()->GetSet<UWeaponAttributeSet>();
 	bool bFound = false;
@@ -94,7 +98,7 @@ void UReloadAbility::OnReloadMontageCompleted()
 	Tags.AddTag(ComplyTags::States::State_Reloading);
 	GetAbilitySystemComponentFromActorInfo()->RemoveActiveEffectsWithGrantedTags(Tags);
 
-	// Resume firing if still holding, otherwise end the ability to allow future inputs (as it's instanced per actor)dddd
+	// Resume firing if still holding, otherwise end the ability to allow future inputs (as it's instanced per actor)
 	GetAbilitySystemComponentFromActorInfo()->GetOwnedGameplayTags(Tags);
 	if (Tags.HasTagExact(ComplyTags::States::State_Firing) && ActiveWeapon)
 	{
@@ -107,4 +111,16 @@ void UReloadAbility::OnReloadMontageCompleted()
 	{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 	}
+}
+
+void UReloadAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+{
+	AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
+	if (Character)
+	{
+		Character->bIsReloading = false;
+	}
+	
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

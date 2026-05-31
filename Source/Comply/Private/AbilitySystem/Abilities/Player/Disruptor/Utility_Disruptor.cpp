@@ -2,8 +2,11 @@
 
 
 #include "AbilitySystem/Abilities/Player/Disruptor/Utility_Disruptor.h"
+
+#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
+#include "AbilitySystem/ComplyTags.h"
 #include "Actors/ConfusionBeacon/ConfusionBeaconPreview.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
@@ -76,12 +79,13 @@ void UUtility_Disruptor::ConfirmPlacement()
 		SpawnedBeaconPreviewActor = nullptr;
 	}
 
-	TraceAndSpawnBeacon();
-
-	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	UAbilityTask_PlayMontageAndWait* PlaceBeaconMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
+		this, NAME_None, PlaceBeaconMontage, 1.f, NAME_None, true);
+	PlaceBeaconMontageTask->OnCompleted.AddDynamic(this, &UUtility_Disruptor::TraceAndSpawnBeacon);
+	PlaceBeaconMontageTask->ReadyForActivation();
 }
 
-void UUtility_Disruptor::TraceAndSpawnBeacon() const
+void UUtility_Disruptor::TraceAndSpawnBeacon()
 {
 	AActor* Avatar = GetAvatarActorFromActorInfo();
 	if (!Avatar) return;
@@ -139,6 +143,12 @@ void UUtility_Disruptor::TraceAndSpawnBeacon() const
 			ASC->Server_PlaceBeacon(GetCurrentAbilitySpecHandle(), SpawnLocation, BeaconLifetime);
 		}
 	}
+	
+	// Automatically equip the primary ability once the shield is thrown, as the player should not be able to equip the shield while it's on cooldown
+	GetAbilitySystemComponentFromActorInfo()->TryActivateAbilitiesByTag(
+				FGameplayTagContainer(ComplyTags::ComplyAbilities::AssetTags::Equip_Primary));
+	
+	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
 void UUtility_Disruptor::CancelPlacement()

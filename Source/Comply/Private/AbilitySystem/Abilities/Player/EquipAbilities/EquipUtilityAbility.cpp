@@ -11,6 +11,7 @@ UEquipUtilityAbility::UEquipUtilityAbility()
 {
 	// The equip utility ability should not be activated if the utility is on cooldown
 	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("ComplyTags.Abilities.Cooldowns.RangerUtility")));
+	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("ComplyTags.Abilities.Cooldowns.DisruptorUtility")));
 }
 
 void UEquipUtilityAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,

@@ -40,7 +40,8 @@ private:
 	
 	void SpawnPreview(const FGameplayAbilityActorInfo* ActorInfo);
 	
-	void TraceAndSpawnBeacon() const;
+	UFUNCTION()
+	void TraceAndSpawnBeacon();
 	
 	UFUNCTION()
 	void ConfirmPlacement();
@@ -49,4 +50,7 @@ private:
 	void CancelPlacement();
 	
 	FTimerHandle OnBeaconExpiredTimerHandle;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Animations")
+	TObjectPtr<UAnimMontage> PlaceBeaconMontage;
 };

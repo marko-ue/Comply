@@ -48,4 +48,14 @@ protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	
 	virtual void SpawnPreview() override;
+	
+private:
+	UPROPERTY(EditDefaultsOnly, Category = "Animations")
+	TObjectPtr<UAnimMontage> ThrowDecoyMontage;
+	
+	UPROPERTY()
+	UAbilityTask_PlayMontageAndWait* PrepareDecoyMontageTask;
+	
+	UFUNCTION()
+	void OnThrowMontageCompleted();
 };

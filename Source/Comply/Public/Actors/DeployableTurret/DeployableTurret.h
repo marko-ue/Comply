@@ -45,19 +45,21 @@ public:
 	FGameplayTag DamageTypeTag;
 	
 	virtual void Destroyed() override;
+	
+	
 
 protected:
 	virtual void BeginPlay() override;
 	
 private:
 	UPROPERTY(EditAnywhere, Category = "Components")
-	USkeletalMeshComponent* TurretMesh;
+	TObjectPtr<UStaticMeshComponent> TurretMesh;
 	
 	UPROPERTY(EditAnywhere, Category = "Components")
-	UArrowComponent* ArrowComp;
+	TObjectPtr<UArrowComponent> ArrowComp;
 	
 	UPROPERTY(EditAnywhere, Category = "Components")
-	USphereComponent* SphereComp;
+	TObjectPtr<USphereComponent> SphereComp;
 	
 	UFUNCTION()
 	void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

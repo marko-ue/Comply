@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/Abilities/Player/Enforcer/Throwable_Enforcer.h"
 #include "AbilitySystemComponent.h"
+#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "AbilitySystem/AbilityTasks/HitscanTargetData.h"
@@ -27,20 +28,13 @@ void UThrowable_Enforcer::Throw()
 	{
 		SpawnPreview(GetCurrentActorInfo());
 	}
-
-	// The bound function will be called when the OnConfirm event is received from where the input is handled (player class)
-	// It will only be received if the input is pressed while the ability is already active (preview spawned)
-	UAbilityTask_WaitConfirmCancel* WaitConfirm = UAbilityTask_WaitConfirmCancel::WaitConfirmCancel(this);
-	WaitConfirm->OnConfirm.AddDynamic(this, &ThisClass::ConfirmThrow);
-	WaitConfirm->OnCancel.AddDynamic(this, &ThisClass::CancelThrow);
-	WaitConfirm->ReadyForActivation();
 }
 
 void UThrowable_Enforcer::SpawnPreview(const FGameplayAbilityActorInfo* ActorInfo)
 {
-	// Input is confirmed when the primary input is released
-	UAbilityTask_WaitConfirmCancel* WaitConfirm = UAbilityTask_WaitConfirmCancel::WaitConfirmCancel(this);
-	WaitConfirm->OnConfirm.AddDynamic(this, &UThrowable_Enforcer::ConfirmThrow);
+	// Input is confirmed when the primary input is pressed again
+	WaitConfirm = UAbilityTask_WaitConfirmCancel::WaitConfirmCancel(this);
+	WaitConfirm->OnConfirm.AddDynamic(this, &UThrowable_Enforcer::PlayPlaceTurretAnimation);
 	WaitConfirm->ReadyForActivation();
 	
 	AActor* Avatar = GetCurrentActorInfo()->AvatarActor.Get();
@@ -58,12 +52,35 @@ void UThrowable_Enforcer::SpawnPreview(const FGameplayAbilityActorInfo* ActorInf
 	}
 }
 
+void UThrowable_Enforcer::PlayPlaceTurretAnimation()
+{
+	UAbilityTask_PlayMontageAndWait* PlaceTurretMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
+		this, NAME_None, PlaceTurretMontage, 1.f, NAME_None, true);
+	PlaceTurretMontageTask->OnCompleted.AddDynamic(this, &UThrowable_Enforcer::ConfirmThrow);
+	PlaceTurretMontageTask->OnBlendOut.AddDynamic(this, &UThrowable_Enforcer::ConfirmThrow);
+	
+	// If the turret is placed in a valid location, play the animation
+	if (SpawnedTurretPreviewActor->bCanPlace)
+	{
+		SpawnedTurretPreviewActor->bShouldUpdatePosition = false;
+		PlaceTurretMontageTask->ReadyForActivation();
+	}
+	else
+	{
+		// Re-create the task so the player can try placing again
+		WaitConfirm = UAbilityTask_WaitConfirmCancel::WaitConfirmCancel(this);
+		WaitConfirm->OnConfirm.AddDynamic(this, &ThisClass::PlayPlaceTurretAnimation);
+		WaitConfirm->OnCancel.AddDynamic(this, &ThisClass::PlayPlaceTurretAnimation);
+		WaitConfirm->ReadyForActivation();
+	}
+}
+
 void UThrowable_Enforcer::ConfirmThrow()
 {
 	if (!SpawnedTurretPreviewActor || !SpawnedTurretPreviewActor->bCanPlace)
         {
             // Re-create the task so the player can try placing again
-            UAbilityTask_WaitConfirmCancel* WaitConfirm = UAbilityTask_WaitConfirmCancel::WaitConfirmCancel(this);
+            WaitConfirm = UAbilityTask_WaitConfirmCancel::WaitConfirmCancel(this);
             WaitConfirm->OnConfirm.AddDynamic(this, &ThisClass::ConfirmThrow);
             WaitConfirm->OnCancel.AddDynamic(this, &ThisClass::CancelThrow);
             WaitConfirm->ReadyForActivation();
@@ -76,19 +93,12 @@ void UThrowable_Enforcer::ConfirmThrow()
 		return;
 	}
 
-	// Destroy the preview actor now, as the actual turret is already placed
-	if (SpawnedTurretPreviewActor)
-	{
-		SpawnedTurretPreviewActor->Destroy();
-		SpawnedTurretPreviewActor = nullptr;
-	}
-
 	PlaceTurret();
 
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
-void UThrowable_Enforcer::PlaceTurret() const
+void UThrowable_Enforcer::PlaceTurret()
 {
 	AActor* Avatar = GetAvatarActorFromActorInfo();
 	if (!Avatar) return;
@@ -141,7 +151,14 @@ void UThrowable_Enforcer::PlaceTurret() const
 		UComplyAbilitySystemComponent* ASC = Cast<UComplyAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
 		if (ASC)
 		{
-			ASC->Server_PlaceTurret(GetCurrentAbilitySpecHandle(), SpawnLocation, SpawnRotation);
+			ASC->Server_PlaceTurret(GetCurrentAbilitySpecHandle(), SpawnedTurretPreviewActor->PlacementLocation, SpawnedTurretPreviewActor->PlacementRotation);
+		}
+		
+		// Destroy the preview actor now, as the actual turret is now placed
+		if (SpawnedTurretPreviewActor)
+		{
+			SpawnedTurretPreviewActor->Destroy();
+			SpawnedTurretPreviewActor = nullptr;
 		}
 	}
 }

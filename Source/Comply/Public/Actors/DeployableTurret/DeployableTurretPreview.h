@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "DeployableTurretPreview.generated.h"
 
+class UArrowComponent;
+
 UCLASS()
 class COMPLY_API ADeployableTurretPreview : public AActor
 {
@@ -21,6 +23,13 @@ public:
 	void UpdatePosition();
 	
 	bool bCanPlace = false;
+	bool bShouldUpdatePosition = true;
+	
+	FVector PlacementLocation;
+	FRotator PlacementRotation;
+	
+	UPROPERTY(EditAnywhere, Category = "Components")
+	TObjectPtr<UStaticMeshComponent> TurretMesh;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Materials")
 	TObjectPtr<UMaterialInterface> ValidMaterial;

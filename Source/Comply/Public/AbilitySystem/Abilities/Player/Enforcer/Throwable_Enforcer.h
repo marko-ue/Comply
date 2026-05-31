@@ -6,6 +6,7 @@
 #include "AbilitySystem/Abilities/ThrowableAbilityBase.h"
 #include "Throwable_Enforcer.generated.h"
 
+class UAbilityTask_WaitConfirmCancel;
 class ADeployableTurret;
 class ADeployableTurretPreview;
 /**
@@ -41,12 +42,21 @@ protected:
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 	
 	void SpawnPreview(const FGameplayAbilityActorInfo* ActorInfo);
-	
+
 	virtual void Throw() override;
 	
 	UFUNCTION()
 	virtual void CancelThrow() override;
 	
 private:
-	void PlaceTurret() const;
+	void PlaceTurret();
+	
+	UFUNCTION()
+	void PlayPlaceTurretAnimation();
+	
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UAnimMontage> PlaceTurretMontage;
+	
+	UPROPERTY()
+	UAbilityTask_WaitConfirmCancel* WaitConfirm;
 };

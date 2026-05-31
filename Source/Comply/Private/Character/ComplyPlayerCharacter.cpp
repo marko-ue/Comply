@@ -189,7 +189,9 @@ void AComplyPlayerCharacter::PrimaryActionReleased()
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
 		// Confirm the throw of the throwable once the primary input is released, removing the preview path
-		if (Spec.Ability->GetAssetTags().HasTagExact(ComplyTags::ComplyAbilities::Throwable) && Spec.IsActive())
+		// Only for throwable abilities that use confirm input on release
+		if (Spec.Ability->GetAssetTags().HasTagExact(ComplyTags::ComplyAbilities::Throwable)
+			&& Spec.IsActive() && Cast<UThrowableAbilityBase>(Spec.GetPrimaryInstance())->bConfirmOnRelease == true) 
 		{
 			GetAbilitySystemComponent()->LocalInputConfirm();
 			break;

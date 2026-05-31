@@ -24,7 +24,7 @@ ADeployableTurret::ADeployableTurret()
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 
-	TurretMesh = CreateDefaultSubobject<USkeletalMeshComponent>("TurretMesh");
+	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>("TurretMesh");
 	TurretMesh->SetupAttachment(RootComponent);
 
 	SphereComp = CreateDefaultSubobject<USphereComponent>("SphereComponent");
@@ -90,7 +90,7 @@ void ADeployableTurret::TryFire()
 			FVector TraceStart = GetActorLocation() + FVector(0.f, 0.f, 50.f);
 			FVector TraceEnd = Target->GetActorLocation() + FVector(0.f, 0.f, 50.f);
 			bool bBlocked = GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility);
-			if (bBlocked) continue; // a wall is in the way
+			if (bBlocked) continue; // A wall is in the way
 			
 			CurrentTarget = Target;
 			Fire(Target);

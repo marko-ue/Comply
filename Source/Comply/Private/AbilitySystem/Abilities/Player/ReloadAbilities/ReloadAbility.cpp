@@ -31,10 +31,22 @@ void UReloadAbility::HandleReload()
 	
 	const UWeaponAttributeSet* WeaponAS = GetAbilitySystemComponentFromActorInfo()->GetSet<UWeaponAttributeSet>();
 	bool bFound = false;
+	
+	float CurrentAmmoInMag = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(ActiveWeapon->GetCurrentAmmoAttribute(), bFound);
+	float MaxAmmoInMag = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(ActiveWeapon->GetMaxAmmoAttribute(), bFound);
 	float ReserveAmmo = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(ActiveWeapon->GetCurrentReserveAmmoAttribute(), bFound);
+	
+	// Can't reload if there's no more reserve ammo
 	if (WeaponAS && ReserveAmmo <= 0.f)
 	{
 		CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true);
+		return;
+	}
+	
+	// Can't reload if the mag is full
+	if (WeaponAS && FMath::IsNearlyEqual(CurrentAmmoInMag, MaxAmmoInMag))
+	{
+	  	CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true);
 		return;
 	}
 	

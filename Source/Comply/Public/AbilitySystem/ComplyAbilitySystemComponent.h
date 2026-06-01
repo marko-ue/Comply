@@ -31,5 +31,5 @@ public:
 	void Server_PlaceTurret(FGameplayAbilitySpecHandle AbilityHandle, FVector SpawnLocation, FRotator SpawnRotation);
 	
 	UFUNCTION(Server, Reliable)
-	void Server_PlaceBeacon(FGameplayAbilitySpecHandle AbilityHandle, FVector SpawnLocation, float BeaconLifetime);
+	void Server_PlaceBuffTotem(FGameplayAbilitySpecHandle AbilityHandle, FVector SpawnLocation, float BuffTotemLifetime);
 };

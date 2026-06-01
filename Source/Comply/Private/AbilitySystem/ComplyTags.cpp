@@ -12,7 +12,6 @@ namespace ComplyTags
 		namespace AssetTags
 		{
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(ApplyShieldedEffectAbility, "ComplyTags.Abilities.Ranger.ApplyShieldedEffectAbility", "Apply shielded effect ability asset tag")
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(ApplyConfusedEffectAbility, "ComplyTags.Abilities.Disruptor.ApplyConfusedEffectAbility", "Apply confused effect ability asset tag")
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Equip_Primary, "ComplyTags.Abilities.Equip.Primary", "Primary weapon equip ability asset tag")
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Equip_Throwable, "ComplyTags.Abilities.Equip.Throwable", "Throwable weapon equip ability asset tag")
 		}
@@ -36,11 +35,11 @@ namespace ComplyTags
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Firing, "ComplyTags.States.Firing", "Is player firing")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Shielded, "ComplyTags.States.Shielded", "Is player being shielded")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Reloading, "ComplyTags.States.Reloading", "Is player reloading")
-		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Confused, "ComplyTags.States.Confused", "Is enemy confused")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Distracted, "ComplyTags.States.Distracted", "Is enemy distracted")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Equipping, "ComplyTags.States.Equipping", "Is player equipping")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_ThrowablePreparing, "ComplyTags.States.Throwable.Preparing", "Is player preparing throwable")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_NoThrowables, "ComplyTags.States.NoGrenades", "Does player have no throwables")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_TotemBuffed, "ComplyTags.States.TotemBuffed", "Is player buffed by a totem")
 	}
 	
 	namespace SetByCaller

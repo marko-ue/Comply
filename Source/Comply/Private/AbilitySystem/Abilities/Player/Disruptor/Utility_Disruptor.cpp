@@ -7,7 +7,7 @@
 #include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "AbilitySystem/ComplyTags.h"
-#include "Actors/ConfusionBeacon/ConfusionBeaconPreview.h"
+#include "Actors/BuffTotem/BuffTotemPreview.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -23,7 +23,7 @@ void UUtility_Disruptor::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 
 void UUtility_Disruptor::Use()
 {
-	// The preview for the shield will be shown only on the owning client
+	// The preview for the buff totem will be shown only on the owning client
 	if (GetCurrentActorInfo()->IsLocallyControlled())
 	{
 		SpawnPreview(GetCurrentActorInfo());
@@ -46,17 +46,17 @@ void UUtility_Disruptor::SpawnPreview(const FGameplayAbilityActorInfo* ActorInfo
 	SpawnParams.Owner = Avatar;
 	SpawnParams.Instigator = Cast<APawn>(Avatar);
 
-	SpawnedBeaconPreviewActor = GetWorld()->SpawnActor<AConfusionBeaconPreview>(BeaconPreviewActorClass, GetAvatarActorFromActorInfo()->GetActorLocation(), FRotator::ZeroRotator, SpawnParams);
+	SpawnedBuffTotemPreviewActor = GetWorld()->SpawnActor<ABuffTotemPreview>(BuffTotemPreviewActorClass, GetAvatarActorFromActorInfo()->GetActorLocation(), FRotator::ZeroRotator, SpawnParams);
 
-	if (SpawnedBeaconPreviewActor)
+	if (SpawnedBuffTotemPreviewActor)
 	{
-		SpawnedBeaconPreviewActor->InitPreviewData(Cast<ACharacter>(ActorInfo->AvatarActor.Get()));
+		SpawnedBuffTotemPreviewActor->InitPreviewData(Cast<ACharacter>(ActorInfo->AvatarActor.Get()));
 	}
 }
 
 void UUtility_Disruptor::ConfirmPlacement()
 {
-	if (!SpawnedBeaconPreviewActor || !SpawnedBeaconPreviewActor->bCanPlace)
+	if (!SpawnedBuffTotemPreviewActor || !SpawnedBuffTotemPreviewActor->bCanPlace)
 	{
 		// Re-create the task so the player can try placing again
 		UAbilityTask_WaitConfirmCancel* WaitConfirm = UAbilityTask_WaitConfirmCancel::WaitConfirmCancel(this);
@@ -72,20 +72,20 @@ void UUtility_Disruptor::ConfirmPlacement()
 		return;
 	}
 
-	// Destroy the preview actor now, as the actual shield is already placed
-	if (SpawnedBeaconPreviewActor)
+	// Destroy the preview actor now, as the actual buff totem is already placed
+	if (SpawnedBuffTotemPreviewActor)
 	{
-		SpawnedBeaconPreviewActor->Destroy();
-		SpawnedBeaconPreviewActor = nullptr;
+		SpawnedBuffTotemPreviewActor->Destroy();
+		SpawnedBuffTotemPreviewActor = nullptr;
 	}
 
-	UAbilityTask_PlayMontageAndWait* PlaceBeaconMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-		this, NAME_None, PlaceBeaconMontage, 1.f, NAME_None, true);
-	PlaceBeaconMontageTask->OnCompleted.AddDynamic(this, &UUtility_Disruptor::TraceAndSpawnBeacon);
-	PlaceBeaconMontageTask->ReadyForActivation();
+	UAbilityTask_PlayMontageAndWait* PlaceBuffTotemMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
+		this, NAME_None, PlaceBuffTotemMontage, 1.f, NAME_None, true);
+	PlaceBuffTotemMontageTask->OnCompleted.AddDynamic(this, &UUtility_Disruptor::TraceAndSpawnBuffTotem);
+	PlaceBuffTotemMontageTask->ReadyForActivation();
 }
 
-void UUtility_Disruptor::TraceAndSpawnBeacon()
+void UUtility_Disruptor::TraceAndSpawnBuffTotem()
 {
 	AActor* Avatar = GetAvatarActorFromActorInfo();
 	if (!Avatar) return;
@@ -124,7 +124,7 @@ void UUtility_Disruptor::TraceAndSpawnBeacon()
 			SpawnLocation = Hit.ImpactPoint;
 		}
 		
-		// The beacon will spawn rotated towards the crosshair's world direction rotation
+		// The buff totem will spawn rotated towards the crosshair's world direction rotation
 		FRotator SpawnRotation = CrosshairWorldDirection.Rotation();
 		SpawnRotation.Yaw += 0.f;
 		SpawnRotation.Pitch = 0.f;
@@ -136,15 +136,15 @@ void UUtility_Disruptor::TraceAndSpawnBeacon()
 		
 		const FGameplayAbilityActivationInfo ActivationInfo = GetCurrentActivationInfo();
 
-		// A server RPC is used to handle spawning the beacon
+		// A server RPC is used to handle spawning the buff totem
 		UComplyAbilitySystemComponent* ASC = Cast<UComplyAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
 		if (ASC)
 		{
-			ASC->Server_PlaceBeacon(GetCurrentAbilitySpecHandle(), SpawnLocation, BeaconLifetime);
+			ASC->Server_PlaceBuffTotem(GetCurrentAbilitySpecHandle(), SpawnLocation, BuffTotemLifetime);
 		}
 	}
 	
-	// Automatically equip the primary ability once the shield is thrown, as the player should not be able to equip the shield while it's on cooldown
+	// Automatically equip the primary ability once the buff totem is thrown, as the player should not be able to equip the buff totem while it's on cooldown
 	GetAbilitySystemComponentFromActorInfo()->TryActivateAbilitiesByTag(
 				FGameplayTagContainer(ComplyTags::ComplyAbilities::AssetTags::Equip_Primary));
 	
@@ -153,10 +153,10 @@ void UUtility_Disruptor::TraceAndSpawnBeacon()
 
 void UUtility_Disruptor::CancelPlacement()
 {
-	if (SpawnedBeaconPreviewActor)
+	if (SpawnedBuffTotemPreviewActor)
 	{
-		SpawnedBeaconPreviewActor->Destroy();
-		SpawnedBeaconPreviewActor = nullptr;
+		SpawnedBuffTotemPreviewActor->Destroy();
+		SpawnedBuffTotemPreviewActor = nullptr;
 	}
 
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, true);
@@ -165,10 +165,10 @@ void UUtility_Disruptor::CancelPlacement()
 void UUtility_Disruptor::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	if (SpawnedBeaconPreviewActor)
+	if (SpawnedBuffTotemPreviewActor)
 	{
-		SpawnedBeaconPreviewActor->Destroy();
-		SpawnedBeaconPreviewActor = nullptr;
+		SpawnedBuffTotemPreviewActor->Destroy();
+		SpawnedBuffTotemPreviewActor = nullptr;
 	}
 
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);

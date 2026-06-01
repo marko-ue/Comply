@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "ConfusionBeaconPreview.generated.h"
+#include "BuffTotemPreview.generated.h"
 
 UCLASS()
-class COMPLY_API AConfusionBeaconPreview : public AActor
+class COMPLY_API ABuffTotemPreview : public AActor
 {
 	GENERATED_BODY()
 
 public:
-	AConfusionBeaconPreview();
+	ABuffTotemPreview();
 	
 	void InitPreviewData(ACharacter* OwnerChar);
 	

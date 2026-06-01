@@ -3,20 +3,22 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ActiveGameplayEffectHandle.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/Actor.h"
-#include "ConfusionBeacon.generated.h"
+#include "BuffTotem.generated.h"
 
 class UGameplayEffect;
 class UGameplayAbility;
 class USphereComponent;
 
 UCLASS()
-class COMPLY_API AConfusionBeacon : public AActor
+class COMPLY_API ABuffTotem : public AActor
 {
 	GENERATED_BODY()
 
 public:
-	AConfusionBeacon();
+	ABuffTotem();
 	
 	virtual void Tick(float DeltaTime) override;
 	
@@ -26,11 +28,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USphereComponent> SphereComp;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilities")
-	TSubclassOf<UGameplayAbility> ApplyConfusedEffectAbilityClass;
-	
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
-	TSubclassOf<UGameplayEffect> ApplyConfusedEffectClass;
+	TSubclassOf<UGameplayEffect> ApplyTotemBuffEffectClass;
 
 protected:
 	virtual void BeginPlay() override;
@@ -40,7 +39,10 @@ private:
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
-	UFUNCTION()
-	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	FActiveGameplayEffectHandle ActiveTotemBuffEffect;
+	
+	void OnTotemBuffTagChanged(const FGameplayTag Tag, int32 NewCount);
+	
+	// Will be upgradeable
+	int32 BuffCount = 0;
 };

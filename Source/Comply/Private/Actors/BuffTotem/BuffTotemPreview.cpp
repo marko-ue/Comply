@@ -1,34 +1,34 @@
 // Copyright © 2026 Marko. All rights reserved.
 
 
-#include "Actors/ConfusionBeacon/ConfusionBeaconPreview.h"
+#include "Actors/BuffTotem/BuffTotemPreview.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 
 
-AConfusionBeaconPreview::AConfusionBeaconPreview()
+ABuffTotemPreview::ABuffTotemPreview()
 {
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void AConfusionBeaconPreview::BeginPlay()
+void ABuffTotemPreview::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-void AConfusionBeaconPreview::InitPreviewData(ACharacter* OwnerChar)
+void ABuffTotemPreview::InitPreviewData(ACharacter* OwnerChar)
 {
 	OwnerCharacter = OwnerChar;
 }
 
-void AConfusionBeaconPreview::Tick(float DeltaTime)
+void ABuffTotemPreview::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
 	UpdatePosition();
 }
 
-void AConfusionBeaconPreview::UpdatePosition()
+void ABuffTotemPreview::UpdatePosition()
 {
 	if (!OwnerCharacter) return;
 	

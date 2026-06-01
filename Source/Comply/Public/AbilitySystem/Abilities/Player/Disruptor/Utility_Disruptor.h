@@ -6,10 +6,10 @@
 #include "AbilitySystem/Abilities/UtilityAbilityBase.h"
 #include "Utility_Disruptor.generated.h"
 
-class AConfusionBeacon;
-class AConfusionBeaconPreview;
+class ABuffTotem;
+class ABuffTotemPreview;
 /**
- * TODO: Make enemies attack each other. This will be done after enemy UI is finished, after enemies are able to attack
+ * 
  */
 UCLASS()
 class COMPLY_API UUtility_Disruptor : public UUtilityAbilityBase
@@ -18,13 +18,13 @@ class COMPLY_API UUtility_Disruptor : public UUtilityAbilityBase
 	
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Actors")
-	TSubclassOf<AConfusionBeacon> BeaconActorClass;
+	TSubclassOf<ABuffTotem> BuffTotemActorClass;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Actors")
-	TSubclassOf<AConfusionBeaconPreview> BeaconPreviewActorClass;
+	TSubclassOf<ABuffTotemPreview> BuffTotemPreviewActorClass;
 	
 	UPROPERTY()
-	TObjectPtr<AConfusionBeaconPreview> SpawnedBeaconPreviewActor = nullptr;
+	TObjectPtr<ABuffTotemPreview> SpawnedBuffTotemPreviewActor = nullptr;
 	
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
@@ -36,12 +36,12 @@ protected:
 private:
 	// This will be a scalable float in the future for upgrades
 	UPROPERTY(EditAnywhere, Category = "Ability Properties")
-	float BeaconLifetime = 20.f;
+	float BuffTotemLifetime = 20.f;
 	
 	void SpawnPreview(const FGameplayAbilityActorInfo* ActorInfo);
 	
 	UFUNCTION()
-	void TraceAndSpawnBeacon();
+	void TraceAndSpawnBuffTotem();
 	
 	UFUNCTION()
 	void ConfirmPlacement();
@@ -52,5 +52,5 @@ private:
 	FTimerHandle OnBeaconExpiredTimerHandle;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Animations")
-	TObjectPtr<UAnimMontage> PlaceBeaconMontage;
+	TObjectPtr<UAnimMontage> PlaceBuffTotemMontage;
 };

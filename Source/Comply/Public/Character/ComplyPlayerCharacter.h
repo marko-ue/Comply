@@ -178,6 +178,9 @@ private:
 	UFUNCTION()
 	void OnDistractedTagChanged(const FGameplayTag Tag, int32 NewCount);
 	
+	UFUNCTION()
+	void OnTotemBuffedTagChanged(const FGameplayTag Tag, int32 NewCount);
+	
 	virtual void OnWeaponEquipped(EWeaponSlot Slot) override;
 	
 	UFUNCTION()

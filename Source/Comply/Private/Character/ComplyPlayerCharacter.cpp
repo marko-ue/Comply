@@ -85,6 +85,9 @@ void AComplyPlayerCharacter::PossessedBy(AController* NewController)
 	
 	GetAbilitySystemComponent()->RegisterGameplayTagEvent(ComplyTags::States::State_Distracted,
 		EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AComplyPlayerCharacter::OnDistractedTagChanged);
+	
+	GetAbilitySystemComponent()->RegisterGameplayTagEvent(ComplyTags::States::State_TotemBuffed,
+		EGameplayTagEventType::AnyCountChange).AddUObject(this, &AComplyPlayerCharacter::OnTotemBuffedTagChanged);
 }
 
 // For clients, ASC ability actor info is initialized here
@@ -106,6 +109,9 @@ void AComplyPlayerCharacter::OnRep_PlayerState()
 	
 	GetAbilitySystemComponent()->RegisterGameplayTagEvent(ComplyTags::States::State_Distracted,
 		EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AComplyPlayerCharacter::OnDistractedTagChanged);
+	
+	GetAbilitySystemComponent()->RegisterGameplayTagEvent(ComplyTags::States::State_TotemBuffed,
+		EGameplayTagEventType::AnyCountChange).AddUObject(this, &AComplyPlayerCharacter::OnTotemBuffedTagChanged);
 }
 
 void AComplyPlayerCharacter::Tick(float DeltaTime)
@@ -295,7 +301,7 @@ void AComplyPlayerCharacter::UpdateRotationMode(float DeltaTime)
 {
 	if (!GetAbilitySystemComponent()) return;
 	
-	// With this check, the server computers rotation and replicates it
+	// With this check, the server computes rotation and replicates it
 	// The owning client computes rotation locally for responsiveness
 	// Simulated proxies display the replicated rotation instead of fighting with local interpolation
 	if (!IsLocallyControlled() && !HasAuthority()) return;
@@ -333,6 +339,15 @@ void AComplyPlayerCharacter::OnDistractedTagChanged(const FGameplayTag Tag, int3
 		AComplyPlayerController* PC = Cast<AComplyPlayerController>(GetController());
 		if (PC) PC->ShowFlashbangEffect();
 	}
+}
+
+void AComplyPlayerCharacter::OnTotemBuffedTagChanged(const FGameplayTag Tag, int32 NewCount)
+{
+	if (NewCount <= 0) return;
+    
+	if (NewCount == 1) UE_LOG(LogTemp, Warning, TEXT("1 totem buffed tag"));
+	if (NewCount == 2) UE_LOG(LogTemp, Warning, TEXT("2 totem buffed tag"));
+	if (NewCount == 3) UE_LOG(LogTemp, Warning, TEXT("3 totem buffed tag"));
 }
 
 FVector AComplyPlayerCharacter::GetScaleForSlot(EWeaponSlot Slot)

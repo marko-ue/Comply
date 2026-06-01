@@ -8,7 +8,7 @@
 #include "AbilitySystem/Abilities/Player/Disruptor/Utility_Disruptor.h"
 #include "AbilitySystem/Abilities/Player/Enforcer/Throwable_Enforcer.h"
 #include "AbilitySystem/Abilities/Player/Ranger/Throwable_Ranger.h"
-#include "Actors/ConfusionBeacon/ConfusionBeacon.h"
+#include "Actors/BuffTotem/BuffTotem.h"
 #include "Actors/DecoyGrenade/DecoyGrenade.h"
 #include "Actors/DeployableTurret/DeployableTurret.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -112,8 +112,8 @@ void UComplyAbilitySystemComponent::Server_PlaceTurret_Implementation(FGameplayA
 	}
 }
 
-void UComplyAbilitySystemComponent::Server_PlaceBeacon_Implementation(FGameplayAbilitySpecHandle AbilityHandle,
-                                                                      FVector SpawnLocation, float BeaconLifetime)
+void UComplyAbilitySystemComponent::Server_PlaceBuffTotem_Implementation(FGameplayAbilitySpecHandle AbilityHandle,
+                                                                      FVector SpawnLocation, float BuffTotemLifetime)
 {
 	const FGameplayAbilitySpec* Spec = FindAbilitySpecFromHandle(AbilityHandle);
 	const UUtility_Disruptor* Ability = Cast<UUtility_Disruptor>(Spec->GetPrimaryInstance());
@@ -124,9 +124,9 @@ void UComplyAbilitySystemComponent::Server_PlaceBeacon_Implementation(FGameplayA
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Instigator = Cast<APawn>(InstigatorPawn);
 
-	AConfusionBeacon* Beacon = GetWorld()->SpawnActor<AConfusionBeacon>(Ability->BeaconActorClass, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
-	if (Beacon)
+	ABuffTotem* BuffTotem = GetWorld()->SpawnActor<ABuffTotem>(Ability->BuffTotemActorClass, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
+	if (BuffTotem)
 	{
-		Beacon->SetLifeSpan(BeaconLifetime);
+		BuffTotem->SetLifeSpan(BuffTotemLifetime);
 	}
 }

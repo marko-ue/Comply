@@ -357,19 +357,22 @@ UStaticMesh* AComplyPlayerCharacter::GetMeshForSlot(EWeaponSlot Slot)
 void AComplyPlayerCharacter::OnWeaponEquipped(EWeaponSlot Slot)
 {
 	if (Slot == CurrentEquippedSlot) return; // Already holding this weapon, return so the equip animation is not played again
+
+	CurrentEquippedSlot = Slot;
 	
-	CurrentEquippedSlot = Slot; // This slot is used for guarding whether the weapon attempting to be equipped is already equipped
-	
-	GetAbilitySystemComponent()->AddLooseGameplayTag(ComplyTags::States::State_Equipping);
-    
+	// Set tag to exactly 1 stack regardless of how many were added previously
+	// This is to prevent multiple equipping state tags from stacking when spamming equips
+	GetAbilitySystemComponent()->SetLooseGameplayTagCount(ComplyTags::States::State_Equipping, 1);
+
 	UAnimMontage* Montage = nullptr;
 	switch (Slot)
 	{
-		case EWeaponSlot::None:		 Montage = nullptr;
 		case EWeaponSlot::Primary:   Montage = PrimaryEquipMontage;   break;
 		case EWeaponSlot::Utility:   Montage = UtilityEquipMontage;   break;
 		case EWeaponSlot::Throwable: Montage = ThrowableEquipMontage; break;
+		default: break;
 	}
+
 	if (Montage) PlayAnimMontage(Montage);
 }
 

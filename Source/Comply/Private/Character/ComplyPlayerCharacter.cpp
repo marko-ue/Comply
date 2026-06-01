@@ -295,6 +295,11 @@ void AComplyPlayerCharacter::UpdateRotationMode(float DeltaTime)
 {
 	if (!GetAbilitySystemComponent()) return;
 	
+	// With this check, the server computers rotation and replicates it
+	// The owning client computes rotation locally for responsiveness
+	// Simulated proxies display the replicated rotation instead of fighting with local interpolation
+	if (!IsLocallyControlled() && !HasAuthority()) return;
+	
 	const bool bDoesAimingTagExist = GetAbilitySystemComponent()->HasMatchingGameplayTag(ComplyTags::States::State_Aiming);
 	const bool bDoesFiringTagExist = GetAbilitySystemComponent()->HasMatchingGameplayTag(ComplyTags::States::State_Firing);
 	const bool bShouldControlRotation = bDoesAimingTagExist || bDoesFiringTagExist;

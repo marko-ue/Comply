@@ -83,8 +83,11 @@ void UShotgunReload::LoadNextShell()
     ShellMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
         this, NAME_None, ActiveWeapon->InsertShellMontage, 1.f, NAME_None, true);
 
-    ShellMontageTask->OnCompleted.AddDynamic(this, &UShotgunReload::OnShellMontageCompleted);
-    ShellMontageTask->ReadyForActivation();
+    if (IsValid(ShellMontageTask))
+    {
+        ShellMontageTask->OnCompleted.AddDynamic(this, &UShotgunReload::OnShellMontageCompleted);
+        ShellMontageTask->ReadyForActivation();
+    }
 }
 
 void UShotgunReload::OnShellMontageCompleted()

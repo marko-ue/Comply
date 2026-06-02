@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameplayEffectTypes.h"
+#include "Abilities/GameplayAbilityTargetTypes.h"
 #include "ComplyAbilityTypes.generated.h"
 
 USTRUCT(BlueprintType)
@@ -35,6 +36,9 @@ public:
 	
 	UPROPERTY()
 	float ShieldDamageMultiplier = 1.f;
+	
+	// Used to send the shotgun's trace target data for cue effect purposes
+	FGameplayAbilityTargetDataHandle ShotgunTracesTargetData;
 };
 
 template<>

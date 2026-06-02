@@ -41,9 +41,13 @@ bool FComplyGameplayEffectContext::NetSerialize(FArchive& Ar, class UPackageMap*
 		{
 			RepBits |= 1 << 8;
 		}
+		if (ShotgunTracesTargetData.IsValid(0))
+		{
+			RepBits |= 1 << 9;
+		}
 	}
 	
-	Ar.SerializeBits(&RepBits, 9);
+	Ar.SerializeBits(&RepBits, 10);
 	
 	if (RepBits & (1 << 0))
 	{
@@ -101,6 +105,10 @@ bool FComplyGameplayEffectContext::NetSerialize(FArchive& Ar, class UPackageMap*
 	else if (Ar.IsLoading())
 	{
 		ShieldDamageMultiplier = 1.f;
+	}
+	if (RepBits & (1 << 9))
+	{
+		ShotgunTracesTargetData.NetSerialize(Ar, Map, bOutSuccess);
 	}
 	
 	if (Ar.IsLoading())

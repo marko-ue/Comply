@@ -51,4 +51,9 @@ namespace ComplyTags
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(SBC_ReduceShotgunReserveAmmo);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(SBC_TotemSpeedBuff);
 	}
+	
+	namespace GameplayCues
+	{
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(HitscanWeaponImpact);
+	}
 }

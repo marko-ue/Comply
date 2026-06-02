@@ -49,4 +49,9 @@ namespace ComplyTags
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(SBC_ReduceShotgunReserveAmmo, "ComplyTags.SetByCaller.Weapons.Shotgun", "Set by caller tag for reducing shotgun reserve ammo")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(SBC_TotemSpeedBuff, "ComplyTags.SetByCaller.Buffs.TotemSpeed", "Set by caller tag for buffing player speed")
 	}
+	
+	namespace GameplayCues
+	{
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(HitscanWeaponImpact, "GameplayCue.Weapon.Hitscan.Impact", "Gameplay cue tag for hitscan weapon impact")
+	}
 }

@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "AbilitySystemComponent.h"
+#include "GameplayCueManager.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "AbilitySystem/ComplyAbilityTypes.h"
@@ -66,6 +67,12 @@ void URangedWeaponAbilityBase::TraceToCrosshair(FHitResult& TraceHitResult, cons
 
 			// The trace hit result is also stored here
 			TraceHitResult = Hit;
+			
+			FGameplayCueParameters CueParameters;
+			CueParameters.Location = Hit.ImpactPoint;
+			CueParameters.Normal = Hit.ImpactNormal;
+			GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::HitscanWeaponImpact, CueParameters);
+			
 			return;
 		}
 	}
@@ -106,6 +113,9 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 		FCollisionQueryParams CollisionParams;
 		CollisionParams.AddIgnoredActor(Avatar);
 		
+		// Target data for shotgun impact points
+		FGameplayAbilityTargetDataHandle TargetDataHandle;
+		
 		// A multi trace is used because overlap events are required, as well as direct hits for applying damage
 		for (int32 i = 0; i < NumPellets; i++)
 		{
@@ -124,9 +134,28 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 					continue;
 				}
 				OutHitResults.Add(Hit);
-				break; // Stop at first solid hit per pellet
+				
+				// Hit result added to target data handle
+				TargetDataHandle.Add(new FGameplayAbilityTargetData_SingleTargetHit(Hit));
+				break;
 			}
 		}
+		
+		/*
+		 * One cue is created, and the context with the shotgun trace target data is created and passed in the params
+		 * In the cue blueprint, we iterate over reach hit result to spawn particles at each location
+		 * All the particles are spawned at once from one cue, so only one multicast RPC is needed
+		 */
+		FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
+		FComplyGameplayEffectContext* Context = static_cast<FComplyGameplayEffectContext*>(ContextHandle.Get());
+		if (Context)
+		{
+			Context->ShotgunTracesTargetData = TargetDataHandle;
+		}
+
+		FGameplayCueParameters CueParams;
+		CueParams.EffectContext = ContextHandle;
+		GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::HitscanWeaponImpact, CueParams);
 	}
 }
 

@@ -27,4 +27,7 @@ public:
 	// A damage gameplay effect that will use an execution calculation.
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
+	
+	UPROPERTY()
+	float TotemDamageBonusPerStack = 0.15f;
 };

@@ -1,6 +1,8 @@
 // Copyright © 2026 Marko. All rights reserved.
 
 #include "Character/ComplyPlayerCharacter.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Framework/PlayerState/ComplyPlayerState.h"
 #include "EnhancedInputComponent.h"
 #include "AbilitySystemComponent.h"
@@ -9,6 +11,7 @@
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "AbilitySystem/Abilities/ThrowableAbilityBase.h"
+#include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Framework/GameState/ComplyGameStateBase.h"
@@ -88,6 +91,9 @@ void AComplyPlayerCharacter::PossessedBy(AController* NewController)
 	
 	GetAbilitySystemComponent()->RegisterGameplayTagEvent(ComplyTags::States::State_TotemBuffed,
 		EGameplayTagEventType::AnyCountChange).AddUObject(this, &AComplyPlayerCharacter::OnTotemBuffedTagChanged);
+	
+	GetAbilitySystemComponent()->GetGameplayAttributeValueChangeDelegate(
+	UComplyAttributeSet::GetMovementSpeedAttribute()).AddUObject(this, &AComplyPlayerCharacter::OnMovementSpeedAttributeChanged);
 }
 
 // For clients, ASC ability actor info is initialized here
@@ -112,6 +118,9 @@ void AComplyPlayerCharacter::OnRep_PlayerState()
 	
 	GetAbilitySystemComponent()->RegisterGameplayTagEvent(ComplyTags::States::State_TotemBuffed,
 		EGameplayTagEventType::AnyCountChange).AddUObject(this, &AComplyPlayerCharacter::OnTotemBuffedTagChanged);
+	
+	GetAbilitySystemComponent()->GetGameplayAttributeValueChangeDelegate(
+	UComplyAttributeSet::GetMovementSpeedAttribute()).AddUObject(this, &AComplyPlayerCharacter::OnMovementSpeedAttributeChanged);
 }
 
 void AComplyPlayerCharacter::Tick(float DeltaTime)
@@ -341,13 +350,28 @@ void AComplyPlayerCharacter::OnDistractedTagChanged(const FGameplayTag Tag, int3
 	}
 }
 
+// This callback is used to buff player speed. Damage buffs are handled in the ranged weapon ability base.
 void AComplyPlayerCharacter::OnTotemBuffedTagChanged(const FGameplayTag Tag, int32 NewCount)
 {
+	if (ActiveTotemSpeedBuffEffectHandle.IsValid())
+	{
+		GetAbilitySystemComponent()->RemoveActiveGameplayEffect(ActiveTotemSpeedBuffEffectHandle);
+	}
+
 	if (NewCount <= 0) return;
-    
-	if (NewCount == 1) UE_LOG(LogTemp, Warning, TEXT("1 totem buffed tag"));
-	if (NewCount == 2) UE_LOG(LogTemp, Warning, TEXT("2 totem buffed tag"));
-	if (NewCount == 3) UE_LOG(LogTemp, Warning, TEXT("3 totem buffed tag"));
+
+	// Apply the movement speed buff, stacking with the amount of buffs
+	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(TotemSpeedBuffEffectClass, 1.f, ContextHandle);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, 
+		ComplyTags::SetByCaller::SBC_TotemSpeedBuff, TotemSpeedBonusPerStack * NewCount);
+	ActiveTotemSpeedBuffEffectHandle = GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+}
+
+// When the totem buffs speed, the movement speed attribute is changed, and the character's new movement speed is set here
+void AComplyPlayerCharacter::OnMovementSpeedAttributeChanged(const FOnAttributeChangeData& Data)
+{
+	GetCharacterMovement()->MaxWalkSpeed = Data.NewValue;
 }
 
 FVector AComplyPlayerCharacter::GetScaleForSlot(EWeaponSlot Slot)

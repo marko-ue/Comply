@@ -54,4 +54,16 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
 	FGameplayAttributeData IncomingDamage;
 	
+	/*
+	 * Stats
+	 */
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MovementSpeed)
+	FGameplayAttributeData MovementSpeed;
+	
+	UFUNCTION()
+	void OnRep_MovementSpeed(const FGameplayAttributeData& OldMovementSpeed);
+	
+	ATTRIBUTE_ACCESSORS(UComplyAttributeSet, MovementSpeed)
+	
 };

@@ -70,6 +70,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilities|Equip")
 	TSubclassOf<UGameplayAbility> EquipThrowableAbilityClass;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
+	TSubclassOf<UGameplayEffect> TotemSpeedBuffEffectClass;
+	
 	UPROPERTY(VisibleAnywhere)
 	bool bFireInputHeld = false;
 	
@@ -195,4 +198,10 @@ private:
 	
 	UFUNCTION(BlueprintCallable)
 	void OnWeaponDrawn();
+	
+	FActiveGameplayEffectHandle ActiveTotemSpeedBuffEffectHandle;
+	
+	int32 TotemSpeedBonusPerStack = 48;
+	
+	void OnMovementSpeedAttributeChanged(const FOnAttributeChangeData& Data);
 };

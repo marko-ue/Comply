@@ -193,7 +193,17 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
 			FComplyGameplayEffectContext* Context = new FComplyGameplayEffectContext();
 			Context->bHitThroughShield = HitscanTargetDataTask->bPassedThroughShield;
 			Context->ShieldDamageMultiplier = ShieldShotDamageMultiplier;
-			CauseDamage(TargetActor, Damage.GetValueAtLevel(GetAbilityLevel()), Context);
+
+			float FinalDamage = Damage.GetValueAtLevel(GetAbilityLevel());
+
+			if (UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo())
+			{
+				// Increases damage based on the amount of stacks of totem buffs
+				int32 TotemStacks = ASC->GetTagCount(ComplyTags::States::State_TotemBuffed);
+				FinalDamage *= (1.f + TotemDamageBonusPerStack * TotemStacks);
+			}
+
+			CauseDamage(TargetActor, FinalDamage, Context);
 		}
 	}
 }

@@ -4,6 +4,8 @@
 #include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
 #include "Framework/GameMode/ComplyGameModeBase.h"
 #include "GameplayEffectExtension.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Interface/Player/PlayerInterface.h"
 #include "Net/UnrealNetwork.h"
 
@@ -15,6 +17,8 @@ void UComplyAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimePrope
 	// GAS attributes are set to replicate with no condition for replication, and to replicate whenever an attribute is received from the server, even when there's no value change
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, Health, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, MaxHealth, COND_None, REPNOTIFY_Always);
+	
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, MovementSpeed, COND_None, REPNOTIFY_Always);
 }
 
 void UComplyAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -108,4 +112,9 @@ void UComplyAttributeSet::OnRep_Health(const FGameplayAttributeData& OldValue)
 void UComplyAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldValue)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, MaxHealth, OldValue);
+}
+
+void UComplyAttributeSet::OnRep_MovementSpeed(const FGameplayAttributeData& OldMovementSpeed)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, MovementSpeed, OldMovementSpeed);
 }

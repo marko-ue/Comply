@@ -85,7 +85,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Meshes")
 	TObjectPtr<UStaticMeshComponent> WeaponMesh;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Meshes")
+	UPROPERTY(EditDefaultsOnly, Category = "Meshes", BlueprintreadOnly)
 	TObjectPtr<UStaticMesh> PrimaryMesh;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Meshes")
@@ -204,4 +204,7 @@ private:
 	int32 TotemSpeedBonusPerStack = 48;
 	
 	void OnMovementSpeedAttributeChanged(const FOnAttributeChangeData& Data);
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Audio", meta = (AllowPrivateAccess = true))
+	TObjectPtr<USoundCue> GunFireSound;
 };

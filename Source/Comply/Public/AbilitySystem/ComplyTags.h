@@ -55,5 +55,6 @@ namespace ComplyTags
 	namespace GameplayCues
 	{
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(HitscanWeaponImpact);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(HitscanWeaponFire)
 	}
 }

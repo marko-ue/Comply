@@ -205,6 +205,12 @@ bool URangedWeaponAbilityBase::Fire()
 		FireDelayTask->ReadyForActivation();
 	}
 	
+	
+	FGameplayCueParameters CueParams;
+	CueParams.Location = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo())->WeaponMesh->GetComponentLocation();
+	CueParams.Instigator = GetAvatarActorFromActorInfo();
+	GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::HitscanWeaponFire, CueParams);
+	
 	return true;
 }
 

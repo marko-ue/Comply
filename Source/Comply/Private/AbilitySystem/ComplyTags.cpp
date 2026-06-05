@@ -53,6 +53,10 @@ namespace ComplyTags
 	namespace GameplayCues
 	{
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(HitscanWeaponImpact, "GameplayCue.Weapon.Hitscan.Impact", "Gameplay cue tag for hitscan weapon impact")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShotgunImpact, "GameplayCue.Weapon.Shotgun.Impact", "Gameplay cue tag for shotgun impact")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(HitscanWeaponFire, "GameplayCue.Weapon.Hitscan.Fire", "Gameplay cue tag for hitscan weapon fire")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShieldPlaced, "GameplayCue.Shield.Placed", "Gameplay cue tag for when the shield is placed")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShieldHitscanWeaponImpact, "GameplayCue.Shield.HitscanWeaponImpact", "Gameplay cue for when a shot passes through a shield")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShieldShotgunImpact, "GameplayCue.Shield.ShotgunImpact", "Gameplay cue for when a shotgun bullet passes through a shield")
 	}
 }

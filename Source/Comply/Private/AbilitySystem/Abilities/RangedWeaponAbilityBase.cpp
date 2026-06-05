@@ -62,16 +62,24 @@ void URangedWeaponAbilityBase::TraceToCrosshair(FHitResult& TraceHitResult, cons
 			{
 				// An out parameter boolean is set to true if the overlapping actor is the dome shield
 				OutPassedThroughShield = true;
+				
+				// Impact point and normal for the trace that overlapped with the shield actor
+				FGameplayCueParameters CueParams;
+				CueParams.Location = Hit.ImpactPoint;
+				CueParams.Normal = Hit.ImpactNormal;
+				UGameplayCueManager::ExecuteGameplayCue_NonReplicated(
+				GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::ShieldHitscanWeaponImpact, CueParams);
+				
 				continue;
 			}
 
 			// The trace hit result is also stored here
 			TraceHitResult = Hit;
 			
-			FGameplayCueParameters CueParameters;
-			CueParameters.Location = Hit.ImpactPoint;
-			CueParameters.Normal = Hit.ImpactNormal;
-			GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::HitscanWeaponImpact, CueParameters);
+			FGameplayCueParameters CueParams;
+			CueParams.Location = Hit.ImpactPoint;
+			CueParams.Normal = Hit.ImpactNormal;
+			GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::HitscanWeaponImpact, CueParams);
 			
 			return;
 		}
@@ -116,6 +124,8 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 		// Target data for shotgun impact points
 		FGameplayAbilityTargetDataHandle TargetDataHandle;
 		
+		TArray<FHitResult> ShieldHits;
+		
 		// A multi trace is used because overlap events are required, as well as direct hits for applying damage
 		for (int32 i = 0; i < NumPellets; i++)
 		{
@@ -130,7 +140,9 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 				if (!Hit.GetActor()) continue;
 				if (Hit.GetActor()->ActorHasTag(FName("Shield")))
 				{
+					// An out parameter boolean is set to true if the overlapping actor is the dome shield
 					OutPassedThroughShield = true;
+					ShieldHits.Add(Hit);
 					continue;
 				}
 				OutHitResults.Add(Hit);
@@ -139,6 +151,29 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 				TargetDataHandle.Add(new FGameplayAbilityTargetData_SingleTargetHit(Hit));
 				break;
 			}
+		}
+		
+		// Execute cue outside the loop, pass in information from each hit
+		if (ShieldHits.Num() > 0)
+		{
+			// Context with shotgun traces target data passed in, in order to only activate one cue for all shots
+			FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
+			FComplyGameplayEffectContext* Context = static_cast<FComplyGameplayEffectContext*>(ContextHandle.Get());
+			if (Context)
+			{
+				// pack shield hits into target data the same way you do for regular pellets
+				FGameplayAbilityTargetDataHandle ShieldTargetData;
+				for (const FHitResult& Hit : ShieldHits)
+				{
+					ShieldTargetData.Add(new FGameplayAbilityTargetData_SingleTargetHit(Hit));
+				}
+				Context->ShotgunTracesTargetData = ShieldTargetData;
+			}
+
+			FGameplayCueParameters CueParams;
+			CueParams.EffectContext = ContextHandle;
+			UGameplayCueManager::ExecuteGameplayCue_NonReplicated(
+				GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::ShieldShotgunImpact, CueParams);
 		}
 		
 		/*
@@ -155,7 +190,7 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 
 		FGameplayCueParameters CueParams;
 		CueParams.EffectContext = ContextHandle;
-		GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::HitscanWeaponImpact, CueParams);
+		GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::ShotgunImpact, CueParams);
 	}
 }
 

@@ -3,9 +3,14 @@
 #include "Actors/ShieldDome/ShieldDome.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/ComplyTags.h"
+#include "Components/AudioComponent.h"
 #include "Interface/Player/PlayerInterface.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 
 AShieldDome::AShieldDome()
@@ -25,6 +30,15 @@ AShieldDome::AShieldDome()
 	
 	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnOverlapBegin);
 	SphereComp->OnComponentEndOverlap.AddDynamic(this, &ThisClass::OnOverlapEnd);
+}
+
+void AShieldDome::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	// The looping effects and sounds for the shield actor are handled at BeginPlay since the actor is replicated, no need for a cue
+	ShieldHumNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ShieldParticleEffect, GetActorLocation());
+	HumAudioComponent = UGameplayStatics::SpawnSoundAttached(ShieldHummingCue, RootComponent);
 }
 
 void AShieldDome::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -61,4 +75,20 @@ void AShieldDome::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor*
 			}
 		}
 	}
+}
+
+void AShieldDome::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (HumAudioComponent)
+	{
+		HumAudioComponent->FadeOut(3.f, 0.f);
+	}
+	
+	if (ShieldHumNiagaraComponent)
+	{
+		ShieldHumNiagaraComponent->Deactivate();
+	}
+	
+	Super::EndPlay(EndPlayReason);
+	
 }

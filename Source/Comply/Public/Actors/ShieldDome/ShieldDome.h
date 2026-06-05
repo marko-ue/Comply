@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "ShieldDome.generated.h"
 
+class UNiagaraComponent;
+class UNiagaraSystem;
 class UAbilitySystemComponent;
 class UGameplayAbility;
 class USphereComponent;
@@ -34,6 +36,11 @@ public:
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> SourceASC;
 	
+protected:
+	virtual void BeginPlay() override;
+	
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	
 private:
 	UFUNCTION()
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -42,4 +49,16 @@ private:
 	UFUNCTION()
 	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UNiagaraSystem> ShieldParticleEffect;
+	
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> ShieldHumNiagaraComponent;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<USoundCue> ShieldHummingCue;
+	
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> HumAudioComponent;
 };

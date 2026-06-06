@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/Abilities/Player/Disruptor/Throwable_Disruptor.h"
 
+#include "GameplayCueManager.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
@@ -33,6 +34,11 @@ void UThrowable_Disruptor::SpawnPreview()
 	PrepareDecoyMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 		this, NAME_None, ThrowDecoyMontage, 1.f, "Prepare", true);
 	PrepareDecoyMontageTask->ReadyForActivation();
+	
+	FGameplayCueParameters CueParams;
+	CueParams.Location = GetAvatarActorFromActorInfo()->GetActorLocation();
+	UGameplayCueManager::ExecuteGameplayCue_NonReplicated(
+		GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::PullGrenadePin, CueParams);
 	
 	// Input is confirmed when the primary input is released
 	UAbilityTask_WaitConfirmCancel* WaitConfirm = UAbilityTask_WaitConfirmCancel::WaitConfirmCancel(this);
@@ -108,6 +114,10 @@ void UThrowable_Disruptor::OnThrowMontageCompleted()
 
 		APawn* InstigatorPawn = Cast<APawn>(GetAvatarActorFromActorInfo());
 		ASC->Server_ThrowDecoyGrenade(GetCurrentAbilitySpecHandle(), SpawnPosition, InstigatorPawn->GetActorRotation(), LaunchVelocity);
+		
+		FGameplayCueParameters CueParams;
+		CueParams.Location = GetAvatarActorFromActorInfo()->GetActorLocation();
+		UGameplayCueManager::ExecuteGameplayCue_NonReplicated(GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::ThrowGrenade, CueParams);
 	}
 	
 	GetAbilitySystemComponentFromActorInfo()->RemoveLooseGameplayTag(ComplyTags::States::State_Firing);

@@ -1,6 +1,5 @@
 #include "AbilitySystem/ComplyTags.h"
 
-
 namespace ComplyTags
 {
 	namespace ComplyAbilities
@@ -58,5 +57,8 @@ namespace ComplyTags
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShieldPlaced, "GameplayCue.Shield.Placed", "Gameplay cue tag for when the shield is placed")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShieldHitscanWeaponImpact, "GameplayCue.Shield.HitscanWeaponImpact", "Gameplay cue for when a shot passes through a shield")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShieldShotgunImpact, "GameplayCue.Shield.ShotgunImpact", "Gameplay cue for when a shotgun bullet passes through a shield")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(PullGrenadePin, "GameplayCue.Grenades.PullPin", "Gameplay cue for when a grenade pin is pulled")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ThrowGrenade, "GameplayCue.Grenades.Throw", "Gameplay cue tag for throwing grenades")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ExplodeGrenade, "GameplayCue.Grenades.Explode", "Gameplay cue tag for exploding grenades")
 	}
 }

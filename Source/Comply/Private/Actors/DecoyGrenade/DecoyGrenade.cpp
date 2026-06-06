@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "AIController.h"
 #include "Comply.h"
+#include "AbilitySystem/ComplyTags.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Engine/OverlapResult.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -63,7 +64,6 @@ void ADecoyGrenade::Explode()
 		AffectedASCs.Add(TargetASC);
 		DistractedEffectHandles.Add(Handle);
 		
-
 		// When the decoy grenade explodes, the blackboard key responsible for moving the enemy to a distraction is set
 		if (AAIController* AIC = Cast<AAIController>(HitActor->GetInstigatorController()))
 		{
@@ -79,9 +79,16 @@ void ADecoyGrenade::Explode()
 			}
 		}
 		
-		//GrenadeMesh->SetSimulatePhysics(false);
 		GrenadeMesh->SetCollisionResponseToChannel(ECC_Player, ECR_Ignore);
 		GrenadeMesh->SetCollisionResponseToChannel(ECC_Enemy, ECR_Ignore);
+	}
+	
+	FGameplayCueParameters CueParams;
+	CueParams.Location = GetActorLocation();
+	CueParams.EffectCauser = this;
+	if (SourceASC)
+	{
+		SourceASC->ExecuteGameplayCue(ComplyTags::GameplayCues::ExplodeGrenade, CueParams);
 	}
 	
 	// The grenade will get destroyed after its lifetime passes, and it will stop pulling enemies at this point
@@ -102,5 +109,6 @@ void ADecoyGrenade::Destroyed()
 		// Clear the value of DistractionLocation so enemies can go back to chasing the player
 		if (AffectedBBs[i]) AffectedBBs[i]->ClearValue("DistractionLocation");
 	}
+	
 	Super::Destroyed();
 }

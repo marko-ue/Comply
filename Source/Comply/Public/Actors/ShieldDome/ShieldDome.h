@@ -12,6 +12,7 @@ class UAbilitySystemComponent;
 class UGameplayAbility;
 class USphereComponent;
 class UNavModifierComponent;
+class USoundCue;
 
 UCLASS()
 class COMPLY_API AShieldDome : public AActor

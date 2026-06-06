@@ -2,6 +2,8 @@
 
 
 #include "AbilitySystem/Abilities/Player/Ranger/Throwable_Ranger.h"
+
+#include "GameplayCueManager.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitConfirm.h"
 #include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
@@ -25,7 +27,7 @@ void UThrowable_Ranger::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 void UThrowable_Ranger::SpawnPreview()
 {
 	// For this throwable, we manually handle adding and removing the firing tag
-	// Because of the delay of the ability actually finishing only after releasing primary input
+	// because of the delay of the ability actually finishing only after releasing primary input
 	// ^ This results in the player being able to freely rotate the camera before the grenade is thrown causing weird looking behavior
 	GetAbilitySystemComponentFromActorInfo()->AddLooseGameplayTag(ComplyTags::States::State_Firing);
 	
@@ -33,6 +35,11 @@ void UThrowable_Ranger::SpawnPreview()
 	PrepareGrenadeMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 		this, NAME_None, ThrowGrenadeMontage, 1.f, "Prepare", true);
 	PrepareGrenadeMontageTask->ReadyForActivation();
+	
+	FGameplayCueParameters CueParams;
+	CueParams.Location = GetAvatarActorFromActorInfo()->GetActorLocation();
+	UGameplayCueManager::ExecuteGameplayCue_NonReplicated(
+		GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::PullGrenadePin, CueParams);
 	
 	// Input is confirmed when the primary input is released
 	UAbilityTask_WaitConfirmCancel* WaitConfirm = UAbilityTask_WaitConfirmCancel::WaitConfirmCancel(this);
@@ -109,6 +116,10 @@ void UThrowable_Ranger::OnThrowMontageCompleted()
 
 		APawn* InstigatorPawn = Cast<APawn>(GetAvatarActorFromActorInfo());
 		ASC->Server_ThrowPlasmaGrenade(GetCurrentAbilitySpecHandle(), InstigatorPawn->GetActorLocation(), InstigatorPawn->GetActorRotation(), LaunchVelocity);
+		
+		FGameplayCueParameters CueParams;
+		CueParams.Location = GetAvatarActorFromActorInfo()->GetActorLocation();
+		UGameplayCueManager::ExecuteGameplayCue_NonReplicated(GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::ThrowGrenade, CueParams);
 	}
 	
 	GetAbilitySystemComponentFromActorInfo()->RemoveLooseGameplayTag(ComplyTags::States::State_Firing);

@@ -8,6 +8,7 @@
 #include "GameFramework/Actor.h"
 #include "DecoyGrenade.generated.h"
 
+class UNiagaraSystem;
 class UBlackboardComponent;
 class UProjectileMovementComponent;
 class UAbilitySystemComponent;
@@ -71,4 +72,10 @@ private:
 	FTimerHandle ExplosionTimerHandle;
 	
 	FTimerHandle DestroyDelayTimerHandle;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(AllowPrivateAccess))
+	TObjectPtr<USoundCue> ExplodeSound;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(AllowPrivateAccess))
+	TObjectPtr<UNiagaraSystem> ExplodeEffect;
 };

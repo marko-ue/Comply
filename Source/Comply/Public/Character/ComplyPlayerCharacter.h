@@ -16,6 +16,7 @@ class URangedWeaponAbilityBase;
 struct FActiveGameplayEffectHandle;
 class UCameraComponent;
 class USpringArmComponent;
+class USoundCue;
 
 UCLASS()
 class COMPLY_API AComplyPlayerCharacter : public AComplyCharacterBase, public IPlayerInterface, public ITargetableInterface, public IWeaponInterface

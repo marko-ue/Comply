@@ -14,6 +14,7 @@ namespace ComplyTags
 		namespace AssetTags
 		{
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(ApplyShieldedEffectAbility);
+			
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Equip_Primary)
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Equip_Throwable)
 		}
@@ -39,9 +40,10 @@ namespace ComplyTags
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Reloading);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Distracted)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Equipping)
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_TotemBuffed)
+		
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_ThrowablePreparing)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_NoThrowables)
-		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_TotemBuffed)
 	}
 	
 	namespace SetByCaller
@@ -49,6 +51,7 @@ namespace ComplyTags
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(SBC_ReduceRifleReserveAmmo);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(SBC_ReduceMagnumReserveAmmo);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(SBC_ReduceShotgunReserveAmmo);
+		
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(SBC_TotemSpeedBuff);
 	}
 	
@@ -56,12 +59,19 @@ namespace ComplyTags
 	{
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(HitscanWeaponImpact);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(ShotgunImpact)
+		
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(HitscanWeaponFire)
+		
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(ShieldPlaced)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(ShieldHitscanWeaponImpact)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(ShieldShotgunImpact)
+		
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(PullGrenadePin)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(ThrowGrenade)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(ExplodeGrenade)
+		
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(GrapplingHookUse)
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(GrapplingHookImpact)
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(GrapplingHookHooking)
 	}
 }

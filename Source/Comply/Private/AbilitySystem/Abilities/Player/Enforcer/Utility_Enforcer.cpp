@@ -4,7 +4,9 @@
 #include "AbilitySystem/Abilities/Player/Enforcer/Utility_Enforcer.h"
 #include "AbilitySystemComponent.h"
 #include "CableComponent.h"
+#include "GameplayCueManager.h"
 #include "Abilities/Tasks/AbilityTask_ApplyRootMotionMoveToForce.h"
+#include "AbilitySystem/ComplyTags.h"
 #include "Character/ComplyPlayerCharacter.h"
 #include "Character/Player/EnforcerCharacter.h"
 #include "GameFramework/Character.h"
@@ -107,7 +109,7 @@ void UUtility_Enforcer::OnTargetDataReceived(const FGameplayAbilityTargetDataHan
 		GetCurrentAbilitySpecHandle(),
 		GetCurrentActivationInfo().GetActivationPredictionKey()
 	);
-
+	
 	if (!DataHandle.IsValid(0)) return;
 
 	const FHitResult* HitResult = DataHandle.Get(0)->GetHitResult();
@@ -131,6 +133,10 @@ void UUtility_Enforcer::OnTargetDataReceived(const FGameplayAbilityTargetDataHan
 			Cable->SetVisibility(true);
 		}
 	}
+	
+	FGameplayCueParameters UseCueParams;
+	UseCueParams.Location = GetAvatarActorFromActorInfo()->GetActorLocation();
+	GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::GrapplingHookUse, UseCueParams);
 
 	UAbilityTask_ApplyRootMotionMoveToForce* MoveTask =
 		UAbilityTask_ApplyRootMotionMoveToForce::ApplyRootMotionMoveToForce(
@@ -142,6 +148,17 @@ void UUtility_Enforcer::OnTargetDataReceived(const FGameplayAbilityTargetDataHan
 	MoveTask->OnTimedOutAndDestinationReached.AddDynamic(this, &UUtility_Enforcer::OnPullReachedDestination);
 	MoveTask->OnTimedOut.AddDynamic(this, &UUtility_Enforcer::OnPullTimedOut);
 	MoveTask->ReadyForActivation();
+	
+	FGameplayCueParameters ImpactCueParams;
+	ImpactCueParams.Location = HitResult->ImpactPoint;
+	UGameplayCueManager::ExecuteGameplayCue_NonReplicated(
+		GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::GrapplingHookImpact, ImpactCueParams);
+	
+	// Gameplay cue starting the hooking looping sound started, removed when destination reached or hook pulled out
+	FGameplayCueParameters HookingCueParams;
+	HookingCueParams.Location = GetAvatarActorFromActorInfo()->GetActorLocation();
+	GetAbilitySystemComponentFromActorInfo()->AddGameplayCue(
+		ComplyTags::GameplayCues::GrapplingHookHooking, HookingCueParams);
 }
 
 void UUtility_Enforcer::OnPullReachedDestination()
@@ -157,6 +174,8 @@ void UUtility_Enforcer::OnPullTimedOut()
 
 void UUtility_Enforcer::FinishGrapple()
 {
+	GetAbilitySystemComponentFromActorInfo()->RemoveGameplayCue(ComplyTags::GameplayCues::GrapplingHookHooking);
+	
 	if (ACharacter* Character = Cast<ACharacter>(GetCurrentActorInfo()->AvatarActor.Get()))
 	{
 		// Set movement mode back to falling so landing is handled naturally

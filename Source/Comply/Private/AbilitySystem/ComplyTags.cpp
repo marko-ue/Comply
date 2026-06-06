@@ -11,6 +11,7 @@ namespace ComplyTags
 		namespace AssetTags
 		{
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(ApplyShieldedEffectAbility, "ComplyTags.Abilities.Ranger.ApplyShieldedEffectAbility", "Apply shielded effect ability asset tag")
+			
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Equip_Primary, "ComplyTags.Abilities.Equip.Primary", "Primary weapon equip ability asset tag")
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Equip_Throwable, "ComplyTags.Abilities.Equip.Throwable", "Throwable weapon equip ability asset tag")
 		}
@@ -36,9 +37,11 @@ namespace ComplyTags
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Reloading, "ComplyTags.States.Reloading", "Is player reloading")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Distracted, "ComplyTags.States.Distracted", "Is enemy distracted")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Equipping, "ComplyTags.States.Equipping", "Is player equipping")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_TotemBuffed, "ComplyTags.States.TotemBuffed", "Is player buffed by a totem")
+		
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_ThrowablePreparing, "ComplyTags.States.Throwable.Preparing", "Is player preparing throwable")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_NoThrowables, "ComplyTags.States.NoGrenades", "Does player have no throwables")
-		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_TotemBuffed, "ComplyTags.States.TotemBuffed", "Is player buffed by a totem")
+		
 	}
 	
 	namespace SetByCaller
@@ -46,6 +49,7 @@ namespace ComplyTags
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(SBC_ReduceRifleReserveAmmo, "ComplyTags.SetByCaller.Weapons.Rifle", "Set by caller tag for reducing rifle reserve ammo")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(SBC_ReduceMagnumReserveAmmo, "ComplyTags.SetByCaller.Weapons.Magnum", "Set by caller tag for reducing magnum reserve ammo")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(SBC_ReduceShotgunReserveAmmo, "ComplyTags.SetByCaller.Weapons.Shotgun", "Set by caller tag for reducing shotgun reserve ammo")
+		
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(SBC_TotemSpeedBuff, "ComplyTags.SetByCaller.Buffs.TotemSpeed", "Set by caller tag for buffing player speed")
 	}
 	
@@ -53,12 +57,19 @@ namespace ComplyTags
 	{
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(HitscanWeaponImpact, "GameplayCue.Weapon.Hitscan.Impact", "Gameplay cue tag for hitscan weapon impact")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShotgunImpact, "GameplayCue.Weapon.Shotgun.Impact", "Gameplay cue tag for shotgun impact")
+		
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(HitscanWeaponFire, "GameplayCue.Weapon.Hitscan.Fire", "Gameplay cue tag for hitscan weapon fire")
+		
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShieldPlaced, "GameplayCue.Shield.Placed", "Gameplay cue tag for when the shield is placed")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShieldHitscanWeaponImpact, "GameplayCue.Shield.HitscanWeaponImpact", "Gameplay cue for when a shot passes through a shield")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShieldShotgunImpact, "GameplayCue.Shield.ShotgunImpact", "Gameplay cue for when a shotgun bullet passes through a shield")
+		
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(PullGrenadePin, "GameplayCue.Grenades.PullPin", "Gameplay cue for when a grenade pin is pulled")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ThrowGrenade, "GameplayCue.Grenades.Throw", "Gameplay cue tag for throwing grenades")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ExplodeGrenade, "GameplayCue.Grenades.Explode", "Gameplay cue tag for exploding grenades")
+		
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(GrapplingHookUse, "GameplayCue.GrapplingHook.Use", "Gameplay cue tag for using grappling hook")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(GrapplingHookImpact, "GameplayCue.GrapplingHook.Impact", "Gameplay cue tag for grappling hook impact")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(GrapplingHookHooking, "GameplayCue.GrapplingHook.Hooking", "Gameplay cue tag for hooking")
 	}
 }

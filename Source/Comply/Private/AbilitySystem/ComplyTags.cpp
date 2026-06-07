@@ -71,5 +71,8 @@ namespace ComplyTags
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(GrapplingHookUse, "GameplayCue.GrapplingHook.Use", "Gameplay cue tag for using grappling hook")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(GrapplingHookImpact, "GameplayCue.GrapplingHook.Impact", "Gameplay cue tag for grappling hook impact")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(GrapplingHookHooking, "GameplayCue.GrapplingHook.Hooking", "Gameplay cue tag for hooking")
+		
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(TurretTyping, "GameplayCue.Turret.Typing", "Gameplay cue tag for the typing before placing a turret")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(TurretImpact, "GameplayCue.Turret.Impact", "Gameplay cue tag for turret shot impact")
 	}
 }

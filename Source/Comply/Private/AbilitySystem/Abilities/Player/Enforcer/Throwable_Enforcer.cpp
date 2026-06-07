@@ -6,6 +6,7 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
+#include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/AbilityTasks/HitscanTargetData.h"
 #include "Actors/DeployableTurret/DeployableTurretPreview.h"
 #include "GameFramework/Character.h"
@@ -57,13 +58,20 @@ void UThrowable_Enforcer::PlayPlaceTurretAnimation()
 	UAbilityTask_PlayMontageAndWait* PlaceTurretMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 		this, NAME_None, PlaceTurretMontage, 1.f, NAME_None, true);
 	PlaceTurretMontageTask->OnCompleted.AddDynamic(this, &UThrowable_Enforcer::ConfirmThrow);
-	PlaceTurretMontageTask->OnBlendOut.AddDynamic(this, &UThrowable_Enforcer::ConfirmThrow);
+	PlaceTurretMontageTask->OnCancelled.AddDynamic(this, &UThrowable_Enforcer::PlaceTurretAnimationInterrupted);
+	PlaceTurretMontageTask->OnInterrupted.AddDynamic(this, &UThrowable_Enforcer::PlaceTurretAnimationInterrupted);
 	
 	// If the turret is placed in a valid location, play the animation
 	if (SpawnedTurretPreviewActor->bCanPlace)
 	{
 		SpawnedTurretPreviewActor->bShouldUpdatePosition = false;
+		
 		PlaceTurretMontageTask->ReadyForActivation();
+		
+		FGameplayCueParameters CueParams;
+		CueParams.Location = GetAvatarActorFromActorInfo()->GetActorLocation();
+		GetAbilitySystemComponentFromActorInfo()->AddGameplayCue(
+			ComplyTags::GameplayCues::TurretTyping, CueParams);
 	}
 	else
 	{
@@ -75,8 +83,15 @@ void UThrowable_Enforcer::PlayPlaceTurretAnimation()
 	}
 }
 
+void UThrowable_Enforcer::PlaceTurretAnimationInterrupted()
+{
+	GetAbilitySystemComponentFromActorInfo()->RemoveGameplayCue(ComplyTags::GameplayCues::TurretTyping);
+}
+
 void UThrowable_Enforcer::ConfirmThrow()
 {
+	GetAbilitySystemComponentFromActorInfo()->RemoveGameplayCue(ComplyTags::GameplayCues::TurretTyping);
+	
 	if (!SpawnedTurretPreviewActor || !SpawnedTurretPreviewActor->bCanPlace)
         {
             // Re-create the task so the player can try placing again

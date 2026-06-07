@@ -54,6 +54,9 @@ private:
 	UFUNCTION()
 	void PlayPlaceTurretAnimation();
 	
+	UFUNCTION()
+	void PlaceTurretAnimationInterrupted();
+	
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UAnimMontage> PlaceTurretMontage;
 	

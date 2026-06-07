@@ -5,11 +5,17 @@
 #include <Interface/Enemy/EnemyInterface.h>
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
+#include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
 #include "Components/ArrowComponent.h"
+#include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Sound/SoundCue.h"
 
 
 ADeployableTurret::ADeployableTurret()
@@ -44,6 +50,8 @@ UAbilitySystemComponent* ADeployableTurret::GetAbilitySystemComponent() const
 void ADeployableTurret::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	PlaceTurretNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, PlaceTurretEffect, GetActorLocation());
 	
 	GetOverlappingActors(TargetsInRange);
 	
@@ -101,7 +109,7 @@ void ADeployableTurret::TryFire()
 	CurrentTarget = nullptr; // Clear when no target in cone
 }
 
-void ADeployableTurret::Fire(AActor* TargetActor) const
+void ADeployableTurret::Fire(AActor* TargetActor)
 {
 	if (!SourceASC || !DamageEffectClass) return;
 
@@ -111,6 +119,21 @@ void ADeployableTurret::Fire(AActor* TargetActor) const
 	FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, 1.f, SourceASC->MakeEffectContext());
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, DamageTypeTag, Damage);
 	SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
+	
+	FGameplayCueParameters CueParams;
+	CueParams.Location = TargetActor->GetActorLocation();
+	SourceASC->ExecuteGameplayCue(ComplyTags::GameplayCues::TurretImpact, CueParams);
+
+	// Multicast for the turret fire sound
+	Multicast_TurretFire();
+}
+
+void ADeployableTurret::Multicast_TurretFire_Implementation()
+{
+	if (TurretFireSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, TurretFireSound, GetActorLocation());
+	}
 }
 
 // When the actor is destroyed, the player will be able to spawn another turret after 30 seconds
@@ -133,4 +156,14 @@ void ADeployableTurret::Destroyed()
 	}
 
 	Super::Destroyed();
+}
+
+void ADeployableTurret::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (PlaceTurretNiagaraComponent)
+	{
+		PlaceTurretNiagaraComponent->Deactivate();
+	}
+	
+	Super::EndPlay(EndPlayReason);
 }

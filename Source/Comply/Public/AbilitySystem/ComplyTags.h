@@ -73,5 +73,8 @@ namespace ComplyTags
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(GrapplingHookUse)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(GrapplingHookImpact)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(GrapplingHookHooking)
+		
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(TurretTyping)
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(TurretImpact)
 	}
 }

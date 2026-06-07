@@ -9,6 +9,8 @@
 #include "AbilitySystemInterface.h"
 #include "DeployableTurret.generated.h"
 
+class UNiagaraComponent;
+class UNiagaraSystem;
 class UComplyAttributeSet;
 class UArrowComponent;
 class UGameplayEffect;
@@ -51,6 +53,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	
 private:
 	UPROPERTY(EditAnywhere, Category = "Components")
 	TObjectPtr<UStaticMeshComponent> TurretMesh;
@@ -72,7 +76,7 @@ private:
 	UFUNCTION()
 	void TryFire();
 	
-	void Fire(AActor* TargetActor) const;
+	void Fire(AActor* TargetActor);
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> ASC;
@@ -87,4 +91,16 @@ private:
 	AActor* CurrentTarget = nullptr;
 	
 	FTimerHandle FireTimerHandle;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UNiagaraSystem> PlaceTurretEffect;
+	
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> PlaceTurretNiagaraComponent;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<USoundCue> TurretFireSound;
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_TurretFire();
 };

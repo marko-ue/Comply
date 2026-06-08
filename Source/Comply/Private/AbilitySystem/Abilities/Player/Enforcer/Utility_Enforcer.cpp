@@ -112,9 +112,31 @@ void UUtility_Enforcer::OnTargetDataReceived(const FGameplayAbilityTargetDataHan
 	
 	if (!DataHandle.IsValid(0)) return;
 	
+	// Getting the hit result passed in by the client to check it against the tolerance
+	const FHitResult* ClientHit = DataHandle.Get(0)->GetHitResult();
+	if (!ClientHit)
+	{
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, true);
+		return;
+	}
+	
 	const FGameplayAbilityActorInfo* ActorInfo = GetCurrentActorInfo();
 	if (ActorInfo->IsNetAuthority() && !ActorInfo->IsLocallyControlled())
 	{
+		// Checking how much the client's trace differs against the server trace. If it differs beyond the tolerance, end the ability
+		FHitResult ServerHit;
+		if (PerformGrappleTrace(ServerHit))
+		{
+			FVector ClientLocation = ClientHit->ImpactPoint;
+			FVector ServerLocation = ServerHit.ImpactPoint;
+    
+			if (FVector::Dist(ClientLocation, ServerLocation) > TraceAcceptableTolerance)
+			{
+				EndAbility(GetCurrentAbilitySpecHandle(), ActorInfo, GetCurrentActivationInfo(), true, true);
+				return;
+			}
+		}
+		
 		if (!CommitAbility(GetCurrentAbilitySpecHandle(), ActorInfo, GetCurrentActivationInfo()))
 		{
 			EndAbility(GetCurrentAbilitySpecHandle(), ActorInfo, GetCurrentActivationInfo(), true, true);

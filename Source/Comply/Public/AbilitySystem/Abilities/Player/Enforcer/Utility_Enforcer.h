@@ -53,4 +53,7 @@ private:
 	FVector GrappleWorldTarget;
 	
 	FTimerHandle CableUpdateTimer;
+	
+	UPROPERTY(EditDefaultsOnly)
+	float TraceAcceptableTolerance = 200.f;
 };

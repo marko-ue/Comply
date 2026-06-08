@@ -77,5 +77,5 @@ private:
 	TObjectPtr<USoundCue> ExplodeSound;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(AllowPrivateAccess))
-	TObjectPtr<UNiagaraSystem> ExplodeEffect;
+	TObjectPtr<UNiagaraSystem> ExplodeParticles;
 };

@@ -5,70 +5,25 @@ bool FComplyGameplayEffectContext::NetSerialize(FArchive& Ar, class UPackageMap*
 	uint16 RepBits = 0;
 	if (Ar.IsSaving())
 	{
-		if (bReplicateInstigator && Instigator.IsValid())
-		{
-			RepBits |= 1 << 0;
-		}
-		if (bReplicateEffectCauser && EffectCauser.IsValid() )
-		{
-			RepBits |= 1 << 1;
-		}
-		if (AbilityCDO.IsValid())
-		{
-			RepBits |= 1 << 2;
-		}
-		if (bReplicateSourceObject && SourceObject.IsValid())
-		{
-			RepBits |= 1 << 3;
-		}
-		if (Actors.Num() > 0)
-		{
-			RepBits |= 1 << 4;
-		}
-		if (HitResult.IsValid())
-		{
-			RepBits |= 1 << 5;
-		}
-		if (bHasWorldOrigin)
-		{
-			RepBits |= 1 << 6;
-		}
-		if (bHitThroughShield)
-		{
-			RepBits |= 1 << 7;
-		}
-		if (ShieldDamageMultiplier != 1.f)
-		{
-			RepBits |= 1 << 8;
-		}
-		if (ShotgunTracesTargetData.IsValid(0))
-		{
-			RepBits |= 1 << 9;
-		}
+		if (bReplicateInstigator && Instigator.IsValid()) RepBits |= 1 << 0;
+		if (bReplicateEffectCauser && EffectCauser.IsValid() ) RepBits |= 1 << 1;
+		if (AbilityCDO.IsValid()) RepBits |= 1 << 2;
+		if (bReplicateSourceObject && SourceObject.IsValid()) RepBits |= 1 << 3;
+		if (Actors.Num() > 0) RepBits |= 1 << 4;
+		if (HitResult.IsValid()) RepBits |= 1 << 5;
+		if (bHasWorldOrigin) RepBits |= 1 << 6;
+		if (bHitThroughShield) RepBits |= 1 << 7;
+		if (ShieldDamageMultiplier != 1.f) RepBits |= 1 << 8;
+		if (ShotgunTracesTargetData.IsValid(0)) RepBits |= 1 << 9;
 	}
 	
 	Ar.SerializeBits(&RepBits, 10);
 	
-	if (RepBits & (1 << 0))
-	{
-		Ar << Instigator;
-	}
-	if (RepBits & (1 << 1))
-	{
-		Ar << EffectCauser;
-	}
-	if (RepBits & (1 << 2))
-	{
-		Ar << AbilityCDO;
-	}
-	if (RepBits & (1 << 3))
-	{
-		Ar << SourceObject;
-	}
-	if (RepBits & (1 << 4))
-	{
-		SafeNetSerializeTArray_Default<31>(Ar, Actors);
-	}
+	if (RepBits & (1 << 0)) Ar << Instigator;
+	if (RepBits & (1 << 1)) Ar << EffectCauser;
+	if (RepBits & (1 << 2)) Ar << AbilityCDO;
+	if (RepBits & (1 << 3)) Ar << SourceObject;
+	if (RepBits & (1 << 4)) SafeNetSerializeTArray_Default<31>(Ar, Actors);
 	if (RepBits & (1 << 5))
 	{
 		if (Ar.IsLoading())
@@ -85,16 +40,15 @@ bool FComplyGameplayEffectContext::NetSerialize(FArchive& Ar, class UPackageMap*
 		Ar << WorldOrigin;
 		bHasWorldOrigin = true;
 	}
-	else
+	else if (Ar.IsLoading())
 	{
 		bHasWorldOrigin = false;
 	}
 	if (RepBits & (1 << 7))
 	{
 		Ar << bHitThroughShield;
-		bHitThroughShield = true;
 	}
-	else
+	else if (Ar.IsLoading())
 	{
 		bHitThroughShield = false;
 	}

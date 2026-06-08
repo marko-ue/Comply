@@ -51,7 +51,7 @@ namespace ComplyTags
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(SBC_ReduceShotgunReserveAmmo, "ComplyTags.SetByCaller.Weapons.Shotgun", "Set by caller tag for reducing shotgun reserve ammo")
 		
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(SBC_TotemSpeedBuff, "ComplyTags.SetByCaller.Buffs.TotemSpeed", "Set by caller tag for buffing player speed")
-	}
+	} 
 	
 	namespace GameplayCues
 	{
@@ -74,5 +74,8 @@ namespace ComplyTags
 		
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(TurretTyping, "GameplayCue.Turret.Typing", "Gameplay cue tag for the typing before placing a turret")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(TurretImpact, "GameplayCue.Turret.Impact", "Gameplay cue tag for turret shot impact")
+		
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(BuffTotemApplyBuff, "GameplayCue.BuffTotem.ApplyBuff", "Gameplay cue tag for when a buff totem buff is applied")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(BuffTotemBuffAura, "GameplayCue.BuffTotem.BuffAura", "Gameplay cue tag for the buff aura when a buff exists")
 	}
 }

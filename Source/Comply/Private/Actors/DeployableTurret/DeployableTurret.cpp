@@ -51,7 +51,7 @@ void ADeployableTurret::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	PlaceTurretNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, PlaceTurretEffect, GetActorLocation());
+	PlaceTurretNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, PlaceTurretParticles, GetActorLocation());
 	
 	GetOverlappingActors(TargetsInRange);
 	

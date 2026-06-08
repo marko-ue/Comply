@@ -37,8 +37,8 @@ void AShieldDome::BeginPlay()
 	Super::BeginPlay();
 	
 	// The looping effects and sounds for the shield actor are handled at BeginPlay since the actor is replicated, no need for a cue
-	ShieldHumNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ShieldParticleEffect, GetActorLocation());
-	HumAudioComponent = UGameplayStatics::SpawnSoundAttached(ShieldHummingCue, RootComponent);
+	ShieldHumNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ShieldParticles, GetActorLocation());
+	HumAudioComponent = UGameplayStatics::SpawnSoundAttached(ShieldHummingSound, RootComponent);
 }
 
 void AShieldDome::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

@@ -5,11 +5,14 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
-#include "AbilitySystemInterface.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/ComplyTags.h"
+#include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
-#include "Interface/Enemy/EnemyInterface.h"
 #include "Interface/Player/PlayerInterface.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 
 ABuffTotem::ABuffTotem()
@@ -30,6 +33,12 @@ ABuffTotem::ABuffTotem()
 void ABuffTotem::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), PlaceTotemImpactParticles, GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), TotemPlaceSound, GetActorLocation());
+	
+	TotemNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, TotemParticles, GetActorLocation());
+	HumAudioComponent = UGameplayStatics::SpawnSoundAttached(TotemHummingSound, GetRootComponent());
 }
 
 void ABuffTotem::Tick(float DeltaTime)
@@ -46,15 +55,13 @@ void ABuffTotem::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor
 	{
 		if (UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
 		{
-			// This event will just be used to apply effects and play sounds when a totem buff is picked up 
-			ASC->RegisterGameplayTagEvent(
-					ComplyTags::States::State_TotemBuffed,
-					EGameplayTagEventType::AnyCountChange
-				).AddUObject(this, &ABuffTotem::OnTotemBuffTagChanged);
-
 			FGameplayEffectContextHandle ContextHandle = ASC->MakeEffectContext();
 			FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(ApplyTotemBuffEffectClass, 1.f, ContextHandle);
 			ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+			
+			FGameplayCueParameters CueParams;
+			CueParams.Location = OtherActor->GetActorLocation();
+			ASC->ExecuteGameplayCue(ComplyTags::GameplayCues::BuffTotemApplyBuff, CueParams);
 			
 			// After the totem applied its buff (gameplay effect) to 3 actors in total, destroy it
 			BuffCount++;
@@ -66,7 +73,17 @@ void ABuffTotem::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor
 	}
 }
 
-void ABuffTotem::OnTotemBuffTagChanged(const FGameplayTag Tag, int32 NewCount)
+void ABuffTotem::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	// TODO: Effects and sounds
+	if (HumAudioComponent)
+	{
+		HumAudioComponent->FadeOut(2.f, 0.f);
+	}
+	
+	if (TotemNiagaraComponent)
+	{
+		TotemNiagaraComponent->Deactivate();
+	}
+	
+	Super::EndPlay(EndPlayReason);
 }

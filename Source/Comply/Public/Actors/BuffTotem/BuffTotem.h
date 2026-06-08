@@ -8,6 +8,8 @@
 #include "GameFramework/Actor.h"
 #include "BuffTotem.generated.h"
 
+class UNiagaraComponent;
+class UNiagaraSystem;
 class UGameplayEffect;
 class UGameplayAbility;
 class USphereComponent;
@@ -33,6 +35,8 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
 	UFUNCTION()
@@ -40,9 +44,25 @@ private:
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
 	FActiveGameplayEffectHandle ActiveTotemBuffEffect;
-	
-	void OnTotemBuffTagChanged(const FGameplayTag Tag, int32 NewCount);
-	
+
 	// Will be upgradeable
 	int32 BuffCount = 0;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UNiagaraSystem> PlaceTotemImpactParticles;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UNiagaraSystem> TotemParticles;
+	
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> TotemNiagaraComponent;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<USoundCue> TotemPlaceSound;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<USoundCue> TotemHummingSound;
+	
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> HumAudioComponent;
 };

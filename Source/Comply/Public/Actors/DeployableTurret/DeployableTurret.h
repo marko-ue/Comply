@@ -93,7 +93,7 @@ private:
 	FTimerHandle FireTimerHandle;
 	
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UNiagaraSystem> PlaceTurretEffect;
+	TObjectPtr<UNiagaraSystem> PlaceTurretParticles;
 	
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> PlaceTurretNiagaraComponent;

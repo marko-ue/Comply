@@ -161,7 +161,7 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 			FComplyGameplayEffectContext* Context = static_cast<FComplyGameplayEffectContext*>(ContextHandle.Get());
 			if (Context)
 			{
-				// pack shield hits into target data the same way you do for regular pellets
+				// Pack shield hits into target data the same way it's done for regular pellets so only one cue is used
 				FGameplayAbilityTargetDataHandle ShieldTargetData;
 				for (const FHitResult& Hit : ShieldHits)
 				{

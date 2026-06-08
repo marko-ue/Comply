@@ -52,13 +52,13 @@ private:
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UNiagaraSystem> ShieldParticleEffect;
+	TObjectPtr<UNiagaraSystem> ShieldParticles;
 	
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> ShieldHumNiagaraComponent;
 	
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<USoundCue> ShieldHummingCue;
+	TObjectPtr<USoundCue> ShieldHummingSound;
 	
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> HumAudioComponent;

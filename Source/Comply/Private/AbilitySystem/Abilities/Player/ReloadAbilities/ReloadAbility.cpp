@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/Abilities/Player/ReloadAbilities/ReloadAbility.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "GameplayCueManager.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
@@ -39,6 +40,11 @@ void UReloadAbility::HandleReload()
 	// Can't reload if there's no more reserve ammo
 	if (WeaponAS && ReserveAmmo <= 0.f)
 	{
+		FGameplayCueParameters CueParams;
+		CueParams.Location = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo())->WeaponMesh->GetComponentLocation();
+		CueParams.Instigator = GetAvatarActorFromActorInfo();
+		UGameplayCueManager::ExecuteGameplayCue_NonReplicated(GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::WeaponDryFire, CueParams);
+		
 		CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true);
 		return;
 	}
@@ -67,6 +73,11 @@ void UReloadAbility::HandleReload()
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 		return;
 	}
+	
+	FGameplayCueParameters CueParams;
+	CueParams.Location = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo())->WeaponMesh->GetComponentLocation();
+	CueParams.Instigator = GetAvatarActorFromActorInfo();
+	GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::WeaponReload, CueParams);
 	
 	// Play reload animation
 	ReloadMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
@@ -104,6 +115,11 @@ void UReloadAbility::OnReloadMontageCompleted()
 		FGameplayEffectSpecHandle CurrentAmmoSpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(ActiveWeapon->ReloadEffectClass, 1.f, CurrentAmmoContextHandle);
 		GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*CurrentAmmoSpecHandle.Data);
 	}
+	
+	FGameplayCueParameters CueParams;
+	CueParams.Location = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo())->WeaponMesh->GetComponentLocation();
+	CueParams.Instigator = GetAvatarActorFromActorInfo();
+	GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::WeaponReloadFinished, CueParams);
 
 	// Remove reloading tag
 	FGameplayTagContainer Tags;

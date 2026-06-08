@@ -62,6 +62,10 @@ namespace ComplyTags
 		
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(HitscanWeaponFire)
 		
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(WeaponDryFire)
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(WeaponReload)
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(WeaponReloadFinished)
+		
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(ShieldPlaced)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(ShieldHitscanWeaponImpact)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(ShieldShotgunImpact)

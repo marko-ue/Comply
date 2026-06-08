@@ -60,6 +60,10 @@ namespace ComplyTags
 		
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(HitscanWeaponFire, "GameplayCue.Weapon.Hitscan.Fire", "Gameplay cue tag for hitscan weapon fire")
 		
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(WeaponDryFire, "GameplayCue.Weapon.DryFire", "Gameplay cue tag for when dry firing a weapon")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(WeaponReload, "GameplayCue.Weapon.Reload", "Gameplay cue tag for reloading weapons")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(WeaponReloadFinished, "GameplayCue.Weapon.ReloadFinished", "Gameplay cue tag for when reloading of weapons finishes")
+		
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShieldPlaced, "GameplayCue.Shield.Placed", "Gameplay cue tag for when the shield is placed")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShieldHitscanWeaponImpact, "GameplayCue.Shield.HitscanWeaponImpact", "Gameplay cue for when a shot passes through a shield")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShieldShotgunImpact, "GameplayCue.Shield.ShotgunImpact", "Gameplay cue for when a shotgun bullet passes through a shield")

@@ -202,10 +202,20 @@ private:
 	
 	FActiveGameplayEffectHandle ActiveTotemSpeedBuffEffectHandle;
 	
+	UPROPERTY(EditAnywhere)
 	int32 TotemSpeedBonusPerStack = 48;
 	
 	void OnMovementSpeedAttributeChanged(const FOnAttributeChangeData& Data);
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Audio", meta = (AllowPrivateAccess = true))
 	TObjectPtr<USoundCue> GunFireSound;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Audio", meta = (AllowPrivateAccess = true))
+	TObjectPtr<USoundCue> GunDryFireSound;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Audio", meta = (AllowPrivateAccess = true))
+	TObjectPtr<USoundCue> GunReloadSound;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Audio", meta = (AllowPrivateAccess = true))
+	TObjectPtr<USoundCue> GunReloadFinishedSound;
 };

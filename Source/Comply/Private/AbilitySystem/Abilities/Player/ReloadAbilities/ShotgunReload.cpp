@@ -69,6 +69,11 @@ void UShotgunReload::LoadNextShell()
         FGameplayTagContainer Tags;
         Tags.AddTag(ComplyTags::States::State_Reloading);
         GetAbilitySystemComponentFromActorInfo()->RemoveActiveEffectsWithGrantedTags(Tags);
+        
+        FGameplayCueParameters CueParams;
+        CueParams.Location = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo())->WeaponMesh->GetComponentLocation();
+        CueParams.Instigator = GetAvatarActorFromActorInfo();
+        GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::WeaponReloadFinished, CueParams);
 
         EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
         return;
@@ -87,6 +92,11 @@ void UShotgunReload::LoadNextShell()
     {
         ShellMontageTask->OnCompleted.AddDynamic(this, &UShotgunReload::OnShellMontageCompleted);
         ShellMontageTask->ReadyForActivation();
+        
+        FGameplayCueParameters CueParams;
+        CueParams.Location = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo())->WeaponMesh->GetComponentLocation();
+        CueParams.Instigator = GetAvatarActorFromActorInfo();
+        GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::WeaponReload, CueParams);
     }
 }
 

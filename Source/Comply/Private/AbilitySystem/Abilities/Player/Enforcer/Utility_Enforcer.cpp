@@ -19,13 +19,7 @@ void UUtility_Enforcer::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                         const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
-	if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
-	{
-		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
-		return;
-	}
-
+	
 	// Target data must be used so the client is pulled to the correct position
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
 	ASC->AbilityTargetDataSetDelegate(Handle, ActivationInfo.GetActivationPredictionKey())
@@ -36,6 +30,12 @@ void UUtility_Enforcer::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		// Grapple trace is performed first to get the GrappleHit
 		FHitResult GrappleHit;
 		if (!PerformGrappleTrace(GrappleHit))
+		{
+			EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+			return;
+		}
+		
+		if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 		{
 			EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 			return;
@@ -111,6 +111,16 @@ void UUtility_Enforcer::OnTargetDataReceived(const FGameplayAbilityTargetDataHan
 	);
 	
 	if (!DataHandle.IsValid(0)) return;
+	
+	const FGameplayAbilityActorInfo* ActorInfo = GetCurrentActorInfo();
+	if (ActorInfo->IsNetAuthority() && !ActorInfo->IsLocallyControlled())
+	{
+		if (!CommitAbility(GetCurrentAbilitySpecHandle(), ActorInfo, GetCurrentActivationInfo()))
+		{
+			EndAbility(GetCurrentAbilitySpecHandle(), ActorInfo, GetCurrentActivationInfo(), true, true);
+			return;
+		}
+	}
 
 	const FHitResult* HitResult = DataHandle.Get(0)->GetHitResult();
 	if (!HitResult) { EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false); return; }

@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "AbilitySystemComponent.h"
+#include "Comply.h"
 #include "GameplayCueManager.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
@@ -13,6 +14,7 @@
 #include "AbilitySystem/Abilities/Player/Disruptor/Primary_Disruptor.h"
 #include "Character/ComplyCharacterBase.h"
 #include "Character/ComplyPlayerCharacter.h"
+#include "Framework/GameMode/ComplyGameModeBase.h"
 
 // Traces to the middle of the screen
 // This function is called in HitscanTargetData for transferring hitscan data from client to server
@@ -49,9 +51,18 @@ void URangedWeaponAbilityBase::TraceToCrosshair(FHitResult& TraceHitResult, cons
 		FCollisionQueryParams CollisionParams;
 		CollisionParams.AddIgnoredActor(Avatar);
 		
+		FCollisionObjectQueryParams ObjectParams;
+		ObjectParams.AddObjectTypesToQuery(ECC_Enemy);
+		ObjectParams.AddObjectTypesToQuery(ECC_WorldStatic);
+		AComplyGameModeBase* GameMode = GetWorld()->GetAuthGameMode<AComplyGameModeBase>();
+		if (GameMode && GameMode->bFriendlyFire)
+		{
+			ObjectParams.AddObjectTypesToQuery(ECC_Player);
+		}
+		
 		// A multi trace is used because overlap events are required, as well as direct hits for applying damage
 		TArray<FHitResult> MultiHitResults;
-		GetWorld()->LineTraceMultiByChannel(MultiHitResults, Start, End, ECC_Pawn, CollisionParams);
+		GetWorld()->LineTraceMultiByObjectType(MultiHitResults, Start, End, ObjectParams, CollisionParams);
 		
 		for (const FHitResult& Hit : MultiHitResults)
 		{
@@ -120,6 +131,14 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 		
 		FCollisionQueryParams CollisionParams;
 		CollisionParams.AddIgnoredActor(Avatar);
+		FCollisionObjectQueryParams ObjectParams;
+		ObjectParams.AddObjectTypesToQuery(ECC_Enemy);
+		ObjectParams.AddObjectTypesToQuery(ECC_WorldStatic);
+		AComplyGameModeBase* GameMode = GetWorld()->GetAuthGameMode<AComplyGameModeBase>();
+		if (GameMode && GameMode->bFriendlyFire)
+		{
+			ObjectParams.AddObjectTypesToQuery(ECC_Player);
+		}
 		
 		// Target data for shotgun impact points
 		FGameplayAbilityTargetDataHandle TargetDataHandle;
@@ -133,7 +152,7 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 			const FVector PelletEnd = Start + PelletDirection * TraceLength;
 
 			TArray<FHitResult> MultiHitResults;
-			GetWorld()->LineTraceMultiByChannel(MultiHitResults, Start, PelletEnd, ECC_Pawn, CollisionParams);
+			GetWorld()->LineTraceMultiByObjectType(MultiHitResults, Start, PelletEnd, ObjectParams, CollisionParams);
 
 			for (const FHitResult& Hit : MultiHitResults)
 			{

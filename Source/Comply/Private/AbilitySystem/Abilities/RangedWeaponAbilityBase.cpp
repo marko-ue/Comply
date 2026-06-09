@@ -208,8 +208,14 @@ bool URangedWeaponAbilityBase::Fire()
 	float CurrentAmmo = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(ActiveWeapon->GetCurrentAmmoAttribute(), bFound);
 	if (CurrentAmmo <= 0.f)
 	{
-		GetAbilitySystemComponentFromActorInfo()->TryActivateAbilityByClass(ReloadAbilityClass);
+		FGameplayCueParameters CueParams;
+		CueParams.Location = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo())->WeaponMesh->GetComponentLocation();
+		CueParams.Instigator = GetAvatarActorFromActorInfo();
+		UGameplayCueManager::ExecuteGameplayCue_NonReplicated(GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::WeaponDryFire, CueParams);
+		
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+		
+		GetAbilitySystemComponentFromActorInfo()->TryActivateAbilityByClass(ReloadAbilityClass);
 		return false;
 	}
 	
@@ -239,7 +245,6 @@ bool URangedWeaponAbilityBase::Fire()
 		FireDelayTask->OnFinish.AddDynamic(this, &ThisClass::OnFireDelayFinished);
 		FireDelayTask->ReadyForActivation();
 	}
-	
 	
 	FGameplayCueParameters CueParams;
 	CueParams.Location = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo())->WeaponMesh->GetComponentLocation();

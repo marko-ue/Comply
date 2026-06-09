@@ -43,6 +43,14 @@ private:
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
+	UFUNCTION()
+	void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	
+	// Tracks the actors currently overlapping with the buff to prevent double applications in certain cases
+	// Set used instead of an array due to the set being O(1)
+	UPROPERTY()
+	TSet<TObjectPtr<AActor>> OverlappingActors;
+	
 	FActiveGameplayEffectHandle ActiveTotemBuffEffect;
 
 	// Will be upgradeable

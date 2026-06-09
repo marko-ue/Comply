@@ -54,6 +54,7 @@ void URangedWeaponAbilityBase::TraceToCrosshair(FHitResult& TraceHitResult, cons
 		FCollisionObjectQueryParams ObjectParams;
 		ObjectParams.AddObjectTypesToQuery(ECC_Enemy);
 		ObjectParams.AddObjectTypesToQuery(ECC_WorldStatic);
+		// Trace against the player too if friendly fire is enabled
 		AComplyGameModeBase* GameMode = GetWorld()->GetAuthGameMode<AComplyGameModeBase>();
 		if (GameMode && GameMode->bFriendlyFire)
 		{
@@ -134,6 +135,7 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 		FCollisionObjectQueryParams ObjectParams;
 		ObjectParams.AddObjectTypesToQuery(ECC_Enemy);
 		ObjectParams.AddObjectTypesToQuery(ECC_WorldStatic);
+		// Trace against the player too if friendly fire is enabled
 		AComplyGameModeBase* GameMode = GetWorld()->GetAuthGameMode<AComplyGameModeBase>();
 		if (GameMode && GameMode->bFriendlyFire)
 		{

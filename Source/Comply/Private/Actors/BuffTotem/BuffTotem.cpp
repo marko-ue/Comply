@@ -28,6 +28,7 @@ ABuffTotem::ABuffTotem()
 	SphereComp->SetupAttachment(GetRootComponent());
 	
 	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnOverlapBegin);
+	SphereComp->OnComponentEndOverlap.AddDynamic(this, &ThisClass::OnOverlapEnd);
 }
 
 void ABuffTotem::BeginPlay()
@@ -50,11 +51,15 @@ void ABuffTotem::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (!HasAuthority()) return;
+	// If the actor beginning overlap is already overlapping, don't apply the buff 
+	if (OverlappingActors.Contains(OtherActor)) return;
 	
 	if (OtherActor->Implements<UPlayerInterface>())
 	{
 		if (UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
 		{
+			OverlappingActors.Add(OtherActor);
+			
 			FGameplayEffectContextHandle ContextHandle = ASC->MakeEffectContext();
 			FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(ApplyTotemBuffEffectClass, 1.f, ContextHandle);
 			ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
@@ -71,6 +76,12 @@ void ABuffTotem::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor
 			}
 		}
 	}
+}
+
+void ABuffTotem::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	// Remove the actor so it can overlap again
+	OverlappingActors.Remove(OtherActor);
 }
 
 void ABuffTotem::EndPlay(const EEndPlayReason::Type EndPlayReason)

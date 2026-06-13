@@ -25,6 +25,6 @@ public:
 	
 protected:
 	virtual void SpawnPreview();
-	virtual void Throw();
+	virtual void ThrowOnServer(FVector LaunchVelocity, FVector SpawnPosition);
 	virtual void CancelThrow();
 };

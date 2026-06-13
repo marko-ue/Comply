@@ -19,10 +19,10 @@ void UThrowable_Enforcer::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
-	Throw();
+	ThrowOnServer(FVector::ZeroVector, FVector::ZeroVector);
 }
 
-void UThrowable_Enforcer::Throw()
+void UThrowable_Enforcer::ThrowOnServer(FVector LaunchVelocity, FVector SpawnPosition)
 {
 	// The preview for the turret will be shown only on the owning client
 	if (GetCurrentActorInfo()->IsLocallyControlled())

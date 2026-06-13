@@ -11,7 +11,7 @@ void UThrowableAbilityBase::SpawnPreview()
 {
 }
 
-void UThrowableAbilityBase::Throw()
+void UThrowableAbilityBase::ThrowOnServer(FVector LaunchVelocity, FVector SpawnPosition)
 {
 }
 

@@ -46,6 +46,8 @@ protected:
 	
 	virtual void SpawnPreview() override;
 	
+	virtual void ThrowOnServer(FVector LaunchVelocity, FVector SpawnPosition) override;
+	
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Animations")
 	TObjectPtr<UAnimMontage> ThrowGrenadeMontage;

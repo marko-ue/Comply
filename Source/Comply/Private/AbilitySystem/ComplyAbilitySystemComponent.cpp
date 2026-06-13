@@ -33,6 +33,8 @@ void UComplyAbilitySystemComponent::TickComponent(float DeltaTime, ELevelTick Ti
 
 void UComplyAbilitySystemComponent::Server_ThrowPlasmaGrenade_Implementation(FGameplayAbilitySpecHandle AbilityHandle, FVector SpawnLocation, FRotator SpawnRotation, FVector InLaunchVelocity)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Grenade RPC"));
+	
 	const FGameplayAbilitySpec* Spec = FindAbilitySpecFromHandle(AbilityHandle);
 	const UThrowable_Ranger* Ability = Cast<UThrowable_Ranger>(Spec->GetPrimaryInstance());
 	

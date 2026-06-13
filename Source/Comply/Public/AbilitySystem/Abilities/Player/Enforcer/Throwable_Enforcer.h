@@ -43,7 +43,7 @@ protected:
 	
 	void SpawnPreview(const FGameplayAbilityActorInfo* ActorInfo);
 
-	virtual void Throw() override;
+	virtual void ThrowOnServer(FVector LaunchVelocity, FVector SpawnPosition) override;
 	
 	UFUNCTION()
 	virtual void CancelThrow() override;

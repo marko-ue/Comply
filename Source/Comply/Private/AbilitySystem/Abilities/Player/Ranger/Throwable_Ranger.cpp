@@ -13,6 +13,7 @@
 #include "Actors/PlasmaGrenade/PlasmaGrenade.h"
 #include "Actors/PlasmaGrenade/PlasmaGrenadePreview.h"
 #include "Character/ComplyPlayerCharacter.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 void UThrowable_Ranger::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -64,6 +65,27 @@ void UThrowable_Ranger::SpawnPreview()
 	UGameplayStatics::FinishSpawningActor(SpawnedGrenadePreviewActor, SpawnTransform);
 }
 
+void UThrowable_Ranger::ThrowOnServer(FVector LaunchVelocity, FVector SpawnPosition)
+{
+	const FTransform SpawnTransform(GetAvatarActorFromActorInfo()->GetActorRotation(), SpawnPosition);
+	
+	APlasmaGrenade* Grenade = GetWorld()->SpawnActorDeferred<APlasmaGrenade>(GrenadeActorClass, SpawnTransform, GetOwningActorFromActorInfo(), GetAvatarActorFromActorInfo()->GetInstigator(), ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	if (Grenade)
+	{
+		Grenade->ExplosionRadius = ExplosionRadius;
+		Grenade->MaxDamage = Damage.GetValueAtLevel(GetAbilityLevel());
+		Grenade->SourceASC = GetAbilitySystemComponentFromActorInfo();
+		Grenade->DamageEffectClass = DamageEffectClass;
+		Grenade->DamageTypeTag = DamageType;
+		
+		// Clamp to the throw speed to prevent cheating by the client passing in higher values
+		FVector SafeLaunchVelocity = LaunchVelocity.GetClampedToMaxSize(ThrowSpeed);
+		Grenade->ProjectileMovementComp->Velocity = SafeLaunchVelocity;
+
+		UGameplayStatics::FinishSpawningActor(Grenade, SpawnTransform);
+	}
+}
+
 void UThrowable_Ranger::ConfirmThrow()
 {
 	// End the prepare grenade task now, as the throw is confirmed
@@ -88,39 +110,6 @@ void UThrowable_Ranger::OnThrowMontageCompleted()
 	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	
 	if (SpawnedGrenadePreviewActor) SpawnedGrenadePreviewActor->Destroy();
-	
-	// A server RPC is used to handle spawning the grenade
-	UComplyAbilitySystemComponent* ASC = Cast<UComplyAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
-	if (ASC)
-	{
-		AActor* Owner = GetOwningActorFromActorInfo();
-		AActor* Avatar = GetAvatarActorFromActorInfo();
-	
-		if (!Avatar || !Owner) return;
-	
-		FVector2D ViewportSize = FVector2D();
-		if (GEngine && GEngine->GameViewport)
-		{
-			GEngine->GameViewport->GetViewportSize(ViewportSize);
-		}
-	
-		const FVector2D CrosshairLocation(ViewportSize.X / 2, ViewportSize.Y / 2);
-		FVector CrosshairWorldPosition;
-		FVector CrosshairWorldDirection;
-		const bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(UGameplayStatics::GetPlayerController(
-			this, 0), CrosshairLocation, CrosshairWorldPosition, CrosshairWorldDirection);
-		if (!bScreenToWorld) return;
-	
-		const FVector LaunchVelocity = CrosshairWorldDirection * ThrowSpeed;
-		const FVector SpawnPosition = Avatar->GetActorLocation() + FVector(0.f, 0.f, 60.f) + CrosshairWorldDirection * 40.f;
-
-		APawn* InstigatorPawn = Cast<APawn>(GetAvatarActorFromActorInfo());
-		ASC->Server_ThrowPlasmaGrenade(GetCurrentAbilitySpecHandle(), InstigatorPawn->GetActorLocation(), InstigatorPawn->GetActorRotation(), LaunchVelocity);
-		
-		FGameplayCueParameters CueParams;
-		CueParams.Location = GetAvatarActorFromActorInfo()->GetActorLocation();
-		UGameplayCueManager::ExecuteGameplayCue_NonReplicated(GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::ThrowGrenade, CueParams);
-	}
 	
 	GetAbilitySystemComponentFromActorInfo()->RemoveLooseGameplayTag(ComplyTags::States::State_Firing);
 	
@@ -156,6 +145,49 @@ void UThrowable_Ranger::OnThrowMontageCompleted()
 			FGameplayTagContainer Tags;
 			Tags.AddTag(ComplyTags::ComplyAbilities::AssetTags::Equip_Primary);
 			GetAbilitySystemComponentFromActorInfo()->TryActivateAbilitiesByTag(Tags);
+		}
+	}
+
+	UComplyAbilitySystemComponent* ASC = Cast<UComplyAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
+	if (ASC)
+	{
+		AActor* Owner = GetOwningActorFromActorInfo();
+	
+		if (!Avatar || !Owner) return;
+	
+		FVector2D ViewportSize = FVector2D();
+		if (GEngine && GEngine->GameViewport)
+		{
+			GEngine->GameViewport->GetViewportSize(ViewportSize);
+		}
+	
+		const FVector2D CrosshairLocation(ViewportSize.X / 2, ViewportSize.Y / 2);
+		FVector CrosshairWorldPosition;
+		FVector CrosshairWorldDirection;
+		const bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(UGameplayStatics::GetPlayerController(
+			this, 0), CrosshairLocation, CrosshairWorldPosition, CrosshairWorldDirection);
+		if (!bScreenToWorld) return;
+	
+		const FVector LaunchVelocity = CrosshairWorldDirection * ThrowSpeed;
+		const FVector SpawnPosition = Avatar->GetActorLocation() + FVector(0.f, 0.f, 60.f) + CrosshairWorldDirection * 40.f;
+
+		// Spawn the grenade through the RPC if not on server and execute the throw cue
+		if (!ASC->IsOwnerActorAuthoritative())
+		{
+			APawn* InstigatorPawn = Cast<APawn>(GetAvatarActorFromActorInfo());
+			ASC->Server_ThrowPlasmaGrenade(GetCurrentAbilitySpecHandle(), SpawnPosition, InstigatorPawn->GetActorRotation(), LaunchVelocity);
+			
+			FGameplayCueParameters CueParams;
+			CueParams.Location = GetAvatarActorFromActorInfo()->GetActorLocation();
+			UGameplayCueManager::ExecuteGameplayCue_NonReplicated(GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::ThrowGrenade, CueParams);
+		}
+		else if (GetCurrentActorInfo()->IsLocallyControlled()) // On the server path, checking if locally controlled to prevent double spawn
+		{
+			FGameplayCueParameters CueParams;
+			CueParams.Location = GetAvatarActorFromActorInfo()->GetActorLocation();
+			UGameplayCueManager::ExecuteGameplayCue_NonReplicated(GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::ThrowGrenade, CueParams);
+			
+			ThrowOnServer(LaunchVelocity, SpawnPosition);
 		}
 	}
 	

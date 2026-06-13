@@ -76,6 +76,10 @@ void UHitscanTargetData::SendHitscanTargetData(float TraceDistance)
 	{
 		ValidData.Broadcast(DataHandle);
 	}
+	
+	UE_LOG(LogTemp, Warning,
+	TEXT("ActivationKey %s"),
+	*GetActivationPredictionKey().ToString());
 }
 
 // Consumes the sent data when received

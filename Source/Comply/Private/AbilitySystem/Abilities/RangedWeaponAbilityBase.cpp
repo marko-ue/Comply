@@ -270,7 +270,24 @@ bool URangedWeaponAbilityBase::Fire()
 	FGameplayCueParameters CueParams;
 	CueParams.Location = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo())->WeaponMesh->GetComponentLocation();
 	CueParams.Instigator = GetAvatarActorFromActorInfo();
-	GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::HitscanWeaponFire, CueParams);
+	
+	// Execute the predicted cue non-replicated
+	if (CurrentActorInfo->IsLocallyControlled())
+	{
+		UGameplayCueManager::ExecuteGameplayCue_NonReplicated(
+			GetAvatarActorFromActorInfo(),
+			ComplyTags::GameplayCues::HitscanWeaponFire,
+			CueParams
+		);
+	}
+
+	// Only execute regular cues on the server
+	if (GetAbilitySystemComponentFromActorInfo()->IsOwnerActorAuthoritative())
+	{
+		GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(
+			ComplyTags::GameplayCues::HitscanWeaponFire, CueParams
+		);
+	}
 	
 	return true;
 }
@@ -306,9 +323,8 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
 
 void URangedWeaponAbilityBase::OnFireDelayFinished()
 {
-	FGameplayTagContainer Tags;
-	GetAbilitySystemComponentFromActorInfo()->GetOwnedGameplayTags(Tags);
-	if (!Tags.HasTagExact(ComplyTags::States::State_Firing))
+	AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
+	if (!Character || !Character->bIsFiring)
 	{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 	}

@@ -2,6 +2,9 @@
 
 
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
+
+#include <filesystem>
+
 #include "AbilitySystemComponent.h"
 #include "Comply.h"
 #include "GameplayCueManager.h"
@@ -88,10 +91,14 @@ void URangedWeaponAbilityBase::TraceToCrosshair(FHitResult& TraceHitResult, cons
 			// The trace hit result is also stored here
 			TraceHitResult = Hit;
 			
-			FGameplayCueParameters CueParams;
-			CueParams.Location = Hit.ImpactPoint;
-			CueParams.Normal = Hit.ImpactNormal;
-			GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::HitscanWeaponImpact, CueParams);
+			if (CurrentActorInfo->IsLocallyControlled())
+			{
+				FGameplayCueParameters CueParams;
+				CueParams.Location = Hit.ImpactPoint;
+				CueParams.Normal = Hit.ImpactNormal;
+				UGameplayCueManager::ExecuteGameplayCue_NonReplicated(
+					GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::HitscanWeaponImpact, CueParams);
+			}
 			
 			return;
 		}
@@ -208,10 +215,20 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 		{
 			Context->ShotgunTracesTargetData = TargetDataHandle;
 		}
-
-		FGameplayCueParameters CueParams;
-		CueParams.EffectContext = ContextHandle;
-		GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::ShotgunImpact, CueParams);
+		
+		if (CurrentActorInfo->IsLocallyControlled())
+		{
+			FGameplayCueParameters CueParams;
+			CueParams.EffectContext = ContextHandle;
+			UGameplayCueManager::ExecuteGameplayCue_NonReplicated(GetAvatarActorFromActorInfo(),ComplyTags::GameplayCues::ShotgunImpact, CueParams);
+		}
+		
+		if (GetAbilitySystemComponentFromActorInfo()->IsOwnerActorAuthoritative())
+		{
+			FGameplayCueParameters CueParams;
+			CueParams.EffectContext = ContextHandle;
+			GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::ShotgunImpact, CueParams);
+		}
 	}
 }
 
@@ -296,10 +313,21 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
 {
 	const FGameplayAbilityActivationInfo ActivationInfo = GetCurrentActivationInfo();
 
+	AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
+	
 	for (const TSharedPtr<FGameplayAbilityTargetData>& Data : DataHandle.Data)
 	{
 		if (!Data.IsValid()) continue;
 
+		// Of the weapon uses a single crosshair trace, execute the gameplay cue
+		if (Character->GetEquippedPrimaryWeapon()->bUsesSingleCrosshairTrace && HasAuthority(&ActivationInfo))
+		{
+			FGameplayCueParameters CueParams;
+			CueParams.Location = Data->GetHitResult()->ImpactPoint;
+			CueParams.Normal = Data->GetHitResult()->ImpactNormal;
+			GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::HitscanWeaponImpact, CueParams);
+		}
+		
 		AActor* TargetActor = Data->GetHitResult()->GetActor();
 		if (TargetActor && HasAuthority(&ActivationInfo))
 		{
@@ -318,6 +346,21 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
 
 			CauseDamage(TargetActor, FinalDamage, Context);
 		}
+	}
+	
+	// If the weapon doesn't use a simple cue (shotgun), execute the cue with all packed target data outside the loop
+	if (!Character->GetEquippedPrimaryWeapon()->bUsesSingleCrosshairTrace && HasAuthority(&ActivationInfo))
+	{
+		FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
+		FComplyGameplayEffectContext* Context = static_cast<FComplyGameplayEffectContext*>(ContextHandle.Get());
+		if (Context)
+		{
+			Context->ShotgunTracesTargetData = DataHandle;
+		}
+
+		FGameplayCueParameters CueParams;
+		CueParams.EffectContext = ContextHandle;
+		GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::ShotgunImpact, CueParams);
 	}
 }
 

@@ -113,6 +113,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Animations")
 	TObjectPtr<UAnimMontage> ThrowableEquipMontage;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Animations")
+	TObjectPtr<UAnimMontage> PrepareReloadMontage;
+	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CurrentEquippedSlot)
 	EWeaponSlot CurrentEquippedSlot = EWeaponSlot::Primary;
 	

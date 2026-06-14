@@ -250,6 +250,12 @@ void AComplyPlayerCharacter::ReloadActionPressed()
 	{
 		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_Reload))
 		{
+			// Play the prepare animation locally so a delay at high ping is not felt
+			if (IsLocallyControlled() && !HasAuthority())
+			{
+				PlayAnimMontage(PrepareReloadMontage);
+			}
+			
 			GetAbilitySystemComponent()->TryActivateAbility(Spec.Handle);
 			break;
 		}

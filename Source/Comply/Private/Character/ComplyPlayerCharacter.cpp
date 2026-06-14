@@ -229,11 +229,13 @@ void AComplyPlayerCharacter::PrimaryActionReleased()
 
 void AComplyPlayerCharacter::SecondaryActionPressed()
 {
+	bIsAiming = true;
 	GetAbilitySystemComponent()->TryActivateAbilityByClass(ApplyAimEffectAbilityClass);
 }
 
 void AComplyPlayerCharacter::SecondaryActionReleased()
 {
+	bIsAiming = false;
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
 		if (Spec.Ability->GetClass() == ApplyAimEffectAbilityClass)
@@ -322,10 +324,9 @@ void AComplyPlayerCharacter::UpdateRotationMode(float DeltaTime)
 	// The owning client computes rotation locally for responsiveness
 	// Simulated proxies display the replicated rotation instead of fighting with local interpolation
 	if (!IsLocallyControlled() && !HasAuthority()) return;
-	
-	const bool bDoesAimingTagExist = GetAbilitySystemComponent()->HasMatchingGameplayTag(ComplyTags::States::State_Aiming);
+
 	const bool bDoesFiringTagExist = GetAbilitySystemComponent()->HasMatchingGameplayTag(ComplyTags::States::State_Firing);
-	const bool bShouldControlRotation = bDoesAimingTagExist || bDoesFiringTagExist;
+	const bool bShouldControlRotation = bIsAiming || bDoesFiringTagExist;
 
 	FRotator TargetRotation;
 

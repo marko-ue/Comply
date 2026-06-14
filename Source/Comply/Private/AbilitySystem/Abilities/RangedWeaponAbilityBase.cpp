@@ -56,6 +56,7 @@ void URangedWeaponAbilityBase::TraceToCrosshair(FHitResult& TraceHitResult, cons
 		
 		FCollisionObjectQueryParams ObjectParams;
 		ObjectParams.AddObjectTypesToQuery(ECC_Enemy);
+		ObjectParams.AddObjectTypesToQuery(ECC_Shield);
 		ObjectParams.AddObjectTypesToQuery(ECC_WorldStatic);
 		// Trace against the player too if friendly fire is enabled
 		AComplyGameModeBase* GameMode = GetWorld()->GetAuthGameMode<AComplyGameModeBase>();
@@ -141,6 +142,7 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 		CollisionParams.AddIgnoredActor(Avatar);
 		FCollisionObjectQueryParams ObjectParams;
 		ObjectParams.AddObjectTypesToQuery(ECC_Enemy);
+		ObjectParams.AddObjectTypesToQuery(ECC_Shield);
 		ObjectParams.AddObjectTypesToQuery(ECC_WorldStatic);
 		// Trace against the player too if friendly fire is enabled
 		AComplyGameModeBase* GameMode = GetWorld()->GetAuthGameMode<AComplyGameModeBase>();
@@ -319,7 +321,7 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
 	{
 		if (!Data.IsValid()) continue;
 
-		// Of the weapon uses a single crosshair trace, execute the gameplay cue
+		// If the weapon uses a single crosshair trace, execute the gameplay cue
 		if (Character->GetEquippedPrimaryWeapon()->bUsesSingleCrosshairTrace && HasAuthority(&ActivationInfo))
 		{
 			FGameplayCueParameters CueParams;

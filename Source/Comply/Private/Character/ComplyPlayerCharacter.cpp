@@ -252,10 +252,21 @@ void AComplyPlayerCharacter::ReloadActionPressed()
 	{
 		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_Reload))
 		{
-			// Play the prepare animation locally so a delay at high ping is not felt
+			// Play the prepare animation locally so a delay at high ping is not felt if can reload
 			if (IsLocallyControlled() && !HasAuthority())
 			{
-				PlayAnimMontage(PrepareReloadMontage);
+				if (URangedWeaponAbilityBase* Weapon = GetEquippedPrimaryWeapon())
+				{
+					bool bFound = false;
+					const float CurrentAmmo = GetAbilitySystemComponent()->GetGameplayAttributeValue(Weapon->GetCurrentAmmoAttribute(), bFound);
+					const float MaxAmmo = GetAbilitySystemComponent()->GetGameplayAttributeValue(Weapon->GetMaxAmmoAttribute(), bFound);
+					const float ReserveAmmo = GetAbilitySystemComponent()->GetGameplayAttributeValue(Weapon->GetCurrentReserveAmmoAttribute(), bFound);
+                    
+					if (!FMath::IsNearlyEqual(CurrentAmmo, MaxAmmo) && ReserveAmmo > 0.f)
+					{
+						PlayAnimMontage(PrepareReloadMontage);
+					}
+				}
 			}
 			
 			GetAbilitySystemComponent()->TryActivateAbility(Spec.Handle);

@@ -8,6 +8,7 @@
 #include "AbilitySystem/Abilities/Player/Disruptor/Utility_Disruptor.h"
 #include "AbilitySystem/Abilities/Player/Enforcer/Throwable_Enforcer.h"
 #include "AbilitySystem/Abilities/Player/Ranger/Throwable_Ranger.h"
+#include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
 #include "Actors/BuffTotem/BuffTotem.h"
 #include "Actors/DecoyGrenade/DecoyGrenade.h"
 #include "Actors/DeployableTurret/DeployableTurret.h"
@@ -33,12 +34,25 @@ void UComplyAbilitySystemComponent::TickComponent(float DeltaTime, ELevelTick Ti
 
 void UComplyAbilitySystemComponent::Server_ThrowPlasmaGrenade_Implementation(FGameplayAbilitySpecHandle AbilityHandle, FVector SpawnLocation, FRotator SpawnRotation, FVector InLaunchVelocity)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Grenade RPC"));
-	
 	const FGameplayAbilitySpec* Spec = FindAbilitySpecFromHandle(AbilityHandle);
-	const UThrowable_Ranger* Ability = Cast<UThrowable_Ranger>(Spec->GetPrimaryInstance());
+	UThrowable_Ranger* Ability = Cast<UThrowable_Ranger>(Spec->GetPrimaryInstance());
 	
 	if (!Spec || !Ability) return;
+	
+	bool bFound = false;
+	float GrenadeCurrentCharges = GetGameplayAttributeValue(
+		UWeaponAttributeSet::GetPlasmaGrenadeCurrentChargesAttribute(), bFound);
+    
+	// Don't spawn a grenade if there are no charges
+	if (GrenadeCurrentCharges <= 0.f) return;
+
+	// Cost is applied in the RPC, so the next RPC will see the updated data
+	FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(Ability->CostEffectClass, 1.f, MakeEffectContext());
+	ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	
+	AActor* Avatar = GetAvatarActor();
+	IWeaponInterface* WeaponOwner = Cast<IWeaponInterface>(Avatar);
+	Ability->EquipWeaponBasedOnCharges(WeaponOwner, this);
 	
 	APawn* InstigatorPawn = Cast<APawn>(GetAvatarActor());
 

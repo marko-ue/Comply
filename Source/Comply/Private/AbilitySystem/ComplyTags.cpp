@@ -40,6 +40,7 @@ namespace ComplyTags
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_TotemBuffed, "ComplyTags.States.TotemBuffed", "Is player buffed by a totem")
 		
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_ThrowablePreparing, "ComplyTags.States.Throwable.Preparing", "Is player preparing throwable")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_ThrowableThrowing, "ComplyTags.States.Throwable.Throwing", "Is player throwing a throwable")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_NoThrowables, "ComplyTags.States.NoGrenades", "Does player have no throwables")
 		
 	}

@@ -43,6 +43,7 @@ namespace ComplyTags
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_TotemBuffed)
 		
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_ThrowablePreparing)
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_ThrowableThrowing)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_NoThrowables)
 	}
 	

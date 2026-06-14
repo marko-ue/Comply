@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystem/Abilities/ThrowableAbilityBase.h"
+#include "Interface/Player/WeaponInterface.h"
 #include "Throwable_Ranger.generated.h"
 
 class APlasmaGrenade;
@@ -24,6 +25,8 @@ public:
 	UFUNCTION()
 	virtual void ConfirmThrow() override;
 	
+	void EquipWeaponBasedOnCharges(IWeaponInterface* WeaponOwner, UAbilitySystemComponent* ASC);
+
 	UPROPERTY()
 	TObjectPtr<APlasmaGrenadePreview> SpawnedGrenadePreviewActor;
 	
@@ -44,10 +47,12 @@ public:
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+	
 	virtual void SpawnPreview() override;
 	
 	virtual void ThrowOnServer(FVector LaunchVelocity, FVector SpawnPosition) override;
-	
+
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Animations")
 	TObjectPtr<UAnimMontage> ThrowGrenadeMontage;

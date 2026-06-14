@@ -3,6 +3,9 @@
 
 #include "AbilitySystem/Abilities/ThrowableAbilityBase.h"
 
+#include "AbilitySystemComponent.h"
+#include "AbilitySystem/ComplyTags.h"
+
 void UThrowableAbilityBase::ConfirmThrow()
 {
 }
@@ -17,4 +20,14 @@ void UThrowableAbilityBase::ThrowOnServer(FVector LaunchVelocity, FVector SpawnP
 
 void UThrowableAbilityBase::CancelThrow()
 {
+}
+
+void UThrowableAbilityBase::SafeRemoveThrowingTag()
+{
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
+	// Only remove if we actually own a count of this tag
+	if (ASC->GetTagCount(ComplyTags::States::State_ThrowableThrowing) > 0)
+	{
+		ASC->RemoveLooseGameplayTag(ComplyTags::States::State_ThrowableThrowing);
+	}
 }

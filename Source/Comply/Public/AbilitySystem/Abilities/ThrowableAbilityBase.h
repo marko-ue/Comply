@@ -27,4 +27,5 @@ protected:
 	virtual void SpawnPreview();
 	virtual void ThrowOnServer(FVector LaunchVelocity, FVector SpawnPosition);
 	virtual void CancelThrow();
+	void SafeRemoveThrowingTag();
 };

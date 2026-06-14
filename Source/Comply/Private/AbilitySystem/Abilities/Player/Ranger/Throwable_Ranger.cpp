@@ -2,7 +2,6 @@
 
 
 #include "AbilitySystem/Abilities/Player/Ranger/Throwable_Ranger.h"
-
 #include "GameplayCueManager.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitConfirm.h"
@@ -21,7 +20,18 @@ void UThrowable_Ranger::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                         const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	
+    
+	// Hard gate — don't even start if no charges
+	bool bFound = false;
+	float Charges = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(
+		UWeaponAttributeSet::GetPlasmaGrenadeCurrentChargesAttribute(), bFound);
+	if (Charges <= 0.f)
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+		return;
+	}
+
+	GetAbilitySystemComponentFromActorInfo()->AddLooseGameplayTag(ComplyTags::States::State_ThrowableThrowing);
 	SpawnPreview();
 }
 
@@ -69,6 +79,13 @@ void UThrowable_Ranger::ThrowOnServer(FVector LaunchVelocity, FVector SpawnPosit
 {
 	const FTransform SpawnTransform(GetAvatarActorFromActorInfo()->GetActorRotation(), SpawnPosition);
 	
+	FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(CostEffectClass, 1.f);
+	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+
+	AActor* Avatar = GetAvatarActorFromActorInfo();
+	IWeaponInterface* WeaponOwner = Cast<IWeaponInterface>(Avatar);
+	EquipWeaponBasedOnCharges(WeaponOwner, GetAbilitySystemComponentFromActorInfo());
+	
 	APlasmaGrenade* Grenade = GetWorld()->SpawnActorDeferred<APlasmaGrenade>(GrenadeActorClass, SpawnTransform, GetOwningActorFromActorInfo(), GetAvatarActorFromActorInfo()->GetInstigator(), ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	if (Grenade)
 	{
@@ -106,47 +123,14 @@ void UThrowable_Ranger::ConfirmThrow()
 // Only throw the grenade and end the ability after the throw section of the animation finishes
 void UThrowable_Ranger::OnThrowMontageCompleted()
 {
-	FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(CostEffectClass, 1.f);
-	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-	
-	if (SpawnedGrenadePreviewActor) SpawnedGrenadePreviewActor->Destroy();
-	
-	GetAbilitySystemComponentFromActorInfo()->RemoveLooseGameplayTag(ComplyTags::States::State_Firing);
-	
 	AActor* Avatar = GetAvatarActorFromActorInfo();
 	IWeaponInterface* WeaponOwner = Cast<IWeaponInterface>(Avatar);
 	
-	const UWeaponAttributeSet* WeaponAS = GetAbilitySystemComponentFromActorInfo()->GetSet<UWeaponAttributeSet>();
-	bool bFound = false;
-	float GrenadeCurrentCharges = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(
-		UWeaponAttributeSet::GetPlasmaGrenadeCurrentChargesAttribute(), bFound);
+	if (SpawnedGrenadePreviewActor) SpawnedGrenadePreviewActor->Destroy(); SpawnedGrenadePreviewActor = nullptr;
 	
-	// Clear equip slot and equip the throwable again to simulate grabbing another grenade from the inventory
-	if (WeaponAS && GrenadeCurrentCharges > 0.f)
-	{
-		if (WeaponOwner)
-		{
-			WeaponOwner->ClearEquippedWeapon();
-			
-			FGameplayTagContainer Tags;
-			Tags.AddTag(ComplyTags::ComplyAbilities::AssetTags::Equip_Throwable);
-			GetAbilitySystemComponentFromActorInfo()->TryActivateAbilitiesByTag(Tags);
-		}
-	}
-	else // If there are no more grenades, equip the primary
-	{
-		if (WeaponOwner)
-		{
-			// Add this tag so the equip throwable ability can't be activated anymore
-			GetAbilitySystemComponentFromActorInfo()->AddLooseGameplayTag(ComplyTags::States::State_NoThrowables);
-			
-			WeaponOwner->ClearEquippedWeapon();
-			
-			FGameplayTagContainer Tags;
-			Tags.AddTag(ComplyTags::ComplyAbilities::AssetTags::Equip_Primary);
-			GetAbilitySystemComponentFromActorInfo()->TryActivateAbilitiesByTag(Tags);
-		}
-	}
+	GetAbilitySystemComponentFromActorInfo()->RemoveLooseGameplayTag(ComplyTags::States::State_Firing);
+	
+	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 
 	UComplyAbilitySystemComponent* ASC = Cast<UComplyAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
 	if (ASC)
@@ -190,8 +174,41 @@ void UThrowable_Ranger::OnThrowMontageCompleted()
 			ThrowOnServer(LaunchVelocity, SpawnPosition);
 		}
 	}
-	
-	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+}
+
+void UThrowable_Ranger::EquipWeaponBasedOnCharges(IWeaponInterface* WeaponOwner, UAbilitySystemComponent* ASC)
+{
+	const UWeaponAttributeSet* WeaponAS = ASC->GetSet<UWeaponAttributeSet>();
+	bool bFound = false;
+	float GrenadeCurrentCharges = ASC->GetGameplayAttributeValue(
+		UWeaponAttributeSet::GetPlasmaGrenadeCurrentChargesAttribute(), bFound);
+
+	// Clear equip slot and equip the throwable again to simulate grabbing another grenade from the inventory
+	if (WeaponAS && GrenadeCurrentCharges > 0.f)
+	{
+		if (WeaponOwner)
+		{
+			WeaponOwner->ClearEquippedWeapon();
+			
+			FGameplayTagContainer Tags;
+			Tags.AddTag(ComplyTags::ComplyAbilities::AssetTags::Equip_Throwable);
+			ASC->TryActivateAbilitiesByTag(Tags);
+		}
+	}
+	else // If there are no more grenades, equip the primary
+	{
+		if (WeaponOwner)
+		{
+			// Add this tag so the equip throwable ability can't be activated anymore
+			ASC->AddReplicatedLooseGameplayTag(ComplyTags::States::State_NoThrowables);
+			
+			WeaponOwner->ClearEquippedWeapon();
+			
+			FGameplayTagContainer Tags;
+			Tags.AddTag(ComplyTags::ComplyAbilities::AssetTags::Equip_Primary);
+			ASC->TryActivateAbilitiesByTag(Tags);
+		}
+	}
 }
 
 // This function is overridden so ability costs can be handled manually
@@ -207,7 +224,23 @@ void UThrowable_Ranger::CancelAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	bool bReplicateCancelAbility)
 {
-	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
+	SafeRemoveThrowingTag();
 	
 	if (SpawnedGrenadePreviewActor) SpawnedGrenadePreviewActor->Destroy();
+	
+	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
+}
+
+void UThrowable_Ranger::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+{
+	SafeRemoveThrowingTag();
+	
+	if (SpawnedGrenadePreviewActor)
+	{
+		SpawnedGrenadePreviewActor->Destroy();
+		SpawnedGrenadePreviewActor = nullptr;
+	}
+	
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

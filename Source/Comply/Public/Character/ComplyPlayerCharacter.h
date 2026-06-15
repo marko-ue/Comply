@@ -12,6 +12,7 @@
 #include "ComplyPlayerCharacter.generated.h"
 
 
+class UInputMappingContext;
 class URangedWeaponAbilityBase;
 struct FActiveGameplayEffectHandle;
 class UCameraComponent;

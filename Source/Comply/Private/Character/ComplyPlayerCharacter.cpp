@@ -168,12 +168,18 @@ void AComplyPlayerCharacter::PrimaryActionPressed()
 			// Confirming the input lets the ability continue with its functionality, the preview will now be removed
 			if (Spec.IsActive())
 			{
-				GetAbilitySystemComponent()->LocalInputConfirm();
+				if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+				{
+					ASC->LocalInputConfirm();
+				}
 				break;
 			}
 			else
 			{
-				GetAbilitySystemComponent()->TryActivateAbility(Spec.Handle);
+				if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+				{
+					ASC->TryActivateAbility(Spec.Handle);
+				}
 				break;
 			}
 		}
@@ -184,19 +190,30 @@ void AComplyPlayerCharacter::PrimaryActionPressed()
 			// Confirming the input lets the ability continue with its functionality, the preview will now be removed
 			if (Spec.IsActive())
 			{
-				GetAbilitySystemComponent()->LocalInputConfirm();
+				if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+				{
+					ASC->LocalInputConfirm();
+				}
 				break;
 			}
 		}
 		
 		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_Primary))
 		{
-			GetAbilitySystemComponent()->TryActivateAbility(Spec.Handle);
+			if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+			{
+				ASC->TryActivateAbility(Spec.Handle);
+			}
+			
 			bIsFiring = true;
 		}
 	}
 
-	GetAbilitySystemComponent()->TryActivateAbilityByClass(ApplyFireEffectAbilityClass);
+	if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+	{
+		ASC->TryActivateAbilityByClass(ApplyFireEffectAbilityClass);
+	}
+	
 	bFireInputHeld = true;
 }
 
@@ -209,7 +226,10 @@ void AComplyPlayerCharacter::PrimaryActionReleased()
 		if (Spec.Ability->GetAssetTags().HasTagExact(ComplyTags::ComplyAbilities::Throwable)
 			&& Spec.IsActive() && Cast<UThrowableAbilityBase>(Spec.GetPrimaryInstance())->bConfirmOnRelease == true) 
 		{
-			GetAbilitySystemComponent()->LocalInputConfirm();
+			if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+			{
+				ASC->LocalInputConfirm();
+			}
 			break;
 		}
 	}
@@ -218,7 +238,10 @@ void AComplyPlayerCharacter::PrimaryActionReleased()
 	{
 		if (Spec.Ability->GetClass() == ApplyFireEffectAbilityClass)
 		{
-			GetAbilitySystemComponent()->CancelAbility(Spec.Ability);
+			if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+			{
+				ASC->CancelAbility(Spec.Ability);
+			}
 			bIsFiring = false;
 			break;
 		}
@@ -230,7 +253,11 @@ void AComplyPlayerCharacter::PrimaryActionReleased()
 void AComplyPlayerCharacter::SecondaryActionPressed()
 {
 	bIsAiming = true;
-	GetAbilitySystemComponent()->TryActivateAbilityByClass(ApplyAimEffectAbilityClass);
+	if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+	{
+		ASC->TryActivateAbilityByClass(ApplyAimEffectAbilityClass);
+	}
+	
 }
 
 void AComplyPlayerCharacter::SecondaryActionReleased()
@@ -240,7 +267,10 @@ void AComplyPlayerCharacter::SecondaryActionReleased()
 	{
 		if (Spec.Ability->GetClass() == ApplyAimEffectAbilityClass)
 		{
-			GetAbilitySystemComponent()->CancelAbility(Spec.Ability);
+			if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+			{
+				ASC->CancelAbility(Spec.Ability);
+			}
 			break;
 		}
 	}
@@ -252,7 +282,7 @@ void AComplyPlayerCharacter::ReloadActionPressed()
 	{
 		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_Reload))
 		{
-			// Play the prepare animation locally so a delay at high ping is not felt if can reload
+			// Play the prepare animation locally so a delay at high ping is not felt if player can reload
 			if (IsLocallyControlled() && !HasAuthority())
 			{
 				if (URangedWeaponAbilityBase* Weapon = GetEquippedPrimaryWeapon())
@@ -269,7 +299,10 @@ void AComplyPlayerCharacter::ReloadActionPressed()
 				}
 			}
 			
-			GetAbilitySystemComponent()->TryActivateAbility(Spec.Handle);
+			if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+			{
+				ASC->TryActivateAbility(Spec.Handle);
+			}
 			break;
 		}
 	}
@@ -284,7 +317,10 @@ void AComplyPlayerCharacter::CancelPreviewActionPressed()
 		{
 			if (Spec.IsActive())
 			{
-				GetAbilitySystemComponent()->LocalInputCancel();
+				if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+				{
+					ASC->LocalInputCancel();
+				}
 			}
 			break;
 		}
@@ -293,17 +329,26 @@ void AComplyPlayerCharacter::CancelPreviewActionPressed()
 
 void AComplyPlayerCharacter::EquipPrimaryActionPressed()
 {
-	GetAbilitySystemComponent()->TryActivateAbilityByClass(EquipPrimaryAbilityClass);
+	if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+	{
+		ASC->TryActivateAbilityByClass(EquipPrimaryAbilityClass);
+	}
 }
 
 void AComplyPlayerCharacter::EquipUtilityActionPressed()
 {
-	GetAbilitySystemComponent()->TryActivateAbilityByClass(EquipUtilityAbilityClass);
+	if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+	{
+		ASC->TryActivateAbilityByClass(EquipUtilityAbilityClass);
+	}
 }
 
 void AComplyPlayerCharacter::EquipThrowableActionPressed()
 {
-	GetAbilitySystemComponent()->TryActivateAbilityByClass(EquipThrowableAbilityClass);
+	if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+	{
+		ASC->TryActivateAbilityByClass(EquipThrowableAbilityClass);
+	}
 }
 
 void AComplyPlayerCharacter::ZoomIn(float DeltaTime)

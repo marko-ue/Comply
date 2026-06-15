@@ -50,3 +50,47 @@ struct TStructOpsTypeTraits<FComplyGameplayEffectContext> : TStructOpsTypeTraits
 		WithCopy = true
 	};
 };
+
+USTRUCT()
+struct FComplyGameplayAbilityTargetData_SingleHit : public FGameplayAbilityTargetData_SingleTargetHit
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	bool bPassedThroughShield = false;
+
+	virtual UScriptStruct* GetScriptStruct() const override
+	{
+		return StaticStruct();
+	}
+
+	virtual FGameplayAbilityTargetData* Clone() const
+	{
+		FComplyGameplayAbilityTargetData_SingleHit* NewData =
+			new FComplyGameplayAbilityTargetData_SingleHit();
+
+		NewData->HitResult = HitResult;
+		NewData->bPassedThroughShield = bPassedThroughShield;
+
+		return NewData;
+	}
+
+	virtual bool NetSerialize(FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess)
+	{
+		Super::NetSerialize(Ar, Map, bOutSuccess);
+		Ar << bPassedThroughShield;
+		bOutSuccess = true;
+		return true;
+	}
+};
+
+template<>
+struct TStructOpsTypeTraits<FComplyGameplayAbilityTargetData_SingleHit>
+	: TStructOpsTypeTraitsBase2<FComplyGameplayAbilityTargetData_SingleHit>
+{
+	enum
+	{
+		WithNetSerializer = true,
+		WithCopy = true
+	};
+};

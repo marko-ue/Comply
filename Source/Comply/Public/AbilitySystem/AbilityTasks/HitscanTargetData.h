@@ -1,5 +1,3 @@
-// Copyright © 2026 Marko. All rights reserved.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -7,33 +5,29 @@
 #include "HitscanTargetData.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHitscanTargetDataSignature, const FGameplayAbilityTargetDataHandle&, DataHandle);
-/**
- * This ability task will be used for sending hitscan target data to the server.
- * This is needed in order to make the CauseDamage function run on the server, and therefore firing the execution calculation
- */
+
 UCLASS()
 class COMPLY_API UHitscanTargetData : public UAbilityTask
 {
 	GENERATED_BODY()
-	
+
 public:
-	UFUNCTION(BlueprintCallable, Category="Ability|Tasks", meta = (DisplayName = "HitscanTargetData", HidePin = "OwningAbility", DefaultToSelf = "OwningAbility", BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category="Ability|Tasks",
+	meta=(DisplayName="HitscanTargetData", HidePin="OwningAbility", DefaultToSelf="OwningAbility", BlueprintInternalUseOnly="true"))
 	static UHitscanTargetData* CreateHitScanData(UGameplayAbility* OwningAbility);
-	
+
 	void SendHitscanTargetData(float TraceDistance);
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FHitscanTargetDataSignature ValidData;
-	
-	// A member boolean variable is created that will be populated with the result of if the hit was through a shield or not
-	UPROPERTY()
-	bool bPassedThroughShield;
-	
+
 protected:
 	virtual void Activate() override;
-	
+
 private:
-	void OnTargetDataReplicatedCallback(const FGameplayAbilityTargetDataHandle& InDataHandle, FGameplayTag ActivationTag) const;
-	
+	void OnTargetDataReplicatedCallback(
+		const FGameplayAbilityTargetDataHandle& InDataHandle,
+		FGameplayTag ActivationTag) const;
+
 	FGameplayAbilityTargetDataHandle DataHandle;
 };

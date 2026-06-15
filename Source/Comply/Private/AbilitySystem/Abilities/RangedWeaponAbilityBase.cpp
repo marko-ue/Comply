@@ -316,32 +316,43 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
 	const FGameplayAbilityActivationInfo ActivationInfo = GetCurrentActivationInfo();
 
 	AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
-	
+
 	for (const TSharedPtr<FGameplayAbilityTargetData>& Data : DataHandle.Data)
 	{
 		if (!Data.IsValid()) continue;
 
-		// If the weapon uses a single crosshair trace, execute the gameplay cue
-		if (Character->GetEquippedPrimaryWeapon()->bUsesSingleCrosshairTrace && HasAuthority(&ActivationInfo))
+		if (Character->GetEquippedPrimaryWeapon()->bUsesSingleCrosshairTrace &&
+			HasAuthority(&ActivationInfo))
 		{
 			FGameplayCueParameters CueParams;
 			CueParams.Location = Data->GetHitResult()->ImpactPoint;
 			CueParams.Normal = Data->GetHitResult()->ImpactNormal;
-			GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::HitscanWeaponImpact, CueParams);
+
+			GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(
+				ComplyTags::GameplayCues::HitscanWeaponImpact,
+				CueParams);
 		}
-		
+
 		AActor* TargetActor = Data->GetHitResult()->GetActor();
+
 		if (TargetActor && HasAuthority(&ActivationInfo))
 		{
+			const FComplyGameplayAbilityTargetData_SingleHit* CustomData =
+				static_cast<const FComplyGameplayAbilityTargetData_SingleHit*>(Data.Get());
+
 			FComplyGameplayEffectContext* Context = new FComplyGameplayEffectContext();
-			Context->bHitThroughShield = HitscanTargetDataTask->bPassedThroughShield;
+
+			if (CustomData)
+			{
+				Context->bHitThroughShield = CustomData->bPassedThroughShield;
+			}
+
 			Context->ShieldDamageMultiplier = ShieldShotDamageMultiplier;
 
 			float FinalDamage = Damage.GetValueAtLevel(GetAbilityLevel());
 
 			if (UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo())
 			{
-				// Increases damage based on the amount of stacks of totem buffs
 				int32 TotemStacks = ASC->GetTagCount(ComplyTags::States::State_TotemBuffed);
 				FinalDamage *= (1.f + TotemDamageBonusPerStack * TotemStacks);
 			}
@@ -349,12 +360,16 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
 			CauseDamage(TargetActor, FinalDamage, Context);
 		}
 	}
-	
-	// If the weapon doesn't use a simple cue (shotgun), execute the cue with all packed target data outside the loop
-	if (!Character->GetEquippedPrimaryWeapon()->bUsesSingleCrosshairTrace && HasAuthority(&ActivationInfo))
+
+	if (!Character->GetEquippedPrimaryWeapon()->bUsesSingleCrosshairTrace &&
+		HasAuthority(&ActivationInfo))
 	{
-		FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
-		FComplyGameplayEffectContext* Context = static_cast<FComplyGameplayEffectContext*>(ContextHandle.Get());
+		FGameplayEffectContextHandle ContextHandle =
+			GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
+
+		FComplyGameplayEffectContext* Context =
+			static_cast<FComplyGameplayEffectContext*>(ContextHandle.Get());
+
 		if (Context)
 		{
 			Context->ShotgunTracesTargetData = DataHandle;
@@ -362,7 +377,10 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
 
 		FGameplayCueParameters CueParams;
 		CueParams.EffectContext = ContextHandle;
-		GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::ShotgunImpact, CueParams);
+
+		GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(
+			ComplyTags::GameplayCues::ShotgunImpact,
+			CueParams);
 	}
 }
 

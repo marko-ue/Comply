@@ -53,6 +53,12 @@ void AComplyPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	
+	// Handles the case where SetupPlayerInputComponent fires after OnRep_PlayerState and ASC actor info hasn't been initialized yet
+	if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+	{
+		ASC->InitAbilityActorInfo(GetPlayerState(), this);
+	}
+	
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Started, this, &ThisClass::PrimaryActionPressed);

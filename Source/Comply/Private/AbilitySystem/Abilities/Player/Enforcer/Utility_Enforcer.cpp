@@ -4,6 +4,7 @@
 #include "AbilitySystem/Abilities/Player/Enforcer/Utility_Enforcer.h"
 #include "AbilitySystemComponent.h"
 #include "CableComponent.h"
+#include "Comply.h"
 #include "GameplayCueManager.h"
 #include "Abilities/Tasks/AbilityTask_ApplyRootMotionMoveToForce.h"
 #include "AbilitySystem/ComplyTags.h"
@@ -94,7 +95,7 @@ bool UUtility_Enforcer::PerformGrappleTrace(FHitResult& OutHitResult, float Grap
 		   OutHitResult,
 		   Start,
 		   End,
-		   ECC_WorldStatic,
+		   ECC_GrappleTarget,
 		   CollisionParams
 		);
 	}
@@ -123,20 +124,6 @@ void UUtility_Enforcer::OnTargetDataReceived(const FGameplayAbilityTargetDataHan
 	const FGameplayAbilityActorInfo* ActorInfo = GetCurrentActorInfo();
 	if (ActorInfo->IsNetAuthority() && !ActorInfo->IsLocallyControlled())
 	{
-		// Checking how much the client's trace differs against the server trace. If it differs beyond the tolerance, end the ability
-		FHitResult ServerHit;
-		if (PerformGrappleTrace(ServerHit))
-		{
-			FVector ClientLocation = ClientHit->ImpactPoint;
-			FVector ServerLocation = ServerHit.ImpactPoint;
-    
-			if (FVector::Dist(ClientLocation, ServerLocation) > TraceAcceptableTolerance)
-			{
-				EndAbility(GetCurrentAbilitySpecHandle(), ActorInfo, GetCurrentActivationInfo(), true, true);
-				return;
-			}
-		}
-		
 		if (!CommitAbility(GetCurrentAbilitySpecHandle(), ActorInfo, GetCurrentActivationInfo()))
 		{
 			EndAbility(GetCurrentAbilitySpecHandle(), ActorInfo, GetCurrentActivationInfo(), true, true);
@@ -206,8 +193,6 @@ void UUtility_Enforcer::OnPullTimedOut()
 
 void UUtility_Enforcer::FinishGrapple()
 {
-	GetAbilitySystemComponentFromActorInfo()->RemoveGameplayCue(ComplyTags::GameplayCues::GrapplingHookHooking);
-	
 	if (ACharacter* Character = Cast<ACharacter>(GetCurrentActorInfo()->AvatarActor.Get()))
 	{
 		// Set movement mode back to falling so landing is handled naturally
@@ -242,6 +227,9 @@ void UUtility_Enforcer::EndAbility(const FGameplayAbilitySpecHandle Handle, cons
 	}
 	
 	GetWorld()->GetTimerManager().ClearTimer(CableUpdateTimer);
+	
+	// The cue is removed here so both the server and client get it removed
+	GetAbilitySystemComponentFromActorInfo()->RemoveGameplayCue(ComplyTags::GameplayCues::GrapplingHookHooking);
 
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

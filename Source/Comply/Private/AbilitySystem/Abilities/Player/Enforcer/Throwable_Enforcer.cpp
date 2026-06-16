@@ -3,6 +3,8 @@
 
 #include "AbilitySystem/Abilities/Player/Enforcer/Throwable_Enforcer.h"
 #include "AbilitySystemComponent.h"
+#include "AbilitySystemGlobals.h"
+#include "GameplayCueManager.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
@@ -68,10 +70,16 @@ void UThrowable_Enforcer::PlayPlaceTurretAnimation()
 		
 		PlaceTurretMontageTask->ReadyForActivation();
 		
-		FGameplayCueParameters CueParams;
-		CueParams.Location = GetAvatarActorFromActorInfo()->GetActorLocation();
-		GetAbilitySystemComponentFromActorInfo()->AddGameplayCue(
-			ComplyTags::GameplayCues::TurretTyping, CueParams);
+		// Bypass ASC replication, trigger directly on local client only
+		UGameplayCueManager* CueManager = UAbilitySystemGlobals::Get().GetGameplayCueManager();
+		if (CueManager)
+		{
+			FGameplayCueParameters CueParams;
+			CueParams.Location = GetAvatarActorFromActorInfo()->GetActorLocation();
+			CueManager->HandleGameplayCue(GetAvatarActorFromActorInfo(),
+				ComplyTags::GameplayCues::TurretTyping,
+				EGameplayCueEvent::WhileActive, CueParams);
+		}
 	}
 	else
 	{
@@ -86,11 +94,29 @@ void UThrowable_Enforcer::PlayPlaceTurretAnimation()
 void UThrowable_Enforcer::PlaceTurretAnimationInterrupted()
 {
 	GetAbilitySystemComponentFromActorInfo()->RemoveGameplayCue(ComplyTags::GameplayCues::TurretTyping);
+	
+	FGameplayCueParameters CueParams;
+	UGameplayCueManager* CueManager = UAbilitySystemGlobals::Get().GetGameplayCueManager();
+	if (CueManager)
+	{
+		CueManager->HandleGameplayCue(GetAvatarActorFromActorInfo(),
+			ComplyTags::GameplayCues::TurretTyping,
+			EGameplayCueEvent::Removed, CueParams);
+	}
 }
 
 void UThrowable_Enforcer::ConfirmThrow()
 {
 	GetAbilitySystemComponentFromActorInfo()->RemoveGameplayCue(ComplyTags::GameplayCues::TurretTyping);
+	
+	FGameplayCueParameters CueParams;
+	UGameplayCueManager* CueManager = UAbilitySystemGlobals::Get().GetGameplayCueManager();
+	if (CueManager)
+	{
+		CueManager->HandleGameplayCue(GetAvatarActorFromActorInfo(),
+			ComplyTags::GameplayCues::TurretTyping,
+			EGameplayCueEvent::Removed, CueParams);
+	}
 	
 	if (!SpawnedTurretPreviewActor || !SpawnedTurretPreviewActor->bCanPlace)
         {

@@ -107,9 +107,16 @@ void UComplyAbilitySystemComponent::Server_ThrowDecoyGrenade_Implementation(FGam
 void UComplyAbilitySystemComponent::Server_PlaceTurret_Implementation(FGameplayAbilitySpecHandle AbilityHandle, FVector SpawnLocation, FRotator SpawnRotation)
 {
 	const FGameplayAbilitySpec* Spec = FindAbilitySpecFromHandle(AbilityHandle);
-	const UThrowable_Enforcer* Ability = Cast<UThrowable_Enforcer>(Spec->GetPrimaryInstance());
+	UThrowable_Enforcer* Ability = Cast<UThrowable_Enforcer>(Spec->GetPrimaryInstance());
 	
 	if (!Spec || !Ability) return;
+	
+	// Commit cost and cooldown server-side before doing anything else
+	// It must be committed here because the whole call stack leading up to placing the turret runs only locally
+	if (!Ability->CommitAbility(AbilityHandle, Ability->GetCurrentActorInfo(), Ability->GetCurrentActivationInfo()))
+	{
+		return;
+	}
 	
 	APawn* InstigatorPawn = Cast<APawn>(GetAvatarActor());
 

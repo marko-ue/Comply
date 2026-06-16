@@ -127,12 +127,6 @@ void UThrowable_Enforcer::ConfirmThrow()
             WaitConfirm->ReadyForActivation();
             return;
         }
-	
-	if (!CommitAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo()))
-	{
-		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, true);
-		return;
-	}
 
 	PlaceTurret();
 

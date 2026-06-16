@@ -298,7 +298,8 @@ void AComplyPlayerCharacter::ReloadActionPressed()
 					const float MaxAmmo = GetAbilitySystemComponent()->GetGameplayAttributeValue(Weapon->GetMaxAmmoAttribute(), bFound);
 					const float ReserveAmmo = GetAbilitySystemComponent()->GetGameplayAttributeValue(Weapon->GetCurrentReserveAmmoAttribute(), bFound);
                     
-					if (!FMath::IsNearlyEqual(CurrentAmmo, MaxAmmo) && ReserveAmmo > 0.f)
+					if (!FMath::IsNearlyEqual(CurrentAmmo, MaxAmmo) && ReserveAmmo > 0.f &&
+						!GetAbilitySystemComponent()->HasMatchingGameplayTag(ComplyTags::States::State_Firing))
 					{
 						PlayAnimMontage(PrepareReloadMontage);
 					}

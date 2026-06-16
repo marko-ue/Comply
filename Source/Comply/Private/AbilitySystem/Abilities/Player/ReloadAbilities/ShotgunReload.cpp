@@ -17,6 +17,13 @@ void UShotgunReload::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                      const FGameplayEventData* TriggerEventData)
 {
     Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+    
+    if (GetAbilitySystemComponentFromActorInfo()->HasMatchingGameplayTag(ComplyTags::States::State_Firing))
+    {
+        // Firing still active, end immediately and let the player retry
+        EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+        return;
+    }
 
     AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
     if (Character)

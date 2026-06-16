@@ -225,7 +225,7 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 			UGameplayCueManager::ExecuteGameplayCue_NonReplicated(GetAvatarActorFromActorInfo(),ComplyTags::GameplayCues::ShotgunImpact, CueParams);
 		}
 		
-		if (GetAbilitySystemComponentFromActorInfo()->IsOwnerActorAuthoritative())
+		if (GetAbilitySystemComponentFromActorInfo()->IsOwnerActorAuthoritative() && !CurrentActorInfo->IsLocallyControlled())
 		{
 			FGameplayCueParameters CueParams;
 			CueParams.EffectContext = ContextHandle;
@@ -248,6 +248,11 @@ bool URangedWeaponAbilityBase::Fire()
 	float CurrentAmmo = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(ActiveWeapon->GetCurrentAmmoAttribute(), bFound);
 	if (CurrentAmmo <= 0.f)
 	{
+		if (!GetAbilitySystemComponentFromActorInfo()->IsOwnerActorAuthoritative())
+		{
+			GetAbilitySystemComponentFromActorInfo()->AddLooseGameplayTag(ComplyTags::States::State_Reloading);
+		}
+		
 		FGameplayCueParameters CueParams;
 		CueParams.Location = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo())->WeaponMesh->GetComponentLocation();
 		CueParams.Instigator = GetAvatarActorFromActorInfo();
@@ -255,7 +260,10 @@ bool URangedWeaponAbilityBase::Fire()
 		
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 		
-		GetAbilitySystemComponentFromActorInfo()->TryActivateAbilityByClass(ReloadAbilityClass);
+		if (GetAbilitySystemComponentFromActorInfo()->IsOwnerActorAuthoritative())
+		{
+			GetAbilitySystemComponentFromActorInfo()->TryActivateAbilityByClass(ReloadAbilityClass);
+		}
 		return false;
 	}
 	
@@ -301,7 +309,7 @@ bool URangedWeaponAbilityBase::Fire()
 	}
 
 	// Only execute regular cues on the server
-	if (GetAbilitySystemComponentFromActorInfo()->IsOwnerActorAuthoritative())
+	if (GetAbilitySystemComponentFromActorInfo()->IsOwnerActorAuthoritative() && !CurrentActorInfo->IsLocallyControlled())
 	{
 		GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(
 			ComplyTags::GameplayCues::HitscanWeaponFire, CueParams
@@ -448,8 +456,8 @@ void URangedWeaponAbilityBase::InputReleased(const FGameplayAbilitySpecHandle Ha
 }
 
 void URangedWeaponAbilityBase::EndAbility(const FGameplayAbilitySpecHandle Handle,
-										  const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-										  bool bReplicateEndAbility, bool bWasCancelled)
+                                          const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+                                          bool bReplicateEndAbility, bool bWasCancelled)
 {
 	AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
 	if (Character) Character->bIsFiring = false;

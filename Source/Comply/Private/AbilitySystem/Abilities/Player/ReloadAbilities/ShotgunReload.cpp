@@ -58,6 +58,12 @@ void UShotgunReload::EndAbility(const FGameplayAbilitySpecHandle Handle, const F
 
 void UShotgunReload::LoadNextShell()
 {
+    // Don't run if ability is already ending
+    if (!IsActive())
+    {
+        return;
+    }
+    
     bool bFound = false;
     const float CurrentAmmo = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(ActiveWeapon->GetCurrentAmmoAttribute(), bFound);
     const float MaxAmmo = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(ActiveWeapon->GetMaxAmmoAttribute(), bFound);
@@ -79,14 +85,14 @@ void UShotgunReload::LoadNextShell()
         return;
     }
 
-    if (ShellMontageTask)
-    {
-        ShellMontageTask->EndTask();
-        ShellMontageTask = nullptr;
-    }
-
     ShellMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
         this, NAME_None, ActiveWeapon->InsertShellMontage, 1.f, NAME_None, true);
+    
+    // Always validate the task before attempting to bind
+    if (!IsValid(ShellMontageTask))
+    {
+        EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+    }
 
     if (IsValid(ShellMontageTask))
     {
@@ -102,6 +108,11 @@ void UShotgunReload::LoadNextShell()
 
 void UShotgunReload::OnShellMontageCompleted()
 {
+    if (!IsActive() || !IsValid(this))
+    {
+        return;
+    }
+    
     // Add 1 shell to mag
     FGameplayEffectContextHandle AmmoContext = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
     FGameplayEffectSpecHandle AmmoSpec = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(AddAmmoEffectClass, 1.f, AmmoContext);
@@ -119,6 +130,11 @@ void UShotgunReload::OnShellMontageCompleted()
 
 void UShotgunReload::OnFiringTagAdded()
 {
+    if (!IsActive() || !IsValid(this))
+    {
+        return;
+    }
+    
     // Firing interrupted the reload, end the montage, remove the reloading tag, and end the ability
     if (ShellMontageTask)
     {

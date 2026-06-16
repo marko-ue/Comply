@@ -3,13 +3,16 @@
 
 #include "AbilitySystem/Abilities/Player/Disruptor/Throwable_Disruptor.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayCueManager.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
+#include "Actors/DecoyGrenade/DecoyGrenade.h"
 #include "Actors/DecoyGrenade/DecoyGrenadePreview.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "Interface/Player/WeaponInterface.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -20,7 +23,27 @@ void UThrowable_Disruptor::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
+	bool bFound = false;
+	float Charges = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(
+		UWeaponAttributeSet::GetDecoyGrenadeCurrentChargesAttribute(), bFound);
+	if (Charges <= 0.f)
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+		return;
+	}
+
+	GetAbilitySystemComponentFromActorInfo()->AddLooseGameplayTag(ComplyTags::States::State_ThrowableThrowing);
+	
 	SpawnPreview();
+}
+
+void UThrowable_Disruptor::EndAbility(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+	bool bReplicateEndAbility, bool bWasCancelled)
+{
+	SafeRemoveThrowingTag();
+	
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
 void UThrowable_Disruptor::SpawnPreview()
@@ -63,6 +86,34 @@ void UThrowable_Disruptor::SpawnPreview()
 	UGameplayStatics::FinishSpawningActor(SpawnedDecoyGrenadePreviewActor, SpawnTransform);
 }
 
+void UThrowable_Disruptor::ThrowOnServer(FVector LaunchVelocity, FVector SpawnPosition)
+{
+	FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(CostEffectClass, 1.f);
+	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+
+	AActor* Avatar = GetAvatarActorFromActorInfo();
+	IWeaponInterface* WeaponOwner = Cast<IWeaponInterface>(Avatar);
+	EquipWeaponBasedOnCharges(WeaponOwner, GetAbilitySystemComponentFromActorInfo());
+	
+	const FTransform SpawnTransform(GetAvatarActorFromActorInfo()->GetActorRotation(), SpawnPosition);
+	
+	ADecoyGrenade* DecoyGrenade = GetWorld()->SpawnActorDeferred<ADecoyGrenade>(DecoyGrenadeActorClass, SpawnTransform, GetOwningActorFromActorInfo(), GetAvatarActorFromActorInfo()->GetInstigator(), ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	if (DecoyGrenade)
+	{
+		DecoyGrenade->PullRadius = PullRadius;
+		DecoyGrenade->DecoyGrenadeLifetime = DecoyGrenadeLifetime;
+		DecoyGrenade->SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
+		DecoyGrenade->DamageEffectClass = DamageEffectClass;
+		DecoyGrenade->DamageTypeTag = DamageType;
+		
+		// Clamp to the throw speed to prevent cheating by the client passing in higher values
+		FVector SafeLaunchVelocity = LaunchVelocity.GetClampedToMaxSize(ThrowSpeed);
+		DecoyGrenade->ProjectileMovementComp->Velocity = SafeLaunchVelocity;
+
+		UGameplayStatics::FinishSpawningActor(DecoyGrenade, SpawnTransform);
+	}
+}
+
 void UThrowable_Disruptor::ConfirmThrow()
 {
 	// End the prepare grenade task now, as the throw is confirmed
@@ -80,20 +131,58 @@ void UThrowable_Disruptor::ConfirmThrow()
 	ThrowTask->ReadyForActivation();
 }
 
+void UThrowable_Disruptor::EquipWeaponBasedOnCharges(IWeaponInterface* WeaponOwner, UAbilitySystemComponent* ASC)
+{
+	const UWeaponAttributeSet* WeaponAS = ASC->GetSet<UWeaponAttributeSet>();
+	bool bFound = false;
+	float GrenadeCurrentCharges = ASC->GetGameplayAttributeValue(
+		UWeaponAttributeSet::GetDecoyGrenadeCurrentChargesAttribute(), bFound);
+
+	// Clear equip slot and equip the throwable again to simulate grabbing another grenade from the inventory
+	if (WeaponAS && GrenadeCurrentCharges > 0.f)
+	{
+		if (WeaponOwner)
+		{
+			WeaponOwner->ClearEquippedWeapon();
+			
+			FGameplayTagContainer Tags;
+			Tags.AddTag(ComplyTags::ComplyAbilities::AssetTags::Equip_Throwable);
+			ASC->TryActivateAbilitiesByTag(Tags);
+		}
+	}
+	else // If there are no more grenades, equip the primary
+	{
+		if (WeaponOwner)
+		{
+			// Add this tag so the equip throwable ability can't be activated anymore
+			ASC->AddReplicatedLooseGameplayTag(ComplyTags::States::State_NoThrowables);
+			
+			WeaponOwner->ClearEquippedWeapon();
+			
+			FGameplayTagContainer Tags;
+			Tags.AddTag(ComplyTags::ComplyAbilities::AssetTags::Equip_Primary);
+			ASC->TryActivateAbilitiesByTag(Tags);
+		}
+	}
+}
+
+// Only throw the grenade and end the ability after the throw section of the animation finishes
 void UThrowable_Disruptor::OnThrowMontageCompleted()
 {
-	FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(CostEffectClass, 1.f);
-	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	AActor* Avatar = GetAvatarActorFromActorInfo();
+	IWeaponInterface* WeaponOwner = Cast<IWeaponInterface>(Avatar);
 	
-	if (SpawnedDecoyGrenadePreviewActor) SpawnedDecoyGrenadePreviewActor->Destroy();
+	if (SpawnedDecoyGrenadePreviewActor) SpawnedDecoyGrenadePreviewActor->Destroy(); SpawnedDecoyGrenadePreviewActor = nullptr;
 	
-	// A server RPC is used to handle spawning the decoy grenade
+	GetAbilitySystemComponentFromActorInfo()->RemoveLooseGameplayTag(ComplyTags::States::State_Firing);
+	
+	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+
 	UComplyAbilitySystemComponent* ASC = Cast<UComplyAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
 	if (ASC)
 	{
 		AActor* Owner = GetOwningActorFromActorInfo();
-		AActor* Avatar = GetAvatarActorFromActorInfo();
-
+	
 		if (!Avatar || !Owner) return;
 	
 		FVector2D ViewportSize = FVector2D();
@@ -108,56 +197,29 @@ void UThrowable_Disruptor::OnThrowMontageCompleted()
 		const bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(UGameplayStatics::GetPlayerController(
 			this, 0), CrosshairLocation, CrosshairWorldPosition, CrosshairWorldDirection);
 		if (!bScreenToWorld) return;
-
+	
 		const FVector LaunchVelocity = CrosshairWorldDirection * ThrowSpeed;
 		const FVector SpawnPosition = Avatar->GetActorLocation() + FVector(0.f, 0.f, 60.f) + CrosshairWorldDirection * 40.f;
 
-		APawn* InstigatorPawn = Cast<APawn>(GetAvatarActorFromActorInfo());
-		ASC->Server_ThrowDecoyGrenade(GetCurrentAbilitySpecHandle(), SpawnPosition, InstigatorPawn->GetActorRotation(), LaunchVelocity);
-		
-		FGameplayCueParameters CueParams;
-		CueParams.Location = GetAvatarActorFromActorInfo()->GetActorLocation();
-		UGameplayCueManager::ExecuteGameplayCue_NonReplicated(GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::ThrowGrenade, CueParams);
-	}
-	
-	GetAbilitySystemComponentFromActorInfo()->RemoveLooseGameplayTag(ComplyTags::States::State_Firing);
-	
-	AActor* Avatar = GetAvatarActorFromActorInfo();
-	IWeaponInterface* WeaponOwner = Cast<IWeaponInterface>(Avatar);
-	
-	const UWeaponAttributeSet* WeaponAS = GetAbilitySystemComponentFromActorInfo()->GetSet<UWeaponAttributeSet>();
-	bool bFound = false;
-	float DecoyGrenadeCurrentCharges = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(
-		UWeaponAttributeSet::GetDecoyGrenadeCurrentChargesAttribute(), bFound);
-	
-	// Clear equip slot and equip the throwable again to simulate grabbing another grenade from the inventory
-	if (WeaponAS && DecoyGrenadeCurrentCharges > 0.f)
-	{
-		if (WeaponOwner)
+		// Spawn the grenade through the RPC if not on server and execute the throw cue
+		if (!ASC->IsOwnerActorAuthoritative())
 		{
-			WeaponOwner->ClearEquippedWeapon();
+			APawn* InstigatorPawn = Cast<APawn>(GetAvatarActorFromActorInfo());
+			ASC->Server_ThrowDecoyGrenade(GetCurrentAbilitySpecHandle(), SpawnPosition, InstigatorPawn->GetActorRotation(), LaunchVelocity);
 			
-			FGameplayTagContainer Tags;
-			Tags.AddTag(ComplyTags::ComplyAbilities::AssetTags::Equip_Throwable);
-			GetAbilitySystemComponentFromActorInfo()->TryActivateAbilitiesByTag(Tags);
+			FGameplayCueParameters CueParams;
+			CueParams.Location = GetAvatarActorFromActorInfo()->GetActorLocation();
+			UGameplayCueManager::ExecuteGameplayCue_NonReplicated(GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::ThrowGrenade, CueParams);
+		}
+		else if (GetCurrentActorInfo()->IsLocallyControlled()) // On the server path, checking if locally controlled to prevent double spawn
+		{
+			FGameplayCueParameters CueParams;
+			CueParams.Location = GetAvatarActorFromActorInfo()->GetActorLocation();
+			UGameplayCueManager::ExecuteGameplayCue_NonReplicated(GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::ThrowGrenade, CueParams);
+			
+			ThrowOnServer(LaunchVelocity, SpawnPosition);
 		}
 	}
-	else // If there are no more grenades, equip the primary
-	{
-		if (WeaponOwner)
-		{
-			// Add this tag so the equip throwable ability can't be activated anymore
-			GetAbilitySystemComponentFromActorInfo()->AddLooseGameplayTag(ComplyTags::States::State_NoThrowables);
-			
-			WeaponOwner->ClearEquippedWeapon();
-			
-			FGameplayTagContainer Tags;
-			Tags.AddTag(ComplyTags::ComplyAbilities::AssetTags::Equip_Primary);
-			GetAbilitySystemComponentFromActorInfo()->TryActivateAbilitiesByTag(Tags);
-		}
-	}
-	
-	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
 // This function is overridden so ability costs can be handled manually
@@ -174,6 +236,8 @@ void UThrowable_Disruptor::CancelAbility(const FGameplayAbilitySpecHandle Handle
 	bool bReplicateCancelAbility)
 {
 	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
+	
+	SafeRemoveThrowingTag();
 	
 	if (SpawnedDecoyGrenadePreviewActor) SpawnedDecoyGrenadePreviewActor->Destroy();
 }

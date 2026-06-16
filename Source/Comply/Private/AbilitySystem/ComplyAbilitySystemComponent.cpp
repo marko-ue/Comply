@@ -79,9 +79,24 @@ void UComplyAbilitySystemComponent::Server_ThrowDecoyGrenade_Implementation(FGam
 	FVector SpawnLocation, FRotator SpawnRotation, FVector InLaunchVelocity)
 {
 	const FGameplayAbilitySpec* Spec = FindAbilitySpecFromHandle(AbilityHandle);
-	const UThrowable_Disruptor* Ability = Cast<UThrowable_Disruptor>(Spec->GetPrimaryInstance());
+	UThrowable_Disruptor* Ability = Cast<UThrowable_Disruptor>(Spec->GetPrimaryInstance());
 	
 	if (!Spec || !Ability) return;
+	
+	bool bFound = false;
+	float GrenadeCurrentCharges = GetGameplayAttributeValue(
+		UWeaponAttributeSet::GetDecoyGrenadeCurrentChargesAttribute(), bFound);
+    
+	// Don't spawn a grenade if there are no charges
+	if (GrenadeCurrentCharges <= 0.f) return;
+
+	// Cost is applied in the RPC, so the next RPC will see the updated data
+	FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(Ability->CostEffectClass, 1.f, MakeEffectContext());
+	ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	
+	AActor* Avatar = GetAvatarActor();
+	IWeaponInterface* WeaponOwner = Cast<IWeaponInterface>(Avatar);
+	Ability->EquipWeaponBasedOnCharges(WeaponOwner, this);
 	
 	APawn* InstigatorPawn = Cast<APawn>(GetAvatarActor());
 

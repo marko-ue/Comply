@@ -21,7 +21,7 @@ void UThrowable_Ranger::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
     
-	// Hard gate — don't even start if no charges
+	// Hard gate - don't even start if no charges
 	bool bFound = false;
 	float Charges = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(
 		UWeaponAttributeSet::GetPlasmaGrenadeCurrentChargesAttribute(), bFound);

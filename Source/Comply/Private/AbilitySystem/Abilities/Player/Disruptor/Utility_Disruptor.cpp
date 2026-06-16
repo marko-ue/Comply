@@ -65,12 +65,6 @@ void UUtility_Disruptor::ConfirmPlacement()
 		WaitConfirm->ReadyForActivation();
 		return;
 	}
-	
-	if (!CommitAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo()))
-	{
-		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, true);
-		return;
-	}
 
 	// Destroy the preview actor now, as the actual buff totem is already placed
 	if (SpawnedBuffTotemPreviewActor)

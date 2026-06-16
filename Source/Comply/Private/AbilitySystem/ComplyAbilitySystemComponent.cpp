@@ -139,9 +139,16 @@ void UComplyAbilitySystemComponent::Server_PlaceBuffTotem_Implementation(FGamepl
                                                                       FVector SpawnLocation, float BuffTotemLifetime)
 {
 	const FGameplayAbilitySpec* Spec = FindAbilitySpecFromHandle(AbilityHandle);
-	const UUtility_Disruptor* Ability = Cast<UUtility_Disruptor>(Spec->GetPrimaryInstance());
+	UUtility_Disruptor* Ability = Cast<UUtility_Disruptor>(Spec->GetPrimaryInstance());
 	
 	if (!Spec || !Ability) return;
+	
+	// Commit cost and cooldown server-side before doing anything else
+	// It must be committed here because the whole call stack leading up to placing the turret runs only locally
+	if (!Ability->CommitAbility(AbilityHandle, Ability->GetCurrentActorInfo(), Ability->GetCurrentActivationInfo()))
+	{
+		return;
+	}
 	
 	APawn* InstigatorPawn = Cast<APawn>(GetAvatarActor());
 	FActorSpawnParameters SpawnParams;

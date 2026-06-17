@@ -258,11 +258,9 @@ bool URangedWeaponAbilityBase::Fire()
 		UGameplayCueManager::ExecuteGameplayCue_NonReplicated(GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::WeaponDryFire, CueParams);
 		
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+
+		GetAbilitySystemComponentFromActorInfo()->TryActivateAbilityByClass(ReloadAbilityClass);
 		
-		if (GetAbilitySystemComponentFromActorInfo()->IsOwnerActorAuthoritative())
-		{
-			GetAbilitySystemComponentFromActorInfo()->TryActivateAbilityByClass(ReloadAbilityClass);
-		}
 		return false;
 	}
 	

@@ -217,7 +217,10 @@ void AComplyPlayerCharacter::PrimaryActionPressed()
 
 	if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
 	{
-		ASC->TryActivateAbilityByClass(ApplyFireEffectAbilityClass);
+		if (ApplyFireEffectAbilityClass)
+		{
+			ASC->TryActivateAbilityByClass(ApplyFireEffectAbilityClass);
+		}
 	}
 	
 	bFireInputHeld = true;
@@ -262,7 +265,10 @@ void AComplyPlayerCharacter::SecondaryActionPressed()
 	bIsAiming = true;
 	if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
 	{
-		ASC->TryActivateAbilityByClass(ApplyAimEffectAbilityClass);
+		if (ApplyAimEffectAbilityClass)
+		{
+			ASC->TryActivateAbilityByClass(ApplyAimEffectAbilityClass);
+		}
 	}
 	
 }

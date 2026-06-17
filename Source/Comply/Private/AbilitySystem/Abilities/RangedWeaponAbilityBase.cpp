@@ -15,6 +15,7 @@
 #include "AbilitySystem/AbilityTasks/HitscanTargetData.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/Abilities/Player/Disruptor/Primary_Disruptor.h"
+#include "BehaviorTree/BehaviorTreeTypes.h"
 #include "Character/ComplyCharacterBase.h"
 #include "Character/ComplyPlayerCharacter.h"
 #include "Framework/GameMode/ComplyGameModeBase.h"
@@ -236,23 +237,23 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 
 bool URangedWeaponAbilityBase::Fire()
 {
-	// Find the active ranged weapon to get its current ammo
 	AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
+	if (!Character || !Character->bIsFiring)
+	{
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+		return false;
+	}
+	
+	// Find the active ranged weapon to get its current ammo
 	if (Character)
 	{
 		ActiveWeapon = Character->GetEquippedPrimaryWeapon();
-		Character->bIsFiring = true;
 	}
 	
 	bool bFound = false;
 	float CurrentAmmo = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(ActiveWeapon->GetCurrentAmmoAttribute(), bFound);
 	if (CurrentAmmo <= 0.f)
 	{
-		if (!GetAbilitySystemComponentFromActorInfo()->IsOwnerActorAuthoritative())
-		{
-			GetAbilitySystemComponentFromActorInfo()->AddLooseGameplayTag(ComplyTags::States::State_Reloading);
-		}
-		
 		FGameplayCueParameters CueParams;
 		CueParams.Location = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo())->WeaponMesh->GetComponentLocation();
 		CueParams.Instigator = GetAvatarActorFromActorInfo();
@@ -308,7 +309,7 @@ bool URangedWeaponAbilityBase::Fire()
 		);
 	}
 
-	// Only execute regular cues on the server
+	// Only execute replicated cues on the server
 	if (GetAbilitySystemComponentFromActorInfo()->IsOwnerActorAuthoritative() && !CurrentActorInfo->IsLocallyControlled())
 	{
 		GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(

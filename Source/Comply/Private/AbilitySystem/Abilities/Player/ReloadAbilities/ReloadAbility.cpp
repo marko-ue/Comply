@@ -151,5 +151,10 @@ void UReloadAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const F
 		Character->bIsReloading = false;
 	}
 	
+	// Ensure reloading tag gets removed
+	FGameplayTagContainer Tags;
+	Tags.AddTag(ComplyTags::States::State_Reloading);
+	GetAbilitySystemComponentFromActorInfo()->RemoveActiveEffectsWithGrantedTags(Tags);
+	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

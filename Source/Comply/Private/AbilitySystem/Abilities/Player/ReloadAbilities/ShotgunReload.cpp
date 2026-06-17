@@ -63,18 +63,6 @@ void UShotgunReload::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
     LoadNextShell();
 }
 
-void UShotgunReload::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-    const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
-{
-    AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
-    if (Character)
-    {
-        Character->bIsReloading = false;
-    }
-    
-    Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-}
-
 void UShotgunReload::LoadNextShell()
 {
     // Don't run if ability is already ending
@@ -166,4 +154,21 @@ void UShotgunReload::OnFiringTagAdded()
     GetAbilitySystemComponentFromActorInfo()->RemoveActiveEffectsWithGrantedTags(Tags);
 
     EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+}
+
+void UShotgunReload::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+    const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+{
+    AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
+    if (Character)
+    {
+        Character->bIsReloading = false;
+    }
+    
+    // Also remove the tags here so the removal replicates to clients
+    FGameplayTagContainer Tags;
+    Tags.AddTag(ComplyTags::States::State_Reloading);
+    GetAbilitySystemComponentFromActorInfo()->RemoveActiveEffectsWithGrantedTags(Tags);
+    
+    Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

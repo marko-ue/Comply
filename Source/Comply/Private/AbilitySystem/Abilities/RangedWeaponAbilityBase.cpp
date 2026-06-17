@@ -228,6 +228,10 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 		
 		if (GetAbilitySystemComponentFromActorInfo()->IsOwnerActorAuthoritative() && !CurrentActorInfo->IsLocallyControlled())
 		{
+			FScopedPredictionWindow ScopedPrediction(GetAbilitySystemComponentFromActorInfo(),
+				CurrentActivationInfo.GetActivationPredictionKey());
+    
+			
 			FGameplayCueParameters CueParams;
 			CueParams.EffectContext = ContextHandle;
 			GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::ShotgunImpact, CueParams);
@@ -237,17 +241,11 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 
 bool URangedWeaponAbilityBase::Fire()
 {
-	AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
-	if (!Character || !Character->bIsFiring)
-	{
-		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-		return false;
-	}
-	
 	// Find the active ranged weapon to get its current ammo
-	if (Character)
+	if (AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo()))
 	{
 		ActiveWeapon = Character->GetEquippedPrimaryWeapon();
+		Character->bIsFiring = true;
 	}
 	
 	bool bFound = false;
@@ -302,19 +300,18 @@ bool URangedWeaponAbilityBase::Fire()
 	// Execute the predicted cue non-replicated
 	if (CurrentActorInfo->IsLocallyControlled())
 	{
-		UGameplayCueManager::ExecuteGameplayCue_NonReplicated(
-			GetAvatarActorFromActorInfo(),
-			ComplyTags::GameplayCues::HitscanWeaponFire,
-			CueParams
-		);
+		UGameplayCueManager::ExecuteGameplayCue_NonReplicated( 
+			GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::HitscanWeaponFire, CueParams);
 	}
 
 	// Only execute replicated cues on the server
-	if (GetAbilitySystemComponentFromActorInfo()->IsOwnerActorAuthoritative() && !CurrentActorInfo->IsLocallyControlled())
+	if (GetAbilitySystemComponentFromActorInfo()->IsOwnerActorAuthoritative() && !IsLocallyControlled())
 	{
+		FScopedPredictionWindow ScopedPrediction(
+			GetAbilitySystemComponentFromActorInfo(), CurrentActivationInfo.GetActivationPredictionKey());
+		
 		GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(
-			ComplyTags::GameplayCues::HitscanWeaponFire, CueParams
-		);
+			ComplyTags::GameplayCues::HitscanWeaponFire, CueParams);
 	}
 	
 	return true;

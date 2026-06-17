@@ -206,12 +206,12 @@ void AComplyPlayerCharacter::PrimaryActionPressed()
 		
 		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_Primary))
 		{
-			bIsFiring = true;
-			
 			if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
 			{
 				ASC->TryActivateAbility(Spec.Handle);
 			}
+			
+			bIsFiring = true;
 		}
 	}
 
@@ -244,13 +244,12 @@ void AComplyPlayerCharacter::PrimaryActionReleased()
 	{
 		if (Spec.Ability->GetClass() == ApplyFireEffectAbilityClass)
 		{
-			bIsFiring = false;
-			
 			if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
 			{
 				ASC->CancelAbility(Spec.Ability);
 			}
 			
+			bIsFiring = false;
 			break;
 		}
 	}

@@ -12,6 +12,7 @@
 #include "ComplyPlayerCharacter.generated.h"
 
 
+class IInteractableInterface;
 class UInputMappingContext;
 class URangedWeaponAbilityBase;
 struct FActiveGameplayEffectHandle;
@@ -137,6 +138,9 @@ protected:
 	UInputAction* SecondaryAction;
 	
 	UPROPERTY(EditAnywhere, Category="Input|Actions")
+	UInputAction* InteractAction;
+	
+	UPROPERTY(EditAnywhere, Category="Input|Actions")
 	UInputAction* ReloadAction;
 	
 	UPROPERTY(EditAnywhere, Category="Input|Actions")
@@ -156,6 +160,8 @@ protected:
 
 	void SecondaryActionPressed();
 	void SecondaryActionReleased();
+	
+	void InteractActionPressed();
 
 	void ReloadActionPressed();
 	
@@ -180,6 +186,10 @@ private:
 	
 	bool bIsAiming = false;
 	// End Zoom
+	
+	void TraceForInteractable();
+	
+	IInteractableInterface* CurrentFocusedInteractable;
 	
 	void UpdateRotationMode(float DeltaTime);
 	

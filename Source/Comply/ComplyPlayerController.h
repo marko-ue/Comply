@@ -19,6 +19,15 @@ class AComplyPlayerController : public APlayerController
 	GENERATED_BODY()
 	
 public:
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UUserWidget> ActiveMenuWidget;
+	
+	// Functions called from objects that have menus (main menu, interactables, upgrade screen, mission debrief etc.)
+	UFUNCTION(BlueprintCallable)
+	void OpenMenuWidget(TSubclassOf<UUserWidget> WidgetClass);
+	UFUNCTION(BlueprintCallable)
+	void CloseMenuWidget();
+	
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> FlashbangWidgetClass;
 	

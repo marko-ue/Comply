@@ -68,3 +68,29 @@ void AComplyPlayerController::ShowFlashbangEffect()
 	FlashbangWidget = CreateWidget<UUserWidget>(this, FlashbangWidgetClass);
 	if (FlashbangWidget) FlashbangWidget->AddToViewport();
 }
+
+void AComplyPlayerController::OpenMenuWidget(TSubclassOf<UUserWidget> WidgetClass)
+{
+	if (ActiveMenuWidget)
+		ActiveMenuWidget->RemoveFromParent();
+
+	ActiveMenuWidget = CreateWidget<UUserWidget>(this, WidgetClass);
+	ActiveMenuWidget->AddToViewport();
+
+	FInputModeUIOnly InputMode;
+	InputMode.SetWidgetToFocus(ActiveMenuWidget->TakeWidget());
+	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	SetInputMode(InputMode);
+	bShowMouseCursor = true;
+}
+
+void AComplyPlayerController::CloseMenuWidget()
+{
+	if (ActiveMenuWidget)
+	{
+		ActiveMenuWidget->RemoveFromParent();
+		ActiveMenuWidget = nullptr;
+	}
+	SetInputMode(FInputModeGameOnly());
+	bShowMouseCursor = false;
+}

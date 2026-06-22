@@ -4,22 +4,29 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Interface/Player/InteractableInterface.h"
 #include "CharacterSelection.generated.h"
 
 UCLASS()
-class COMPLY_API ACharacterSelection : public AActor
+class COMPLY_API ACharacterSelection : public AActor, public IInteractableInterface
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
 	ACharacterSelection();
+	
+	virtual void Tick(float DeltaTime) override;
+	
+	virtual void Interact(APlayerController* InstigatorPC) override;
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	
+private:
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UStaticMeshComponent> InteractableMesh;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UUserWidget> CharacterSelectionWidgetClass;
+	
 };

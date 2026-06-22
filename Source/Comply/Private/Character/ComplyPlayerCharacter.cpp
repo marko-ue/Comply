@@ -16,6 +16,8 @@
 #include "Camera/CameraComponent.h"
 #include "Framework/GameState/ComplyGameStateBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Interface/Player/InteractableInterface.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -65,6 +67,7 @@ void AComplyPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Completed, this, &ThisClass::PrimaryActionReleased);
 		EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Started, this, &ThisClass::SecondaryActionPressed);
 		EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Completed, this, &ThisClass::SecondaryActionReleased);
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ThisClass::InteractActionPressed);
 		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Started, this, &ThisClass::ReloadActionPressed);
 		EnhancedInputComponent->BindAction(CancelPreviewAction, ETriggerEvent::Started, this, &ThisClass::CancelPreviewActionPressed);
 		EnhancedInputComponent->BindAction(EquipPrimaryAction, ETriggerEvent::Started, this, &ThisClass::EquipPrimaryActionPressed);
@@ -137,6 +140,8 @@ void AComplyPlayerCharacter::Tick(float DeltaTime)
 	
 	// Handles how the character should rotate depending on if the player is aiming and/or firing
 	UpdateRotationMode(DeltaTime);
+	
+	if (IsLocallyControlled()) { TraceForInteractable(); }
 }
 
 UAbilitySystemComponent* AComplyPlayerCharacter::GetAbilitySystemComponent() const
@@ -289,6 +294,12 @@ void AComplyPlayerCharacter::SecondaryActionReleased()
 	}
 }
 
+void AComplyPlayerCharacter::InteractActionPressed()
+{
+	// Call the interact function on the current focused interactable, passing in the player's controller
+	if (CurrentFocusedInteractable) { CurrentFocusedInteractable->Interact(GetController<APlayerController>()); }
+}
+
 void AComplyPlayerCharacter::ReloadActionPressed()
 {
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
@@ -379,6 +390,44 @@ void AComplyPlayerCharacter::ZoomOut(float DeltaTime)
 	UCameraComponent* CameraComp = FindComponentByClass<UCameraComponent>();
 	CameraComp->FieldOfView = FMath::FInterpTo(
 		CameraComp->FieldOfView, DefaultFOV, DeltaTime, ZoomSpeed);
+}
+
+// Traces to the camera each tick, checking for interactable actors
+void AComplyPlayerCharacter::TraceForInteractable()
+{
+	FVector2D ViewportSize = FVector2D();
+	if (GEngine && GEngine->GameViewport)
+	{
+		GEngine->GameViewport->GetViewportSize(ViewportSize);
+	}
+	
+	const FVector2D CrosshairLocation(ViewportSize.X / 2, ViewportSize.Y / 2);
+	FVector CrosshairWorldPosition;
+	FVector CrosshairWorldDirection;
+	const bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(UGameplayStatics::GetPlayerController(
+		this, 0), CrosshairLocation, CrosshairWorldPosition, CrosshairWorldDirection);
+	if (bScreenToWorld)
+	{
+		FVector Start = CrosshairWorldPosition;
+		
+		float DistanceToCharacter = (GetActorLocation() - Start).Size();
+		Start += CrosshairWorldDirection * (DistanceToCharacter + 100);
+		
+		FVector End = Start + CrosshairWorldDirection * 2000;
+		
+		FHitResult Hit;
+		bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility);
+
+		AActor* HitActor = bHit ? Hit.GetActor() : nullptr;
+		IInteractableInterface* Interactable = HitActor ? Cast<IInteractableInterface>(HitActor) : nullptr;
+
+		if (Interactable != CurrentFocusedInteractable)
+		{
+			CurrentFocusedInteractable = Interactable;
+			// Update prompt UI — show/hide "Press E"
+			UE_LOG(LogTemp, Warning, TEXT("Interact"));
+		}
+	}
 }
 
 void AComplyPlayerCharacter::OnAimingTagChanged(const FGameplayTag Tag, int32 NewCount)

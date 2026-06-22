@@ -7,6 +7,7 @@
 #include "InputMappingContext.h"
 #include "Blueprint/UserWidget.h"
 #include "Comply.h"
+#include "Character/ComplyPlayerCharacter.h"
 #include "Widgets/Input/SVirtualJoystick.h"
 
 void AComplyPlayerController::BeginPlay()
@@ -23,13 +24,12 @@ void AComplyPlayerController::BeginPlay()
 		{
 			// add the controls to the player screen
 			MobileControlsWidget->AddToPlayerScreen(0);
-
-		} else {
+		} 
+		else
+		{
 
 			UE_LOG(LogComply, Error, TEXT("Could not spawn mobile controls widget."));
-
 		}
-
 	}
 }
 
@@ -78,7 +78,7 @@ void AComplyPlayerController::OpenMenuWidget(TSubclassOf<UUserWidget> WidgetClas
 	ActiveMenuWidget->AddToViewport();
 
 	FInputModeUIOnly InputMode;
-	InputMode.SetWidgetToFocus(ActiveMenuWidget->TakeWidget());
+	InputMode.SetWidgetToFocus(nullptr);
 	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 	SetInputMode(InputMode);
 	bShowMouseCursor = true;
@@ -93,4 +93,33 @@ void AComplyPlayerController::CloseMenuWidget()
 	}
 	SetInputMode(FInputModeGameOnly());
 	bShowMouseCursor = false;
+}
+
+void AComplyPlayerController::Server_SelectCharacter_Implementation(TSubclassOf<AComplyPlayerCharacter> SelectedCharacter)
+{
+	APawn* PreviousCharacterPawn = GetPawn();
+	
+	// Clear abilities before unpossessing so the player can activate abilities from the newly possessed character class
+	if (AComplyCharacterBase* OldCharacter = Cast<AComplyCharacterBase>(PreviousCharacterPawn))
+	{
+		OldCharacter->ClearStartupAbilities();
+	}
+	
+	UnPossess();
+	
+	if (PreviousCharacterPawn) { PreviousCharacterPawn->Destroy(); }
+	
+	if (SelectedCharacter)
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+		
+		AComplyPlayerCharacter* NewCharacter = GetWorld()->SpawnActor<AComplyPlayerCharacter>(
+			SelectedCharacter, PreviousCharacterPawn->GetActorTransform(), SpawnParams);
+		
+		if (NewCharacter)
+		{
+			Possess(NewCharacter);
+		}
+	}
 }

@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "ComplyPlayerController.generated.h"
 
+class AComplyPlayerCharacter;
 class UInputMappingContext;
 class UUserWidget;
 
@@ -27,6 +28,9 @@ public:
 	void OpenMenuWidget(TSubclassOf<UUserWidget> WidgetClass);
 	UFUNCTION(BlueprintCallable)
 	void CloseMenuWidget();
+	
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void Server_SelectCharacter(TSubclassOf<AComplyPlayerCharacter> SelectedCharacter);
 	
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> FlashbangWidgetClass;

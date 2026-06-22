@@ -413,7 +413,7 @@ void AComplyPlayerCharacter::TraceForInteractable()
 		float DistanceToCharacter = (GetActorLocation() - Start).Size();
 		Start += CrosshairWorldDirection * (DistanceToCharacter + 100);
 		
-		FVector End = Start + CrosshairWorldDirection * 2000;
+		FVector End = Start + CrosshairWorldDirection * 200;
 		
 		FHitResult Hit;
 		bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility);

@@ -64,6 +64,20 @@ void AComplyCharacterBase::GiveStartupAbilities()
 	}
 }
 
+void AComplyCharacterBase::ClearStartupAbilities()
+{
+	if (!GetAbilitySystemComponent()) return;
+
+	for (const FAbilitySet& Set : StartupAbilities)
+	{
+		FGameplayAbilitySpec* AbilitySpec = GetAbilitySystemComponent()->FindAbilitySpecFromClass(Set.AbilityClass);
+		if (AbilitySpec)
+		{
+			GetAbilitySystemComponent()->ClearAbility(AbilitySpec->Handle);
+		}
+	}
+}
+
 void AComplyCharacterBase::ActivateInitialAbility() const
 {
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();

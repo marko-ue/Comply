@@ -89,7 +89,14 @@ void AComplyPlayerCharacter::PossessedBy(AController* NewController)
 	WeaponMesh->SetStaticMesh(PrimaryMesh);
 	
 	InitializeAttributes();
-	GiveStartupAbilities();
+	
+	// Don't give abilities if in the lobby map
+	FString MapName = GetWorld()->GetMapName();
+	if (!MapName.Contains("Lobby"))
+	{
+		GiveStartupAbilities();
+	}
+	
 	ActivateInitialAbility();
 	
 	GetAbilitySystemComponent()->RegisterGameplayTagEvent(ComplyTags::States::State_Aiming,

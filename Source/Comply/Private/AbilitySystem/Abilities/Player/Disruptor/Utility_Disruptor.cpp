@@ -7,7 +7,7 @@
 #include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "AbilitySystem/ComplyTags.h"
-#include "Actors/BuffTotem/BuffTotemPreview.h"
+#include "Actors/AbilityActors/BuffTotem/BuffTotemPreview.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 

@@ -6,8 +6,8 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
 #include "AbilitySystem/ComplyTags.h"
-#include "Actors/ShieldDome/ShieldDome.h"
-#include "Actors/ShieldDome/ShieldDomePreview.h"
+#include "Actors/AbilityActors/ShieldDome/ShieldDome.h"
+#include "Actors/AbilityActors/ShieldDome/ShieldDomePreview.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 

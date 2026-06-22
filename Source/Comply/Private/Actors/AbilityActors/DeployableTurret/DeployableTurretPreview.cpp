@@ -1,7 +1,7 @@
 // Copyright © 2026 Marko. All rights reserved.
 
 
-#include "Actors/DeployableTurret/DeployableTurretPreview.h"
+#include "Actors/AbilityActors/DeployableTurret/DeployableTurretPreview.h"
 
 #include "Components/ArrowComponent.h"
 #include "GameFramework/Character.h"

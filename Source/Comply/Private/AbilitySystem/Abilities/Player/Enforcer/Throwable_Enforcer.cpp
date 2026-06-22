@@ -10,7 +10,7 @@
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/AbilityTasks/HitscanTargetData.h"
-#include "Actors/DeployableTurret/DeployableTurretPreview.h"
+#include "Actors/AbilityActors/DeployableTurret/DeployableTurretPreview.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 

@@ -1,7 +1,7 @@
 // Copyright © 2026 Marko. All rights reserved.
 
 
-#include "Actors/BuffTotem/BuffTotemPreview.h"
+#include "Actors/AbilityActors/BuffTotem/BuffTotemPreview.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 

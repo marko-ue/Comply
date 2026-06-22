@@ -2,16 +2,16 @@
 
 
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
-#include "Actors/PlasmaGrenade/PlasmaGrenade.h"
+#include "Actors/AbilityActors/PlasmaGrenade/PlasmaGrenade.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/Abilities/Player/Disruptor/Throwable_Disruptor.h"
 #include "AbilitySystem/Abilities/Player/Disruptor/Utility_Disruptor.h"
 #include "AbilitySystem/Abilities/Player/Enforcer/Throwable_Enforcer.h"
 #include "AbilitySystem/Abilities/Player/Ranger/Throwable_Ranger.h"
 #include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
-#include "Actors/BuffTotem/BuffTotem.h"
-#include "Actors/DecoyGrenade/DecoyGrenade.h"
-#include "Actors/DeployableTurret/DeployableTurret.h"
+#include "Actors/AbilityActors/BuffTotem/BuffTotem.h"
+#include "Actors/AbilityActors/DecoyGrenade/DecoyGrenade.h"
+#include "Actors/AbilityActors/DeployableTurret/DeployableTurret.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 

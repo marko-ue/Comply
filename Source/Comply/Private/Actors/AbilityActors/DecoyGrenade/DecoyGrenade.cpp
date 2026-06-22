@@ -1,7 +1,7 @@
 // Copyright © 2026 Marko. All rights reserved.
 
 
-#include "Actors/DecoyGrenade/DecoyGrenade.h"
+#include "Actors/AbilityActors/DecoyGrenade/DecoyGrenade.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "AIController.h"

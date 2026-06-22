@@ -1,7 +1,7 @@
 // Copyright © 2026 Marko. All rights reserved.
 
 
-#include "Actors/BuffTotem/BuffTotem.h"
+#include "Actors/AbilityActors/BuffTotem/BuffTotem.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"

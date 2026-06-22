@@ -1,7 +1,7 @@
 // Copyright © 2026 Marko. All rights reserved.
 
 
-#include "Actors/DecoyGrenade/DecoyGrenadePreview.h"
+#include "Actors/AbilityActors/DecoyGrenade/DecoyGrenadePreview.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/GameplayStaticsTypes.h"
 

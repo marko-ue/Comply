@@ -1,6 +1,6 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-#include "Actors/ShieldDome/ShieldDome.h"
+#include "Actors/AbilityActors/ShieldDome/ShieldDome.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
 #include "NiagaraComponent.h"

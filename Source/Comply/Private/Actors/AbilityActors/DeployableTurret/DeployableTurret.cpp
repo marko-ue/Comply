@@ -1,7 +1,7 @@
 // Copyright © 2026 Marko. All rights reserved.
 
 
-#include "Actors/DeployableTurret/DeployableTurret.h"
+#include "Actors/AbilityActors/DeployableTurret/DeployableTurret.h"
 #include <Interface/Enemy/EnemyInterface.h>
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"

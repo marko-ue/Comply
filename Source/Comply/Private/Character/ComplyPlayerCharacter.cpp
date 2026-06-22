@@ -90,7 +90,7 @@ void AComplyPlayerCharacter::PossessedBy(AController* NewController)
 	
 	InitializeAttributes();
 	
-	// Don't give abilities if in the lobby map
+	// Only give startup abilities if not in the lobby map
 	FString MapName = GetWorld()->GetMapName();
 	if (!MapName.Contains("Lobby"))
 	{
@@ -430,9 +430,11 @@ void AComplyPlayerCharacter::TraceForInteractable()
 
 		if (Interactable != CurrentFocusedInteractable)
 		{
+			if (CurrentFocusedInteractable) CurrentFocusedInteractable->HideInteractionPrompt();
+
 			CurrentFocusedInteractable = Interactable;
-			// Update prompt UI — show/hide "Press E"
-			UE_LOG(LogTemp, Warning, TEXT("Interact"));
+
+			if (CurrentFocusedInteractable) CurrentFocusedInteractable->ShowInteractionPrompt();
 		}
 	}
 }

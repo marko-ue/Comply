@@ -1,7 +1,7 @@
 // Copyright © 2026 Marko. All rights reserved.
 
 
-#include "Actors/CharacterSelection.h"
+#include "Actors/InteractableActors/CharacterSelection.h"
 
 #include "ComplyPlayerController.h"
 
@@ -10,8 +10,6 @@ ACharacterSelection::ACharacterSelection()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	
-	InteractableMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("InteractableMesh"));
-	SetRootComponent(InteractableMesh);
 }
 
 void ACharacterSelection::BeginPlay()

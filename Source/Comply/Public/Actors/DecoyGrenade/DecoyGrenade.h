@@ -13,6 +13,7 @@ class UBlackboardComponent;
 class UProjectileMovementComponent;
 class UAbilitySystemComponent;
 class UGameplayEffect;
+class USoundCue;
 
 UCLASS()
 class COMPLY_API ADecoyGrenade : public AActor

@@ -13,6 +13,7 @@ class UNiagaraSystem;
 class UGameplayEffect;
 class UGameplayAbility;
 class USphereComponent;
+class USoundCue;
 
 UCLASS()
 class COMPLY_API ABuffTotem : public AActor

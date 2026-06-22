@@ -230,7 +230,6 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 		{
 			FScopedPredictionWindow ScopedPrediction(GetAbilitySystemComponentFromActorInfo(),
 				CurrentActivationInfo.GetActivationPredictionKey());
-    
 			
 			FGameplayCueParameters CueParams;
 			CueParams.EffectContext = ContextHandle;
@@ -258,8 +257,13 @@ bool URangedWeaponAbilityBase::Fire()
 		UGameplayCueManager::ExecuteGameplayCue_NonReplicated(GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::WeaponDryFire, CueParams);
 		
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-
-		GetAbilitySystemComponentFromActorInfo()->TryActivateAbilityByClass(ReloadAbilityClass);
+		
+		// Band-Aid fix for shotgun reload being rejected due to Reloading tag being present too early
+		FTimerHandle ReloadTimer;
+		GetWorld()->GetTimerManager().SetTimer(ReloadTimer, [this]()
+		{
+			GetAbilitySystemComponentFromActorInfo()->TryActivateAbilityByClass(ReloadAbilityClass);
+		}, 0.1f, false);
 		
 		return false;
 	}
@@ -295,14 +299,14 @@ bool URangedWeaponAbilityBase::Fire()
 	CueParams.Location = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo())->WeaponMesh->GetComponentLocation();
 	CueParams.Instigator = GetAvatarActorFromActorInfo();
 	
-	// Execute the predicted cue non-replicated
+	// Execute the local cue non-replicated
 	if (CurrentActorInfo->IsLocallyControlled())
 	{
 		UGameplayCueManager::ExecuteGameplayCue_NonReplicated( 
 			GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::HitscanWeaponFire, CueParams);
 	}
 
-	// Only execute replicated cues on the server
+	// Execute replicated cue; prediction key lets owning client skip re-execution
 	if (GetAbilitySystemComponentFromActorInfo()->IsOwnerActorAuthoritative() && !IsLocallyControlled())
 	{
 		FScopedPredictionWindow ScopedPrediction(

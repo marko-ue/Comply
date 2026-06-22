@@ -16,6 +16,7 @@ class UArrowComponent;
 class UGameplayEffect;
 class UAbilitySystemComponent;
 class USphereComponent;
+class USoundCue;
 
 UCLASS()
 class COMPLY_API ADeployableTurret : public AActor, public ITargetableInterface, public IAbilitySystemInterface

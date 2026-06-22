@@ -7,6 +7,7 @@
 #include "AbilitySystemInterface.h"
 #include "ComplyPlayerState.generated.h"
 
+class AComplyPlayerCharacter;
 class UWeaponAttributeSet;
 class UComplyAttributeSet;
 /**
@@ -21,6 +22,10 @@ public:
 	AComplyPlayerState();
 	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	
+	// Tracks the character that was last selected before the mission was started
+	// Set in the RPC when selecting characters, and read and set in BeginPlay/OnRep_PlayerState on the PC
+	TSubclassOf<AComplyPlayerCharacter> LastSelectedCharacterClass;
 	
 protected:
 	UPROPERTY(VisibleAnywhere)

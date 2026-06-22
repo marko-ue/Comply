@@ -8,6 +8,8 @@
 #include "Blueprint/UserWidget.h"
 #include "Comply.h"
 #include "Character/ComplyPlayerCharacter.h"
+#include "Framework/PlayerState/ComplyPlayerState.h"
+#include "GameFramework/GameModeBase.h"
 #include "Widgets/Input/SVirtualJoystick.h"
 
 void AComplyPlayerController::BeginPlay()
@@ -30,6 +32,25 @@ void AComplyPlayerController::BeginPlay()
 
 			UE_LOG(LogComply, Error, TEXT("Could not spawn mobile controls widget."));
 		}
+	}
+	
+	if (AComplyPlayerState* PS = GetPlayerState<AComplyPlayerState>())
+	{
+		SelectedCharacterClass = PS->LastSelectedCharacterClass 
+			? PS->LastSelectedCharacterClass 
+			: DefaultCharacterClass;
+	}
+}
+
+void AComplyPlayerController::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+	
+	if (AComplyPlayerState* PS = GetPlayerState<AComplyPlayerState>())
+	{
+		SelectedCharacterClass = PS->LastSelectedCharacterClass
+			? PS->LastSelectedCharacterClass
+			: DefaultCharacterClass;
 	}
 }
 
@@ -111,6 +132,11 @@ void AComplyPlayerController::Server_SelectCharacter_Implementation(TSubclassOf<
 	
 	if (SelectedCharacter)
 	{
+		SelectedCharacterClass = SelectedCharacter;
+		
+		if (AComplyPlayerState* PS = GetPlayerState<AComplyPlayerState>())
+			PS->LastSelectedCharacterClass = SelectedCharacter;
+		
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 		

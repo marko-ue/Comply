@@ -18,6 +18,9 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	bool bFriendlyFire = false;
 	
+	UFUNCTION(BlueprintCallable)
+	bool AllPlayersHaveUniqueCharacters();
+	
 protected:
 	virtual void BeginPlay() override;
 };

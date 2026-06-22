@@ -32,6 +32,12 @@ public:
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void Server_SelectCharacter(TSubclassOf<AComplyPlayerCharacter> SelectedCharacter);
 	
+	UPROPERTY(VisibleAnywhere)
+	TSubclassOf<AComplyPlayerCharacter> SelectedCharacterClass;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AComplyPlayerCharacter> DefaultCharacterClass;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> FlashbangWidgetClass;
 	
@@ -39,6 +45,7 @@ public:
 	TObjectPtr<UUserWidget> FlashbangWidget;
 	
 	void ShowFlashbangEffect();
+
 	
 protected:
 
@@ -59,6 +66,8 @@ protected:
 
 	/** Gameplay initialization */
 	virtual void BeginPlay() override;
+	
+	virtual void OnRep_PlayerState() override;
 
 	/** Input mapping context setup */
 	virtual void SetupInputComponent() override;

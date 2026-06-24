@@ -9,7 +9,6 @@
 #include "Comply.h"
 #include "Character/ComplyPlayerCharacter.h"
 #include "Framework/PlayerState/ComplyPlayerState.h"
-#include "GameFramework/GameModeBase.h"
 #include "Widgets/Input/SVirtualJoystick.h"
 
 void AComplyPlayerController::BeginPlay()
@@ -36,9 +35,7 @@ void AComplyPlayerController::BeginPlay()
 	
 	if (AComplyPlayerState* PS = GetPlayerState<AComplyPlayerState>())
 	{
-		SelectedCharacterClass = PS->LastSelectedCharacterClass 
-			? PS->LastSelectedCharacterClass 
-			: DefaultCharacterClass;
+		SelectedCharacterClass = PS->LastSelectedCharacterClass ? PS->LastSelectedCharacterClass : DefaultCharacterClass;
 	}
 }
 
@@ -48,9 +45,7 @@ void AComplyPlayerController::OnRep_PlayerState()
 	
 	if (AComplyPlayerState* PS = GetPlayerState<AComplyPlayerState>())
 	{
-		SelectedCharacterClass = PS->LastSelectedCharacterClass
-			? PS->LastSelectedCharacterClass
-			: DefaultCharacterClass;
+		SelectedCharacterClass = PS->LastSelectedCharacterClass ? PS->LastSelectedCharacterClass : DefaultCharacterClass;
 	}
 }
 

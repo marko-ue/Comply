@@ -148,6 +148,12 @@ void UMenu::OnJoinSession(EOnJoinSessionCompleteResult::Type Result)
 		// 0=Success, 1=SessionIsFull, 2=SessionDoesNotExist, 3=CouldNotRetrieveAddress, 4=AlreadyInSession, 5=UnknownError
 	}
 
+	if (Result != EOnJoinSessionCompleteResult::Success)
+	{
+		JoinButton->SetIsEnabled(true);
+		return;
+	}
+	
 	IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();
 	if (Subsystem)
 	{
@@ -197,9 +203,10 @@ void UMenu::HostButtonClicked()
 void UMenu::JoinButtonClicked()
 {
 	JoinButton->SetIsEnabled(false);
-	if (MultiplayerSessionsSubsystem)
+	APlayerController* PC = GetGameInstance()->GetFirstLocalPlayerController();
+	if (PC)
 	{
-		MultiplayerSessionsSubsystem->FindSessions(10000);
+		PC->ClientTravel(TEXT("192.168.1.9"), ETravelType::TRAVEL_Absolute);
 	}
 }
 

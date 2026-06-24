@@ -8,6 +8,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Comply.h"
 #include "Character/ComplyPlayerCharacter.h"
+#include "Framework/GameInstance/ComplyGameInstance.h"
 #include "Framework/PlayerState/ComplyPlayerState.h"
 #include "Widgets/Input/SVirtualJoystick.h"
 
@@ -130,7 +131,14 @@ void AComplyPlayerController::Server_SelectCharacter_Implementation(TSubclassOf<
 		SelectedCharacterClass = SelectedCharacter;
 		
 		if (AComplyPlayerState* PS = GetPlayerState<AComplyPlayerState>())
+		{
 			PS->LastSelectedCharacterClass = SelectedCharacter;
+			if (UComplyGameInstance* GI = GetGameInstance<UComplyGameInstance>())
+			{
+				// The selected character class is added to the game instance map containing the player ID associated with that character
+				GI->PlayerCharacterSelections.Add(FString::FromInt(PS->GetPlayerId()), SelectedCharacter);
+			}
+		}
 		
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;

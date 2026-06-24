@@ -6,7 +6,9 @@
 #include "ComplyPlayerController.h"
 #include "EngineUtils.h"
 #include "Character/ComplyPlayerCharacter.h"
+#include "Framework/GameInstance/ComplyGameInstance.h"
 #include "Framework/GameState/ComplyGameStateBase.h"
+#include "Framework/PlayerState/ComplyPlayerState.h"
 
 
 void AComplyGameModeBase::BeginPlay()
@@ -38,4 +40,30 @@ bool AComplyGameModeBase::AllPlayersHaveUniqueCharacters()
 	}
 
 	return true;
+}
+
+void AComplyGameModeBase::TravelToMap(const FString& MapPath)
+{
+	UE_LOG(LogTemp, Warning, TEXT("TravelToMap called, bUseSeamlessTravel: %d"), bUseSeamlessTravel);
+	GetWorld()->ServerTravel(MapPath);
+}
+
+// Returns the player's selected character class from the GameInstance instead of the GameMode default
+UClass* AComplyGameModeBase::GetDefaultPawnClassForController_Implementation(AController* InController)
+{
+	if (AComplyPlayerController* PC = Cast<AComplyPlayerController>(InController))
+	{
+		if (UComplyGameInstance* GI = GetGameInstance<UComplyGameInstance>())
+		{
+			if (AComplyPlayerState* PS = PC->GetPlayerState<AComplyPlayerState>())
+			{
+				FString PlayerID = FString::FromInt(PS->GetPlayerId());
+				if (TSubclassOf<AComplyPlayerCharacter>* Found = GI->PlayerCharacterSelections.Find(PlayerID))
+				{
+					if (*Found) return *Found;
+				}
+			}
+		}
+	}
+	return Super::GetDefaultPawnClassForController_Implementation(InController);
 }

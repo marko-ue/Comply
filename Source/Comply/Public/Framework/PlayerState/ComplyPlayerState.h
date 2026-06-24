@@ -25,6 +25,7 @@ public:
 	
 	// Tracks the character that was last selected before the mission was started
 	// Set in the RPC when selecting characters, and read and set in BeginPlay/OnRep_PlayerState on the PC
+	UPROPERTY()
 	TSubclassOf<AComplyPlayerCharacter> LastSelectedCharacterClass;
 	
 protected:

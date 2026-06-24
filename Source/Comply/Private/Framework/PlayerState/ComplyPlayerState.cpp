@@ -5,6 +5,7 @@
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
 #include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
+#include "Character/ComplyPlayerCharacter.h"
 
 
 AComplyPlayerState::AComplyPlayerState()

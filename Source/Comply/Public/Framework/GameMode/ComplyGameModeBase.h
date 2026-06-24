@@ -20,6 +20,11 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	bool AllPlayersHaveUniqueCharacters();
+
+	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
+
+	UFUNCTION(BlueprintCallable)
+	void TravelToMap(const FString& MapPath);
 	
 protected:
 	virtual void BeginPlay() override;

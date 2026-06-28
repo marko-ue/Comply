@@ -141,6 +141,9 @@ protected:
 	UInputAction* InteractAction;
 	
 	UPROPERTY(EditAnywhere, Category="Input|Actions")
+	UInputAction* SprintAction;
+	
+	UPROPERTY(EditAnywhere, Category="Input|Actions")
 	UInputAction* ReloadAction;
 	
 	UPROPERTY(EditAnywhere, Category="Input|Actions")
@@ -162,6 +165,9 @@ protected:
 	void SecondaryActionReleased();
 	
 	void InteractActionPressed();
+	
+	void SprintActionPressed();
+	void SprintActionReleased();
 
 	void ReloadActionPressed();
 	
@@ -220,6 +226,7 @@ private:
 	int32 TotemSpeedBonusPerStack = 48;
 	
 	void OnMovementSpeedAttributeChanged(const FOnAttributeChangeData& Data);
+	
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Audio", meta = (AllowPrivateAccess = true))
 	TObjectPtr<USoundCue> GunFireSound;

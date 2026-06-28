@@ -67,6 +67,8 @@ void AComplyPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Completed, this, &ThisClass::PrimaryActionReleased);
 		EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Started, this, &ThisClass::SecondaryActionPressed);
 		EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Completed, this, &ThisClass::SecondaryActionReleased);
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &ThisClass::SprintActionPressed);
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &ThisClass::SprintActionReleased);
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ThisClass::InteractActionPressed);
 		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Started, this, &ThisClass::ReloadActionPressed);
 		EnhancedInputComponent->BindAction(CancelPreviewAction, ETriggerEvent::Started, this, &ThisClass::CancelPreviewActionPressed);
@@ -307,6 +309,36 @@ void AComplyPlayerCharacter::InteractActionPressed()
 	if (CurrentFocusedInteractable) { CurrentFocusedInteractable->Interact(GetController<APlayerController>()); }
 }
 
+void AComplyPlayerCharacter::SprintActionPressed()
+{
+	if (GetCharacterMovement()->IsFalling()) return;
+	
+	if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+	{
+		FGameplayTagContainer Tag;
+		Tag.AddTag(ComplyTags::ComplyAbilities::Sprint);
+		ASC->TryActivateAbilitiesByTag(Tag);
+	}
+}
+
+void AComplyPlayerCharacter::SprintActionReleased()
+{
+	// Predictively set max walk speed back to the base value on the client, since GE removal is not replicated
+	if (GetCharacterMovement() && IsLocallyControlled() && !HasAuthority())
+	{
+		int32 TotemStacks = GetAbilitySystemComponent()->GetTagCount(ComplyTags::States::State_TotemBuffed);
+		float CorrectSpeed = 500.f + (TotemStacks * TotemSpeedBonusPerStack);
+		GetCharacterMovement()->MaxWalkSpeed = CorrectSpeed;
+	}
+	
+	if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+	{
+		FGameplayTagContainer Tag;
+		Tag.AddTag(ComplyTags::ComplyAbilities::Sprint);
+		ASC->CancelAbilities(&Tag);
+	}
+}
+
 void AComplyPlayerCharacter::ReloadActionPressed()
 {
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
@@ -505,7 +537,7 @@ void AComplyPlayerCharacter::OnTotemBuffedTagChanged(const FGameplayTag Tag, int
 	ActiveTotemSpeedBuffEffectHandle = GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 }
 
-// When the totem buffs speed, the movement speed attribute is changed, and the character's new movement speed is set here
+// When speed is buffed, the movement speed attribute is changed, and the character's new movement speed is set here
 void AComplyPlayerCharacter::OnMovementSpeedAttributeChanged(const FOnAttributeChangeData& Data)
 {
 	GetCharacterMovement()->MaxWalkSpeed = Data.NewValue;

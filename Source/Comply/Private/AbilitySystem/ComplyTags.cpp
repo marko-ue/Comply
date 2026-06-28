@@ -7,6 +7,7 @@ namespace ComplyTags
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Primary, "ComplyTags.Abilities.AbilityTags.Primary", "Primary ability asset tag")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Utility, "ComplyTags.Abilities.AbilityTags.Utility", "Utility ability asset tag")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Throwable, "ComplyTags.Abilities.AbilityTags.Throwable", "Throwable ability asset tag")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Sprint, "ComplyTags.Abilities.AbilityTags.Sprint", "Sprint ability asset tag")
 		
 		namespace AssetTags
 		{
@@ -21,6 +22,7 @@ namespace ComplyTags
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Input_Primary, "ComplyTags.Abilities.InputTags.Input_Primary", "Input tag for primary abilities")
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Input_OneShotUtility, "ComplyTags.Abilities.InputTags.Input_OneShotUtility", "Input tag for utilities that are used as soon as their input is pressed")
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Input_Reload, "ComplyTags.Abilities.InputTags.Input_Reload", "Input tag for reloading")
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Input_Sprint, "ComplyTags.Abilities.InputTags.Input_Sprint", "Input tag for sprinting")
 		}
 		
 		namespace DamageTypes
@@ -38,6 +40,7 @@ namespace ComplyTags
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Distracted, "ComplyTags.States.Distracted", "Is enemy distracted")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Equipping, "ComplyTags.States.Equipping", "Is player equipping")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_TotemBuffed, "ComplyTags.States.TotemBuffed", "Is player buffed by a totem")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Sprinting, "ComplyTags.States.Sprinting", "Is player sprinting")
 		
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_ThrowablePreparing, "ComplyTags.States.Throwable.Preparing", "Is player preparing throwable")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_ThrowableThrowing, "ComplyTags.States.Throwable.Throwing", "Is player throwing a throwable")

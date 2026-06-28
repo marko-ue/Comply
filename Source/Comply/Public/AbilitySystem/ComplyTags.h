@@ -10,6 +10,7 @@ namespace ComplyTags
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Primary);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Utility);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Throwable);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Sprint)
 		
 		namespace AssetTags
 		{
@@ -24,6 +25,7 @@ namespace ComplyTags
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Input_Primary);
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Input_OneShotUtility);
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Input_Reload);
+			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Input_Sprint)
 		}
 		
 		namespace DamageTypes
@@ -41,6 +43,7 @@ namespace ComplyTags
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Distracted)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Equipping)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_TotemBuffed)
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Sprinting)
 		
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_ThrowablePreparing)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_ThrowableThrowing)

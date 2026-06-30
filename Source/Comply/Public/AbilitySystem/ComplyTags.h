@@ -59,6 +59,11 @@ namespace ComplyTags
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(SBC_TotemSpeedBuff);
 	}
 	
+	namespace Events
+	{
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_MeleeAttackRobot);
+	}
+	
 	namespace GameplayCues
 	{
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(HitscanWeaponImpact);

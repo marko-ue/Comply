@@ -32,4 +32,6 @@ void AComplyEnemyCharacter::BeginPlay()
 	if (!HasAuthority()) return;
 	
 	InitializeAttributes();
+	
+	GiveStartupAbilities();
 }

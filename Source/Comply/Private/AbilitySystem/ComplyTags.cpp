@@ -30,6 +30,11 @@ namespace ComplyTags
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Damage_Physical, "ComplyTags.Abilities.DamageTypes.Physical", "Physical damage type")
 		}
 	}
+
+	namespace Events
+	{
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_MeleeAttackRobot, "ComplyTags.Events.Abilities.MeleeAttackRobot", "Event tag for activating the melee attack robot ability")
+	}
 	
 	namespace States
 	{

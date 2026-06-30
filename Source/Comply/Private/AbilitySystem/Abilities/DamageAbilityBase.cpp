@@ -13,19 +13,16 @@
  */
 void UDamageAbilityBase::CauseDamage(AActor* TargetActor, float ExplicitDamage, FComplyGameplayEffectContext* Context) const
 {
-	FGameplayEffectSpecHandle DamageSpecHandle = MakeOutgoingGameplayEffectSpec(DamageEffectClass, 1.f);
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageSpecHandle, DamageType, ExplicitDamage);
-	
-	FComplyGameplayEffectContext* EffectContext = static_cast<FComplyGameplayEffectContext*>(
-		DamageSpecHandle.Data->GetContext().Get());
+	FGameplayEffectContextHandle ContextHandle(Context ? Context : new FComplyGameplayEffectContext());
+	ContextHandle.AddSourceObject(GetAvatarActorFromActorInfo());
 
-	if (EffectContext && Context)
-	{
-		EffectContext->bHitThroughShield = Context->bHitThroughShield;
-		EffectContext->ShieldDamageMultiplier = Context->ShieldDamageMultiplier;
-	}
+	FGameplayEffectSpecHandle DamageSpecHandle = MakeOutgoingGameplayEffectSpec(DamageEffectClass, 1.f);
+	DamageSpecHandle.Data->SetContext(ContextHandle);
+    
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageSpecHandle, DamageType, ExplicitDamage);
 
 	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(
 		*DamageSpecHandle.Data.Get(),
-		UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor));
+		UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor)
+	);
 }

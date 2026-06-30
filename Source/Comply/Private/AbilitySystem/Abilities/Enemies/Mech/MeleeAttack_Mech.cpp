@@ -43,15 +43,14 @@ void UMeleeAttack_Mech::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	}
 }
 
+void UMeleeAttack_Mech::OnAttackAnimationFinished()
+{
+	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+}
+
 void UMeleeAttack_Mech::CancelAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	bool bReplicateCancelAbility)
 {
-	
 	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
-}
-
-void UMeleeAttack_Mech::OnAttackAnimationFinished()
-{
-	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }

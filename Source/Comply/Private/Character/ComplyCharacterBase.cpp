@@ -3,10 +3,12 @@
 
 #include "Character/ComplyCharacterBase.h"
 #include "AbilitySystemComponent.h"
+#include "Comply.h"
 #include "GameplayEffect.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "Character/ComplyPlayerCharacter.h"
+#include "Components/CapsuleComponent.h"
 
 
 AComplyCharacterBase::AComplyCharacterBase()
@@ -76,6 +78,21 @@ void AComplyCharacterBase::ClearStartupAbilities()
 			GetAbilitySystemComponent()->ClearAbility(AbilitySpec->Handle);
 		}
 	}
+}
+
+void AComplyCharacterBase::Die()
+{
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
+	GetMesh()->SetCollisionResponseToChannel(ECC_Player, ECR_Ignore);
+	GetMesh()->SetSimulatePhysics(true);
+    
+	if (AController* C = GetController())
+	{
+		C->UnPossess();
+	}
+
+	SetLifeSpan(3.f);
 }
 
 void AComplyCharacterBase::ActivateInitialAbility() const

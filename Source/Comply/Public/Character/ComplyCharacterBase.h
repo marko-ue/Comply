@@ -43,6 +43,8 @@ public:
 	// This function is called when a new character class is being equipped
 	// This ensures the old class abilities are cleared, and the new character's abilities can be used
 	void ClearStartupAbilities();
+	
+	void Die();
 
 protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

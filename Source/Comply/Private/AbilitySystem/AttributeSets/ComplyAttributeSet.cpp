@@ -4,6 +4,7 @@
 #include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
 #include "Framework/GameMode/ComplyGameModeBase.h"
 #include "GameplayEffectExtension.h"
+#include "Character/ComplyCharacterBase.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Interface/Player/PlayerInterface.h"
@@ -98,7 +99,11 @@ void UComplyAttributeSet::HandleIncomingDamage(const struct FGameplayEffectModCa
 		const bool bFatal = NewHealth <= 0.f;
 		if (bFatal)
 		{
-			Data.Target.GetAvatarActor()->Destroy();
+			AActor* AvatarActor = Data.Target.GetAvatarActor();
+			if (AComplyCharacterBase* Character = Cast<AComplyCharacterBase>(AvatarActor))
+			{
+				Character->Die();
+			}
 		}
 	}
 }

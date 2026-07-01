@@ -85,6 +85,7 @@ void AComplyCharacterBase::Die()
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
 	GetMesh()->SetCollisionResponseToChannel(ECC_Player, ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Enemy, ECR_Ignore);
 	GetMesh()->SetSimulatePhysics(true);
     
 	if (AController* C = GetController())

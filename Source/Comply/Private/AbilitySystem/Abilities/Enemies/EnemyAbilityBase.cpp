@@ -12,7 +12,7 @@ void UEnemyAbilityBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 void UEnemyAbilityBase::OnAttackAnimationFinished()
 {
-	
+	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
 void UEnemyAbilityBase::CancelAbility(const FGameplayAbilitySpecHandle Handle,
@@ -21,4 +21,3 @@ void UEnemyAbilityBase::CancelAbility(const FGameplayAbilitySpecHandle Handle,
 {
 	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
 }
-

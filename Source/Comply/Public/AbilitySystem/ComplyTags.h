@@ -62,6 +62,7 @@ namespace ComplyTags
 	namespace Events
 	{
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_MeleeAttackRobot);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_AttackTank);
 	}
 	
 	namespace GameplayCues

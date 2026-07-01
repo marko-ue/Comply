@@ -40,6 +40,8 @@ public:
 	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	
 	// This function is called when a new character class is being equipped
 	// This ensures the old class abilities are cleared, and the new character's abilities can be used
 	void ClearStartupAbilities();
@@ -57,6 +59,12 @@ protected:
 	void GiveStartupAbilities();
 	
 	void ActivateInitialAbility() const;
+	
+	UPROPERTY(ReplicatedUsing=OnRep_IsDead)
+	bool bIsDead = false;
+	
+	UFUNCTION()
+	void OnRep_IsDead();
 
 public:	
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")

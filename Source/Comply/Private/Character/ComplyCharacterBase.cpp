@@ -9,6 +9,7 @@
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "Character/ComplyPlayerCharacter.h"
 #include "Components/CapsuleComponent.h"
+#include "Net/UnrealNetwork.h"
 
 
 AComplyCharacterBase::AComplyCharacterBase()
@@ -19,6 +20,13 @@ AComplyCharacterBase::AComplyCharacterBase()
 UAbilitySystemComponent* AComplyCharacterBase::GetAbilitySystemComponent() const
 {
 	return nullptr;
+}
+
+void AComplyCharacterBase::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(ThisClass, bIsDead);
 }
 
 void AComplyCharacterBase::BeginPlay()
@@ -81,6 +89,12 @@ void AComplyCharacterBase::ClearStartupAbilities()
 }
 
 void AComplyCharacterBase::Die()
+{
+	bIsDead = true; // Replicated variable triggers OnRep
+	OnRep_IsDead(); // Call directly on the server
+}
+
+void AComplyCharacterBase::OnRep_IsDead()
 {
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));

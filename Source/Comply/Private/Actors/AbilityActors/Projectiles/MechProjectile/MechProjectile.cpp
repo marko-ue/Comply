@@ -96,4 +96,3 @@ void AMechProjectile::OnRep_InitialVelocity()
 {
 	ProjectileMovementComp->Velocity = InitialVelocity;
 }
-

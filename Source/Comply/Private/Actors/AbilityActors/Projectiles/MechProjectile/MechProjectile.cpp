@@ -6,6 +6,7 @@
 #include "Actors/AbilityActors/Projectiles/MechProjectile/MechProjectileAreaEffect.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 
 AMechProjectile::AMechProjectile()
@@ -24,6 +25,9 @@ AMechProjectile::AMechProjectile()
 void AMechProjectile::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	// Movement shouldn't be replicated as clients now have a local projectile for smoothness
+	SetReplicateMovement(false);
 	
 	ProjectileMesh->OnComponentHit.AddDynamic(this, &ThisClass::OnHit);
 	
@@ -50,12 +54,20 @@ void AMechProjectile::LaunchProjectile()
 
 	if (bSuccess)
 	{
+		InitialVelocity = LaunchVelocity; // Triggers OnRep on clients
 		ProjectileMovementComp->Velocity = LaunchVelocity;
 	}
 }
 
+void AMechProjectile::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(ThisClass, InitialVelocity);
+}
+
 void AMechProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-	FVector NormalImpulse, const FHitResult& Hit)
+                            FVector NormalImpulse, const FHitResult& Hit)
 {
 	// Align the actor's Up (Z) axis with the floor normal
 	FRotator FlatRotation = FRotationMatrix::MakeFromZ(Hit.ImpactNormal).Rotator();
@@ -78,5 +90,10 @@ void AMechProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 	}
 
 	Destroy();
+}
+
+void AMechProjectile::OnRep_InitialVelocity()
+{
+	ProjectileMovementComp->Velocity = InitialVelocity;
 }
 

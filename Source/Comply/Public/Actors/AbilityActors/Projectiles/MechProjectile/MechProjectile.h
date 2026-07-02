@@ -17,7 +17,10 @@ class COMPLY_API AMechProjectile : public AActor
 
 public:
 	AMechProjectile();
+	
 	void LaunchProjectile();
+	
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual void Tick(float DeltaTime) override;
 	
@@ -49,4 +52,10 @@ private:
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	
+	UPROPERTY(ReplicatedUsing=OnRep_InitialVelocity)
+	FVector InitialVelocity;
+	
+	UFUNCTION()
+	void OnRep_InitialVelocity();
 };

@@ -35,6 +35,7 @@ namespace ComplyTags
 	{
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_MeleeAttackRobot, "ComplyTags.Events.Abilities.MeleeAttackRobot", "Event tag for activating the melee attack robot ability")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_AttackTank, "ComplyTags.Events.Abilities.AttackTank", "Event tag for activating the attack robot ability")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_AttackMech, "ComplyTags.Events.Abilities.AttackMech", "Event tag for activating the attack mech ability")
 	}
 	
 	namespace States

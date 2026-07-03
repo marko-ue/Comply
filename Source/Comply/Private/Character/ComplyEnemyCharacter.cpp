@@ -30,8 +30,9 @@ void AComplyEnemyCharacter::BeginPlay()
 	GetAbilitySystemComponent()->InitAbilityActorInfo(this, this);
 	
 	if (!HasAuthority()) return;
-	
-	InitializeAttributes();
-	
+
 	GiveStartupAbilities();
+	
+	GetAbilitySystemComponent()->SetNumericAttributeBase(UComplyAttributeSet::GetMaxHealthAttribute(), BaseMaxHealth);
+	GetAbilitySystemComponent()->SetNumericAttributeBase(UComplyAttributeSet::GetHealthAttribute(), BaseHealth);
 }

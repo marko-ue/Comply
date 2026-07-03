@@ -30,4 +30,10 @@ private:
 	
 	UPROPERTY()
 	TObjectPtr<UComplyAttributeSet> AttributeSet;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
+	float BaseHealth = 100.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
+	float BaseMaxHealth = 100.f;
 };

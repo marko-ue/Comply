@@ -119,13 +119,19 @@ void UComplyAttributeSet::HandleIncomingDamage(const struct FGameplayEffectModCa
 		*/
 		const float NewHealth = GetHealth() - LocalIncomingDamage;
 		SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
-			
+		
 		UE_LOG(LogTemp, Warning, TEXT("Health after damage: %f"), GetHealth());
+		
+		AActor* AvatarActor = Data.Target.GetAvatarActor();
+		
+		if (AComplyCharacterBase* Character = Cast<AComplyCharacterBase>(AvatarActor))
+		{
+			Character->PlayHitReactMontage();
+		}
 			
 		const bool bFatal = NewHealth <= 0.f;
 		if (bFatal)
 		{
-			AActor* AvatarActor = Data.Target.GetAvatarActor();
 			if (AComplyCharacterBase* Character = Cast<AComplyCharacterBase>(AvatarActor))
 			{
 				Character->Die();

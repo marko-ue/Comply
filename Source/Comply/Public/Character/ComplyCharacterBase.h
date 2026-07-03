@@ -47,6 +47,8 @@ public:
 	void ClearStartupAbilities();
 	
 	void Die();
+	
+	void PlayHitReactMontage();
 
 protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -78,4 +80,10 @@ public:
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilities")
 	TArray<FAbilitySet> StartupAbilities;
+	
+	UPROPERTY(EditAnywhere, Category = "Animations")
+	TObjectPtr<UAnimMontage> HitReactMontage;
+	
+	UFUNCTION(NetMulticast, Unreliable)
+	void Multicast_PlayHitReact();
 };

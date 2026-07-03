@@ -71,14 +71,14 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(
 		DamageStatics().ArmorPenetrationDef, EvaluationParameters, ArmorPenetration
 	);
-	ArmorPenetration = FMath::Clamp(ArmorPenetration, 0.f, 1.f);
+	ArmorPenetration = FMath::Clamp(ArmorPenetration, 0.f, 1.f); // Must be clamped because if it's above 1 the formula breaks
 	
 	// Armor constant decides how fast armor damage reduction scales
 	// Armor cap decides the highest possible damage reduction
 	const float ArmorConstant = DamageConfig->ArmorConstant;
 	const float ArmorCap = DamageConfig->ArmorReductionCap;
 	
-	// Effective armor is the original armor, reduced 10% per 0.1 armor penetration
+	// Effective armor is the original armor, reduced by 10% per 0.1 armor penetration
 	const float EffectiveArmor = Armor * (1.f - ArmorPenetration);
 	
 	const float DamageReduction = FMath::Min(EffectiveArmor / (EffectiveArmor + ArmorConstant), ArmorCap);

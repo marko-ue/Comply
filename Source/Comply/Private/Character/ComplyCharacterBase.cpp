@@ -88,6 +88,16 @@ void AComplyCharacterBase::ClearStartupAbilities()
 	}
 }
 
+void AComplyCharacterBase::PlayHitReactMontage()
+{
+	Multicast_PlayHitReact();
+}
+
+void AComplyCharacterBase::Multicast_PlayHitReact_Implementation()
+{
+	PlayAnimMontage(HitReactMontage);
+}
+
 void AComplyCharacterBase::Die()
 {
 	bIsDead = true; // Replicated variable triggers OnRep

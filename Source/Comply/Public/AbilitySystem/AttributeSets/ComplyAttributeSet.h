@@ -45,7 +45,38 @@ public:
 	
 	ATTRIBUTE_ACCESSORS(ThisClass, Health)
 	ATTRIBUTE_ACCESSORS(ThisClass, MaxHealth)
-	ATTRIBUTE_ACCESSORS(ThisClass, IncomingDamage)
+	
+	// TODO: Make upgradeable
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Armor)
+	FGameplayAttributeData Armor;
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxArmor)
+	FGameplayAttributeData MaxArmor;
+	
+	UFUNCTION()
+	void OnRep_Armor(const FGameplayAttributeData& OldArmor);
+	
+	UFUNCTION()
+	void OnRep_MaxArmor(const FGameplayAttributeData& OldArmor);
+	
+	ATTRIBUTE_ACCESSORS(ThisClass, Armor)
+	ATTRIBUTE_ACCESSORS(ThisClass, MaxArmor)
+	
+	// Used for enemies, this will be used for scaling based on difficulty and amount of players
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ArmorPenetration)
+	FGameplayAttributeData ArmorPenetration;
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxArmorPenetration)
+	FGameplayAttributeData MaxArmorPenetration;
+	
+	UFUNCTION()
+	void OnRep_ArmorPenetration(const FGameplayAttributeData& OldArmorPenetration);
+	
+	UFUNCTION()
+	void OnRep_MaxArmorPenetration(const FGameplayAttributeData& OldArmorPenetration);
+	
+	ATTRIBUTE_ACCESSORS(ThisClass, ArmorPenetration)
+	ATTRIBUTE_ACCESSORS(ThisClass, MaxArmorPenetration)
 	
 	/*
 	 * Meta Attributes
@@ -53,6 +84,8 @@ public:
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
 	FGameplayAttributeData IncomingDamage;
+	
+	ATTRIBUTE_ACCESSORS(ThisClass, IncomingDamage)
 	
 	/*
 	 * Stats

@@ -36,4 +36,10 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Stats")
 	float BaseMaxHealth = 100.f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
+	float BaseArmorPenetration = 0.1f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
+	float BaseMaxArmorPenetration = 0.1f;
 };

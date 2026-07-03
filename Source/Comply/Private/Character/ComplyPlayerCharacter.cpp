@@ -92,6 +92,9 @@ void AComplyPlayerCharacter::PossessedBy(AController* NewController)
 	
 	InitializeAttributes();
 	
+	GetAbilitySystemComponent()->SetNumericAttributeBase(UComplyAttributeSet::GetMaxArmorAttribute(), BaseMaxArmor);
+	GetAbilitySystemComponent()->SetNumericAttributeBase(UComplyAttributeSet::GetArmorAttribute(), BaseArmor);
+	
 	// Only give startup abilities if not in the lobby map
 	FString MapName = GetWorld()->GetMapName();
 	if (!MapName.Contains("Lobby"))

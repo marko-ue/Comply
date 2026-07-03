@@ -19,6 +19,12 @@ void UComplyAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimePrope
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, Health, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, MaxHealth, COND_None, REPNOTIFY_Always);
 	
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, Armor, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, MaxArmor, COND_None, REPNOTIFY_Always);
+	
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, ArmorPenetration, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, MaxArmorPenetration, COND_None, REPNOTIFY_Always);
+	
 	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, MovementSpeed, COND_None, REPNOTIFY_Always);
 }
 
@@ -29,6 +35,16 @@ void UComplyAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute
 	if (Attribute == GetHealthAttribute())
 	{
 		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxHealth());
+	}
+	
+	if (Attribute == GetArmorAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxArmor());
+	}
+	
+	if (Attribute == GetArmorPenetrationAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxArmorPenetration());
 	}
 }
 
@@ -49,6 +65,16 @@ void UComplyAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffect
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
+	}
+	
+	if (Data.EvaluatedData.Attribute == GetArmorAttribute())
+	{
+		SetArmor(FMath::Clamp(GetArmor(), 0.f, GetMaxArmor()));
+	}
+	
+	if (Data.EvaluatedData.Attribute == GetArmorPenetrationAttribute())
+	{
+		SetArmorPenetration(FMath::Clamp(GetArmorPenetration(), 0.f, GetMaxArmorPenetration()));
 	}
 }
 
@@ -117,6 +143,26 @@ void UComplyAttributeSet::OnRep_Health(const FGameplayAttributeData& OldValue)
 void UComplyAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldValue)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, MaxHealth, OldValue);
+}
+
+void UComplyAttributeSet::OnRep_Armor(const FGameplayAttributeData& OldArmor)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, Armor, OldArmor);
+}
+
+void UComplyAttributeSet::OnRep_MaxArmor(const FGameplayAttributeData& OldArmor)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, MaxArmor, OldArmor);
+}
+
+void UComplyAttributeSet::OnRep_ArmorPenetration(const FGameplayAttributeData& OldArmorPenetration)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, ArmorPenetration, OldArmorPenetration);
+}
+
+void UComplyAttributeSet::OnRep_MaxArmorPenetration(const FGameplayAttributeData& OldArmorPenetration)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(ThisClass, MaxArmorPenetration, OldArmorPenetration);
 }
 
 void UComplyAttributeSet::OnRep_MovementSpeed(const FGameplayAttributeData& OldMovementSpeed)

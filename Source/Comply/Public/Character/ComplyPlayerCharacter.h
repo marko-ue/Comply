@@ -58,6 +58,12 @@ public:
 	float ZoomSpeed = 10.f;
 	// End Zoom
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
+	float BaseArmor = 5.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
+	float BaseMaxArmor = 5.f;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilities|Effect Application")
 	TSubclassOf<UGameplayAbility> ApplyAimEffectAbilityClass;
 	

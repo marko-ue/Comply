@@ -6,6 +6,7 @@
 #include "GameplayEffectExecutionCalculation.h"
 #include "ExecCalc_Damage.generated.h"
 
+class UComplyDamageCalculationConfig;
 /**
  * 
  */
@@ -18,4 +19,7 @@ public:
 	UExecCalc_Damage();
 	
 	virtual void Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const override;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Config")
+	TObjectPtr<UComplyDamageCalculationConfig> DamageConfig;
 };

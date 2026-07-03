@@ -35,4 +35,6 @@ void AComplyEnemyCharacter::BeginPlay()
 	
 	GetAbilitySystemComponent()->SetNumericAttributeBase(UComplyAttributeSet::GetMaxHealthAttribute(), BaseMaxHealth);
 	GetAbilitySystemComponent()->SetNumericAttributeBase(UComplyAttributeSet::GetHealthAttribute(), BaseHealth);
+	GetAbilitySystemComponent()->SetNumericAttributeBase(UComplyAttributeSet::GetMaxArmorPenetrationAttribute(), BaseMaxArmorPenetration);
+	GetAbilitySystemComponent()->SetNumericAttributeBase(UComplyAttributeSet::GetArmorPenetrationAttribute(), BaseArmorPenetration);
 }

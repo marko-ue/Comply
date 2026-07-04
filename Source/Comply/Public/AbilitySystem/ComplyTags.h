@@ -78,6 +78,7 @@ namespace ComplyTags
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(WeaponReloadFinished)
 		
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(PlayerHit)
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(PlayerDeath)
 		
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(ShieldPlaced)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(ShieldHitscanWeaponImpact)
@@ -98,5 +99,6 @@ namespace ComplyTags
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(BuffTotemBuffAura)
 		
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(EnemyAttack)
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(EnemyDeath)
 	}
 }

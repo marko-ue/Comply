@@ -12,6 +12,7 @@ public class Comply : ModuleRules
 			"Core",
 			"CoreUObject",
 			"Engine",
+			"DerivedDataCache",
 			"InputCore",
 			"EnhancedInput",
 			"AIModule",

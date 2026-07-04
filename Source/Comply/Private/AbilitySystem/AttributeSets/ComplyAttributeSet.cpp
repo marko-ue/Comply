@@ -134,7 +134,7 @@ void UComplyAttributeSet::HandleIncomingDamage(const struct FGameplayEffectModCa
 		{
 			if (AComplyCharacterBase* Character = Cast<AComplyCharacterBase>(AvatarActor))
 			{
-				Character->Die();
+				Character->Die(AvatarActor);
 			}
 		}
 	}

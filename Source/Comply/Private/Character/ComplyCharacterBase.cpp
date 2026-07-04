@@ -3,12 +3,14 @@
 
 #include "Character/ComplyCharacterBase.h"
 #include "AbilitySystemComponent.h"
+#include "AudioDerivedData.h"
 #include "Comply.h"
 #include "GameplayEffect.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "Character/ComplyPlayerCharacter.h"
 #include "Components/CapsuleComponent.h"
+#include "Interface/Enemy/EnemyInterface.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -105,8 +107,22 @@ void AComplyCharacterBase::Multicast_PlayHitReact_Implementation()
 	PlayAnimMontage(HitReactMontage);
 }
 
-void AComplyCharacterBase::Die()
+void AComplyCharacterBase::Die(AActor* DeadActor)
 {
+	if (DeadActor->Implements<UPlayerInterface>())
+	{
+		FGameplayCueParameters CueParams;
+		CueParams.Location = GetActorLocation();
+		GetAbilitySystemComponent()->ExecuteGameplayCue(ComplyTags::GameplayCues::PlayerDeath, CueParams);
+	}
+	else if (DeadActor->Implements<UEnemyInterface>())
+	{
+		FGameplayCueParameters CueParams;
+		CueParams.Location = DeadActor->GetActorLocation();
+		CueParams.Instigator = DeadActor;
+		GetAbilitySystemComponent()->ExecuteGameplayCue(ComplyTags::GameplayCues::EnemyDeath, CueParams);
+	}
+	
 	bIsDead = true; // Replicated variable triggers OnRep
 	OnRep_IsDead(); // Call directly on the server
 }

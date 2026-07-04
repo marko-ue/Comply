@@ -46,7 +46,7 @@ public:
 	// This ensures the old class abilities are cleared, and the new character's abilities can be used
 	void ClearStartupAbilities();
 	
-	void Die();
+	void Die(AActor* DeadActor);
 	
 	void HandleHit(AActor* HitActor);
 

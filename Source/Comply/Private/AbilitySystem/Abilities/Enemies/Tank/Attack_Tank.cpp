@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/Abilities/Enemies/Tank/Attack_Tank.h"
 
+#include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "AbilitySystem/ComplyTags.h"
 
@@ -17,9 +18,9 @@ UAttack_Tank::UAttack_Tank()
 void UAttack_Tank::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	
 	if (!CommitAbility(Handle, ActorInfo, ActivationInfo)) return; 
+	
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
 	if (TriggerEventData && TriggerEventData->Target)
 	{

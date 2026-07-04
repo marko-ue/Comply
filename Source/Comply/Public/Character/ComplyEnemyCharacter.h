@@ -8,6 +8,7 @@
 #include "ComplyEnemyCharacter.generated.h"
 
 class UComplyAttributeSet;
+class USoundCue;
 /**
  * 
  */
@@ -21,6 +22,9 @@ public:
 	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sounds")
+	TObjectPtr<USoundCue> AttackSound;
+	
 protected:
 	virtual void BeginPlay() override;
 	
@@ -31,15 +35,15 @@ private:
 	UPROPERTY()
 	TObjectPtr<UComplyAttributeSet> AttributeSet;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Stats")
+	UPROPERTY(EditAnywhere, Category = "Stats")
 	float BaseHealth = 100.f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Stats")
+	UPROPERTY(EditAnywhere, Category = "Stats")
 	float BaseMaxHealth = 100.f;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Stats")
+	UPROPERTY(EditAnywhere, Category = "Stats")
 	float BaseArmorPenetration = 0.1f;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Stats")
+	UPROPERTY(EditAnywhere, Category = "Stats")
 	float BaseMaxArmorPenetration = 0.1f;
 };

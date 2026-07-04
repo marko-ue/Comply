@@ -3,11 +3,12 @@
 
 #include "AbilitySystem/Abilities/Enemies/Mech/Attack_Mech.h"
 
+#include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "Actors/AbilityActors/Projectiles/MechProjectile/MechProjectile.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetMathLibrary.h"
+
 
 UAttack_Mech::UAttack_Mech()
 {
@@ -20,9 +21,9 @@ UAttack_Mech::UAttack_Mech()
 void UAttack_Mech::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	
 	if (!CommitAbility(Handle, ActorInfo, ActivationInfo)) return; 
+	
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
 	if (TriggerEventData && TriggerEventData->Target)
 	{

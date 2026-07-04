@@ -3,11 +3,19 @@
 
 #include "AbilitySystem/Abilities/Enemies/EnemyAbilityBase.h"
 
+#include "AbilitySystemComponent.h"
+#include "AbilitySystem/ComplyTags.h"
+
 void UEnemyAbilityBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-	const FGameplayEventData* TriggerEventData)
+                                        const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+                                        const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+	
+	FGameplayCueParameters CueParams;
+	CueParams.Location = GetAvatarActorFromActorInfo()->GetActorLocation();
+	CueParams.Instigator = GetAvatarActorFromActorInfo();
+	GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::EnemyAttack, CueParams);
 }
 
 void UEnemyAbilityBase::OnAttackAnimationFinished()

@@ -126,7 +126,7 @@ void UComplyAttributeSet::HandleIncomingDamage(const struct FGameplayEffectModCa
 		
 		if (AComplyCharacterBase* Character = Cast<AComplyCharacterBase>(AvatarActor))
 		{
-			Character->PlayHitReactMontage();
+			Character->HandleHit(AvatarActor);
 		}
 			
 		const bool bFatal = NewHealth <= 0.f;

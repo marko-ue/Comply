@@ -75,6 +75,8 @@ namespace ComplyTags
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(WeaponReload, "GameplayCue.Weapon.Reload", "Gameplay cue tag for reloading weapons")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(WeaponReloadFinished, "GameplayCue.Weapon.ReloadFinished", "Gameplay cue tag for when reloading of weapons finishes")
 		
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(PlayerHit, "GameplayCue.Player.PlayerHit", "Gameplay cue tag for when players get hit")
+		
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShieldPlaced, "GameplayCue.Shield.Placed", "Gameplay cue tag for when the shield is placed")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShieldHitscanWeaponImpact, "GameplayCue.Shield.HitscanWeaponImpact", "Gameplay cue for when a shot passes through a shield")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShieldShotgunImpact, "GameplayCue.Shield.ShotgunImpact", "Gameplay cue for when a shotgun bullet passes through a shield")
@@ -92,5 +94,7 @@ namespace ComplyTags
 		
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(BuffTotemApplyBuff, "GameplayCue.BuffTotem.ApplyBuff", "Gameplay cue tag for when a buff totem buff is applied")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(BuffTotemBuffAura, "GameplayCue.BuffTotem.BuffAura", "Gameplay cue tag for the buff aura when a buff exists")
+		
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(EnemyAttack, "GameplayCue.Enemy.Attack", "Gameplay cue for when enemies attack")
 	}
 }

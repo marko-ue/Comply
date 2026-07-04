@@ -48,7 +48,7 @@ public:
 	
 	void Die();
 	
-	void PlayHitReactMontage();
+	void HandleHit(AActor* HitActor);
 
 protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

@@ -88,8 +88,15 @@ void AComplyCharacterBase::ClearStartupAbilities()
 	}
 }
 
-void AComplyCharacterBase::PlayHitReactMontage()
+void AComplyCharacterBase::HandleHit(AActor* HitActor)
 {
+	if (HitActor->Implements<UPlayerInterface>())
+	{
+		FGameplayCueParameters CueParams;
+		CueParams.Location = GetActorLocation();
+		GetAbilitySystemComponent()->ExecuteGameplayCue(ComplyTags::GameplayCues::PlayerHit, CueParams);
+	}
+	
 	Multicast_PlayHitReact();
 }
 

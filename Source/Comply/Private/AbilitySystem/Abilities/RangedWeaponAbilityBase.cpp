@@ -296,7 +296,7 @@ bool URangedWeaponAbilityBase::Fire()
 	}
 	
 	FGameplayCueParameters CueParams;
-	CueParams.Location = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo())->WeaponMesh->GetComponentLocation();
+	CueParams.Location = GetAvatarActorFromActorInfo()->GetActorLocation();
 	CueParams.Instigator = GetAvatarActorFromActorInfo();
 	
 	// Execute the local cue non-replicated

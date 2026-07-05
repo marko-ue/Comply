@@ -28,6 +28,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sounds")
 	TObjectPtr<USoundCue> DeathSound;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sounds")
+	TObjectPtr<USoundCue> FootstepsSound;
+	
 protected:
 	virtual void BeginPlay() override;
 	

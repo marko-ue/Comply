@@ -48,7 +48,8 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	const FComplyGameplayEffectContext* Context = static_cast<const FComplyGameplayEffectContext*>(
 		Spec.GetContext().Get());
 
-	float Damage = Spec.GetSetByCallerMagnitude(ComplyTags::ComplyAbilities::DamageTypes::Damage_Physical);
+	const float PhysicalDamage = Spec.GetSetByCallerMagnitude(ComplyTags::ComplyAbilities::DamageTypes::Damage_Physical, false, 0.f);
+	const float ElectricalDamage = Spec.GetSetByCallerMagnitude(ComplyTags::ComplyAbilities::DamageTypes::Damage_Electrical, false, 0.f);
 
 	float Multiplier = 1.f;
 	
@@ -82,8 +83,12 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	const float EffectiveArmor = Armor * (1.f - ArmorPenetration);
 	
 	const float DamageReduction = FMath::Min(EffectiveArmor / (EffectiveArmor + ArmorConstant), ArmorCap);
-	const float FinalDamage = (Damage * Multiplier) * (1.f - DamageReduction);
 	
+	const float FinalPhysicalDamage = (PhysicalDamage * Multiplier) * (1.f - DamageReduction);
+	const float FinalElectricalDamage = ElectricalDamage;
+	
+	const float FinalDamage = FinalPhysicalDamage + FinalElectricalDamage;
+
 	const FGameplayModifierEvaluatedData EvaluatedData(
 		UComplyAttributeSet::GetIncomingDamageAttribute(), EGameplayModOp::Additive, FinalDamage);
 	OutExecutionOutput.AddOutputModifier(EvaluatedData);

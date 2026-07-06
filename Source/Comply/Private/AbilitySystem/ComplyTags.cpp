@@ -28,6 +28,7 @@ namespace ComplyTags
 		namespace DamageTypes
 		{
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Damage_Physical, "ComplyTags.Abilities.DamageTypes.Physical", "Physical damage type")
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Damage_Electrical, "ComplyTags.Abilities.DamageTypes.Electrical", "Electrical damage type")
 		}
 	}
 
@@ -48,6 +49,7 @@ namespace ComplyTags
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Equipping, "ComplyTags.States.Equipping", "Is player equipping")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_TotemBuffed, "ComplyTags.States.TotemBuffed", "Is player buffed by a totem")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Sprinting, "ComplyTags.States.Sprinting", "Is player sprinting")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Stunned, "ComplyTags.States.Stunned", "Is player stunned")
 		
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_ThrowablePreparing, "ComplyTags.States.Throwable.Preparing", "Is player preparing throwable")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_ThrowableThrowing, "ComplyTags.States.Throwable.Throwing", "Is player throwing a throwable")

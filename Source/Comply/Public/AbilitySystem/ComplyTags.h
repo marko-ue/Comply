@@ -31,6 +31,7 @@ namespace ComplyTags
 		namespace DamageTypes
 		{
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Damage_Physical);
+			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Damage_Electrical)
 		}
 	}
 	
@@ -44,6 +45,7 @@ namespace ComplyTags
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Equipping)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_TotemBuffed)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Sprinting)
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Stunned)
 		
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_ThrowablePreparing)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_ThrowableThrowing)

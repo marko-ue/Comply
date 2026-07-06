@@ -95,8 +95,7 @@ void AMechProjectileAreaEffect::OnComponentBeginOverlap(UPrimitiveComponent* Ove
 		{
 			if (!SourceASC || !TargetASC || !DamageEffectClass) return;
 
-			ApplyDamageToTarget(TargetASC);
-			ApplySlowToTarget(TargetASC);
+			ApplyEffectToTarget(TargetASC);
 		}
 	}
 }

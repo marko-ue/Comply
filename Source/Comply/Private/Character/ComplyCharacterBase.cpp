@@ -92,11 +92,14 @@ void AComplyCharacterBase::ClearStartupAbilities()
 
 void AComplyCharacterBase::HandleHit(AActor* HitActor)
 {
-	if (HitActor->Implements<UPlayerInterface>())
+	if (HitActor && HitActor->Implements<UPlayerInterface>())
 	{
-		FGameplayCueParameters CueParams;
-		CueParams.Location = GetActorLocation();
-		GetAbilitySystemComponent()->ExecuteGameplayCue(ComplyTags::GameplayCues::PlayerHit, CueParams);
+		if (GetAbilitySystemComponent())
+		{
+			FGameplayCueParameters CueParams;
+			CueParams.Location = GetActorLocation();
+			GetAbilitySystemComponent()->ExecuteGameplayCue(ComplyTags::GameplayCues::PlayerHit, CueParams);
+		}
 	}
 	
 	Multicast_PlayHitReact();
@@ -109,22 +112,30 @@ void AComplyCharacterBase::Multicast_PlayHitReact_Implementation()
 
 void AComplyCharacterBase::Die(AActor* DeadActor)
 {
-	if (DeadActor->Implements<UPlayerInterface>())
+	if (DeadActor && DeadActor->Implements<UPlayerInterface>())
 	{
-		FGameplayCueParameters CueParams;
-		CueParams.Location = GetActorLocation();
-		GetAbilitySystemComponent()->ExecuteGameplayCue(ComplyTags::GameplayCues::PlayerDeath, CueParams);
+		if (GetAbilitySystemComponent())
+		{
+			FGameplayCueParameters CueParams;
+			CueParams.Location = GetActorLocation();
+			GetAbilitySystemComponent()->ExecuteGameplayCue(ComplyTags::GameplayCues::PlayerDeath, CueParams);
+		}
+		
+		if (AComplyPlayerCharacter* DeadPlayer = Cast<AComplyPlayerCharacter>(DeadActor))
+		{
+			DeadPlayer->DownPlayer();
+		}
 	}
-	else if (DeadActor->Implements<UEnemyInterface>())
+	else if (DeadActor && DeadActor->Implements<UEnemyInterface>())
 	{
 		FGameplayCueParameters CueParams;
 		CueParams.Location = DeadActor->GetActorLocation();
 		CueParams.Instigator = DeadActor;
 		GetAbilitySystemComponent()->ExecuteGameplayCue(ComplyTags::GameplayCues::EnemyDeath, CueParams);
+		
+		bIsDead = true; // Replicated variable triggers OnRep
+		OnRep_IsDead();
 	}
-	
-	bIsDead = true; // Replicated variable triggers OnRep
-	OnRep_IsDead(); // Call directly on the server
 }
 
 void AComplyCharacterBase::OnRep_IsDead()

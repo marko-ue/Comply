@@ -47,6 +47,16 @@ public:
 	void SetEquippedPrimaryWeapon(TSubclassOf<URangedWeaponAbilityBase> NewWeaponClass);
 	URangedWeaponAbilityBase* GetEquippedPrimaryWeapon() const;
 	
+	UFUNCTION(BlueprintCallable)
+	void DownPlayer();
+	void RevivePlayer();
+	
+	UFUNCTION(Server, Reliable)
+	void Server_ReviveTarget(AComplyPlayerCharacter* Target);
+	
+	UPROPERTY(ReplicatedUsing=OnRep_IsDowned)
+	bool bIsDowned = false;
+	
 	// Zoom
 	UPROPERTY(EditAnywhere, Category = "Zoom")
 	float DefaultFOV = 90.f;
@@ -79,8 +89,16 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilities|Equip")
 	TSubclassOf<UGameplayAbility> EquipThrowableAbilityClass;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects|Buffs")
 	TSubclassOf<UGameplayEffect> TotemSpeedBuffEffectClass;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects|States")
+	TSubclassOf<UGameplayEffect> DownedEffectClass;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects|States")
+	TSubclassOf<UGameplayEffect> ReviveEffectClass;
+	
+	FActiveGameplayEffectHandle ActiveDownedEffectHandle;
 	
 	UPROPERTY(VisibleAnywhere)
 	bool bFireInputHeld = false;
@@ -199,6 +217,9 @@ private:
 	bool bIsAiming = false;
 	// End Zoom
 	
+	UFUNCTION()
+	void OnRep_IsDowned();
+	
 	void TraceForInteractable();
 	
 	IInteractableInterface* CurrentFocusedInteractable;
@@ -232,7 +253,6 @@ private:
 	int32 TotemSpeedBonusPerStack = 48;
 	
 	void OnMovementSpeedAttributeChanged(const FOnAttributeChangeData& Data);
-	
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Audio", meta = (AllowPrivateAccess = true))
 	TObjectPtr<USoundCue> GunFireSound;

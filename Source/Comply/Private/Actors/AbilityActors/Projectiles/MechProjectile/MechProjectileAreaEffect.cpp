@@ -37,7 +37,7 @@ void AMechProjectileAreaEffect::BeginPlay()
 	
 	AreaEffectNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, AreaEffectParticles, GetActorLocation());
 	AreaEffectAudioComponent = UGameplayStatics::SpawnSoundAttached(AreaEffectSound, RootComponent);
-	SetLifeSpan(5.5f);
+	SetLifeSpan(4.5f);
 }
 
 void AMechProjectileAreaEffect::Tick(float DeltaTime)

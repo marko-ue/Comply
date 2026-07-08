@@ -23,6 +23,7 @@ namespace ComplyTags
 		namespace InputTags
 		{
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Input_Primary);
+			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Input_Interact)
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Input_OneShotUtility);
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Input_Reload);
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Input_Sprint)
@@ -46,6 +47,7 @@ namespace ComplyTags
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_TotemBuffed)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Sprinting)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Stunned)
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Downed)
 		
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_ThrowablePreparing)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_ThrowableThrowing)
@@ -66,6 +68,8 @@ namespace ComplyTags
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_MeleeAttackRobot);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_AttackTank);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_AttackMech)
+		
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_RevivePlayer)
 	}
 	
 	namespace GameplayCues

@@ -20,6 +20,7 @@ namespace ComplyTags
 		namespace InputTags
 		{
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Input_Primary, "ComplyTags.Abilities.InputTags.Input_Primary", "Input tag for primary abilities")
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Input_Interact, "ComplyTags.Abilities.InputTags.Input_Interact", "Input tag for interacting")
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Input_OneShotUtility, "ComplyTags.Abilities.InputTags.Input_OneShotUtility", "Input tag for utilities that are used as soon as their input is pressed")
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Input_Reload, "ComplyTags.Abilities.InputTags.Input_Reload", "Input tag for reloading")
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Input_Sprint, "ComplyTags.Abilities.InputTags.Input_Sprint", "Input tag for sprinting")
@@ -37,6 +38,8 @@ namespace ComplyTags
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_MeleeAttackRobot, "ComplyTags.Events.Abilities.MeleeAttackRobot", "Event tag for activating the melee attack robot ability")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_AttackTank, "ComplyTags.Events.Abilities.AttackTank", "Event tag for activating the attack robot ability")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_AttackMech, "ComplyTags.Events.Abilities.AttackMech", "Event tag for activating the attack mech ability")
+		
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_RevivePlayer, "ComplyTags.Events.Abilities.RevivePlayer", "Event tag for activating the revive player ability")
 	}
 	
 	namespace States
@@ -50,6 +53,7 @@ namespace ComplyTags
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_TotemBuffed, "ComplyTags.States.TotemBuffed", "Is player buffed by a totem")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Sprinting, "ComplyTags.States.Sprinting", "Is player sprinting")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Stunned, "ComplyTags.States.Stunned", "Is player stunned")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Downed, "ComplyTags.States.Downed", "Is player downed")
 		
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_ThrowablePreparing, "ComplyTags.States.Throwable.Preparing", "Is player preparing throwable")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_ThrowableThrowing, "ComplyTags.States.Throwable.Throwing", "Is player throwing a throwable")

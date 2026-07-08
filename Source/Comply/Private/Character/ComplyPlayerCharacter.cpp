@@ -7,6 +7,7 @@
 #include "EnhancedInputComponent.h"
 #include "AbilitySystemComponent.h"
 #include "CableComponent.h"
+#include "Comply.h"
 #include "ComplyPlayerController.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
@@ -14,8 +15,10 @@
 #include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Framework/GameState/ComplyGameStateBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpectatorPawn.h"
 #include "Interface/Player/InteractableInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
@@ -49,6 +52,7 @@ void AComplyPlayerCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimePr
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
 	DOREPLIFETIME(AComplyPlayerCharacter, EquippedPrimaryWeaponClass);
+	DOREPLIFETIME(AComplyPlayerCharacter, bIsDowned);
 }
 
 void AComplyPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -166,6 +170,8 @@ UAbilitySystemComponent* AComplyPlayerCharacter::GetAbilitySystemComponent() con
 
 URangedWeaponAbilityBase* AComplyPlayerCharacter::GetEquippedPrimaryWeapon() const
 {
+	if (!GetAbilitySystemComponent()) return nullptr;
+	
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
 		if (Spec.Ability->GetClass() == EquippedPrimaryWeaponClass)
@@ -174,6 +180,92 @@ URangedWeaponAbilityBase* AComplyPlayerCharacter::GetEquippedPrimaryWeapon() con
 		}
 	}
 	return nullptr;
+}
+
+void AComplyPlayerCharacter::DownPlayer()
+{
+	if (!GetAbilitySystemComponent()) return;
+	
+	if (GetAbilitySystemComponent()->HasMatchingGameplayTag(ComplyTags::States::State_Downed)) return;
+    
+	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(DownedEffectClass, 1.f, ContextHandle);
+	ActiveDownedEffectHandle = GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	
+	// Trigger OnRep on both client and server, it handles ragdolling the player and also reviving them
+	bIsDowned = true;
+	OnRep_IsDowned();
+}
+
+void AComplyPlayerCharacter::OnRep_IsDowned()
+{
+	if (bIsDowned)
+	{
+		// Ragdoll player
+		// TODO: put capsule over mesh when downed instead of last position when alive
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Interact, ECR_Block);
+		GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
+		GetMesh()->SetCollisionResponseToChannel(ECC_Player, ECR_Ignore);
+		GetMesh()->SetCollisionResponseToChannel(ECC_Enemy, ECR_Ignore);
+		GetMesh()->SetSimulatePhysics(true);
+		
+		GetCharacterMovement()->DisableMovement();
+	}
+	else
+	{
+		RevivePlayer();
+	}
+}
+
+void AComplyPlayerCharacter::RevivePlayer()
+{
+	// Trace down from capsule to find ground to spawn the actor there
+	FHitResult GroundHit;
+	FVector Start = GetCapsuleComponent()->GetComponentLocation();
+	FVector End = Start - FVector(0.f, 0.f, 500.f);
+	GetWorld()->LineTraceSingleByChannel(GroundHit, Start, End, ECC_Visibility);
+    
+	if (GroundHit.bBlockingHit)
+	{
+		float CapsuleHalfHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+		SetActorLocation(GroundHit.ImpactPoint + FVector(0.f, 0.f, CapsuleHalfHeight));
+	}
+	
+	// Restore relevant attributes to defaults before death
+	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(ReviveEffectClass, 1.f, ContextHandle);
+	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	
+	// Restore to settings from before ragdoll
+	GetMesh()->SetSimulatePhysics(false);
+	GetMesh()->SetWorldLocation(GetCapsuleComponent()->GetComponentLocation(), false, nullptr, ETeleportType::TeleportPhysics);
+	GetMesh()->AttachToComponent(GetCapsuleComponent(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, NAME_None);
+	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -90.f));
+	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionProfileName(TEXT("CharacterMesh"));
+	GetMesh()->SetCollisionResponseToChannel(ECC_Player, ECR_Block);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Enemy, ECR_Block);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Interact, ECR_Ignore);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Block);
+	
+	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+	
+	if (ActiveDownedEffectHandle.IsValid() && GetAbilitySystemComponent())
+	{
+		GetAbilitySystemComponent()->RemoveActiveGameplayEffect(ActiveDownedEffectHandle);
+	}
+}
+
+// Server RPC called from the revive ability
+void AComplyPlayerCharacter::Server_ReviveTarget_Implementation(AComplyPlayerCharacter* Target)
+{
+	if (!Target) return;
+	Target->bIsDowned = false; // Variable handles replicating to client via OnRep
+	Target->RevivePlayer(); // Runs the function on the server
 }
 
 void AComplyPlayerCharacter::SetEquippedPrimaryWeapon(TSubclassOf<URangedWeaponAbilityBase> NewWeaponClass)
@@ -287,7 +379,6 @@ void AComplyPlayerCharacter::SecondaryActionPressed()
 			ASC->TryActivateAbilityByClass(ApplyAimEffectAbilityClass);
 		}
 	}
-	
 }
 
 void AComplyPlayerCharacter::SecondaryActionReleased()
@@ -310,6 +401,17 @@ void AComplyPlayerCharacter::InteractActionPressed()
 {
 	// Call the interact function on the current focused interactable, passing in the player's controller
 	if (CurrentFocusedInteractable) { CurrentFocusedInteractable->Interact(GetController<APlayerController>()); }
+	
+	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
+	{
+		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_Interact))
+		{
+			if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+			{
+				ASC->TryActivateAbility(Spec.Handle);
+			}
+		}
+	}
 }
 
 void AComplyPlayerCharacter::SprintActionPressed()

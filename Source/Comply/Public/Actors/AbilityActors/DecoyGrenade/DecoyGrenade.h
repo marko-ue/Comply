@@ -8,6 +8,7 @@
 #include "GameFramework/Actor.h"
 #include "DecoyGrenade.generated.h"
 
+class URotatingMovementComponent;
 class UNiagaraSystem;
 class UBlackboardComponent;
 class UProjectileMovementComponent;
@@ -22,6 +23,8 @@ class COMPLY_API ADecoyGrenade : public AActor
 
 public:
 	ADecoyGrenade();
+	
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	virtual void Tick(float DeltaTime) override;
 	
@@ -48,6 +51,12 @@ public:
 	
 	UPROPERTY()
 	float DecoyGrenadeLifetime = 20.f;
+		
+	UPROPERTY(ReplicatedUsing=OnRep_LaunchVelocity)
+	FVector LaunchVelocity;
+	
+	UFUNCTION()
+	void OnRep_LaunchVelocity();
 	
 	virtual void Destroyed() override;
 
@@ -79,4 +88,10 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(AllowPrivateAccess))
 	TObjectPtr<UNiagaraSystem> ExplodeParticles;
+	
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<URotatingMovementComponent> RotatingMovementComp;
+	
+	UFUNCTION()
+	void OnGrenadeLanded(const FHitResult& ImpactResult);
 };

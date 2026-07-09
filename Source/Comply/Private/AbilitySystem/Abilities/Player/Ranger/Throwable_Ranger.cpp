@@ -12,7 +12,6 @@
 #include "Actors/AbilityActors/PlasmaGrenade/PlasmaGrenade.h"
 #include "Actors/AbilityActors/PlasmaGrenade/PlasmaGrenadePreview.h"
 #include "Character/ComplyPlayerCharacter.h"
-#include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 void UThrowable_Ranger::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -97,7 +96,7 @@ void UThrowable_Ranger::ThrowOnServer(FVector LaunchVelocity, FVector SpawnPosit
 		
 		// Clamp to the throw speed to prevent cheating by the client passing in higher values
 		FVector SafeLaunchVelocity = LaunchVelocity.GetClampedToMaxSize(ThrowSpeed);
-		Grenade->ProjectileMovementComp->Velocity = SafeLaunchVelocity;
+		Grenade->LaunchVelocity = SafeLaunchVelocity;
 
 		UGameplayStatics::FinishSpawningActor(Grenade, SpawnTransform);
 	}

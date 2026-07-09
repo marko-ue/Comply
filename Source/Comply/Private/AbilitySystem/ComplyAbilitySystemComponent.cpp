@@ -69,7 +69,7 @@ void UComplyAbilitySystemComponent::Server_ThrowPlasmaGrenade_Implementation(FGa
 		
 		// Clamp to the throw speed to prevent cheating by the client passing in higher values
 		FVector SafeLaunchVelocity = InLaunchVelocity.GetClampedToMaxSize(Ability->ThrowSpeed);
-		Grenade->ProjectileMovementComp->Velocity = SafeLaunchVelocity;
+		Grenade->LaunchVelocity = SafeLaunchVelocity;
 
 		UGameplayStatics::FinishSpawningActor(Grenade, SpawnTransform);
 	}
@@ -113,7 +113,7 @@ void UComplyAbilitySystemComponent::Server_ThrowDecoyGrenade_Implementation(FGam
 		
 		// Clamp to the throw speed to prevent cheating by the client passing in higher values
 		FVector SafeLaunchVelocity = InLaunchVelocity.GetClampedToMaxSize(Ability->ThrowSpeed);
-		DecoyGrenade->ProjectileMovementComp->Velocity = SafeLaunchVelocity;
+		DecoyGrenade->LaunchVelocity = SafeLaunchVelocity;
 
 		UGameplayStatics::FinishSpawningActor(DecoyGrenade, SpawnTransform);
 	}

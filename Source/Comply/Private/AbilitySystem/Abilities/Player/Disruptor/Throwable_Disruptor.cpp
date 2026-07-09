@@ -108,7 +108,7 @@ void UThrowable_Disruptor::ThrowOnServer(FVector LaunchVelocity, FVector SpawnPo
 		
 		// Clamp to the throw speed to prevent cheating by the client passing in higher values
 		FVector SafeLaunchVelocity = LaunchVelocity.GetClampedToMaxSize(ThrowSpeed);
-		DecoyGrenade->ProjectileMovementComp->Velocity = SafeLaunchVelocity;
+		DecoyGrenade->LaunchVelocity = SafeLaunchVelocity;
 
 		UGameplayStatics::FinishSpawningActor(DecoyGrenade, SpawnTransform);
 	}

@@ -10,6 +10,8 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Engine/OverlapResult.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "GameFramework/RotatingMovementComponent.h"
+#include "Net/UnrealNetwork.h"
 
 
 ADecoyGrenade::ADecoyGrenade()
@@ -18,22 +20,45 @@ ADecoyGrenade::ADecoyGrenade()
 	
 	GrenadeMesh = CreateDefaultSubobject<UStaticMeshComponent>("GrenadeMesh");
 	SetRootComponent(GrenadeMesh);
-	GrenadeMesh->SetIsReplicated(true);
 	
 	ProjectileMovementComp = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComp"));
+	ProjectileMovementComp->bShouldBounce = true;
+	ProjectileMovementComp->Bounciness = 0.1f;
+	ProjectileMovementComp->Friction = 0.8f;
+	ProjectileMovementComp->BounceAdditionalIterations = 1;
+	ProjectileMovementComp->SetUpdatedComponent(GrenadeMesh);
+	
+	RotatingMovementComp = CreateDefaultSubobject<URotatingMovementComponent>(TEXT("RotatingMovementComp"));
+	RotatingMovementComp->RotationRate = FRotator(200.f, 150.f, 0.f);
+	
+	ProjectileMovementComp->OnProjectileStop.AddDynamic(this, &ADecoyGrenade::OnGrenadeLanded);
+}
+
+void ADecoyGrenade::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(ThisClass, LaunchVelocity);
 }
 
 void ADecoyGrenade::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	// Movement shouldn't be replicated as clients now have a local projectile for smoothness
+	SetReplicateMovement(false);
+	
 	if (HasAuthority())
 	{
 		GetWorld()->GetTimerManager().SetTimer(ExplosionTimerHandle, this, &ThisClass::Explode, 4.f, false);
 	}
 	
-	const float SpinDirection = FMath::RandBool() ? 1.f : -1.f;
-	GrenadeMesh->AddTorqueInRadians(FVector(250000.f * SpinDirection, 250000.f * SpinDirection, 250000.f * SpinDirection));
+	ProjectileMovementComp->Velocity = LaunchVelocity; // Sets the velocity of the grenade throw
+}
+
+void ADecoyGrenade::OnRep_LaunchVelocity()
+{
+	ProjectileMovementComp->Velocity = LaunchVelocity;
 }
 
 void ADecoyGrenade::Tick(float DeltaTime)
@@ -94,6 +119,11 @@ void ADecoyGrenade::Explode()
 	// The grenade will get destroyed after its lifetime passes, and it will stop pulling enemies at this point
 	GetWorld()->GetTimerManager().SetTimer(ExplosionTimerHandle, FTimerDelegate::CreateLambda([this]()
 	{ Destroy(); }), DecoyGrenadeLifetime, false);
+}
+
+void ADecoyGrenade::OnGrenadeLanded(const FHitResult& ImpactResult)
+{
+	RotatingMovementComp->RotationRate = FRotator::ZeroRotator;
 }
 
 void ADecoyGrenade::Destroyed()

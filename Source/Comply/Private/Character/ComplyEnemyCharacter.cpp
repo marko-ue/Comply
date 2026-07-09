@@ -4,6 +4,7 @@
 #include "Character/ComplyEnemyCharacter.h"
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 
 AComplyEnemyCharacter::AComplyEnemyCharacter()
@@ -13,6 +14,10 @@ AComplyEnemyCharacter::AComplyEnemyCharacter()
 	ASC->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 	
 	AttributeSet = CreateDefaultSubobject<UComplyAttributeSet>("AttributeSet");
+	
+	// Causes enemies to avoid each other so they don't clip through each other
+	GetCharacterMovement()->bUseRVOAvoidance = true;
+	GetCharacterMovement()->AvoidanceWeight = 0.2f;
 }
 
 UAbilitySystemComponent* AComplyEnemyCharacter::GetAbilitySystemComponent() const
@@ -37,6 +42,4 @@ void AComplyEnemyCharacter::BeginPlay()
 	GetAbilitySystemComponent()->SetNumericAttributeBase(UComplyAttributeSet::GetHealthAttribute(), BaseHealth);
 	GetAbilitySystemComponent()->SetNumericAttributeBase(UComplyAttributeSet::GetMaxArmorPenetrationAttribute(), BaseMaxArmorPenetration);
 	GetAbilitySystemComponent()->SetNumericAttributeBase(UComplyAttributeSet::GetArmorPenetrationAttribute(), BaseArmorPenetration);
-	
-	UE_LOG(LogTemp, Warning, TEXT("EnemyBase NetUpdateFrequency: %f"), NetUpdateFrequency);
 }

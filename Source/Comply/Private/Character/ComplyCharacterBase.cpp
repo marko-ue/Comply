@@ -10,6 +10,7 @@
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "Character/ComplyPlayerCharacter.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Interface/Enemy/EnemyInterface.h"
 #include "Net/UnrealNetwork.h"
 
@@ -17,6 +18,9 @@
 AComplyCharacterBase::AComplyCharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	
+	// Prevents the character movement component from applying impulses to physics objects and characters
+	GetCharacterMovement()->bEnablePhysicsInteraction = false;
 }
 
 UAbilitySystemComponent* AComplyCharacterBase::GetAbilitySystemComponent() const

@@ -128,12 +128,15 @@ void AComplyCharacterBase::Die(AActor* DeadActor)
 	}
 	else if (DeadActor && DeadActor->Implements<UEnemyInterface>())
 	{
+		// Prevents multiple cues and function calls if multiple sources kill the enemy in the same frame (like shotgun pellets)
+		if (bIsDead) return;
+		bIsDead = true; // Replicated variable triggers OnRep
+		
 		FGameplayCueParameters CueParams;
 		CueParams.Location = DeadActor->GetActorLocation();
 		CueParams.Instigator = DeadActor;
 		GetAbilitySystemComponent()->ExecuteGameplayCue(ComplyTags::GameplayCues::EnemyDeath, CueParams);
 		
-		bIsDead = true; // Replicated variable triggers OnRep
 		OnRep_IsDead();
 	}
 }

@@ -174,12 +174,16 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 					// An out parameter boolean is set to true if the overlapping actor is the dome shield
 					OutPassedThroughShield = true;
 					ShieldHits.Add(Hit);
+					// DEBUG: shield hit point
+					DrawDebugSphere(GetWorld(), Hit.ImpactPoint, 5.f, 8, FColor::Yellow, false, 2.f);
 					continue;
 				}
 				OutHitResults.Add(Hit);
 				
 				// Hit result added to target data handle
 				TargetDataHandle.Add(new FGameplayAbilityTargetData_SingleTargetHit(Hit));
+				// DEBUG: enemy/world hit point
+				DrawDebugSphere(GetWorld(), Hit.ImpactPoint, 5.f, 8, FColor::Green, false, 2.f);
 				break;
 			}
 		}

@@ -5,17 +5,23 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Comply.h"
-#include "AbilitySystem/ComplyTags.h"
+#include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "Character/ComplyPlayerCharacter.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 
 void URevivePlayer::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
                                     const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
+	AComplyPlayerCharacter* Avatar = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
+	if (!Avatar) { EndAbility(Handle, ActorInfo, ActivationInfo, true, false); return; }
+
+	Avatar->GetCharacterMovement()->DisableMovement();
+
 	AActor* Owner = GetOwningActorFromActorInfo();
-	AActor* Avatar = GetAvatarActorFromActorInfo();
 
 	if (!Avatar || !Owner) return;
 	
@@ -46,19 +52,57 @@ void URevivePlayer::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		QueryParams.AddIgnoredActor(GetAvatarActorFromActorInfo());
 		
 		FHitResult Hit;
-		FCollisionShape Sphere = FCollisionShape::MakeSphere(50.f);
+		FCollisionShape Sphere = FCollisionShape::MakeSphere(ReviveSphereTraceRadius);
 		GetWorld()->SweepSingleByChannel(Hit, Start, End, FQuat::Identity, ECC_Interact, Sphere, QueryParams);
-
+		
 		if (AComplyPlayerCharacter* HitPlayer = Cast<AComplyPlayerCharacter>(Hit.GetActor()))
 		{
-			AComplyPlayerCharacter* Reviver = Cast<AComplyPlayerCharacter>(ActorInfo->AvatarActor.Get());
+			TargetPlayer = HitPlayer;
+			Reviver = Cast<AComplyPlayerCharacter>(ActorInfo->AvatarActor.Get());
+
+			if (Reviver && TargetPlayer)
 			{
-				if (HitPlayer->bIsDowned)
-				{
-					//HitPlayer->bIsDowned = false;
-					Reviver->Server_ReviveTarget(HitPlayer);
-				}
+				// Rotates the reviver towards the player they are reviving 
+				Reviver->Server_FaceTarget(TargetPlayer);
+				FRotator LookAt = UKismetMathLibrary::FindLookAtRotation(
+					Reviver->GetActorLocation(), TargetPlayer->GetActorLocation());
+				Reviver->SetActorRotation(FRotator(0.f, LookAt.Yaw, 0.f));
+				Reviver->Server_FaceTarget(TargetPlayer);
 			}
 		}
 	}
+	
+	// After 5 seconds, revive the player. This ability is canceled if input is released before 5 seconds are up
+	UAbilityTask_WaitDelay* WaitTask = UAbilityTask_WaitDelay::WaitDelay(this, ReviveTime);
+	WaitTask->OnFinish.AddDynamic(this, &URevivePlayer::OnHoldComplete);
+	WaitTask->ReadyForActivation();
+}
+
+void URevivePlayer::OnHoldComplete()
+{
+	if (Reviver && TargetPlayer->bIsDowned)
+	{
+		Reviver->Server_ReviveTarget(TargetPlayer);
+	}
+	
+	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+}
+
+void URevivePlayer::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+{
+	AComplyPlayerCharacter* Avatar = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
+	if (Avatar)
+	{
+		Avatar->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+        
+		APlayerController* PC = Cast<APlayerController>(Avatar->GetController());
+		if (PC && Reviver)
+		{
+			PC->ResetIgnoreMoveInput();
+			
+			Reviver->SetActorRotation(FRotator(0.f, PC->GetControlRotation().Yaw, 0.f));
+		}
+	}
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }

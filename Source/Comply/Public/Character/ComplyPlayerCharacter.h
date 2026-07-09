@@ -47,6 +47,7 @@ public:
 	void SetEquippedPrimaryWeapon(TSubclassOf<URangedWeaponAbilityBase> NewWeaponClass);
 	URangedWeaponAbilityBase* GetEquippedPrimaryWeapon() const;
 	
+	// Death and reviving
 	UFUNCTION(BlueprintCallable)
 	void DownPlayer();
 	void RevivePlayer();
@@ -56,6 +57,10 @@ public:
 	
 	UPROPERTY(ReplicatedUsing=OnRep_IsDowned)
 	bool bIsDowned = false;
+	// End Death and Reviving
+	
+	UFUNCTION(Server, Reliable)
+	void Server_FaceTarget(ACharacter* Target);
 	
 	// Zoom
 	UPROPERTY(EditAnywhere, Category = "Zoom")
@@ -189,6 +194,7 @@ protected:
 	void SecondaryActionReleased();
 	
 	void InteractActionPressed();
+	void InteractActionReleased();
 	
 	void SprintActionPressed();
 	void SprintActionReleased();

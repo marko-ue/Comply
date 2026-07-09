@@ -21,6 +21,7 @@
 #include "GameFramework/SpectatorPawn.h"
 #include "Interface/Player/InteractableInterface.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -74,6 +75,7 @@ void AComplyPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &ThisClass::SprintActionPressed);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &ThisClass::SprintActionReleased);
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ThisClass::InteractActionPressed);
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &ThisClass::InteractActionReleased);
 		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Started, this, &ThisClass::ReloadActionPressed);
 		EnhancedInputComponent->BindAction(CancelPreviewAction, ETriggerEvent::Started, this, &ThisClass::CancelPreviewActionPressed);
 		EnhancedInputComponent->BindAction(EquipPrimaryAction, ETriggerEvent::Started, this, &ThisClass::EquipPrimaryActionPressed);
@@ -202,7 +204,6 @@ void AComplyPlayerCharacter::OnRep_IsDowned()
 	if (bIsDowned)
 	{
 		// Ragdoll player
-		// TODO: put capsule over mesh when downed instead of last position when alive
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 		GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
 		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Interact, ECR_Block);
@@ -266,6 +267,15 @@ void AComplyPlayerCharacter::Server_ReviveTarget_Implementation(AComplyPlayerCha
 	if (!Target) return;
 	Target->bIsDowned = false; // Variable handles replicating to client via OnRep
 	Target->RevivePlayer(); // Runs the function on the server
+}
+
+void AComplyPlayerCharacter::Server_FaceTarget_Implementation(ACharacter* Target)
+{
+	if (!Target) return;
+	bUseControllerRotationYaw = false;
+	FRotator LookAt = UKismetMathLibrary::FindLookAtRotation(
+		GetActorLocation(), Target->GetActorLocation());
+	SetActorRotation(FRotator(0.f, LookAt.Yaw, 0.f));
 }
 
 void AComplyPlayerCharacter::SetEquippedPrimaryWeapon(TSubclassOf<URangedWeaponAbilityBase> NewWeaponClass)
@@ -409,6 +419,22 @@ void AComplyPlayerCharacter::InteractActionPressed()
 			if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
 			{
 				ASC->TryActivateAbility(Spec.Handle);
+			}
+		}
+	}
+}
+
+void AComplyPlayerCharacter::InteractActionReleased()
+{
+	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
+	{
+		// For interact abilities that require holding (like reviving the player)
+		// The ability will be canceled if the interact action is released, which makes it not go through with the revive if input released
+		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_Interact))
+		{
+			if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+			{
+				ASC->CancelAbilityHandle(Spec.Handle);
 			}
 		}
 	}

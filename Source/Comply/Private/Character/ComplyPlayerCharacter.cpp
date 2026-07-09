@@ -285,6 +285,8 @@ void AComplyPlayerCharacter::SetEquippedPrimaryWeapon(TSubclassOf<URangedWeaponA
 
 void AComplyPlayerCharacter::PrimaryActionPressed()
 {
+	if (!GetAbilitySystemComponent()) return;
+	
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
 		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::Throwable))
@@ -293,18 +295,12 @@ void AComplyPlayerCharacter::PrimaryActionPressed()
 			// Confirming the input lets the ability continue with its functionality, the preview will now be removed
 			if (Spec.IsActive())
 			{
-				if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
-				{
-					ASC->LocalInputConfirm();
-				}
+				GetAbilitySystemComponent()->LocalInputConfirm();
 				break;
 			}
 			else
 			{
-				if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
-				{
-					ASC->TryActivateAbility(Spec.Handle);
-				}
+				GetAbilitySystemComponent()->TryActivateAbility(Spec.Handle);
 				break;
 			}
 		}
@@ -315,38 +311,31 @@ void AComplyPlayerCharacter::PrimaryActionPressed()
 			// Confirming the input lets the ability continue with its functionality, the preview will now be removed
 			if (Spec.IsActive())
 			{
-				if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
-				{
-					ASC->LocalInputConfirm();
-				}
+				GetAbilitySystemComponent()->LocalInputConfirm();
 				break;
 			}
 		}
 		
 		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_Primary))
 		{
-			if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
-			{
-				ASC->TryActivateAbility(Spec.Handle);
-			}
+			GetAbilitySystemComponent()->TryActivateAbility(Spec.Handle);
 			
 			bIsFiring = true;
 		}
 	}
-
-	if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
-	{
+	
 		if (ApplyFireEffectAbilityClass)
 		{
-			ASC->TryActivateAbilityByClass(ApplyFireEffectAbilityClass);
+			GetAbilitySystemComponent()->TryActivateAbilityByClass(ApplyFireEffectAbilityClass);
 		}
-	}
 	
 	bFireInputHeld = true;
 }
 
 void AComplyPlayerCharacter::PrimaryActionReleased()
 {
+	if (!GetAbilitySystemComponent()) return;
+	
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
 		// Confirm the throw of the throwable once the primary input is released, removing the preview path
@@ -354,10 +343,7 @@ void AComplyPlayerCharacter::PrimaryActionReleased()
 		if (Spec.Ability->GetAssetTags().HasTagExact(ComplyTags::ComplyAbilities::Throwable)
 			&& Spec.IsActive() && Cast<UThrowableAbilityBase>(Spec.GetPrimaryInstance())->bConfirmOnRelease == true) 
 		{
-			if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
-			{
-				ASC->LocalInputConfirm();
-			}
+			GetAbilitySystemComponent()->LocalInputConfirm();
 			break;
 		}
 	}
@@ -366,10 +352,7 @@ void AComplyPlayerCharacter::PrimaryActionReleased()
 	{
 		if (Spec.Ability->GetClass() == ApplyFireEffectAbilityClass)
 		{
-			if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
-			{
-				ASC->CancelAbility(Spec.Ability);
-			}
+			GetAbilitySystemComponent()->CancelAbility(Spec.Ability);
 			
 			bIsFiring = false;
 			break;
@@ -382,26 +365,24 @@ void AComplyPlayerCharacter::PrimaryActionReleased()
 void AComplyPlayerCharacter::SecondaryActionPressed()
 {
 	bIsAiming = true;
-	if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+	if (GetAbilitySystemComponent())
 	{
 		if (ApplyAimEffectAbilityClass)
 		{
-			ASC->TryActivateAbilityByClass(ApplyAimEffectAbilityClass);
+			GetAbilitySystemComponent()->TryActivateAbilityByClass(ApplyAimEffectAbilityClass);
 		}
 	}
 }
 
 void AComplyPlayerCharacter::SecondaryActionReleased()
 {
+	if (!GetAbilitySystemComponent()) return;
 	bIsAiming = false;
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
 		if (Spec.Ability->GetClass() == ApplyAimEffectAbilityClass)
 		{
-			if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
-			{
-				ASC->CancelAbility(Spec.Ability);
-			}
+			GetAbilitySystemComponent()->CancelAbility(Spec.Ability);
 			break;
 		}
 	}
@@ -409,6 +390,8 @@ void AComplyPlayerCharacter::SecondaryActionReleased()
 
 void AComplyPlayerCharacter::InteractActionPressed()
 {
+	if (!GetAbilitySystemComponent()) return;
+	
 	// Call the interact function on the current focused interactable, passing in the player's controller
 	if (CurrentFocusedInteractable) { CurrentFocusedInteractable->Interact(GetController<APlayerController>()); }
 	
@@ -416,26 +399,22 @@ void AComplyPlayerCharacter::InteractActionPressed()
 	{
 		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_Interact))
 		{
-			if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
-			{
-				ASC->TryActivateAbility(Spec.Handle);
-			}
+			GetAbilitySystemComponent()->TryActivateAbility(Spec.Handle);
 		}
 	}
 }
 
 void AComplyPlayerCharacter::InteractActionReleased()
 {
+	if (!GetAbilitySystemComponent()) return;
+	
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
 		// For interact abilities that require holding (like reviving the player)
 		// The ability will be canceled if the interact action is released, which makes it not go through with the revive if input released
 		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_Interact))
 		{
-			if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
-			{
-				ASC->CancelAbilityHandle(Spec.Handle);
-			}
+			GetAbilitySystemComponent()->CancelAbilityHandle(Spec.Handle);
 		}
 	}
 }
@@ -444,16 +423,18 @@ void AComplyPlayerCharacter::SprintActionPressed()
 {
 	if (GetCharacterMovement()->IsFalling()) return;
 	
-	if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+	if (GetAbilitySystemComponent())
 	{
 		FGameplayTagContainer Tag;
 		Tag.AddTag(ComplyTags::ComplyAbilities::Sprint);
-		ASC->TryActivateAbilitiesByTag(Tag);
+		GetAbilitySystemComponent()->TryActivateAbilitiesByTag(Tag);
 	}
 }
 
 void AComplyPlayerCharacter::SprintActionReleased()
 {
+	if (!GetAbilitySystemComponent()) return;
+	
 	// Predictively set max walk speed back to the base value on the client, since GE removal is not replicated
 	if (GetCharacterMovement() && IsLocallyControlled() && !HasAuthority())
 	{
@@ -461,17 +442,16 @@ void AComplyPlayerCharacter::SprintActionReleased()
 		float CorrectSpeed = 500.f + (TotemStacks * TotemSpeedBonusPerStack);
 		GetCharacterMovement()->MaxWalkSpeed = CorrectSpeed;
 	}
-	
-	if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
-	{
-		FGameplayTagContainer Tag;
-		Tag.AddTag(ComplyTags::ComplyAbilities::Sprint);
-		ASC->CancelAbilities(&Tag);
-	}
+
+	FGameplayTagContainer Tag;
+	Tag.AddTag(ComplyTags::ComplyAbilities::Sprint);
+	GetAbilitySystemComponent()->CancelAbilities(&Tag);
 }
 
 void AComplyPlayerCharacter::ReloadActionPressed()
 {
+	if (!GetAbilitySystemComponent()) return;
+	
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
 		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_Reload))
@@ -494,10 +474,7 @@ void AComplyPlayerCharacter::ReloadActionPressed()
 				}
 			}
 			
-			if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
-			{
-				ASC->TryActivateAbility(Spec.Handle);
-			}
+			GetAbilitySystemComponent()->TryActivateAbility(Spec.Handle);
 			break;
 		}
 	}
@@ -506,16 +483,15 @@ void AComplyPlayerCharacter::ReloadActionPressed()
 // If the ability is active and this input is pressed, cancel the input. This will properly cancel the ability client side and notify the server
 void AComplyPlayerCharacter::CancelPreviewActionPressed()
 {
+	if (!GetAbilitySystemComponent()) return;
+	
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
 		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_Primary))
 		{
 			if (Spec.IsActive())
 			{
-				if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
-				{
-					ASC->LocalInputCancel();
-				}
+				GetAbilitySystemComponent()->LocalInputCancel();
 			}
 			break;
 		}
@@ -524,25 +500,25 @@ void AComplyPlayerCharacter::CancelPreviewActionPressed()
 
 void AComplyPlayerCharacter::EquipPrimaryActionPressed()
 {
-	if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+	if (GetAbilitySystemComponent())
 	{
-		ASC->TryActivateAbilityByClass(EquipPrimaryAbilityClass);
+		GetAbilitySystemComponent()->TryActivateAbilityByClass(EquipPrimaryAbilityClass);
 	}
 }
 
 void AComplyPlayerCharacter::EquipUtilityActionPressed()
 {
-	if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+	if (GetAbilitySystemComponent())
 	{
-		ASC->TryActivateAbilityByClass(EquipUtilityAbilityClass);
+		GetAbilitySystemComponent()->TryActivateAbilityByClass(EquipUtilityAbilityClass);
 	}
 }
 
 void AComplyPlayerCharacter::EquipThrowableActionPressed()
 {
-	if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+	if (GetAbilitySystemComponent())
 	{
-		ASC->TryActivateAbilityByClass(EquipThrowableAbilityClass);
+		GetAbilitySystemComponent()->TryActivateAbilityByClass(EquipThrowableAbilityClass);
 	}
 }
 

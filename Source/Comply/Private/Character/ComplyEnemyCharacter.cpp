@@ -37,4 +37,6 @@ void AComplyEnemyCharacter::BeginPlay()
 	GetAbilitySystemComponent()->SetNumericAttributeBase(UComplyAttributeSet::GetHealthAttribute(), BaseHealth);
 	GetAbilitySystemComponent()->SetNumericAttributeBase(UComplyAttributeSet::GetMaxArmorPenetrationAttribute(), BaseMaxArmorPenetration);
 	GetAbilitySystemComponent()->SetNumericAttributeBase(UComplyAttributeSet::GetArmorPenetrationAttribute(), BaseArmorPenetration);
+	
+	UE_LOG(LogTemp, Warning, TEXT("EnemyBase NetUpdateFrequency: %f"), NetUpdateFrequency);
 }

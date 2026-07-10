@@ -324,11 +324,14 @@ void AComplyPlayerCharacter::PrimaryActionPressed()
 		}
 	}
 	
-		if (ApplyFireEffectAbilityClass)
+	if (ApplyFireEffectAbilityClass)
+	{
+		if (!GetAbilitySystemComponent()->HasMatchingGameplayTag(ComplyTags::States::State_FiringBlocked))
 		{
 			GetAbilitySystemComponent()->TryActivateAbilityByClass(ApplyFireEffectAbilityClass);
 		}
-	
+	}
+
 	bFireInputHeld = true;
 }
 

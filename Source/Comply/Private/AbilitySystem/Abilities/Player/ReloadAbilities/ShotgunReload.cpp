@@ -80,6 +80,8 @@ void UShotgunReload::LoadNextShell()
         CueParams.Location = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo())->WeaponMesh->GetComponentLocation();
         CueParams.Instigator = GetAvatarActorFromActorInfo();
         GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::WeaponReloadFinished, CueParams);
+        
+        GetAbilitySystemComponentFromActorInfo()->SetLooseGameplayTagCount(ComplyTags::States::State_FiringBlocked, 0);
 
         EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
         return;
@@ -162,6 +164,8 @@ void UShotgunReload::EndAbility(const FGameplayAbilitySpecHandle Handle, const F
     FGameplayTagContainer Tags;
     Tags.AddTag(ComplyTags::States::State_Reloading);
     GetAbilitySystemComponentFromActorInfo()->RemoveActiveEffectsWithGrantedTags(Tags);
+    
+    GetAbilitySystemComponentFromActorInfo()->SetLooseGameplayTagCount(ComplyTags::States::State_FiringBlocked, 0);
     
     Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

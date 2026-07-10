@@ -156,5 +156,7 @@ void UReloadAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const F
 	Tags.AddTag(ComplyTags::States::State_Reloading);
 	GetAbilitySystemComponentFromActorInfo()->RemoveActiveEffectsWithGrantedTags(Tags);
 	
+	GetAbilitySystemComponentFromActorInfo()->SetLooseGameplayTagCount(ComplyTags::States::State_FiringBlocked, 0);
+	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

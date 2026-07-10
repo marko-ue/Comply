@@ -47,7 +47,7 @@ void URangedWeaponAbilityBase::TraceToCrosshair(FHitResult& TraceHitResult, cons
 		if (Avatar)
 		{
 			float DistanceToCharacter = (Avatar->GetActorLocation() - Start).Size();
-			Start += CrosshairWorldDirection * (DistanceToCharacter + 100);
+			Start += CrosshairWorldDirection * (DistanceToCharacter + 25);
 		}
 		
 		End = Start + CrosshairWorldDirection * TraceLength;
@@ -134,7 +134,7 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 		if (Avatar)
 		{
 			float DistanceToCharacter = (Avatar->GetActorLocation() - Start).Size();
-			Start += CrosshairWorldDirection * (DistanceToCharacter + 100);
+			Start += CrosshairWorldDirection * (DistanceToCharacter + 25);
 		}
 		
 		End = Start + CrosshairWorldDirection * TraceLength;

@@ -17,7 +17,7 @@ AComplyEnemyCharacter::AComplyEnemyCharacter()
 	
 	// Causes enemies to avoid each other so they don't clip through each other
 	GetCharacterMovement()->bUseRVOAvoidance = true;
-	GetCharacterMovement()->AvoidanceWeight = 0.2f;
+	GetCharacterMovement()->AvoidanceWeight = 0.05f;
 }
 
 UAbilitySystemComponent* AComplyEnemyCharacter::GetAbilitySystemComponent() const

@@ -212,6 +212,12 @@ protected:
 	// End Input
 	
 private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
+	USpringArmComponent* CameraBoom;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
+	UCameraComponent* FollowCamera;
+	
 	// Zoom
 	void ZoomIn(float DeltaTime);
 	void ZoomOut(float DeltaTime);

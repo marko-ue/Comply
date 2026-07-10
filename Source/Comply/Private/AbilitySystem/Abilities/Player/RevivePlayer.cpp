@@ -19,8 +19,6 @@ void URevivePlayer::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	AComplyPlayerCharacter* Avatar = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
 	if (!Avatar) { EndAbility(Handle, ActorInfo, ActivationInfo, true, false); return; }
 
-	Avatar->GetCharacterMovement()->DisableMovement();
-
 	AActor* Owner = GetOwningActorFromActorInfo();
 
 	if (!Avatar || !Owner) return;
@@ -62,12 +60,19 @@ void URevivePlayer::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 
 			if (Reviver && TargetPlayer)
 			{
-				// Rotates the reviver towards the player they are reviving 
+				// Rotates the reviver towards the player they are reviving on the server
 				Reviver->Server_FaceTarget(TargetPlayer);
+				
+				// Locally rotates towards the player they are reviving
 				FRotator LookAt = UKismetMathLibrary::FindLookAtRotation(
 					Reviver->GetActorLocation(), TargetPlayer->GetActorLocation());
 				Reviver->SetActorRotation(FRotator(0.f, LookAt.Yaw, 0.f));
-				Reviver->Server_FaceTarget(TargetPlayer);
+
+				APlayerController* PC = Cast<APlayerController>(Avatar->GetController());
+				if (PC)
+				{
+				 	PC->SetIgnoreMoveInput(true);
+				}
 			}
 		}
 	}
@@ -94,15 +99,17 @@ void URevivePlayer::EndAbility(const FGameplayAbilitySpecHandle Handle, const FG
 	AComplyPlayerCharacter* Avatar = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
 	if (Avatar)
 	{
-		Avatar->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-        
 		APlayerController* PC = Cast<APlayerController>(Avatar->GetController());
-		if (PC && Reviver)
+		if (PC)
 		{
 			PC->ResetIgnoreMoveInput();
-			
-			Reviver->SetActorRotation(FRotator(0.f, PC->GetControlRotation().Yaw, 0.f));
+
+			if (Reviver)
+			{
+				Reviver->SetActorRotation(FRotator(0.f, PC->GetControlRotation().Yaw, 0.f));
+			}
 		}
 	}
+	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }

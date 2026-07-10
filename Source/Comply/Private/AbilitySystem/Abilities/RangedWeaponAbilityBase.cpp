@@ -244,6 +244,12 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 
 bool URangedWeaponAbilityBase::Fire()
 {
+	// Ensure all reload abilities are canceled when firing, so cleanup code always runs
+	// Mostly helps with removing the Reloading tag when firing is interrupted while reloading the shotgun
+	FGameplayTagContainer ReloadTag;
+	ReloadTag.AddTag(ComplyTags::ComplyAbilities::Reload);
+	GetAbilitySystemComponentFromActorInfo()->CancelAbilities(&ReloadTag);
+	
 	// Find the active ranged weapon to get its current ammo
 	if (AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo()))
 	{

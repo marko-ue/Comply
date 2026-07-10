@@ -48,11 +48,6 @@ void UShotgunReload::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
     FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(ReloadStateEffectClass, 1.f, ContextHandle);
     GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 
-    // Listen for firing tag so reload can be interrupted when the player shoots
-    WaitFiringTagTask = UAbilityTask_WaitGameplayTagAdded::WaitGameplayTagAdd(this, ComplyTags::States::State_Firing);
-    WaitFiringTagTask->Added.AddDynamic(this, &UShotgunReload::OnFiringTagAdded);
-    WaitFiringTagTask->ReadyForActivation();
-
     LoadNextShell();
 }
 
@@ -72,10 +67,6 @@ void UShotgunReload::LoadNextShell()
     // Stop if mag is full or no reserve left
     if (CurrentAmmo >= MaxAmmo || ReserveAmmo <= 0.f)
     {
-        FGameplayTagContainer Tags;
-        Tags.AddTag(ComplyTags::States::State_Reloading);
-        GetAbilitySystemComponentFromActorInfo()->RemoveActiveEffectsWithGrantedTags(Tags);
-        
         FGameplayCueParameters CueParams;
         CueParams.Location = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo())->WeaponMesh->GetComponentLocation();
         CueParams.Instigator = GetAvatarActorFromActorInfo();
@@ -108,7 +99,7 @@ void UShotgunReload::LoadNextShell()
     }
 }
 
-void UShotgunReload::OnShellMontageCompleted()
+void UShotgunReload::OnShellMontageCompleted() 
 {
     if (!IsActive() || !IsValid(this))
     {
@@ -128,27 +119,6 @@ void UShotgunReload::OnShellMontageCompleted()
 
     // Try to load the next shell
     LoadNextShell();
-}
-
-void UShotgunReload::OnFiringTagAdded()
-{
-    if (!IsActive() || !IsValid(this))
-    {
-        return;
-    }
-    
-    // Firing interrupted the reload, end the montage, remove the reloading tag, and end the ability
-    if (ShellMontageTask)
-    {
-        ShellMontageTask->EndTask();
-        ShellMontageTask = nullptr;
-    }
-
-    FGameplayTagContainer Tags;
-    Tags.AddTag(ComplyTags::States::State_Reloading);
-    GetAbilitySystemComponentFromActorInfo()->RemoveActiveEffectsWithGrantedTags(Tags);
-
-    EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 
 void UShotgunReload::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,

@@ -417,7 +417,10 @@ void AComplyPlayerCharacter::InteractActionReleased()
 		// The ability will be canceled if the interact action is released, which makes it not go through with the revive if input released
 		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_Interact))
 		{
-			GetAbilitySystemComponent()->CancelAbilityHandle(Spec.Handle);
+			if (Spec.IsActive())
+			{
+				GetAbilitySystemComponent()->CancelAbilityHandle(Spec.Handle);
+			}
 		}
 	}
 }

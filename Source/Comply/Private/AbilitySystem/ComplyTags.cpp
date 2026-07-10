@@ -8,6 +8,7 @@ namespace ComplyTags
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Utility, "ComplyTags.Abilities.AbilityTags.Utility", "Utility ability asset tag")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Throwable, "ComplyTags.Abilities.AbilityTags.Throwable", "Throwable ability asset tag")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Sprint, "ComplyTags.Abilities.AbilityTags.Sprint", "Sprint ability asset tag")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Reload, "ComplyTags.Abilities.AbilityTags.Reload", "Reload abilities asset tag")
 		
 		namespace AssetTags
 		{

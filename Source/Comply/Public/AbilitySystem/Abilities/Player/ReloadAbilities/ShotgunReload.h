@@ -18,7 +18,6 @@ class COMPLY_API UShotgunReload : public UComplyAbilityBase
 	
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
-
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 	
 private:
@@ -26,9 +25,6 @@ private:
     
 	UFUNCTION()
 	void OnShellMontageCompleted();
-
-	UFUNCTION()
-	void OnFiringTagAdded();
 
 	UPROPERTY()
 	TObjectPtr<UAbilityTask_PlayMontageAndWait> ShellMontageTask;

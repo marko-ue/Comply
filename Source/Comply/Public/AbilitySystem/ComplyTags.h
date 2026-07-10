@@ -11,6 +11,7 @@ namespace ComplyTags
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Utility);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Throwable);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Sprint)
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Reload)
 		
 		namespace AssetTags
 		{

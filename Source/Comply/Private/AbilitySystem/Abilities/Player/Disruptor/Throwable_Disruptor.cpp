@@ -154,8 +154,9 @@ void UThrowable_Disruptor::EquipWeaponBasedOnCharges(IWeaponInterface* WeaponOwn
 	{
 		if (WeaponOwner)
 		{
-			// Add this tag so the equip throwable ability can't be activated anymore
-			ASC->AddReplicatedLooseGameplayTag(ComplyTags::States::State_NoThrowables);
+			// GE that applies the NoThrowables tag so grenades can't be equipped when there's no throwables
+			FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(NoThrowablesEffectClass, 1.f);
+			GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 			
 			WeaponOwner->ClearEquippedWeapon();
 			

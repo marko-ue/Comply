@@ -60,6 +60,9 @@ private:
 	UPROPERTY()
 	UAbilityTask_PlayMontageAndWait* PrepareGrenadeMontageTask;
 	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UGameplayEffect> NoThrowablesEffectClass;
+	
 	UFUNCTION()
 	void OnThrowMontageCompleted();
 };

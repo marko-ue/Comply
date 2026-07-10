@@ -90,20 +90,15 @@ void ADeployableTurret::TryFire()
 {
 	for (AActor* Target : TargetsInRange)
 	{
-		// Only fire at enemies <= 70 degrees around the turret
-		FVector DirectionToTarget = (Target->GetActorLocation() - GetActorLocation()).GetSafeNormal();
-		if (FVector::DotProduct(GetActorForwardVector(), DirectionToTarget) >= 0)
-		{
-			FHitResult Hit;
-			FVector TraceStart = GetActorLocation() + FVector(0.f, 0.f, 50.f);
-			FVector TraceEnd = Target->GetActorLocation() + FVector(0.f, 0.f, 50.f);
-			bool bBlocked = GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility);
-			if (bBlocked) continue; // A wall is in the way
-			
-			CurrentTarget = Target;
-			Fire(Target);
-			return;
-		}
+		FHitResult Hit;
+		FVector TraceStart = GetActorLocation() + FVector(0.f, 0.f, 50.f);
+		FVector TraceEnd = Target->GetActorLocation() + FVector(0.f, 0.f, 50.f);
+		bool bBlocked = GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility);
+		if (bBlocked) continue; // A wall is in the way
+
+		CurrentTarget = Target;
+		Fire(Target);
+		return;
 	}
 
 	CurrentTarget = nullptr; // Clear when no target in cone

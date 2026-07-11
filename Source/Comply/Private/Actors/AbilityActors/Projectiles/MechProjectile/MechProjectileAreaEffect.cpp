@@ -9,9 +9,11 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/ComplyAbilityTypes.h"
+#include "Character/ComplyPlayerCharacter.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
 #include "Engine/OverlapResult.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Interface/Player/PlayerInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
@@ -88,6 +90,16 @@ void AMechProjectileAreaEffect::OnComponentBeginOverlap(UPrimitiveComponent* Ove
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (!OtherActor->Implements<UPlayerInterface>()) return;
+	
+	// Immediately apply speed reduction on the local client
+	if (AComplyPlayerCharacter* PlayerCharacter = Cast<AComplyPlayerCharacter>(OtherActor))
+	{
+		if (PlayerCharacter->IsLocallyControlled() && !PlayerCharacter->HasAuthority() && PlayerCharacter->GetCharacterMovement())
+		{
+			PlayerCharacter->GetCharacterMovement()->MaxWalkSpeed -= 300.f;
+			PlayerCharacter->NextSlowMagnitude = 300.f;
+		}
+	}
 
 	if (IAbilitySystemInterface* ASCInterface = Cast<IAbilitySystemInterface>(OtherActor))
 	{
@@ -104,6 +116,15 @@ void AMechProjectileAreaEffect::OnComponentEndOverlap(UPrimitiveComponent* Overl
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	AffectedActors.Remove(OtherActor);
+	
+	// Immediately add back speed on the local client
+	if (const AComplyPlayerCharacter* PlayerCharacter = Cast<AComplyPlayerCharacter>(OtherActor))
+	{
+		if (PlayerCharacter->IsLocallyControlled() && !PlayerCharacter->HasAuthority() && PlayerCharacter->GetCharacterMovement())
+		{
+			PlayerCharacter->GetCharacterMovement()->MaxWalkSpeed += 300.f;
+		}
+	}
 	
 	if (IAbilitySystemInterface* ASCInterface = Cast<IAbilitySystemInterface>(OtherActor))
 	{

@@ -9,8 +9,10 @@
 #include "GameplayCueNotifyTypes.h"
 #include "NiagaraComponent.h"
 #include "AbilitySystem/ComplyAbilityTypes.h"
+#include "Character/ComplyPlayerCharacter.h"
 #include "Components/AudioComponent.h"
 #include "Components/BoxComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Interface/Player/PlayerInterface.h"
 
 
@@ -53,6 +55,16 @@ void AElectricHazardZone::OnComponentBeginOverlap(UPrimitiveComponent* Overlappe
                                                   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (!OtherActor->Implements<UPlayerInterface>()) return;
+	
+	// Immediately add back speed on the local client
+	if (AComplyPlayerCharacter* PlayerCharacter = Cast<AComplyPlayerCharacter>(OtherActor))
+	{
+		if (PlayerCharacter->IsLocallyControlled() && !PlayerCharacter->HasAuthority() && PlayerCharacter->GetCharacterMovement())
+		{
+			PlayerCharacter->GetCharacterMovement()->MaxWalkSpeed -= 200.f;
+			PlayerCharacter->NextSlowMagnitude = 200.f;
+		}
+	}
 
 	if (IAbilitySystemInterface* ASCInterface = Cast<IAbilitySystemInterface>(OtherActor))
 	{
@@ -74,6 +86,15 @@ void AElectricHazardZone::OnComponentEndOverlap(UPrimitiveComponent* OverlappedC
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	AffectedActors.Remove(OtherActor);
+	
+	// Immediately add back speed on the local client
+	if (const AComplyPlayerCharacter* PlayerCharacter = Cast<AComplyPlayerCharacter>(OtherActor))
+	{
+		if (PlayerCharacter->IsLocallyControlled() && !PlayerCharacter->HasAuthority() && PlayerCharacter->GetCharacterMovement())
+		{
+			PlayerCharacter->GetCharacterMovement()->MaxWalkSpeed += 200.f;
+		}
+	}
 	
 	// Clear the timer so the stun effect doesn't keep reapplying
 	if (ApplyStunEffectTimerHandle.IsValid())

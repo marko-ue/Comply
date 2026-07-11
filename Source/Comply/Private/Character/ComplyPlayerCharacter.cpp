@@ -455,6 +455,12 @@ void AComplyPlayerCharacter::SprintActionReleased()
 	{
 		int32 TotemStacks = GetAbilitySystemComponent()->GetTagCount(ComplyTags::States::State_TotemBuffed);
 		float CorrectSpeed = 500.f + (TotemStacks * TotemSpeedBonusPerStack);
+		
+		if (GetAbilitySystemComponent()->HasMatchingGameplayTag(ComplyTags::States::State_Slowed))
+		{
+			CorrectSpeed -= NextSlowMagnitude;
+		}
+        
 		GetCharacterMovement()->MaxWalkSpeed = CorrectSpeed;
 	}
 

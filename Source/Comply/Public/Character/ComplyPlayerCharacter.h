@@ -62,6 +62,9 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_FaceTarget(ACharacter* Target);
 	
+	UPROPERTY(VisibleAnywhere)
+	float NextSlowMagnitude;
+	
 	// Zoom
 	UPROPERTY(EditAnywhere, Category = "Zoom")
 	float DefaultFOV = 90.f;

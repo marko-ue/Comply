@@ -34,7 +34,7 @@ void UComplyAbilitySystemComponent::TickComponent(float DeltaTime, ELevelTick Ti
 
 void UComplyAbilitySystemComponent::Server_ThrowPlasmaGrenade_Implementation(FGameplayAbilitySpecHandle AbilityHandle, FVector SpawnLocation, FRotator SpawnRotation, FVector InLaunchVelocity)
 {
-	const FGameplayAbilitySpec* Spec = FindAbilitySpecFromHandle(AbilityHandle);
+	FGameplayAbilitySpec* Spec = FindAbilitySpecFromHandle(AbilityHandle);
 	UThrowable_Ranger* Ability = Cast<UThrowable_Ranger>(Spec->GetPrimaryInstance());
 	
 	if (!Spec || !Ability) return;
@@ -53,6 +53,10 @@ void UComplyAbilitySystemComponent::Server_ThrowPlasmaGrenade_Implementation(FGa
 	AActor* Avatar = GetAvatarActor();
 	IWeaponInterface* WeaponOwner = Cast<IWeaponInterface>(Avatar);
 	Ability->EquipWeaponBasedOnCharges(WeaponOwner, this);
+	
+	// Makes EndAbility get called on clients 
+	// Needed because the path that ends the ability never runs on the server for remote clients (OnThrowMontageCompleted)
+	CancelAbilitySpec(*Spec, nullptr);
 	
 	APawn* InstigatorPawn = Cast<APawn>(GetAvatarActor());
 
@@ -78,7 +82,7 @@ void UComplyAbilitySystemComponent::Server_ThrowPlasmaGrenade_Implementation(FGa
 void UComplyAbilitySystemComponent::Server_ThrowDecoyGrenade_Implementation(FGameplayAbilitySpecHandle AbilityHandle,
 	FVector SpawnLocation, FRotator SpawnRotation, FVector InLaunchVelocity)
 {
-	const FGameplayAbilitySpec* Spec = FindAbilitySpecFromHandle(AbilityHandle);
+	FGameplayAbilitySpec* Spec = FindAbilitySpecFromHandle(AbilityHandle);
 	UThrowable_Disruptor* Ability = Cast<UThrowable_Disruptor>(Spec->GetPrimaryInstance());
 	
 	if (!Spec || !Ability) return;
@@ -97,6 +101,10 @@ void UComplyAbilitySystemComponent::Server_ThrowDecoyGrenade_Implementation(FGam
 	AActor* Avatar = GetAvatarActor();
 	IWeaponInterface* WeaponOwner = Cast<IWeaponInterface>(Avatar);
 	Ability->EquipWeaponBasedOnCharges(WeaponOwner, this);
+	
+	// Makes EndAbility get called on clients 
+	// Needed because the path that ends the ability never runs on the server for remote clients (OnThrowMontageCompleted)
+	CancelAbilitySpec(*Spec, nullptr);
 	
 	APawn* InstigatorPawn = Cast<APawn>(GetAvatarActor());
 

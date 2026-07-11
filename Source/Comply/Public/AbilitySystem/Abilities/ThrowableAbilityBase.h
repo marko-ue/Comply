@@ -16,7 +16,7 @@ class COMPLY_API UThrowableAbilityBase : public UDamageAbilityBase
 	
 public:
 	virtual void ConfirmThrow();
-	
+
 	UPROPERTY(EditDefaultsOnly, Category = "Ability Properties|Types")
 	bool bConfirmOnRelease = true;
 	
@@ -28,4 +28,7 @@ protected:
 	virtual void ThrowOnServer(FVector LaunchVelocity, FVector SpawnPosition);
 	virtual void CancelThrow();
 	void SafeRemoveThrowingTag();
+	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UGameplayEffect> NoThrowablesEffectClass;
 };

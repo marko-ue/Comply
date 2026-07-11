@@ -127,8 +127,6 @@ void UThrowable_Ranger::OnThrowMontageCompleted()
 	
 	if (SpawnedGrenadePreviewActor) SpawnedGrenadePreviewActor->Destroy(); SpawnedGrenadePreviewActor = nullptr;
 	
-	GetAbilitySystemComponentFromActorInfo()->RemoveLooseGameplayTag(ComplyTags::States::State_Firing);
-	
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 
 	UComplyAbilitySystemComponent* ASC = Cast<UComplyAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
@@ -235,6 +233,13 @@ void UThrowable_Ranger::EndAbility(const FGameplayAbilitySpecHandle Handle, cons
 	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	SafeRemoveThrowingTag();
+	
+	// Remove both the loose tag and any GE granting it
+	GetAbilitySystemComponentFromActorInfo()->RemoveLooseGameplayTag(ComplyTags::States::State_Firing);
+	
+	FGameplayTagContainer TagsToRemove;
+	TagsToRemove.AddTag(ComplyTags::States::State_Firing);
+	GetAbilitySystemComponentFromActorInfo()->RemoveActiveEffectsWithGrantedTags(TagsToRemove);
 	
 	if (SpawnedGrenadePreviewActor)
 	{

@@ -62,9 +62,6 @@ private:
 	UPROPERTY()
 	UAbilityTask_PlayMontageAndWait* PrepareDecoyMontageTask;
 	
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UGameplayEffect> NoThrowablesEffectClass;
-	
 	UFUNCTION()
 	void OnThrowMontageCompleted();
 	

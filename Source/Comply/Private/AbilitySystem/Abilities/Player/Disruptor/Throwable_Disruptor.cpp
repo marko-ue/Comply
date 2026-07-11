@@ -43,6 +43,19 @@ void UThrowable_Disruptor::EndAbility(const FGameplayAbilitySpecHandle Handle,
 {
 	SafeRemoveThrowingTag();
 	
+	// Remove both the loose tag and any GE granting it
+	GetAbilitySystemComponentFromActorInfo()->RemoveLooseGameplayTag(ComplyTags::States::State_Firing);
+	
+	FGameplayTagContainer TagsToRemove;
+	TagsToRemove.AddTag(ComplyTags::States::State_Firing);
+	GetAbilitySystemComponentFromActorInfo()->RemoveActiveEffectsWithGrantedTags(TagsToRemove);
+	
+	if (SpawnedDecoyGrenadePreviewActor)
+	{
+		SpawnedDecoyGrenadePreviewActor->Destroy();
+		SpawnedDecoyGrenadePreviewActor = nullptr;
+	}
+	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
@@ -174,8 +187,6 @@ void UThrowable_Disruptor::OnThrowMontageCompleted()
 	IWeaponInterface* WeaponOwner = Cast<IWeaponInterface>(Avatar);
 	
 	if (SpawnedDecoyGrenadePreviewActor) SpawnedDecoyGrenadePreviewActor->Destroy(); SpawnedDecoyGrenadePreviewActor = nullptr;
-	
-	GetAbilitySystemComponentFromActorInfo()->RemoveLooseGameplayTag(ComplyTags::States::State_Firing);
 	
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 

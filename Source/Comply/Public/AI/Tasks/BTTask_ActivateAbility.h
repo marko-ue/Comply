@@ -13,6 +13,18 @@ class UGameplayAbility;
 /**
  * 
  */
+
+// Per-robot state stored in NodeMemory, one block allocated per AI instance running this task
+// This is needed when there are multiple enemies at once, since member variables are shared across all AI running the same BT asset
+struct FBTTask_ActivateAbilityMemory
+{
+	TWeakObjectPtr<UAbilitySystemComponent> CachedASC;
+	TWeakObjectPtr<UGameplayAbility> CachedAbilityInstance;
+	TWeakObjectPtr<UBehaviorTreeComponent> CachedOwnerComp;
+	FGameplayAbilitySpecHandle ActiveSpecHandle;
+	FDelegateHandle AbilityEndedDelegateHandle;
+};
+
 UCLASS()
 class COMPLY_API UBTTask_ActivateAbility : public UBTTaskNode
 {
@@ -22,6 +34,7 @@ public:
 	UBTTask_ActivateAbility();
 	
 	virtual void InitializeFromAsset(UBehaviorTree& Asset) override;
+	virtual uint16 GetInstanceMemorySize() const override;
 	
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	virtual EBTNodeResult::Type AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
@@ -35,12 +48,4 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	FBlackboardKeySelector TargetActorKey;
-	
-private:
-	void OnAbilityEnded(const FAbilityEndedData& AbilityEndedData);
-
-	TWeakObjectPtr<UAbilitySystemComponent> CachedASC;
-	FGameplayAbilitySpecHandle ActiveSpecHandle;
-	FDelegateHandle AbilityEndedDelegateHandle;
-	TWeakObjectPtr<UBehaviorTreeComponent> CachedOwnerComp;
 };

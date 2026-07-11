@@ -9,7 +9,7 @@ The game is inspired by Deep Rock Galactic and Helldivers 2. One to three player
 ## Status
 
 > **In active development**
-> Development began on April 2026
+> Development began April 2026
 
 ### Planned Phase Order
 1. Multiplayer Foundation
@@ -39,7 +39,7 @@ This project is built to demonstrate competency in the systems that matter most 
 - [✓] Multiplayer foundation - listen server setup, connection handling, replication framework, sessions
 - [✓] Networked GAS setup with server-authoritative ability activation
 - [✓] GAS foundation - attribute sets, gameplay effects, damage pipeline
-- [ ] Core combat system
+- [✓] Core combat system
 - [ ] Mission system - two distinct mission types with shared objective framework
 - [ ] Progression system - resource earning from missions and an upgrade system
 - [ ] Announcer system - dynamic broadcast commentary depending on mission state
@@ -48,9 +48,11 @@ This project is built to demonstrate competency in the systems that matter most 
 
 ## Writing & Devlog
 
-I write technical breakdowns of problems I've solved in Unreal Engine C++, with a focus on GAS and multiplayer.
-
+I write technical breakdowns of GAS and multiplayer in Unreal Engine C++.
 → https://hashnode.com/@marko-ue
+
+Check out my website where I keep everything in one place, plus additional content:
+→ https://markopetric.dev
 
 The codebase is thoroughly documented throughout.
 

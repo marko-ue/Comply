@@ -203,10 +203,9 @@ void UMenu::HostButtonClicked()
 void UMenu::JoinButtonClicked()
 {
 	JoinButton->SetIsEnabled(false);
-	APlayerController* PC = GetGameInstance()->GetFirstLocalPlayerController();
-	if (PC)
+	if (MultiplayerSessionsSubsystem)
 	{
-		PC->ClientTravel(TEXT("192.168.1.9"), ETravelType::TRAVEL_Absolute);
+		MultiplayerSessionsSubsystem->FindSessions(10000);
 	}
 }
 

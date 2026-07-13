@@ -42,6 +42,8 @@ void UAttack_Mech::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	
 	APawn* InstigatorPawn = Cast<APawn>(GetAvatarActorFromActorInfo());
 	
+	if (InstigatorPawn != nullptr) return;
+	
 	AMechProjectile* MechProjectile = GetWorld()->SpawnActorDeferred<AMechProjectile>(
 		MechProjectileClass, SpawnTransform, GetOwningActorFromActorInfo(), InstigatorPawn, ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 	);

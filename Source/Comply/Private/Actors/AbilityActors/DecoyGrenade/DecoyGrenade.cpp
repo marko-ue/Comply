@@ -53,7 +53,8 @@ void ADecoyGrenade::BeginPlay()
 		GetWorld()->GetTimerManager().SetTimer(ExplosionTimerHandle, this, &ThisClass::Explode, 4.f, false);
 	}
 	
-	ProjectileMovementComp->Velocity = LaunchVelocity; // Sets the velocity of the grenade throw
+	// Sets the velocity of the grenade throw and triggers OnRep
+	ProjectileMovementComp->Velocity = LaunchVelocity; 
 }
 
 void ADecoyGrenade::OnRep_LaunchVelocity()

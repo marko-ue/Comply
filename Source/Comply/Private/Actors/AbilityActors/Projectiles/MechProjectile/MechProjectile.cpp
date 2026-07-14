@@ -22,6 +22,13 @@ AMechProjectile::AMechProjectile()
 	ProjectileMovementComp->SetUpdatedComponent(ProjectileMesh);
 }
 
+void AMechProjectile::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(ThisClass, InitialVelocity);
+}
+
 void AMechProjectile::BeginPlay()
 {
 	Super::BeginPlay();
@@ -32,6 +39,11 @@ void AMechProjectile::BeginPlay()
 	ProjectileMesh->OnComponentHit.AddDynamic(this, &ThisClass::OnHit);
 	
 	LaunchProjectile();
+}
+
+void AMechProjectile::OnRep_InitialVelocity()
+{
+	ProjectileMovementComp->Velocity = InitialVelocity;
 }
 
 void AMechProjectile::Tick(float DeltaTime)
@@ -59,15 +71,8 @@ void AMechProjectile::LaunchProjectile()
 	}
 }
 
-void AMechProjectile::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	
-	DOREPLIFETIME(ThisClass, InitialVelocity);
-}
-
 void AMechProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-                            FVector NormalImpulse, const FHitResult& Hit)
+							FVector NormalImpulse, const FHitResult& Hit)
 {
 	// Align the actor's Up (Z) axis with the floor normal
 	FRotator FlatRotation = FRotationMatrix::MakeFromZ(Hit.ImpactNormal).Rotator();
@@ -90,9 +95,4 @@ void AMechProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 	}
 
 	Destroy();
-}
-
-void AMechProjectile::OnRep_InitialVelocity()
-{
-	ProjectileMovementComp->Velocity = InitialVelocity;
 }

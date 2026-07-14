@@ -20,7 +20,7 @@ void UEnemyAbilityBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 void UEnemyAbilityBase::OnAttackAnimationFinished()
 {
-	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), false, false);
 }
 
 void UEnemyAbilityBase::CancelAbility(const FGameplayAbilitySpecHandle Handle,

@@ -20,6 +20,8 @@ class AComplyPlayerController : public APlayerController
 	GENERATED_BODY()
 	
 public:
+	virtual void AcknowledgePossession(class APawn* P) override;
+	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UUserWidget> ActiveMenuWidget;
 	

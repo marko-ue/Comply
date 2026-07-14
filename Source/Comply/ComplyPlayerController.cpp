@@ -77,6 +77,29 @@ void AComplyPlayerController::SetupInputComponent()
 	}
 }
 
+// Ensures mapping contexts are added on the client whenever a pawn is possessed
+void AComplyPlayerController::AcknowledgePossession(class APawn* P)
+{
+	Super::AcknowledgePossession(P);
+
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
+		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+	{
+		for (UInputMappingContext* CurrentContext : DefaultMappingContexts)
+		{
+			Subsystem->AddMappingContext(CurrentContext, 0);
+		}
+
+		if (!SVirtualJoystick::ShouldDisplayTouchInterface())
+		{
+			for (UInputMappingContext* CurrentContext : MobileExcludedMappingContexts)
+			{
+				Subsystem->AddMappingContext(CurrentContext, 0);
+			}
+		}
+	}
+}
+
 void AComplyPlayerController::ShowFlashbangEffect()
 {
 	if (!FlashbangWidgetClass) return;

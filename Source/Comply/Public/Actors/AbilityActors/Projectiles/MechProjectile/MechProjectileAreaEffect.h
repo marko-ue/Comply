@@ -77,7 +77,7 @@ private:
 	UPROPERTY()
 	TSet<TObjectPtr<AActor>> AffectedActors;
 	
-	void ApplyEffectToTarget(UAbilitySystemComponent* TargetASC);
+	void ApplyEffectToTarget(AActor* OverlappingActor, UAbilitySystemComponent* TargetASC);
 	void ApplySlowToTarget(UAbilitySystemComponent* TargetASC);
 	void ApplyDamageToTarget(UAbilitySystemComponent* TargetASC);
 	

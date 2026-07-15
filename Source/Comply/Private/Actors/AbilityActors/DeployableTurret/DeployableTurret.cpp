@@ -16,6 +16,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Sound/SoundCue.h"
+#include "WorldPartition/RuntimeSpatialHash/RuntimeSpatialHashGridHelper.h"
 
 
 ADeployableTurret::ADeployableTurret()
@@ -28,10 +29,9 @@ ADeployableTurret::ADeployableTurret()
 	
 	AttributeSet = CreateDefaultSubobject<UComplyAttributeSet>("AttributeSet");
 
-	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-
 	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>("TurretMesh");
-	TurretMesh->SetupAttachment(RootComponent);
+	TurretMesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+	SetRootComponent(TurretMesh);
 
 	SphereComp = CreateDefaultSubobject<USphereComponent>("SphereComponent");
 	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnSphereOverlap);
@@ -47,9 +47,23 @@ UAbilitySystemComponent* ADeployableTurret::GetAbilitySystemComponent() const
 	return ASC;
 }
 
+void ADeployableTurret::Die_Implementation()
+{
+	Destroy();
+}
+
 void ADeployableTurret::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	if (HasAuthority())
+	{
+		ASC->InitAbilityActorInfo(this, this);
+	}
+	
+	FGameplayEffectContextHandle AttributesContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+	FGameplayEffectSpecHandle AttributesSpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(InitializeAttributesEffect, 1.f, AttributesContextHandle);
+	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*AttributesSpecHandle.Data.Get());	
 	
 	PlaceTurretNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, PlaceTurretParticles, GetActorLocation());
 	

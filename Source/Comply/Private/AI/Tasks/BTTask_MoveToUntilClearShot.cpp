@@ -4,6 +4,7 @@
 #include "AI/Tasks/BTTask_MoveToUntilClearShot.h"
 
 #include "AIController.h"
+#include "Comply.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 UBTTask_MoveToUntilClearShot::UBTTask_MoveToUntilClearShot()
@@ -41,18 +42,23 @@ void UBTTask_MoveToUntilClearShot::TickTask(UBehaviorTreeComponent& OwnerComp, u
 	FHitResult Hit;
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(Pawn);
-	Params.AddIgnoredActor(Target);
+	FCollisionObjectQueryParams ObjectParams;
+	ObjectParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	ObjectParams.AddObjectTypesToQuery(ECC_Player);
 
 	const FCollisionShape SweepShape = FCollisionShape::MakeSphere(30.f); // Projectile size 
 
-	bool bHit = GetWorld()->SweepSingleByChannel(
-		Hit, Pawn->GetActorLocation(), Target->GetActorLocation(), FQuat::Identity, ECC_Visibility, SweepShape, Params
+	bool bHit = GetWorld()->SweepSingleByObjectType(
+		Hit, Pawn->GetActorLocation(), Target->GetActorLocation(), FQuat::Identity, ObjectParams, SweepShape, Params
 	);
 	
 	// Check distance to target, only succeed if there is a clear shot and the enemy is close enough to the target
 	float DistanceToTarget = FVector::Dist(Pawn->GetActorLocation(), Target->GetActorLocation());
 
-	if (!bHit && DistanceToTarget <= MaxAttackRange)
+	// Handles both player and targetable actor cases, by checking if nothing was hit or if the first thing hit was the target actor itself
+	bool bClearShot = !bHit || Hit.GetActor() == Target;
+
+	if (bClearShot && DistanceToTarget <= MaxAttackRange)
 	{
 		AIController->StopMovement();
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);

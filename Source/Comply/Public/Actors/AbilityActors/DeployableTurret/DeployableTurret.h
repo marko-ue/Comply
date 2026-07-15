@@ -31,6 +31,7 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	
 	FORCEINLINE virtual UAbilitySystemComponent* GetTargetASC() const override { return GetAbilitySystemComponent(); }
+	virtual void Die_Implementation() override;
 	
 	UPROPERTY(EditAnywhere, Category = "Gameplay Effects")
 	TSubclassOf<UGameplayEffect> RechargeTurretChargeClass;
@@ -104,4 +105,7 @@ private:
 	
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_TurretFire();
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
+	TSubclassOf<UGameplayEffect> InitializeAttributesEffect;
 };

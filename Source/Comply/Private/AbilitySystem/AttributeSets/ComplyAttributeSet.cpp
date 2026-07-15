@@ -7,6 +7,7 @@
 #include "Character/ComplyCharacterBase.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Interface/TargetableInterface.h"
 #include "Interface/Player/PlayerInterface.h"
 #include "Net/UnrealNetwork.h"
 
@@ -82,6 +83,7 @@ void UComplyAttributeSet::HandleIncomingDamage(const struct FGameplayEffectModCa
 {
 	const float LocalIncomingDamage = GetIncomingDamage();
 	SetIncomingDamage(0);
+	
 	if (LocalIncomingDamage > 0)
 	{
 		AComplyGameModeBase* GameMode = GetWorld()->GetAuthGameMode<AComplyGameModeBase>();
@@ -121,7 +123,7 @@ void UComplyAttributeSet::HandleIncomingDamage(const struct FGameplayEffectModCa
 		SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
 		
 		UE_LOG(LogTemp, Warning, TEXT("Health after damage: %f"), GetHealth());
-		
+
 		AActor* AvatarActor = Data.Target.GetAvatarActor();
 		
 		if (AComplyCharacterBase* Character = Cast<AComplyCharacterBase>(AvatarActor))
@@ -135,6 +137,12 @@ void UComplyAttributeSet::HandleIncomingDamage(const struct FGameplayEffectModCa
 			if (AComplyCharacterBase* Character = Cast<AComplyCharacterBase>(AvatarActor))
 			{
 				Character->Die(AvatarActor);
+			}
+			
+			// Death for any non-player actors
+			if (AvatarActor->Implements<UTargetableInterface>())
+			{
+				ITargetableInterface::Execute_Die(AvatarActor);
 			}
 		}
 	}

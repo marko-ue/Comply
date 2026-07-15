@@ -47,13 +47,12 @@ void AMechProjectileAreaEffect::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void AMechProjectileAreaEffect::ApplyEffectToTarget(UAbilitySystemComponent* TargetASC)
+void AMechProjectileAreaEffect::ApplyEffectToTarget(AActor* OverlappingActor, UAbilitySystemComponent* TargetASC)
 {
-	if (!SourceASC || !TargetASC || !DamageEffectClass) return;
-	
-	if (AffectedActors.Contains(TargetActor)) return;
-	AffectedActors.Add(TargetActor);
-	
+	// Adds the already overlapping actor so the same effect is not applied multiple times on the same actor
+	if (AffectedActors.Contains(OverlappingActor)) return;
+	AffectedActors.Add(OverlappingActor);
+
 	ApplyDamageToTarget(TargetASC);
 	ApplySlowToTarget(TargetASC);
 }
@@ -89,15 +88,21 @@ void AMechProjectileAreaEffect::ApplySlowToTarget(UAbilitySystemComponent* Targe
 void AMechProjectileAreaEffect::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (!OtherActor->Implements<UPlayerInterface>()) return;
-	
-	// Immediately apply speed reduction on the local client
-	if (AComplyPlayerCharacter* PlayerCharacter = Cast<AComplyPlayerCharacter>(OtherActor))
+	const bool bIsPlayer = OtherActor->Implements<UPlayerInterface>();
+	const bool bIsTargetable = OtherActor->Implements<UTargetableInterface>();
+    
+	if (!bIsPlayer && !bIsTargetable) return;
+
+	if (bIsPlayer)
 	{
-		if (PlayerCharacter->IsLocallyControlled() && !PlayerCharacter->HasAuthority() && PlayerCharacter->GetCharacterMovement())
+		// Immediately apply speed reduction on the local client
+		if (AComplyPlayerCharacter* PlayerCharacter = Cast<AComplyPlayerCharacter>(OtherActor))
 		{
-			PlayerCharacter->GetCharacterMovement()->MaxWalkSpeed -= 300.f;
-			PlayerCharacter->NextSlowMagnitude = 300.f;
+			if (PlayerCharacter->IsLocallyControlled() && !PlayerCharacter->HasAuthority() && PlayerCharacter->GetCharacterMovement())
+			{
+				PlayerCharacter->GetCharacterMovement()->MaxWalkSpeed -= 300.f;
+				PlayerCharacter->NextSlowMagnitude = 300.f;
+			}
 		}
 	}
 
@@ -106,8 +111,7 @@ void AMechProjectileAreaEffect::OnComponentBeginOverlap(UPrimitiveComponent* Ove
 		if (UAbilitySystemComponent* TargetASC = ASCInterface->GetAbilitySystemComponent())
 		{
 			if (!SourceASC || !TargetASC || !DamageEffectClass) return;
-
-			ApplyEffectToTarget(TargetASC);
+			ApplyEffectToTarget(OtherActor, TargetASC);
 		}
 	}
 }

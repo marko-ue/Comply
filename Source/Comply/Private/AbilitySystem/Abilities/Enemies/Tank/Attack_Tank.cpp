@@ -35,26 +35,42 @@ void UAttack_Tank::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	FVector EnemyLocation = GetAvatarActorFromActorInfo()->GetActorLocation();
 	FVector EnemyForward = GetAvatarActorFromActorInfo()->GetActorForwardVector();
 
+	// Collect all candidates - players + any other targetable actors in range
+	TArray<AActor*> Candidates;
+    
+	// Players
 	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 	{
 		if (APlayerController* PC = It->Get())
 		{
 			if (APawn* PlayerPawn = PC->GetPawn())
 			{
-				FVector ToPlayer = (PlayerPawn->GetActorLocation() - EnemyLocation);
-				float Distance = ToPlayer.Size();
+				Candidates.Add(PlayerPawn);
+			}
+		}
+	}
 
-				if (Distance <= SweepRange)
-				{
-					// Sweeps from the front
-					FVector ToPlayerNormalized = ToPlayer.GetSafeNormal();
-					float DotProduct = FVector::DotProduct(EnemyForward, ToPlayerNormalized);
+	// Non-player damageables (turret, etc.)
+	TArray<AActor*> OverlappingActors;
+	
+	if (TargetActor && !Candidates.Contains(TargetActor))
+	{
+		Candidates.Add(TargetActor);
+	}
 
-					if (DotProduct >= ConeHalfAngleDot)
-					{
-						CauseDamage(PlayerPawn, Damage.GetValueAtLevel(GetAbilityLevel()));
-					}
-				}
+	for (AActor* Candidate : Candidates)
+	{
+		FVector ToTarget = Candidate->GetActorLocation() - EnemyLocation;
+		float Distance = ToTarget.Size();
+
+		if (Distance <= SweepRange)
+		{
+			FVector ToTargetNormalized = ToTarget.GetSafeNormal();
+			float DotProduct = FVector::DotProduct(EnemyForward, ToTargetNormalized);
+
+			if (DotProduct >= ConeHalfAngleDot)
+			{
+				CauseDamage(Candidate, Damage.GetValueAtLevel(GetAbilityLevel()));
 			}
 		}
 	}

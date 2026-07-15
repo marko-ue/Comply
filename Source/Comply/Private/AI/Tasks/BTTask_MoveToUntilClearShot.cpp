@@ -43,7 +43,7 @@ void UBTTask_MoveToUntilClearShot::TickTask(UBehaviorTreeComponent& OwnerComp, u
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(Pawn);
 	FCollisionObjectQueryParams ObjectParams;
-	ObjectParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	ObjectParams.AddObjectTypesToQuery(ECC_PlayerFriend);
 	ObjectParams.AddObjectTypesToQuery(ECC_Player);
 
 	const FCollisionShape SweepShape = FCollisionShape::MakeSphere(30.f); // Projectile size 

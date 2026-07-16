@@ -104,6 +104,9 @@ namespace ComplyTags
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(TurretTyping)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(TurretImpact)
 		
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(TargetableActorTakeDamage)
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(TargetableActorDeath)
+		
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(BuffTotemApplyBuff)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(BuffTotemBuffAura)
 		

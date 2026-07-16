@@ -8,8 +8,10 @@
 #include "Interface/TargetableInterface.h"
 #include "TargetableActorsBase.generated.h"
 
+class UNiagaraSystem;
 class UGameplayEffect;
 class UComplyAttributeSet;
+class USoundCue;
 
 UCLASS()
 class COMPLY_API ATargetableActorsBase : public AActor, public ITargetableInterface, public IAbilitySystemInterface
@@ -40,4 +42,16 @@ protected:
 private:
 	UPROPERTY()
 	TObjectPtr<UComplyAttributeSet> AttributeSet;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess=true), Category = "Sounds")
+	TObjectPtr<USoundCue> DamageSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess=true), Category = "Sounds")
+	TObjectPtr<USoundCue> DeathSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess=true), Category = "Effects")
+	TObjectPtr<UNiagaraSystem> DamageEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess=true), Category = "Effects")
+	TObjectPtr<UNiagaraSystem> DeathEffect;
 };

@@ -102,6 +102,9 @@ namespace ComplyTags
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(TurretTyping, "GameplayCue.Turret.Typing", "Gameplay cue tag for the typing before placing a turret")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(TurretImpact, "GameplayCue.Turret.Impact", "Gameplay cue tag for turret shot impact")
 		
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(TargetableActorTakeDamage, "GameplayCue.TargetableActor.TakeDamage", "Gameplay cue tag for when targetable actors take damage")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(TargetableActorDeath, "GameplayCue.TargetableActor.Death", "Gameplay cue tag for when targetable actors die")
+		
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(BuffTotemApplyBuff, "GameplayCue.BuffTotem.ApplyBuff", "Gameplay cue tag for when a buff totem buff is applied")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(BuffTotemBuffAura, "GameplayCue.BuffTotem.BuffAura", "Gameplay cue tag for the buff aura when a buff exists")
 		

@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
+#include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
 
 
@@ -45,10 +46,16 @@ UAbilitySystemComponent* ATargetableActorsBase::GetAbilitySystemComponent() cons
 
 void ATargetableActorsBase::TakeDamage_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Taking damage"));
+	FGameplayCueParameters CueParams;
+	CueParams.Location = GetActorLocation();
+	GetAbilitySystemComponent()->ExecuteGameplayCue(ComplyTags::GameplayCues::TargetableActorTakeDamage, CueParams);
 }
 
 void ATargetableActorsBase::Die_Implementation()
 {
+	FGameplayCueParameters CueParams;
+	CueParams.Location = GetActorLocation();
+	GetAbilitySystemComponent()->ExecuteGameplayCue(ComplyTags::GameplayCues::TargetableActorDeath, CueParams);
+	
 	Destroy();
 }

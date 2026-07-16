@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "Interface/TargetableInterface.h"
 #include "AbilitySystemInterface.h"
+#include "Actors/TargetableActorsBase.h"
 #include "DeployableTurret.generated.h"
 
 class UNiagaraComponent;
@@ -19,7 +20,7 @@ class USphereComponent;
 class USoundCue;
 
 UCLASS()
-class COMPLY_API ADeployableTurret : public AActor, public ITargetableInterface, public IAbilitySystemInterface
+class COMPLY_API ADeployableTurret : public ATargetableActorsBase
 {
 	GENERATED_BODY()
 
@@ -27,11 +28,6 @@ public:
 	ADeployableTurret();
 	
 	virtual void Tick(float DeltaTime) override;
-	
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	
-	FORCEINLINE virtual UAbilitySystemComponent* GetTargetASC() const override { return GetAbilitySystemComponent(); }
-	virtual void Die_Implementation() override;
 	
 	UPROPERTY(EditAnywhere, Category = "Gameplay Effects")
 	TSubclassOf<UGameplayEffect> RechargeTurretChargeClass;
@@ -49,8 +45,6 @@ public:
 	FGameplayTag DamageTypeTag;
 	
 	virtual void Destroyed() override;
-	
-	
 
 protected:
 	virtual void BeginPlay() override;
@@ -80,12 +74,6 @@ private:
 	
 	void Fire(AActor* TargetActor);
 	
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UAbilitySystemComponent> ASC;
-	
-	UPROPERTY()
-	TObjectPtr<UComplyAttributeSet> AttributeSet;
-	
 	UPROPERTY()
 	TArray<AActor*> TargetsInRange;
 	
@@ -105,7 +93,4 @@ private:
 	
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_TurretFire();
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
-	TSubclassOf<UGameplayEffect> InitializeAttributesEffect;
 };

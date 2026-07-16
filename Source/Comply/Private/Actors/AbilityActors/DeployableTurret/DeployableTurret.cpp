@@ -7,27 +7,17 @@
 #include "AbilitySystemComponent.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
-#include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "AbilitySystem/ComplyTags.h"
-#include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
 #include "Components/ArrowComponent.h"
-#include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Sound/SoundCue.h"
-#include "WorldPartition/RuntimeSpatialHash/RuntimeSpatialHashGridHelper.h"
 
 
 ADeployableTurret::ADeployableTurret()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	
-	ASC = CreateDefaultSubobject<UComplyAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
-	ASC->SetIsReplicated(true);
-	ASC->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
-	
-	AttributeSet = CreateDefaultSubobject<UComplyAttributeSet>("AttributeSet");
 
 	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>("TurretMesh");
 	TurretMesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
@@ -42,28 +32,9 @@ ADeployableTurret::ADeployableTurret()
 	ArrowComp->SetupAttachment(RootComponent);
 }
 
-UAbilitySystemComponent* ADeployableTurret::GetAbilitySystemComponent() const
-{
-	return ASC;
-}
-
-void ADeployableTurret::Die_Implementation()
-{
-	Destroy();
-}
-
 void ADeployableTurret::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	if (HasAuthority())
-	{
-		ASC->InitAbilityActorInfo(this, this);
-	}
-	
-	FGameplayEffectContextHandle AttributesContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
-	FGameplayEffectSpecHandle AttributesSpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(InitializeAttributesEffect, 1.f, AttributesContextHandle);
-	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*AttributesSpecHandle.Data.Get());	
 	
 	PlaceTurretNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, PlaceTurretParticles, GetActorLocation());
 	

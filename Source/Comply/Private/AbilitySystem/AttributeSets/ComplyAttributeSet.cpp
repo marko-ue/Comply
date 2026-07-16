@@ -130,6 +130,12 @@ void UComplyAttributeSet::HandleIncomingDamage(const struct FGameplayEffectModCa
 		{
 			Character->HandleHit(AvatarActor);
 		}
+		
+		// Take damage for any non-player actors
+		if (AvatarActor->Implements<UTargetableInterface>())
+		{
+			ITargetableInterface::Execute_TakeDamage(AvatarActor);
+		}
 			
 		const bool bFatal = NewHealth <= 0.f;
 		if (bFatal)

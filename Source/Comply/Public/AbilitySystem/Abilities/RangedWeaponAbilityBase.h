@@ -112,4 +112,7 @@ private:
 	
 	UPROPERTY()
 	TObjectPtr<UHitscanTargetData> HitscanTargetDataTask;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TArray<TObjectPtr<UMaterialInstance>> BulletImpactDecals;
 };

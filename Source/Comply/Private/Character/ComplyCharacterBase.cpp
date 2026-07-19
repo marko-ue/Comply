@@ -20,6 +20,10 @@ AComplyCharacterBase::AComplyCharacterBase()
 	
 	// Prevents the character movement component from applying impulses to physics objects and characters
 	GetCharacterMovement()->bEnablePhysicsInteraction = false;
+	GetCharacterMovement()->bPushForceScaledToMass    = false;
+	GetCharacterMovement()->PushForceFactor           = 0.f;
+	GetCharacterMovement()->InitialPushForceFactor    = 0.f;
+	GetCharacterMovement()->RepulsionForce            = 0.f;
 }
 
 UAbilitySystemComponent* AComplyCharacterBase::GetAbilitySystemComponent() const

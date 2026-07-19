@@ -18,7 +18,9 @@
 #include "BehaviorTree/BehaviorTreeTypes.h"
 #include "Character/ComplyCharacterBase.h"
 #include "Character/ComplyPlayerCharacter.h"
+#include "Components/DecalComponent.h"
 #include "Framework/GameMode/ComplyGameModeBase.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Traces to the middle of the screen
 // This function is called in HitscanTargetData for transferring hitscan data from client to server
@@ -353,7 +355,21 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
 
 			GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(
 				ComplyTags::GameplayCues::HitscanWeaponImpact,
-				CueParams);
+				CueParams
+			);
+			
+			// Spawns a random decal from an array
+			float DecalIndex = FMath::RandRange(0, BulletImpactDecals.Max() - 1);
+			UDecalComponent* Decal = UGameplayStatics::SpawnDecalAtLocation(
+				GetWorld(), BulletImpactDecals[DecalIndex], FVector(5.f, 10.f, 10.f), Data->GetHitResult()->ImpactPoint,
+				UKismetMathLibrary::MakeRotFromX(Data->GetHitResult()->ImpactNormal), 5.f
+			);
+
+			if (Decal)
+			{
+				Decal->SetFadeScreenSize(0.f);
+				Decal->SetFadeOut(5.f, 1.f, true);
+			}
 		}
 
 		AActor* TargetActor = Data->GetHitResult()->GetActor();
@@ -403,7 +419,26 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
 
 		GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(
 			ComplyTags::GameplayCues::ShotgunImpact,
-			CueParams);
+			CueParams
+		);
+		
+		// Spawn decals for each pellet hit
+		for (const TSharedPtr<FGameplayAbilityTargetData>& Data : DataHandle.Data)
+		{
+			if (!Data.IsValid() || !Data->GetHitResult()->bBlockingHit) continue;
+
+			UDecalComponent* Decal = UGameplayStatics::SpawnDecalAtLocation(
+			   GetWorld(), BulletImpactDecals[FMath::RandRange(0, BulletImpactDecals.Max() - 1)], FVector(5.f, 10.f, 10.f),
+			   Data->GetHitResult()->ImpactPoint,
+			   UKismetMathLibrary::MakeRotFromX(Data->GetHitResult()->ImpactNormal), 5.f
+			);
+
+			if (Decal)
+			{
+				Decal->SetFadeScreenSize(0.f);
+				Decal->SetFadeOut(5.f, 1.f, true);
+			}
+		}
 	}
 }
 

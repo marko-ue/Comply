@@ -67,8 +67,11 @@ private:
 	UFUNCTION()
 	void Explode();
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	float MinDamage = 10.f;
+	
+	UPROPERTY(EditAnywhere)
+	float ExplosionDelay = 2.f;
 	
 	UPROPERTY()
 	TArray<UAbilitySystemComponent*> AffectedASCs;

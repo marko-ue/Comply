@@ -50,7 +50,7 @@ void ADecoyGrenade::BeginPlay()
 	
 	if (HasAuthority())
 	{
-		GetWorld()->GetTimerManager().SetTimer(ExplosionTimerHandle, this, &ThisClass::Explode, 4.f, false);
+		GetWorld()->GetTimerManager().SetTimer(ExplosionTimerHandle, this, &ThisClass::Explode, ExplosionDelay, false);
 	}
 	
 	// Sets the velocity of the grenade throw and triggers OnRep

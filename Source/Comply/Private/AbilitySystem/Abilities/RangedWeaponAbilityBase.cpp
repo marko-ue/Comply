@@ -59,11 +59,12 @@ void URangedWeaponAbilityBase::TraceToCrosshair(FHitResult& TraceHitResult, cons
 		ObjectParams.AddObjectTypesToQuery(ECC_Enemy);
 		ObjectParams.AddObjectTypesToQuery(ECC_Shield);
 		ObjectParams.AddObjectTypesToQuery(ECC_WorldStatic);
-		// Trace against the player too if friendly fire is enabled
+		// Trace against the player and player friends too if friendly fire is enabled
 		AComplyGameModeBase* GameMode = GetWorld()->GetAuthGameMode<AComplyGameModeBase>();
 		if (GameMode && GameMode->bFriendlyFire)
 		{
 			ObjectParams.AddObjectTypesToQuery(ECC_Player);
+			ObjectParams.AddObjectTypesToQuery(ECC_PlayerFriend);
 		}
 		
 		// A multi trace is used because overlap events are required, as well as direct hits for applying damage
@@ -150,6 +151,7 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 		if (GameMode && GameMode->bFriendlyFire)
 		{
 			ObjectParams.AddObjectTypesToQuery(ECC_Player);
+			ObjectParams.AddObjectTypesToQuery(ECC_PlayerFriend);
 		}
 		
 		// Target data for shotgun impact points

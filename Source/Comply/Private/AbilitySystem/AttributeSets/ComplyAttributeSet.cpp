@@ -8,6 +8,7 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Interface/TargetableInterface.h"
+#include "Interface/Enemy/EnemyInterface.h"
 #include "Interface/Player/PlayerInterface.h"
 #include "Net/UnrealNetwork.h"
 
@@ -82,76 +83,65 @@ void UComplyAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffect
 void UComplyAttributeSet::HandleIncomingDamage(const struct FGameplayEffectModCallbackData& Data)
 {
 	const float LocalIncomingDamage = GetIncomingDamage();
-	SetIncomingDamage(0);
-	
-	if (LocalIncomingDamage > 0)
-	{
-		AComplyGameModeBase* GameMode = GetWorld()->GetAuthGameMode<AComplyGameModeBase>();
-		if (GameMode)
-		{
-			// If friendly fire is off, and the source and target of the gameplay effect context both implement the player interface, damage won't be dealt
-			if (GameMode->bFriendlyFire == false)
-			{
-				const AActor* SourceAvatarActor = nullptr;
-				const AActor* TargetAvatarActor = nullptr;
-			
-				const UAbilitySystemComponent* SourceASC = Data.EffectSpec.GetContext().GetInstigatorAbilitySystemComponent();
-				if (SourceASC && SourceASC->AbilityActorInfo && SourceASC->AbilityActorInfo->AvatarActor.IsValid())
-				{
-					SourceAvatarActor = SourceASC->AbilityActorInfo->AvatarActor.Get();
-				}
-			
-				if (Data.Target.AbilityActorInfo.IsValid() && Data.Target.AbilityActorInfo->AvatarActor.IsValid())
-				{
-					TargetAvatarActor = Data.Target.AbilityActorInfo->AvatarActor.Get();
-				}
-			
-				if (SourceAvatarActor && TargetAvatarActor)
-				{
-					if (SourceAvatarActor->Implements<UPlayerInterface>() && TargetAvatarActor->Implements<UPlayerInterface>()) return;
-				}
-			}
-		}
-		
-	   /** 
-		* Clamps the health attribute to a minimum of 0 and maximum of max health
-		* This doesn't permanently clamp, and instead just changes the value returned from querying the modification of the attribute instead of actually setting health
-		* This means that further calculations will break the clamp, so clamping should also be done in PostGameplayEffectExecute
-		* If friendly fire is on, damage will be dealt no matter who's attacking and being attacked
-		*/
-		const float NewHealth = GetHealth() - LocalIncomingDamage;
-		SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
-		
-		UE_LOG(LogTemp, Warning, TEXT("Health after damage: %f"), GetHealth());
+    SetIncomingDamage(0);
+    if (LocalIncomingDamage <= 0) return;
 
-		AActor* AvatarActor = Data.Target.GetAvatarActor();
-		
-		if (AComplyCharacterBase* Character = Cast<AComplyCharacterBase>(AvatarActor))
+    const AComplyGameModeBase* GameMode = GetWorld()->GetAuthGameMode<AComplyGameModeBase>();
+
+    const AActor* SourceAvatarActor = nullptr;
+    const AActor* TargetAvatarActor = nullptr;
+
+    const UAbilitySystemComponent* SourceASC = Data.EffectSpec.GetContext().GetInstigatorAbilitySystemComponent();
+    if (SourceASC && SourceASC->AbilityActorInfo && SourceASC->AbilityActorInfo->AvatarActor.IsValid())
+    {
+        SourceAvatarActor = SourceASC->AbilityActorInfo->AvatarActor.Get();
+    }
+    if (Data.Target.AbilityActorInfo.IsValid() && Data.Target.AbilityActorInfo->AvatarActor.IsValid())
+    {
+        TargetAvatarActor = Data.Target.AbilityActorInfo->AvatarActor.Get();
+    }
+
+	if (GameMode && !GameMode->bFriendlyFire && SourceAvatarActor)
+	{
+		// When friendly fire is off, players can't damage anything except enemies
+		if (SourceAvatarActor->Implements<UPlayerInterface>() && 
+			TargetAvatarActor && !TargetAvatarActor->Implements<UEnemyInterface>())
 		{
-			Character->HandleHit(AvatarActor);
-		}
-		
-		// Take damage for any non-player actors
-		if (AvatarActor->Implements<UTargetableInterface>())
-		{
-			ITargetableInterface::Execute_TakeDamage(AvatarActor);
-		}
-			
-		const bool bFatal = NewHealth <= 0.f;
-		if (bFatal)
-		{
-			if (AComplyCharacterBase* Character = Cast<AComplyCharacterBase>(AvatarActor))
-			{
-				Character->Die(AvatarActor);
-			}
-			
-			// Death for any non-player actors
-			if (AvatarActor->Implements<UTargetableInterface>())
-			{
-				ITargetableInterface::Execute_Die(AvatarActor);
-			}
+			return;
 		}
 	}
+
+    // Damage is valid, apply it
+    const float NewHealth = GetHealth() - LocalIncomingDamage;
+    SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
+
+    UE_LOG(LogTemp, Warning, TEXT("Health after damage: %f"), GetHealth());
+
+    AActor* AvatarActor = Data.Target.GetAvatarActor();
+
+    if (AComplyCharacterBase* Character = Cast<AComplyCharacterBase>(AvatarActor))
+    {
+        Character->HandleHit(AvatarActor);
+    }
+
+    if (AvatarActor && AvatarActor->Implements<UTargetableInterface>())
+    {
+        ITargetableInterface::Execute_TakeDamage(AvatarActor);
+    }
+
+    const bool bFatal = NewHealth <= 0.f;
+    if (bFatal)
+    {
+        if (AComplyCharacterBase* Character = Cast<AComplyCharacterBase>(AvatarActor))
+        {
+            Character->Die(AvatarActor);
+        }
+
+        if (AvatarActor && AvatarActor->Implements<UTargetableInterface>())
+        {
+            ITargetableInterface::Execute_Die(AvatarActor);
+        }
+    }
 }
 
 // In OnRep functions for GAS attributes, a specific GAS macro is used to that GAS handles replication and local prediction on its own

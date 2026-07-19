@@ -15,12 +15,13 @@ void UDamageAbilityBase::CauseDamage(AActor* TargetActor, float ExplicitDamage, 
 {
 	FGameplayEffectContextHandle ContextHandle(Context ? Context : new FComplyGameplayEffectContext());
 	ContextHandle.AddSourceObject(GetAvatarActorFromActorInfo());
+	ContextHandle.AddInstigator(GetAvatarActorFromActorInfo(), GetAvatarActorFromActorInfo());
 
 	FGameplayEffectSpecHandle DamageSpecHandle = MakeOutgoingGameplayEffectSpec(DamageEffectClass, 1.f);
 	DamageSpecHandle.Data->SetContext(ContextHandle);
     
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageSpecHandle, DamageType, ExplicitDamage);
-
+	
 	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(
 		*DamageSpecHandle.Data.Get(),
 		UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor)

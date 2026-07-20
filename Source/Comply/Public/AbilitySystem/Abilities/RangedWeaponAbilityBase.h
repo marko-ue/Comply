@@ -81,6 +81,9 @@ public:
 	FORCEINLINE virtual FGameplayTag GetReduceReserveAmmoTag() const { return FGameplayTag(); }
 	FORCEINLINE virtual FGameplayAttribute GetCurrentReserveAmmoAttribute() const { return FGameplayAttribute(); }
 	FORCEINLINE virtual bool DoesWeaponUseCrosshairTrace() const { return bUsesSingleCrosshairTrace; }
+	
+	UPROPERTY()
+	TObjectPtr<URangedWeaponAbilityBase> ActiveWeapon;
 
 protected:
 	virtual bool Fire();
@@ -108,9 +111,6 @@ protected:
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 private:
-	UPROPERTY()
-	TObjectPtr<URangedWeaponAbilityBase> ActiveWeapon;
-	
 	UPROPERTY()
 	TObjectPtr<UHitscanTargetData> HitscanTargetDataTask;
 };

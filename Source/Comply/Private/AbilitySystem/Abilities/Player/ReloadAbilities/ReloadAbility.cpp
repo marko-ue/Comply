@@ -82,13 +82,14 @@ void UReloadAbility::HandleReload()
 	
 	// Play reload animation
 	ReloadMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-		this, NAME_None, ActiveWeapon->ReloadMontage, 1.f, NAME_None, true);
+		this, NAME_None, ActiveWeapon->ReloadMontage, 1.f, NAME_None, true
+	);
 		
-	ReloadMontageTask->OnCompleted.AddDynamic(this, &UReloadAbility::OnReloadMontageCompleted);
-	ReloadMontageTask->OnInterrupted.AddDynamic(this, &UReloadAbility::OnReloadMontageCompleted);
-	ReloadMontageTask->OnCancelled.AddDynamic(this, &UReloadAbility::OnReloadMontageCompleted);
-	ReloadMontageTask->OnBlendOut.AddDynamic(this, &UReloadAbility::OnReloadMontageCompleted);
-		
+	ReloadMontageTask->OnCompleted.AddDynamic(this, &UReloadAbility::OnReloadCompleted);
+	ReloadMontageTask->OnBlendOut.AddDynamic(this, &UReloadAbility::OnReloadCompleted);
+	ReloadMontageTask->OnInterrupted.AddDynamic(this, &UReloadAbility::OnReloadCanceled);
+	ReloadMontageTask->OnCancelled.AddDynamic(this, &UReloadAbility::OnReloadCanceled);
+	
 	ReloadMontageTask->ReadyForActivation();
 		
 	// Effect that applies the reloading tag
@@ -97,7 +98,7 @@ void UReloadAbility::HandleReload()
 	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 }
 
-void UReloadAbility::OnReloadMontageCompleted()
+void UReloadAbility::OnReloadCompleted()
 {
 	if (ActiveWeapon)
 	{
@@ -142,8 +143,13 @@ void UReloadAbility::OnReloadMontageCompleted()
 	}
 }
 
+void UReloadAbility::OnReloadCanceled()
+{
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+}
+
 void UReloadAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+                                const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
 	if (Character)

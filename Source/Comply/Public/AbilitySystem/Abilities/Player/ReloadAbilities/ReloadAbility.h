@@ -31,7 +31,10 @@ protected:
 	
 private:
 	UFUNCTION()
-	virtual void OnReloadMontageCompleted();
+	virtual void OnReloadCompleted();
+	
+	UFUNCTION()
+	virtual void OnReloadCanceled();
 	
 	UPROPERTY()
 	TObjectPtr<UAbilityTask_PlayMontageAndWait> ReloadMontageTask;

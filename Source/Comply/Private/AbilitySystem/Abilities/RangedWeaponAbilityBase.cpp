@@ -8,6 +8,8 @@
 #include "AbilitySystemComponent.h"
 #include "Comply.h"
 #include "GameplayCueManager.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "AbilitySystem/ComplyAbilityTypes.h"
@@ -15,7 +17,6 @@
 #include "AbilitySystem/AbilityTasks/HitscanTargetData.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/Abilities/Player/Disruptor/Primary_Disruptor.h"
-#include "BehaviorTree/BehaviorTreeTypes.h"
 #include "Character/ComplyCharacterBase.h"
 #include "Character/ComplyPlayerCharacter.h"
 #include "Components/DecalComponent.h"
@@ -341,10 +342,17 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
 	const FGameplayAbilityActivationInfo ActivationInfo = GetCurrentActivationInfo();
 
 	AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
+	
+	FVector MuzzleLocation = Character->WeaponMesh->GetSocketLocation(FName("MuzzleFlash"));
 
 	for (const TSharedPtr<FGameplayAbilityTargetData>& Data : DataHandle.Data)
 	{
 		if (!Data.IsValid()) continue;
+		
+		if (IsLocallyControlled())
+		{
+			Character->SpawnImpactEffectsLocal(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->ImpactNormal, MuzzleLocation);
+		}
 
 		if (Character->GetEquippedPrimaryWeapon()->bUsesSingleCrosshairTrace &&
 			HasAuthority(&ActivationInfo))
@@ -358,18 +366,7 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
 				CueParams
 			);
 			
-			// Spawns a random decal from an array
-			float DecalIndex = FMath::RandRange(0, BulletImpactDecals.Max() - 1);
-			UDecalComponent* Decal = UGameplayStatics::SpawnDecalAtLocation(
-				GetWorld(), BulletImpactDecals[DecalIndex], FVector(5.f, 10.f, 10.f), Data->GetHitResult()->ImpactPoint,
-				UKismetMathLibrary::MakeRotFromX(Data->GetHitResult()->ImpactNormal), 5.f
-			);
-
-			if (Decal)
-			{
-				Decal->SetFadeScreenSize(0.f);
-				Decal->SetFadeOut(5.f, 1.f, true);
-			}
+			Character->Multicast_SpawnImpactEffects(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->ImpactNormal, MuzzleLocation);
 		}
 
 		AActor* TargetActor = Data->GetHitResult()->GetActor();
@@ -399,6 +396,14 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
 			CauseDamage(TargetActor, FinalDamage, Context);
 		}
 	}
+	
+	if (IsLocallyControlled())
+	{
+		for (const TSharedPtr<FGameplayAbilityTargetData>& Data : DataHandle.Data)
+		{
+			Character->SpawnImpactEffectsLocal(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->ImpactNormal, MuzzleLocation);
+		}
+	}
 
 	if (!Character->GetEquippedPrimaryWeapon()->bUsesSingleCrosshairTrace &&
 		HasAuthority(&ActivationInfo))
@@ -422,22 +427,12 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
 			CueParams
 		);
 		
-		// Spawn decals for each pellet hit
+		// Spawn decals and effects for each pellet hit
 		for (const TSharedPtr<FGameplayAbilityTargetData>& Data : DataHandle.Data)
 		{
 			if (!Data.IsValid() || !Data->GetHitResult()->bBlockingHit) continue;
 
-			UDecalComponent* Decal = UGameplayStatics::SpawnDecalAtLocation(
-			   GetWorld(), BulletImpactDecals[FMath::RandRange(0, BulletImpactDecals.Max() - 1)], FVector(5.f, 10.f, 10.f),
-			   Data->GetHitResult()->ImpactPoint,
-			   UKismetMathLibrary::MakeRotFromX(Data->GetHitResult()->ImpactNormal), 5.f
-			);
-
-			if (Decal)
-			{
-				Decal->SetFadeScreenSize(0.f);
-				Decal->SetFadeOut(5.f, 1.f, true);
-			}
+			Character->Multicast_SpawnImpactEffects(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->ImpactNormal, MuzzleLocation);
 		}
 	}
 }

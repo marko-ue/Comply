@@ -6,6 +6,7 @@
 #include "DamageAbilityBase.h"
 #include "RangedWeaponAbilityBase.generated.h"
 
+class UNiagaraSystem;
 class UWeaponAttributeSet;
 class UReloadAbility;
 class UAbilityTask_PlayMontageAndWait;
@@ -112,7 +113,4 @@ private:
 	
 	UPROPERTY()
 	TObjectPtr<UHitscanTargetData> HitscanTargetDataTask;
-	
-	UPROPERTY(EditDefaultsOnly)
-	TArray<TObjectPtr<UMaterialInstance>> BulletImpactDecals;
 };

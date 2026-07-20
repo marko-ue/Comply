@@ -12,6 +12,7 @@
 #include "ComplyPlayerCharacter.generated.h"
 
 
+class UNiagaraSystem;
 class IInteractableInterface;
 class UInputMappingContext;
 class URangedWeaponAbilityBase;
@@ -64,6 +65,19 @@ public:
 	
 	UPROPERTY(VisibleAnywhere)
 	float NextSlowMagnitude;
+	
+	// Impact Effects
+	UFUNCTION(NetMulticast, Unreliable)
+	void Multicast_SpawnImpactEffects(FVector ImpactPoint, FVector ImpactNormal, FVector MuzzleLocation);
+	
+	void SpawnImpactEffectsLocal(FVector ImpactPoint, FVector ImpactNormal, FVector MuzzleLocation);
+	
+	UPROPERTY(EditDefaultsOnly)
+	TArray<TObjectPtr<UMaterialInstance>> BulletImpactDecals;
+	
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UNiagaraSystem> BulletTracerEffect;
+	// End Impact Effects
 	
 	// Zoom
 	UPROPERTY(EditAnywhere, Category = "Zoom")

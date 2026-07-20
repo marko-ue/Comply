@@ -9,6 +9,8 @@
 #include "CableComponent.h"
 #include "Comply.h"
 #include "ComplyPlayerController.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "AbilitySystem/Abilities/ThrowableAbilityBase.h"
@@ -16,6 +18,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/DecalComponent.h"
 #include "Framework/GameState/ComplyGameStateBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpectatorPawn.h"
@@ -267,6 +270,67 @@ void AComplyPlayerCharacter::RevivePlayer()
 	if (ActiveDownedEffectHandle.IsValid() && GetAbilitySystemComponent())
 	{
 		GetAbilitySystemComponent()->RemoveActiveGameplayEffect(ActiveDownedEffectHandle);
+	}
+}
+
+void AComplyPlayerCharacter::SpawnImpactEffectsLocal(FVector ImpactPoint, FVector ImpactNormal, FVector MuzzleLocation)
+{
+	// Spawns a random decal from an array
+	float DecalIndex = FMath::RandRange(0, BulletImpactDecals.Max() - 1);
+	UDecalComponent* Decal = UGameplayStatics::SpawnDecalAtLocation(
+		GetWorld(), BulletImpactDecals[DecalIndex], FVector(5.f, 10.f, 10.f), ImpactPoint,
+		UKismetMathLibrary::MakeRotFromX(ImpactNormal), 5.f
+	);
+
+	if (Decal)
+	{
+		Decal->SetFadeScreenSize(0.f);
+		Decal->SetFadeOut(5.f, 1.f, true);
+	}
+
+	// Spawns a tracer niagara effect and sets its beam end to the impact point
+	UNiagaraComponent* Tracer = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+		GetWorld(), BulletTracerEffect, MuzzleLocation, FRotator::ZeroRotator, FVector(1.f)
+	);
+			
+	if (Tracer)
+	{
+		// Local offset from the muzzle, Niagara was interpreting world space vector as local relative to the spawn location
+		FVector BeamEndLocal = ImpactPoint - MuzzleLocation;
+		Tracer->SetNiagaraVariableVec3("BeamEnd", BeamEndLocal);
+	}
+}
+
+// Multicast that handles broadcasting impact decals and bullet tracers from the muzzle to the impact point
+void AComplyPlayerCharacter::Multicast_SpawnImpactEffects_Implementation(FVector ImpactPoint, FVector ImpactNormal,
+	FVector MuzzleLocation)
+{
+	// Decal and effects are spawned locally for clients, don't multicast to them again
+	if (IsLocallyControlled()) return;
+	
+	// Spawns a random decal from an array
+	float DecalIndex = FMath::RandRange(0, BulletImpactDecals.Max() - 1);
+	UDecalComponent* Decal = UGameplayStatics::SpawnDecalAtLocation(
+		GetWorld(), BulletImpactDecals[DecalIndex], FVector(5.f, 10.f, 10.f), ImpactPoint,
+		UKismetMathLibrary::MakeRotFromX(ImpactNormal), 5.f
+	);
+
+	if (Decal)
+	{
+		Decal->SetFadeScreenSize(0.f);
+		Decal->SetFadeOut(5.f, 1.f, true);
+	}
+
+	// Spawns a tracer niagara effect and sets its beam end to the impact point
+	UNiagaraComponent* Tracer = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+		GetWorld(), BulletTracerEffect, MuzzleLocation, FRotator::ZeroRotator, FVector(1.f)
+	);
+			
+	if (Tracer)
+	{
+		// Local offset from the muzzle, Niagara was interpreting world space vector as local relative to the spawn location
+		FVector BeamEndLocal = ImpactPoint - MuzzleLocation;
+		Tracer->SetNiagaraVariableVec3("BeamEnd", BeamEndLocal);
 	}
 }
 

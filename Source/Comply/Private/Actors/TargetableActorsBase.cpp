@@ -57,5 +57,9 @@ void ATargetableActorsBase::Die_Implementation()
 	CueParams.Location = GetActorLocation();
 	GetAbilitySystemComponent()->ExecuteGameplayCue(ComplyTags::GameplayCues::TargetableActorDeath, CueParams);
 	
+	bWasKilledByEnemies = true;
+	
+	UE_LOG(LogTemp, Warning, TEXT("Death cue"));
+	
 	Destroy();
 }

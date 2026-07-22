@@ -140,6 +140,17 @@ void ADeployableTurret::Destroyed()
 
 void ADeployableTurret::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+	// If the turret was not killed by enemies, play its death cue here. The reason for death would be turret lifetime
+	if (!bWasKilledByEnemies)
+	{
+		FGameplayCueParameters CueParams;
+		CueParams.Location = GetActorLocation();
+		GetAbilitySystemComponent()->ExecuteGameplayCue(ComplyTags::GameplayCues::TargetableActorDeath, CueParams);
+		
+		UE_LOG(LogTemp, Warning, TEXT("Death cue"));
+	}
+	
+	
 	if (PlaceTurretNiagaraComponent)
 	{
 		PlaceTurretNiagaraComponent->Deactivate();

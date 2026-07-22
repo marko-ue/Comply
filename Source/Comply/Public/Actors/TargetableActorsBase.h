@@ -39,6 +39,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> ASC;
 	
+	UPROPERTY(VisibleAnywhere)
+	bool bWasKilledByEnemies = false;
+	
 private:
 	UPROPERTY()
 	TObjectPtr<UComplyAttributeSet> AttributeSet;

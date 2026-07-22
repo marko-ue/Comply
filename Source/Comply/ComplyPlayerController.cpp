@@ -9,6 +9,8 @@
 #include "Comply.h"
 #include "Character/ComplyPlayerCharacter.h"
 #include "Framework/GameInstance/ComplyGameInstance.h"
+#include "Framework/GameMode/ComplyGameModeBase.h"
+#include "Framework/GameState/ComplyGameStateBase.h"
 #include "Framework/PlayerState/ComplyPlayerState.h"
 #include "Widgets/Input/SVirtualJoystick.h"
 
@@ -172,6 +174,17 @@ void AComplyPlayerController::Server_SelectCharacter_Implementation(TSubclassOf<
 		if (NewCharacter)
 		{
 			Possess(NewCharacter);
+		}
+		
+		if (AComplyGameModeBase* GM = GetWorld()->GetAuthGameMode<AComplyGameModeBase>())
+		{
+			if (AComplyGameStateBase* GS = GetWorld()->GetGameState<AComplyGameStateBase>())
+			{
+				// Updates the game state's variable whenever characters are changed
+				GS->bAllPlayersHaveUniqueClasses = GM->AllPlayersHaveUniqueCharacters();
+			}
+			// Broadcast the player selection delegate. The mission selection widget listens to this and updates itself for feedback
+			GM->OnPlayerSelectionChanged.Broadcast();
 		}
 	}
 }

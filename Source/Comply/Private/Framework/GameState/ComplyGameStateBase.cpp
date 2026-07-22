@@ -10,4 +10,5 @@ void AComplyGameStateBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
 	DOREPLIFETIME(ThisClass, bFriendlyFire);
+	DOREPLIFETIME(ThisClass, bAllPlayersHaveUniqueClasses);
 }

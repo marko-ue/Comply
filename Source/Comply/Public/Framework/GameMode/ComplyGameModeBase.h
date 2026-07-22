@@ -9,6 +9,9 @@
 /**
  * 
  */
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerSelectionChanged);
+
 UCLASS()
 class COMPLY_API AComplyGameModeBase : public AGameModeBase
 {
@@ -25,6 +28,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void TravelToMap(const FString& MapPath);
+	
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnPlayerSelectionChanged OnPlayerSelectionChanged;
 	
 protected:
 	virtual void BeginPlay() override;

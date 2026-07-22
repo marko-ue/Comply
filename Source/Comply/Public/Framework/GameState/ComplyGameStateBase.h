@@ -20,4 +20,8 @@ public:
 	// This replicated variable is used for clients to check if friendly fire is enabled. It's set internally by the GameMode
 	UPROPERTY(Replicated)
 	bool bFriendlyFire;
+	
+	// Used to globally track if all players have unique classes. Currently used so widgets can update their text without having to be constructed first
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	bool bAllPlayersHaveUniqueClasses = false;
 };

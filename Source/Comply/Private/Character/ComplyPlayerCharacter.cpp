@@ -434,6 +434,7 @@ void AComplyPlayerCharacter::PrimaryActionReleased()
 			GetAbilitySystemComponent()->CancelAbility(Spec.Ability);
 			
 			bIsFiring = false;
+			bFiredThisFrame = false;
 			break;
 		}
 	}

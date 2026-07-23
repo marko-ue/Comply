@@ -259,6 +259,13 @@ bool URangedWeaponAbilityBase::Fire()
 	if (AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo()))
 	{
 		ActiveWeapon = Character->GetEquippedPrimaryWeapon();
+		
+		// Automatic weapons directly use this variable for checking whether firing should continue
+		// so it's set to true when starting fire for them. For non-automatic weapons, this variable is only used to handle player rotation
+		if (RangedWeaponType == ERangedWeaponType::Automatic)
+		{
+			Character->bIsFiring = true;
+		}
 	}
 	
 	bool bFound = false;
@@ -441,7 +448,6 @@ void URangedWeaponAbilityBase::OnFireDelayFinished()
 	AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
 	if (!Character || !Character->bIsFiring)
 	{
-		GetAbilitySystemComponentFromActorInfo()->RemoveLooseGameplayTag(ComplyTags::States::State_FiringBlocked);
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 	}
 	else
@@ -491,12 +497,18 @@ void URangedWeaponAbilityBase::PlayMontageAndBindDelegates(const TObjectPtr<UAni
 	
 	GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
 	{
-		GetAbilitySystemComponentFromActorInfo()->SetLooseGameplayTagCount(ComplyTags::States::State_FiringBlocked, 1);
+		// This state is not used for automatic weapons. Firing is never blocked for them since they use a WaitDelay task and hold input
+		if (RangedWeaponType != ERangedWeaponType::Automatic)
+		{
+			// Firing should be blocked if another bullet can't be fired. Firing is only allowed again after the previous fire animation finishes
+			GetAbilitySystemComponentFromActorInfo()->SetLooseGameplayTagCount(ComplyTags::States::State_FiringBlocked, 1);
+		}
 	});
 }
 
 void URangedWeaponAbilityBase::OnMontageCompleted()
 {
+	// Remove tag and end ability so firing can be activated again
 	GetAbilitySystemComponentFromActorInfo()->RemoveLooseGameplayTag(ComplyTags::States::State_FiringBlocked);
 	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
@@ -506,6 +518,7 @@ void URangedWeaponAbilityBase::OnMontageCompleted()
 
 void URangedWeaponAbilityBase::OnMontageCancelled()
 {
+	// Remove tag and end ability so firing can be activated again
 	GetAbilitySystemComponentFromActorInfo()->RemoveLooseGameplayTag(ComplyTags::States::State_FiringBlocked);
 	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);

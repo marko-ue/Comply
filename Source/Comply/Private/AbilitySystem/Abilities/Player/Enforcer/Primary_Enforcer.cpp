@@ -24,13 +24,3 @@ bool UPrimary_Enforcer::Fire()
 	
 	return true;
 }
-
-void UPrimary_Enforcer::OnMontageCompleted()
-{
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-}
-
-void UPrimary_Enforcer::OnMontageCancelled()
-{
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
-}

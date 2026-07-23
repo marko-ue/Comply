@@ -44,13 +44,3 @@ bool UPrimary_Disruptor::Fire()
 	PlayAnimationBasedOnState();
 	return true;
 }
-
-void UPrimary_Disruptor::OnMontageCompleted()
-{
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-}
-
-void UPrimary_Disruptor::OnMontageCancelled()
-{
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
-}

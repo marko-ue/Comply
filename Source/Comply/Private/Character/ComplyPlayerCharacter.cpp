@@ -393,7 +393,10 @@ void AComplyPlayerCharacter::PrimaryActionPressed()
 		{
 			GetAbilitySystemComponent()->TryActivateAbility(Spec.Handle);
 			
-			bIsFiring = true;
+			if (!GetAbilitySystemComponent()->HasMatchingGameplayTag(ComplyTags::States::State_FiringBlocked))
+			{
+				bIsFiring = true;
+			}
 		}
 	}
 	

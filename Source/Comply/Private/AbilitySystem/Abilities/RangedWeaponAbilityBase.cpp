@@ -259,7 +259,6 @@ bool URangedWeaponAbilityBase::Fire()
 	if (AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo()))
 	{
 		ActiveWeapon = Character->GetEquippedPrimaryWeapon();
-		Character->bIsFiring = true;
 	}
 	
 	bool bFound = false;
@@ -442,6 +441,7 @@ void URangedWeaponAbilityBase::OnFireDelayFinished()
 	AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
 	if (!Character || !Character->bIsFiring)
 	{
+		GetAbilitySystemComponentFromActorInfo()->RemoveLooseGameplayTag(ComplyTags::States::State_FiringBlocked);
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 	}
 	else
@@ -478,18 +478,39 @@ void URangedWeaponAbilityBase::PlayMontageAndBindDelegates(const TObjectPtr<UAni
 	{
 		PlayActivationMontageTask->EndTask();
 	}
-	
-	checkf(AnimationToPlay, TEXT("Ability Activation Montage not set"));
-	
+
 	PlayActivationMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-	this, NAME_None, AnimationToPlay, 1.f, NAME_None, true);
-	
+		this, NAME_None, AnimationToPlay, 1.f, NAME_None, true);
+
 	PlayActivationMontageTask->OnCompleted.AddDynamic(this, &URangedWeaponAbilityBase::OnMontageCompleted);
 	PlayActivationMontageTask->OnBlendOut.AddDynamic(this, &URangedWeaponAbilityBase::OnMontageCompleted);
 	PlayActivationMontageTask->OnCancelled.AddDynamic(this, &URangedWeaponAbilityBase::OnMontageCancelled);
 	PlayActivationMontageTask->OnInterrupted.AddDynamic(this, &URangedWeaponAbilityBase::OnMontageCancelled);
-	
+
 	PlayActivationMontageTask->ReadyForActivation();
+	
+	GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
+	{
+		GetAbilitySystemComponentFromActorInfo()->SetLooseGameplayTagCount(ComplyTags::States::State_FiringBlocked, 1);
+	});
+}
+
+void URangedWeaponAbilityBase::OnMontageCompleted()
+{
+	GetAbilitySystemComponentFromActorInfo()->RemoveLooseGameplayTag(ComplyTags::States::State_FiringBlocked);
+	
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+	
+	Super::OnMontageCompleted();
+}
+
+void URangedWeaponAbilityBase::OnMontageCancelled()
+{
+	GetAbilitySystemComponentFromActorInfo()->RemoveLooseGameplayTag(ComplyTags::States::State_FiringBlocked);
+	
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
+	
+	Super::OnMontageCancelled();
 }
 
 void URangedWeaponAbilityBase::InputReleased(const FGameplayAbilitySpecHandle Handle,

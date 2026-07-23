@@ -59,7 +59,5 @@ void ATargetableActorsBase::Die_Implementation()
 	
 	bWasKilledByEnemies = true;
 	
-	UE_LOG(LogTemp, Warning, TEXT("Death cue"));
-	
 	Destroy();
 }

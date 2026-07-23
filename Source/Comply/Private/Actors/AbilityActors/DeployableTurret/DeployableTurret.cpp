@@ -146,10 +146,7 @@ void ADeployableTurret::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		FGameplayCueParameters CueParams;
 		CueParams.Location = GetActorLocation();
 		GetAbilitySystemComponent()->ExecuteGameplayCue(ComplyTags::GameplayCues::TargetableActorDeath, CueParams);
-		
-		UE_LOG(LogTemp, Warning, TEXT("Death cue"));
 	}
-	
 	
 	if (PlaceTurretNiagaraComponent)
 	{

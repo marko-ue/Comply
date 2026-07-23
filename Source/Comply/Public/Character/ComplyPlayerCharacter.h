@@ -129,6 +129,9 @@ public:
 	bool bIsFiring = false;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool bFiredThisFrame = false;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool bIsReloading = false;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Meshes")

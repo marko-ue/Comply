@@ -395,7 +395,7 @@ void AComplyPlayerCharacter::PrimaryActionPressed()
 			
 			if (!GetAbilitySystemComponent()->HasMatchingGameplayTag(ComplyTags::States::State_FiringBlocked))
 			{
-				bIsFiring = true;
+				bFiredThisFrame = true;
 			}
 		}
 	}

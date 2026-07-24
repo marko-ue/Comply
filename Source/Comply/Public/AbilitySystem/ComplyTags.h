@@ -112,5 +112,8 @@ namespace ComplyTags
 		
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(EnemyAttack)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(EnemyDeath)
+		
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(PlayerReviveStart)
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(PlayerReviveEnd)
 	}
 }

@@ -110,5 +110,8 @@ namespace ComplyTags
 		
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(EnemyAttack, "GameplayCue.Enemy.Attack", "Gameplay cue for when enemies attack")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(EnemyDeath, "GameplayCue.Enemy.Death", "Gameplay cue tag for when enemies die")
+		
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(PlayerReviveStart, "GameplayCue.Player.ReviveStart", "Gameplay cue tag for when reviving a player starts")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(PlayerReviveEnd, "GameplayCue.Player.ReviveEnd", "Gameplay cue tag for when a player is revived")
 	}
 }

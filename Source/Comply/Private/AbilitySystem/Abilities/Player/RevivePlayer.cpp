@@ -4,9 +4,11 @@
 #include "AbilitySystem/Abilities/Player/RevivePlayer.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
 #include "Comply.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
+#include "AbilitySystem/ComplyTags.h"
 #include "Character/ComplyPlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -83,6 +85,12 @@ void URevivePlayer::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		}
 	}
 	
+	if (!Reviver || !TargetPlayer)
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+		return;
+	}
+	
 	MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 	this, NAME_None, Reviver->ReviveMontage);
 
@@ -90,6 +98,10 @@ void URevivePlayer::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	MontageTask->OnInterrupted.AddDynamic(this, &URevivePlayer::OnMontageCancelled);
 	MontageTask->OnCancelled.AddDynamic(this, &URevivePlayer::OnMontageCancelled);
 	MontageTask->ReadyForActivation();
+	
+	FGameplayCueParameters CueParams;
+	CueParams.Location = TargetPlayer->GetActorLocation();
+	GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::PlayerReviveStart, CueParams);
 }
 
 void URevivePlayer::OnMontageCompleted()
@@ -97,6 +109,10 @@ void URevivePlayer::OnMontageCompleted()
 	if (Reviver && TargetPlayer->bIsDowned)
 	{
 		Reviver->Server_ReviveTarget(TargetPlayer);
+		
+		FGameplayCueParameters CueParams;
+		CueParams.Location = TargetPlayer->GetActorLocation();
+		GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::PlayerReviveEnd, CueParams);
 	}
 	
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);

@@ -6,6 +6,7 @@
 #include "Abilities/GameplayAbility.h"
 #include "RevivePlayer.generated.h"
 
+class UAbilityTask_PlayMontageAndWait;
 class AComplyPlayerCharacter;
 /**
  * 
@@ -21,7 +22,10 @@ protected:
 	
 private:
 	UFUNCTION()
-	void OnHoldComplete();
+	void OnMontageCompleted();
+	
+	UFUNCTION()
+	void OnMontageCancelled();
 	
 	UPROPERTY()
 	TObjectPtr<AComplyPlayerCharacter> Reviver;
@@ -34,4 +38,7 @@ private:
 	
 	UPROPERTY(EditAnywhere)
 	float ReviveSphereTraceRadius = 100.f;
+	
+	UPROPERTY()
+	UAbilityTask_PlayMontageAndWait* MontageTask;
 };

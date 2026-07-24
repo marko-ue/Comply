@@ -5,9 +5,9 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Comply.h"
+#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "Character/ComplyPlayerCharacter.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -75,15 +75,24 @@ void URevivePlayer::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 				}
 			}
 		}
+		else if (IsLocallyControlled())
+		{
+			// Trace didn't hit a downed player for the client, return early
+			EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+			return;
+		}
 	}
 	
-	// After 5 seconds, revive the player. This ability is canceled if input is released before 5 seconds are up
-	UAbilityTask_WaitDelay* WaitTask = UAbilityTask_WaitDelay::WaitDelay(this, ReviveTime);
-	WaitTask->OnFinish.AddDynamic(this, &URevivePlayer::OnHoldComplete);
-	WaitTask->ReadyForActivation();
+	MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
+	this, NAME_None, Reviver->ReviveMontage);
+
+	MontageTask->OnCompleted.AddDynamic(this, &URevivePlayer::OnMontageCompleted);
+	MontageTask->OnInterrupted.AddDynamic(this, &URevivePlayer::OnMontageCancelled);
+	MontageTask->OnCancelled.AddDynamic(this, &URevivePlayer::OnMontageCancelled);
+	MontageTask->ReadyForActivation();
 }
 
-void URevivePlayer::OnHoldComplete()
+void URevivePlayer::OnMontageCompleted()
 {
 	if (Reviver && TargetPlayer->bIsDowned)
 	{
@@ -93,8 +102,13 @@ void URevivePlayer::OnHoldComplete()
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
+void URevivePlayer::OnMontageCancelled()
+{
+	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, true);
+}
+
 void URevivePlayer::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+                               const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	AComplyPlayerCharacter* Avatar = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
 	if (Avatar)
@@ -111,5 +125,5 @@ void URevivePlayer::EndAbility(const FGameplayAbilitySpecHandle Handle, const FG
 		}
 	}
 	
-	Super::EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

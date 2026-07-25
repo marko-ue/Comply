@@ -15,27 +15,44 @@ UAttack_Robot::UAttack_Robot()
 }
 
 void UAttack_Robot::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-                                        const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-                                        const FGameplayEventData* TriggerEventData)
+										const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+										const FGameplayEventData* TriggerEventData)
 {
 	if (!CommitAbility(Handle, ActorInfo, ActivationInfo)) return; 
-	
+    
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	
+    
 	if (TriggerEventData && TriggerEventData->Target)
 	{
 		TargetActor = const_cast<AActor*>(TriggerEventData->Target.Get());
 	}
-	
+    
 	UAbilityTask_PlayMontageAndWait* AttackMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-		this, NAME_None, AttackMontage, 1.f, NAME_None, true);
+	   this, NAME_None, AttackMontage, 1.f, NAME_None, true);
 	AttackMontageTask->OnCompleted.AddDynamic(this, &ThisClass::OnAttackAnimationFinished);
 	AttackMontageTask->ReadyForActivation();
 
-	if (TargetActor)
+	if (TargetActor && CanHitTarget(TargetActor))
 	{
 		CauseDamage(TargetActor, Damage.GetValueAtLevel(GetAbilityLevel()));
 	}
+}
+
+bool UAttack_Robot::CanHitTarget(AActor* Target) const
+{
+	AActor* Avatar = GetAvatarActorFromActorInfo();
+	if (!Avatar || !Target) return false;
+
+	FHitResult Hit;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(Avatar);
+
+	const bool bBlocked = GetWorld()->LineTraceSingleByChannel(
+		Hit, Avatar->GetActorLocation(), Target->GetActorLocation(), ECC_Visibility, Params
+	);
+
+	// Will only count as a hit if the target hit was the target player and nothing was between them
+	return !bBlocked || Hit.GetActor() == Target;
 }
 
 void UAttack_Robot::OnAttackAnimationFinished()

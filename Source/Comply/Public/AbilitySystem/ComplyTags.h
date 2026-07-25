@@ -70,6 +70,7 @@ namespace ComplyTags
 	{
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_MeleeAttackRobot);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_AttackTank);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_ChargeAttackTank)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_AttackMech)
 		
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_RevivePlayer)

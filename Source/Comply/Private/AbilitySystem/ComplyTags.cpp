@@ -37,7 +37,8 @@ namespace ComplyTags
 	namespace Events
 	{
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_MeleeAttackRobot, "ComplyTags.Events.Abilities.MeleeAttackRobot", "Event tag for activating the melee attack robot ability")
-		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_AttackTank, "ComplyTags.Events.Abilities.AttackTank", "Event tag for activating the attack robot ability")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_AttackTank, "ComplyTags.Events.Abilities.AttackTank", "Event tag for activating the attack tank ability")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_ChargeAttackTank, "ComplyTags.Events.Abilities.ChargeAttackTank", "Event tag for activating the charge attack tank ability")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_AttackMech, "ComplyTags.Events.Abilities.AttackMech", "Event tag for activating the attack mech ability")
 		
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_RevivePlayer, "ComplyTags.Events.Abilities.RevivePlayer", "Event tag for activating the revive player ability")

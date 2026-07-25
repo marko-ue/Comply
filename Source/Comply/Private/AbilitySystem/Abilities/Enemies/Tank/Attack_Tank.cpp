@@ -34,6 +34,8 @@ void UAttack_Tank::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	
 	FVector EnemyLocation = GetAvatarActorFromActorInfo()->GetActorLocation();
 	FVector EnemyForward = GetAvatarActorFromActorInfo()->GetActorForwardVector();
+	
+	bool bHitAnything = false;
 
 	// Collect all candidates - players + any other targetable actors in range
 	TArray<AActor*> Candidates;
@@ -71,7 +73,20 @@ void UAttack_Tank::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 			if (DotProduct >= ConeHalfAngleDot)
 			{
 				CauseDamage(Candidate, Damage.GetValueAtLevel(GetAbilityLevel()));
+				bHitAnything = true;
 			}
+		}
+	}
+	
+	// Also charge if the target actor gets hit
+	if (bHitAnything)
+	{
+		UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
+		if (ASC)
+		{
+			FGameplayEventData ChargeEventData;
+			ChargeEventData.Target = TargetActor;
+			ASC->HandleGameplayEvent(ComplyTags::Events::Event_ChargeAttackTank, &ChargeEventData);
 		}
 	}
 }

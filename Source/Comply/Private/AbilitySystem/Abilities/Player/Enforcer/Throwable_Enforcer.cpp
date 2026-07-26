@@ -31,6 +31,15 @@ void UThrowable_Enforcer::ThrowOnServer(FVector LaunchVelocity, FVector SpawnPos
 	{
 		SpawnPreview(GetCurrentActorInfo());
 	}
+	
+	if (GetCurrentActorInfo()->IsNetAuthority() && !GetCurrentActorInfo()->IsLocallyControlled())
+	{
+		// On the server, bind to the target data callback and wait for the client to send confirmed placement location via target data
+		GetAbilitySystemComponentFromActorInfo()->AbilityTargetDataSetDelegate(
+			GetCurrentAbilitySpecHandle(),
+			GetCurrentActivationInfo().GetActivationPredictionKey()
+		).AddUObject(this, &UThrowable_Enforcer::OnTargetDataReceived);
+	}
 }
 
 void UThrowable_Enforcer::SpawnPreview(const FGameplayAbilityActorInfo* ActorInfo)
@@ -57,38 +66,62 @@ void UThrowable_Enforcer::SpawnPreview(const FGameplayAbilityActorInfo* ActorInf
 
 void UThrowable_Enforcer::PlayPlaceTurretAnimation()
 {
-	UAbilityTask_PlayMontageAndWait* PlaceTurretMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-		this, NAME_None, PlaceTurretMontage, 1.f, NAME_None, true);
-	PlaceTurretMontageTask->OnCompleted.AddDynamic(this, &UThrowable_Enforcer::ConfirmThrow);
-	PlaceTurretMontageTask->OnCancelled.AddDynamic(this, &UThrowable_Enforcer::PlaceTurretAnimationInterrupted);
-	PlaceTurretMontageTask->OnInterrupted.AddDynamic(this, &UThrowable_Enforcer::PlaceTurretAnimationInterrupted);
-	
-	// If the turret is placed in a valid location, play the animation
-	if (SpawnedTurretPreviewActor->bCanPlace)
-	{
-		SpawnedTurretPreviewActor->bShouldUpdatePosition = false;
-		
-		PlaceTurretMontageTask->ReadyForActivation();
-		
-		// Bypass ASC replication, trigger directly on local client only
-		UGameplayCueManager* CueManager = UAbilitySystemGlobals::Get().GetGameplayCueManager();
-		if (CueManager)
-		{
-			FGameplayCueParameters CueParams;
-			CueParams.Location = GetAvatarActorFromActorInfo()->GetActorLocation();
-			CueManager->HandleGameplayCue(GetAvatarActorFromActorInfo(),
-				ComplyTags::GameplayCues::TurretTyping,
-				EGameplayCueEvent::WhileActive, CueParams);
-		}
-	}
-	else
-	{
-		// Re-create the task so the player can try placing again
-		WaitConfirm = UAbilityTask_WaitConfirmCancel::WaitConfirmCancel(this);
-		WaitConfirm->OnConfirm.AddDynamic(this, &ThisClass::PlayPlaceTurretAnimation);
-		WaitConfirm->OnCancel.AddDynamic(this, &ThisClass::PlayPlaceTurretAnimation);
-		WaitConfirm->ReadyForActivation();
-	}
+    UAbilityTask_PlayMontageAndWait* PlaceTurretMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
+        this, NAME_None, PlaceTurretMontage, 1.f, NAME_None, true);
+    PlaceTurretMontageTask->OnCompleted.AddDynamic(this, &UThrowable_Enforcer::ConfirmThrow);
+    PlaceTurretMontageTask->OnCancelled.AddDynamic(this, &UThrowable_Enforcer::PlaceTurretAnimationInterrupted);
+    PlaceTurretMontageTask->OnInterrupted.AddDynamic(this, &UThrowable_Enforcer::PlaceTurretAnimationInterrupted);
+    
+    if (SpawnedTurretPreviewActor->bCanPlace)
+    {
+        SpawnedTurretPreviewActor->bShouldUpdatePosition = false;
+        PlaceTurretMontageTask->ReadyForActivation();
+
+        if (GetCurrentActorInfo()->IsLocallyControlled() && GetCurrentActorInfo()->IsNetAuthority())
+        {
+            // On the server the preview already exists locally. Replicate it for simulated proxies.
+            SpawnedTurretPreviewActor->SetReplicates(true);
+        }
+        else if (GetCurrentActorInfo()->IsLocallyControlled() && !GetCurrentActorInfo()->IsNetAuthority())
+        {
+            // The client sends confirmed placement location and rotation to the server
+            FGameplayAbilityTargetData_SingleTargetHit* TargetData = new FGameplayAbilityTargetData_SingleTargetHit();
+            TargetData->HitResult = SpawnedTurretPreviewActor->LastPlacementHit;
+        	TargetData->HitResult.ImpactNormal = SpawnedTurretPreviewActor->PlacementRotation.Vector();
+
+            FGameplayAbilityTargetDataHandle TargetDataHandle;
+            TargetDataHandle.Add(TargetData);
+
+            if (UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo())
+            {
+                ASC->ServerSetReplicatedTargetData(
+                    GetCurrentAbilitySpecHandle(), 
+                    GetCurrentActivationInfo().GetActivationPredictionKey(),
+                    TargetDataHandle,
+                    FGameplayTag(),
+                    ASC->ScopedPredictionKey
+                );
+            }
+        }
+        
+        // Bypass ASC replication, trigger directly on local client only
+        UGameplayCueManager* CueManager = UAbilitySystemGlobals::Get().GetGameplayCueManager();
+        if (CueManager)
+        {
+            FGameplayCueParameters CueParams;
+            CueParams.Location = GetAvatarActorFromActorInfo()->GetActorLocation();
+            CueManager->HandleGameplayCue(GetAvatarActorFromActorInfo(),
+                ComplyTags::GameplayCues::TurretTyping,
+                EGameplayCueEvent::WhileActive, CueParams);
+        }
+    }
+    else
+    {
+        WaitConfirm = UAbilityTask_WaitConfirmCancel::WaitConfirmCancel(this);
+        WaitConfirm->OnConfirm.AddDynamic(this, &ThisClass::PlayPlaceTurretAnimation);
+        WaitConfirm->OnCancel.AddDynamic(this, &ThisClass::PlayPlaceTurretAnimation);
+        WaitConfirm->ReadyForActivation();
+    }
 }
 
 void UThrowable_Enforcer::PlaceTurretAnimationInterrupted()
@@ -102,6 +135,37 @@ void UThrowable_Enforcer::PlaceTurretAnimationInterrupted()
 		CueManager->HandleGameplayCue(GetAvatarActorFromActorInfo(),
 			ComplyTags::GameplayCues::TurretTyping,
 			EGameplayCueEvent::Removed, CueParams);
+	}
+}
+
+// Handles spawning and replicating the preview actor at the client's sent placement location and rotation
+void UThrowable_Enforcer::OnTargetDataReceived(const FGameplayAbilityTargetDataHandle& DataHandle,
+	FGameplayTag ApplicationTag)
+{
+	GetAbilitySystemComponentFromActorInfo()->ConsumeClientReplicatedTargetData(
+		GetCurrentAbilitySpecHandle(),
+		GetCurrentActivationInfo().GetActivationPredictionKey()
+	);
+
+	if (!DataHandle.IsValid(0)) return;
+
+	const FHitResult* HitResult = DataHandle.Get(0)->GetHitResult();
+	if (!HitResult) return;
+	
+	AActor* Avatar = GetCurrentActorInfo()->AvatarActor.Get();
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = Avatar;
+	SpawnParams.Instigator = Cast<APawn>(Avatar);
+
+	SpawnedTurretPreviewActor = GetWorld()->SpawnActor<ADeployableTurretPreview>(
+		TurretPreviewActorClass, HitResult->ImpactPoint, HitResult->ImpactNormal.Rotation(), SpawnParams
+	);
+
+	if (SpawnedTurretPreviewActor)
+	{
+		SpawnedTurretPreviewActor->bShouldUpdatePosition = false;
+		SpawnedTurretPreviewActor->SetReplicates(true);
 	}
 }
 

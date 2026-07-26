@@ -62,4 +62,7 @@ private:
 	
 	UPROPERTY()
 	UAbilityTask_WaitConfirmCancel* WaitConfirm;
+	
+	UFUNCTION()
+	void OnTargetDataReceived(const FGameplayAbilityTargetDataHandle& DataHandle, FGameplayTag ApplicationTag);
 };

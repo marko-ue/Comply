@@ -25,6 +25,8 @@ public:
 	bool bCanPlace = false;
 	bool bShouldUpdatePosition = true;
 	
+	UPROPERTY()
+	FHitResult LastPlacementHit;
 	FVector PlacementLocation;
 	FRotator PlacementRotation;
 	

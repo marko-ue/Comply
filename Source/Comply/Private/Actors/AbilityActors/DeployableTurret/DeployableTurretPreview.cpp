@@ -87,6 +87,9 @@ void ADeployableTurretPreview::UpdatePosition()
 			if (bCanPlace)
 			{
 				NewLocation = Hit.ImpactPoint;
+				// Stores the last placement hit which the ability spawning this actor will use for the target data callback
+				// which handles enabling replication and spawning the turret at the impact point, to show where a turret is about to be placed
+				LastPlacementHit = Hit;
 				FindComponentByClass<UStaticMeshComponent>()->SetMaterial(0, ValidMaterial);
 			}
 			else

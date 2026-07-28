@@ -3,24 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "Actors/AbilityActors/ThrowablePreviewBase.h"
 #include "DecoyGrenadePreview.generated.h"
 
 UCLASS()
-class COMPLY_API ADecoyGrenadePreview : public AActor
+class COMPLY_API ADecoyGrenadePreview : public AThrowablePreviewBase
 {
 	GENERATED_BODY()
 
 public:
 	ADecoyGrenadePreview();
-	
-	UPROPERTY()
-	TArray<TObjectPtr<AActor>> ActorsToIgnore;
-	
-	UPROPERTY()
-	TObjectPtr<APawn> OwningPawn;
-	
-	float ThrowSpeed;
 
 protected:
 	virtual void BeginPlay() override;

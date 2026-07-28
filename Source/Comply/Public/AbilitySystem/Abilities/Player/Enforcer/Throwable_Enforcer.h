@@ -21,7 +21,7 @@ public:
 	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
 	
 	UFUNCTION()
-	virtual void ConfirmThrow() override;
+	void ConfirmPlace();
 	
 	UPROPERTY()
 	TObjectPtr<ADeployableTurretPreview> SpawnedTurretPreviewActor = nullptr;
@@ -41,12 +41,14 @@ protected:
 	
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 	
-	void SpawnPreview(const FGameplayAbilityActorInfo* ActorInfo);
+	virtual void SpawnPreview() override;
 
-	virtual void ThrowOnServer(FVector LaunchVelocity, FVector SpawnPosition) override;
+	void PlaceOnServer(FVector LaunchVelocity, FVector SpawnPosition);
 	
 	UFUNCTION()
-	virtual void CancelThrow() override;
+	void CancelThrow();
+	
+	virtual FGameplayAttribute GetThrowableCurrentChargesAttribute() override;
 	
 private:
 	void PlaceTurret();

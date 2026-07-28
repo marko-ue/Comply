@@ -12,6 +12,7 @@
 #include "Actors/AbilityActors/BuffTotem/BuffTotem.h"
 #include "Actors/AbilityActors/DecoyGrenade/DecoyGrenade.h"
 #include "Actors/AbilityActors/DeployableTurret/DeployableTurret.h"
+#include "Interface/Player/WeaponInterface.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -62,7 +63,7 @@ void UComplyAbilitySystemComponent::Server_ThrowPlasmaGrenade_Implementation(FGa
 	const FTransform SpawnTransform(SpawnRotation, SpawnLocation);
 	
 	APlasmaGrenade* Grenade = GetWorld()->SpawnActorDeferred<APlasmaGrenade>(
-		Ability->GrenadeActorClass,
+		Ability->ThrowableActorClass,
 		SpawnTransform, GetOwnerActor(),
 		InstigatorPawn,
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
@@ -116,7 +117,7 @@ void UComplyAbilitySystemComponent::Server_ThrowDecoyGrenade_Implementation(FGam
 	const FTransform SpawnTransform(SpawnRotation, SpawnLocation);
 	
 	ADecoyGrenade* DecoyGrenade = GetWorld()->SpawnActorDeferred<ADecoyGrenade>(
-		Ability->DecoyGrenadeActorClass,
+		Ability->ThrowableActorClass,
 		SpawnTransform, GetOwnerActor(),
 		InstigatorPawn,
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn

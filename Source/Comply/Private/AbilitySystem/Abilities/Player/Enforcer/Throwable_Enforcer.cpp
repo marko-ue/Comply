@@ -10,9 +10,9 @@
 #include "AbilitySystem/ComplyAbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "AbilitySystem/ComplyTags.h"
+#include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
 #include "Actors/AbilityActors/DeployableTurret/DeployableTurretPreview.h"
 #include "GameFramework/Character.h"
-#include "Kismet/GameplayStatics.h"
 
 
 void UThrowable_Enforcer::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -21,15 +21,15 @@ void UThrowable_Enforcer::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
-	ThrowOnServer(FVector::ZeroVector, FVector::ZeroVector);
+	PlaceOnServer(FVector::ZeroVector, FVector::ZeroVector);
 }
 
-void UThrowable_Enforcer::ThrowOnServer(FVector LaunchVelocity, FVector SpawnPosition)
+void UThrowable_Enforcer::PlaceOnServer(FVector LaunchVelocity, FVector SpawnPosition)
 {
 	// The preview for the turret will be shown only on the owning client
 	if (GetCurrentActorInfo()->IsLocallyControlled())
 	{
-		SpawnPreview(GetCurrentActorInfo());
+		SpawnPreview();
 	}
 	
 	if (GetCurrentActorInfo()->IsNetAuthority() && !GetCurrentActorInfo()->IsLocallyControlled())
@@ -41,7 +41,7 @@ void UThrowable_Enforcer::ThrowOnServer(FVector LaunchVelocity, FVector SpawnPos
 	}
 }
 
-void UThrowable_Enforcer::SpawnPreview(const FGameplayAbilityActorInfo* ActorInfo)
+void UThrowable_Enforcer::SpawnPreview()
 {
 	// Input is confirmed when the primary input is pressed again
 	WaitConfirm = UAbilityTask_WaitConfirmCancel::WaitConfirmCancel(this);
@@ -64,7 +64,7 @@ void UThrowable_Enforcer::SpawnPreview(const FGameplayAbilityActorInfo* ActorInf
 
 	if (SpawnedTurretPreviewActor)
 	{
-		SpawnedTurretPreviewActor->InitPreviewData(Cast<ACharacter>(ActorInfo->AvatarActor.Get()));
+		SpawnedTurretPreviewActor->InitPreviewData(Cast<ACharacter>(GetCurrentActorInfo()->AvatarActor.Get()));
 	}
 }
 
@@ -72,7 +72,7 @@ void UThrowable_Enforcer::PlayPlaceTurretAnimation()
 {
 	UAbilityTask_PlayMontageAndWait* PlaceTurretMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 		this, NAME_None, PlaceTurretMontage, 1.f, NAME_None, true);
-	PlaceTurretMontageTask->OnCompleted.AddDynamic(this, &UThrowable_Enforcer::ConfirmThrow);
+	PlaceTurretMontageTask->OnCompleted.AddDynamic(this, &UThrowable_Enforcer::ConfirmPlace);
 	PlaceTurretMontageTask->OnCancelled.AddDynamic(this, &UThrowable_Enforcer::PlaceTurretAnimationInterrupted);
 	PlaceTurretMontageTask->OnInterrupted.AddDynamic(this, &UThrowable_Enforcer::PlaceTurretAnimationInterrupted);
 	PlaceTurretMontageTask->ReadyForActivation();
@@ -173,13 +173,13 @@ void UThrowable_Enforcer::OnTargetDataReceived(const FGameplayAbilityTargetDataH
 	
 	UAbilityTask_PlayMontageAndWait* PlaceTurretMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 		this, NAME_None, PlaceTurretMontage, 1.f, NAME_None, true);
-	PlaceTurretMontageTask->OnCompleted.AddDynamic(this, &UThrowable_Enforcer::ConfirmThrow);
+	PlaceTurretMontageTask->OnCompleted.AddDynamic(this, &UThrowable_Enforcer::ConfirmPlace);
 	PlaceTurretMontageTask->OnCancelled.AddDynamic(this, &UThrowable_Enforcer::PlaceTurretAnimationInterrupted);
 	PlaceTurretMontageTask->OnInterrupted.AddDynamic(this, &UThrowable_Enforcer::PlaceTurretAnimationInterrupted);
 	PlaceTurretMontageTask->ReadyForActivation();
 }
 
-void UThrowable_Enforcer::ConfirmThrow()
+void UThrowable_Enforcer::ConfirmPlace()
 {
 	GetAbilitySystemComponentFromActorInfo()->RemoveGameplayCue(ComplyTags::GameplayCues::TurretTyping);
 	
@@ -196,7 +196,7 @@ void UThrowable_Enforcer::ConfirmThrow()
         {
             // Re-create the task so the player can try placing again
             WaitConfirm = UAbilityTask_WaitConfirmCancel::WaitConfirmCancel(this);
-            WaitConfirm->OnConfirm.AddDynamic(this, &ThisClass::ConfirmThrow);
+            WaitConfirm->OnConfirm.AddDynamic(this, &ThisClass::ConfirmPlace);
             WaitConfirm->OnCancel.AddDynamic(this, &ThisClass::CancelThrow);
             WaitConfirm->ReadyForActivation();
             return;
@@ -214,14 +214,24 @@ void UThrowable_Enforcer::PlaceTurret()
 	
 	FVector TraceStart, TraceEnd, TraceDirection;
 	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, Avatar, 0.f, TraceStart, TraceEnd, TraceDirection)) return;
-
+	
+	FVector Start = TraceDirection;
+	
+	if (Avatar)
+	{
+		float DistanceToCharacter = (Avatar->GetActorLocation() - Start).Size();
+		Start += TraceDirection * (DistanceToCharacter + 100);
+	}
+	
+	FVector End = Start + TraceDirection * 500;
+	
 	FHitResult Hit;
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(Avatar);
 	
-	if (GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_WorldStatic, Params))
+	FVector SpawnLocation = Start;
+	if (GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_WorldStatic, Params))
 	{
-		FVector SpawnLocation = TraceStart;
 		SpawnLocation = Hit.ImpactPoint;
 	}
 	
@@ -247,6 +257,11 @@ void UThrowable_Enforcer::PlaceTurret()
 		SpawnedTurretPreviewActor->Destroy();
 		SpawnedTurretPreviewActor = nullptr;
 	}
+}
+
+FGameplayAttribute UThrowable_Enforcer::GetThrowableCurrentChargesAttribute()
+{
+	return UWeaponAttributeSet::GetTurretCurrentChargesAttribute();
 }
 
 void UThrowable_Enforcer::CancelThrow()

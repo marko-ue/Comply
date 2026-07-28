@@ -45,7 +45,7 @@ private:
 	void TraceAndSpawnShield();
 	
 	// This will be a scalable float in the future for upgrades
-	UPROPERTY(EditAnywhere, Category = "Ability Properties")
+	UPROPERTY(EditAnywhere, Category = "Shield Settings")
 	float ShieldLifetime = 10.f;
 	
 	void SpawnPreview(const FGameplayAbilityActorInfo* ActorInfo);

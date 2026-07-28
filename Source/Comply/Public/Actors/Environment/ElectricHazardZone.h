@@ -32,24 +32,24 @@ protected:
 	virtual void BeginPlay() override;
 	
 private:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Components")
 	TObjectPtr<UAbilitySystemComponent> ASC;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Components")
 	TObjectPtr<UBoxComponent> BoxComp;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Effects")
 	TObjectPtr<UNiagaraComponent> ElectricEffect;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Audio")
 	TObjectPtr<UAudioComponent> ElectricSound;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
 	
 	FActiveGameplayEffectHandle ActiveDamageEffectHandle;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
 	TSubclassOf<UGameplayEffect> StunEffectClass;
 	
 	FActiveGameplayEffectHandle ActiveStunEffectHandle;
@@ -72,9 +72,9 @@ private:
 	UPROPERTY()
 	TSet<TObjectPtr<AActor>> AffectedActors;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Electric Zone Settings")
 	FGameplayTag DamageType;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Electric Zone Settings")
 	FScalableFloat ExplicitDamage = 10.f;
 };

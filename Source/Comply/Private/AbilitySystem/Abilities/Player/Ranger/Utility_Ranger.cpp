@@ -15,6 +15,7 @@
 void UUtility_Ranger::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+	
 	Use();
 }
 
@@ -38,15 +39,17 @@ void UUtility_Ranger::SpawnPreview(const FGameplayAbilityActorInfo* ActorInfo)
 {
 	AActor* Avatar = GetCurrentActorInfo()->AvatarActor.Get();
 	if (!Avatar) return;
-
-	FVector Forward = Avatar->GetActorForwardVector();
-	FVector Start = Avatar->GetActorLocation() + Forward * 150.f;
-
+	
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = Avatar;
 	SpawnParams.Instigator = Cast<APawn>(Avatar);
 
-	SpawnedShieldPreviewActor = GetWorld()->SpawnActor<AShieldDomePreview>(ShieldPreviewActorClass, GetAvatarActorFromActorInfo()->GetActorLocation(), FRotator::ZeroRotator, SpawnParams);
+	SpawnedShieldPreviewActor = GetWorld()->SpawnActor<AShieldDomePreview>(
+		ShieldPreviewActorClass,
+		GetAvatarActorFromActorInfo()->GetActorLocation(),
+		FRotator::ZeroRotator,
+		SpawnParams
+	);
 
 	if (SpawnedShieldPreviewActor)
 	{
@@ -125,8 +128,7 @@ void UUtility_Ranger::TraceAndSpawnShield()
 	GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::ShieldPlaced, CueParams);
 	
 	// Automatically equip the primary ability once the shield is thrown, as the player should not be able to equip the shield while it's on cooldown
-	GetAbilitySystemComponentFromActorInfo()->TryActivateAbilitiesByTag(
-				FGameplayTagContainer(ComplyTags::ComplyAbilities::AssetTags::Equip_Primary));
+	GetAbilitySystemComponentFromActorInfo()->TryActivateAbilitiesByTag(FGameplayTagContainer(ComplyTags::ComplyAbilities::AssetTags::Equip_Primary));
 	
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }

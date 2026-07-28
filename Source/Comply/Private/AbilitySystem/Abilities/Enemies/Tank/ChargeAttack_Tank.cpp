@@ -63,8 +63,8 @@ void UChargeAttack_Tank::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 
     // Pause AI so the navmesh doesn't override the CMC velocity that's about to be set
     APawn* AIPawn = Cast<APawn>(ActorInfo->AvatarActor.Get());
-    AAIController* AIC = AIPawn ? Cast<AAIController>(AIPawn->GetController()) : nullptr;
-    if (AIC)
+    
+    if (AAIController* AIC = AIPawn ? Cast<AAIController>(AIPawn->GetController()) : nullptr)
     {
         AIC->StopMovement();
         AIC->GetBrainComponent()->PauseLogic("Charging");
@@ -101,7 +101,7 @@ void UChargeAttack_Tank::OnAttackAnimationFinished()
 }
 
 // Restores all CMC settings to defaults. Called when the ability ends or gets canceled
-void UChargeAttack_Tank::RestoreMovement(const FGameplayAbilityActorInfo* ActorInfo)
+void UChargeAttack_Tank::RestoreMovement(const FGameplayAbilityActorInfo* ActorInfo) const
 {
     if (!ActorInfo) return;
 

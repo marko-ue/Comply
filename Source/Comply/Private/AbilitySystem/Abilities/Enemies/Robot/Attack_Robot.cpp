@@ -40,7 +40,7 @@ void UAttack_Robot::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 bool UAttack_Robot::CanHitTarget(AActor* Target) const
 {
-	AActor* Avatar = GetAvatarActorFromActorInfo();
+	const AActor* Avatar = GetAvatarActorFromActorInfo();
 	if (!Avatar || !Target) return false;
 
 	FHitResult Hit;

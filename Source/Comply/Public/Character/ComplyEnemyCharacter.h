@@ -22,13 +22,13 @@ public:
 	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sounds")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Audio")
 	TObjectPtr<USoundCue> AttackSound;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sounds")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Audio")
 	TObjectPtr<USoundCue> DeathSound;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sounds")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Audio")
 	TObjectPtr<USoundCue> FootstepsSound;
 	
 protected:

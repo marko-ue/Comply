@@ -23,11 +23,11 @@ protected:
 	virtual void OnAttackAnimationFinished() override;
 	
 private:
-	UPROPERTY(EditDefaultsOnly, Category = "Charge")
+	UPROPERTY(EditDefaultsOnly, Category = "Attack Settings")
 	float ChargeSpeed = 1200.f;
 
 	float DefaultMaxFlySpeed;
 	float DefaultBrakingDeceleration;
 
-	void RestoreMovement(const FGameplayAbilityActorInfo* ActorInfo);
+	void RestoreMovement(const FGameplayAbilityActorInfo* ActorInfo) const;
 };

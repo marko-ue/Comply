@@ -22,8 +22,9 @@ void UThrowable_Ranger::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
     
 	// Hard gate - don't even start if no charges
 	bool bFound = false;
-	float Charges = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(
-		UWeaponAttributeSet::GetPlasmaGrenadeCurrentChargesAttribute(), bFound);
+	const float Charges = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(
+		UWeaponAttributeSet::GetPlasmaGrenadeCurrentChargesAttribute(), bFound
+	);
 	if (Charges <= 0.f)
 	{
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
@@ -63,7 +64,11 @@ void UThrowable_Ranger::SpawnPreview()
 	);
 	
 	SpawnedGrenadePreviewActor = GetWorld()->SpawnActorDeferred<APlasmaGrenadePreview>(
-		GrenadePreviewActorClass, SpawnTransform, GetOwningActorFromActorInfo(), InstigatorPawn, ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+		GrenadePreviewActorClass,
+		SpawnTransform,
+		GetOwningActorFromActorInfo(),
+		InstigatorPawn,
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 	);
 	
 	// Information needed to predict the path correctly
@@ -78,14 +83,21 @@ void UThrowable_Ranger::ThrowOnServer(FVector LaunchVelocity, FVector SpawnPosit
 {
 	const FTransform SpawnTransform(GetAvatarActorFromActorInfo()->GetActorRotation(), SpawnPosition);
 	
-	FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(CostEffectClass, 1.f);
+	const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(CostEffectClass, 1.f);
 	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 
 	AActor* Avatar = GetAvatarActorFromActorInfo();
 	IWeaponInterface* WeaponOwner = Cast<IWeaponInterface>(Avatar);
 	EquipWeaponBasedOnCharges(WeaponOwner, GetAbilitySystemComponentFromActorInfo());
 	
-	APlasmaGrenade* Grenade = GetWorld()->SpawnActorDeferred<APlasmaGrenade>(GrenadeActorClass, SpawnTransform, GetOwningActorFromActorInfo(), GetAvatarActorFromActorInfo()->GetInstigator(), ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	APlasmaGrenade* Grenade = GetWorld()->SpawnActorDeferred<APlasmaGrenade>(
+		GrenadeActorClass,
+		SpawnTransform,
+		GetOwningActorFromActorInfo(),
+		GetAvatarActorFromActorInfo()->GetInstigator(),
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+	);
+	
 	if (Grenade)
 	{
 		Grenade->ExplosionRadius = ExplosionRadius;
@@ -122,15 +134,13 @@ void UThrowable_Ranger::ConfirmThrow()
 // Only throw the grenade and end the ability after the throw section of the animation finishes
 void UThrowable_Ranger::OnThrowMontageCompleted()
 {
-	AActor* Avatar = GetAvatarActorFromActorInfo();
-	IWeaponInterface* WeaponOwner = Cast<IWeaponInterface>(Avatar);
+	const AActor* Avatar = GetAvatarActorFromActorInfo();
 	
 	if (SpawnedGrenadePreviewActor) SpawnedGrenadePreviewActor->Destroy(); SpawnedGrenadePreviewActor = nullptr;
 	
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
-
-	UComplyAbilitySystemComponent* ASC = Cast<UComplyAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
-	if (ASC)
+	
+	if (UComplyAbilitySystemComponent* ASC = Cast<UComplyAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo()))
 	{
 		AActor* Owner = GetOwningActorFromActorInfo();
 	
@@ -173,12 +183,13 @@ void UThrowable_Ranger::OnThrowMontageCompleted()
 	}
 }
 
-void UThrowable_Ranger::EquipWeaponBasedOnCharges(IWeaponInterface* WeaponOwner, UAbilitySystemComponent* ASC)
+void UThrowable_Ranger::EquipWeaponBasedOnCharges(IWeaponInterface* WeaponOwner, UAbilitySystemComponent* ASC) const
 {
 	const UWeaponAttributeSet* WeaponAS = ASC->GetSet<UWeaponAttributeSet>();
 	bool bFound = false;
-	float GrenadeCurrentCharges = ASC->GetGameplayAttributeValue(
-		UWeaponAttributeSet::GetPlasmaGrenadeCurrentChargesAttribute(), bFound);
+	const float GrenadeCurrentCharges = ASC->GetGameplayAttributeValue(
+		UWeaponAttributeSet::GetPlasmaGrenadeCurrentChargesAttribute(), bFound
+	);
 
 	// Clear equip slot and equip the throwable again to simulate grabbing another grenade from the inventory
 	if (WeaponAS && GrenadeCurrentCharges > 0.f)
@@ -197,7 +208,7 @@ void UThrowable_Ranger::EquipWeaponBasedOnCharges(IWeaponInterface* WeaponOwner,
 		if (WeaponOwner)
 		{
 			// GE that applies the NoThrowables tag so grenades can't be equipped when there's no throwables
-			FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(NoThrowablesEffectClass, 1.f);
+			const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(NoThrowablesEffectClass, 1.f);
 			GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 			
 			WeaponOwner->ClearEquippedWeapon();

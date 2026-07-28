@@ -25,7 +25,7 @@ public:
 	UFUNCTION()
 	virtual void ConfirmThrow() override;
 	
-	void EquipWeaponBasedOnCharges(IWeaponInterface* WeaponOwner, UAbilitySystemComponent* ASC);
+	void EquipWeaponBasedOnCharges(IWeaponInterface* WeaponOwner, UAbilitySystemComponent* ASC) const;
 	
 	UPROPERTY()
 	TObjectPtr<ADecoyGrenadePreview> SpawnedDecoyGrenadePreviewActor;
@@ -34,11 +34,11 @@ public:
 	TSubclassOf<UGameplayEffect> CostEffectClass;
 	 
 	// This will be a scalable float in the future for upgrades
-	UPROPERTY(EditAnywhere, Category = "Ability Properties")
+	UPROPERTY(EditAnywhere, Category = "Grenade Settings")
 	float PullRadius = 1000.f;
 
 	// This will be a scalable float in the future for upgrades
-	UPROPERTY(EditAnywhere, Category = "Ability Properties")
+	UPROPERTY(EditAnywhere, Category = "Grenade Settings")
 	float DecoyGrenadeLifetime = 20.f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Actors")

@@ -23,11 +23,11 @@ protected:
 	
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Ability Properties")
+	UPROPERTY(EditDefaultsOnly, Category = "Grappling Hook Settings")
 	float PullDuration = 0.8f;
 	
 	// Curve for the path (hook swing feel)
-	UPROPERTY(EditDefaultsOnly, Category = "Ability Properties")
+	UPROPERTY(EditDefaultsOnly, Category = "Grappling Hook Settings")
 	UCurveVector* PathOffsetCurve = nullptr;
 	
 private:

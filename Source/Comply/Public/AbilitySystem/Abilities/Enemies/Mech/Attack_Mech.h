@@ -24,6 +24,6 @@ protected:
 	virtual void OnAttackAnimationFinished() override;
 	
 private:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 	TSubclassOf<AMechProjectile> MechProjectileClass;
 };

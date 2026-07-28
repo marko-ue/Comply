@@ -30,7 +30,7 @@ bool FComplyGameplayEffectContext::NetSerialize(FArchive& Ar, class UPackageMap*
 		{
 			if (!HitResult.IsValid())
 			{
-				HitResult = TSharedPtr<FHitResult>(new FHitResult());
+				HitResult = MakeShared<FHitResult>();
 			}
 		}
 		HitResult->NetSerialize(Ar, Map, bOutSuccess);

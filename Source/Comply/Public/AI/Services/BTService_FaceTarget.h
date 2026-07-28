@@ -24,6 +24,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Blackboard")
 	FBlackboardKeySelector TargetActorKey;
 	
-	UPROPERTY(EditAnywhere, Category = "Rotation")
+	UPROPERTY(EditAnywhere, Category = "Service Settings")
 	float RotationInterpSpeed = 5.f;
 };

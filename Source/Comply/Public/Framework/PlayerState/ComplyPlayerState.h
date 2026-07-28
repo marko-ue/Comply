@@ -29,7 +29,7 @@ public:
 	TSubclassOf<AComplyPlayerCharacter> LastSelectedCharacterClass;
 	
 protected:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Components")
 	TObjectPtr<UAbilitySystemComponent> ASC;
 	
 	UPROPERTY()

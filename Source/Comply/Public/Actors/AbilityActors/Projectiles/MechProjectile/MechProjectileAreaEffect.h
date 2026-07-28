@@ -36,42 +36,42 @@ protected:
 	virtual void BeginPlay() override;
 	
 private:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Components")
 	TObjectPtr<UStaticMeshComponent> AreaEffectMesh;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Components")
 	TObjectPtr<USphereComponent> SphereComp;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
 	
 	FActiveGameplayEffectHandle ActiveDamageEffectHandle;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
 	TSubclassOf<UGameplayEffect> SlowEffectClass;
 	
 	FActiveGameplayEffectHandle ActiveSlowEffectHandle;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Area Effect Settings")
 	FGameplayTag DamageType;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Area Effect Settings")
 	FScalableFloat ExplicitDamage = 10.f;
+	
+	UPROPERTY(EditAnywhere, Category = "Area Effect Settings")
+	float AreaEffectRadius = 200.f;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Audio")
 	TObjectPtr<USoundCue> AreaEffectSound;
 	
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> AreaEffectAudioComponent;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Effects")
 	TObjectPtr<UNiagaraSystem> AreaEffectParticles;
 	
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> AreaEffectNiagaraComponent;
-	
-	UPROPERTY(EditAnywhere)
-	float AreaEffectRadius = 200.f;
 	
 	// Tracks already affected actors to prevent multiple function calls on the same actor
 	UPROPERTY()

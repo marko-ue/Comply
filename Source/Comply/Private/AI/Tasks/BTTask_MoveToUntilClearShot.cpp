@@ -29,7 +29,7 @@ EBTNodeResult::Type UBTTask_MoveToUntilClearShot::ExecuteTask(UBehaviorTreeCompo
 void UBTTask_MoveToUntilClearShot::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	AAIController* AIController = OwnerComp.GetAIOwner();
-	APawn* Pawn = AIController->GetPawn();
+	const APawn* Pawn = AIController->GetPawn();
 	AActor* Target = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(TargetActorKey.SelectedKeyName));
 
 	if (!Pawn || !Target)
@@ -48,15 +48,15 @@ void UBTTask_MoveToUntilClearShot::TickTask(UBehaviorTreeComponent& OwnerComp, u
 
 	const FCollisionShape SweepShape = FCollisionShape::MakeSphere(30.f); // Projectile size 
 
-	bool bHit = GetWorld()->SweepSingleByObjectType(
+	const bool bHit = GetWorld()->SweepSingleByObjectType(
 		Hit, Pawn->GetActorLocation(), Target->GetActorLocation(), FQuat::Identity, ObjectParams, SweepShape, Params
 	);
 	
 	// Check distance to target, only succeed if there is a clear shot and the enemy is close enough to the target
-	float DistanceToTarget = FVector::Dist(Pawn->GetActorLocation(), Target->GetActorLocation());
+	const float DistanceToTarget = FVector::Dist(Pawn->GetActorLocation(), Target->GetActorLocation());
 
 	// Handles both player and targetable actor cases, by checking if nothing was hit or if the first thing hit was the target actor itself
-	bool bClearShot = !bHit || Hit.GetActor() == Target;
+	const bool bClearShot = !bHit || Hit.GetActor() == Target;
 
 	if (bClearShot && DistanceToTarget <= MaxAttackRange)
 	{

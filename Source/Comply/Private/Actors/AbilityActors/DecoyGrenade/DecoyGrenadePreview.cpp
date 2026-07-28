@@ -14,7 +14,6 @@ ADecoyGrenadePreview::ADecoyGrenadePreview()
 void ADecoyGrenadePreview::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void ADecoyGrenadePreview::Tick(float DeltaTime)

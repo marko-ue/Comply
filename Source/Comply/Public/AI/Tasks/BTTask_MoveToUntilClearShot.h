@@ -26,7 +26,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Blackboard")
 	FBlackboardKeySelector TargetActorKey;
 	
-	UPROPERTY(EditAnywhere, Category = "Combat")
+	UPROPERTY(EditAnywhere, Category = "Task Settings")
 	float MaxAttackRange = 500.f;
 	
 };

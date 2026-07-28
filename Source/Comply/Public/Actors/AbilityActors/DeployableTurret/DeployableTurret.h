@@ -82,13 +82,13 @@ private:
 	
 	FTimerHandle FireTimerHandle;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	TObjectPtr<UNiagaraSystem> PlaceTurretParticles;
 	
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> PlaceTurretNiagaraComponent;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Audio")
 	TObjectPtr<USoundCue> TurretFireSound;
 	
 	UFUNCTION(NetMulticast, Reliable)

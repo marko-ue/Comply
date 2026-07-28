@@ -18,11 +18,11 @@ class COMPLY_API AComplyGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Game Settings")
 	bool bFriendlyFire = false;
 	
 	UFUNCTION(BlueprintCallable)
-	bool AllPlayersHaveUniqueCharacters();
+	bool AllPlayersHaveUniqueCharacters() const;
 
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 

@@ -5,8 +5,6 @@
 #include "Framework/GameMode/ComplyGameModeBase.h"
 #include "GameplayEffectExtension.h"
 #include "Character/ComplyCharacterBase.h"
-#include "GameFramework/Character.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Interface/TargetableInterface.h"
 #include "Interface/Enemy/EnemyInterface.h"
 #include "Interface/Player/PlayerInterface.h"
@@ -129,8 +127,8 @@ void UComplyAttributeSet::HandleIncomingDamage(const struct FGameplayEffectModCa
         ITargetableInterface::Execute_TakeDamage(AvatarActor);
     }
 
-    const bool bFatal = NewHealth <= 0.f;
-    if (bFatal)
+    // If fatal damage
+    if (NewHealth <= 0)
     {
         if (AComplyCharacterBase* Character = Cast<AComplyCharacterBase>(AvatarActor))
         {

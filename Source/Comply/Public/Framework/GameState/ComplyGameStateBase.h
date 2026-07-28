@@ -22,6 +22,6 @@ public:
 	bool bFriendlyFire;
 	
 	// Used to globally track if all players have unique classes. Currently used so widgets can update their text without having to be constructed first
-	UPROPERTY(Replicated, BlueprintReadOnly)
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Game State")
 	bool bAllPlayersHaveUniqueClasses = false;
 };

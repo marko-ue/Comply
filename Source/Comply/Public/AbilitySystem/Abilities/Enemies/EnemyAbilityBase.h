@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class COMPLY_API UEnemyAbilityBase : public UDamageAbilityBase
 {
 	GENERATED_BODY()

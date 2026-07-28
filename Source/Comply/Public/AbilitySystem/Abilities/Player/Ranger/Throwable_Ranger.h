@@ -25,7 +25,7 @@ public:
 	UFUNCTION()
 	virtual void ConfirmThrow() override;
 	
-	void EquipWeaponBasedOnCharges(IWeaponInterface* WeaponOwner, UAbilitySystemComponent* ASC);
+	void EquipWeaponBasedOnCharges(IWeaponInterface* WeaponOwner, UAbilitySystemComponent* ASC) const;
 
 	UPROPERTY()
 	TObjectPtr<APlasmaGrenadePreview> SpawnedGrenadePreviewActor;
@@ -34,7 +34,7 @@ public:
 	TSubclassOf<UGameplayEffect> CostEffectClass;
 	
 	// This will be a scalable float in the future for upgrades
-	UPROPERTY(EditAnywhere, Category = "Ability Properties")
+	UPROPERTY(EditAnywhere, Category = "Grenade Settings")
 	float ExplosionRadius = 1000.f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Actors")

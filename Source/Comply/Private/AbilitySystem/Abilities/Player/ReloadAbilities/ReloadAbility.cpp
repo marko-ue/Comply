@@ -9,7 +9,6 @@
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
 #include "Character/ComplyPlayerCharacter.h"
-#include "Kismet/GameplayStatics.h"
 
 
 void UReloadAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -24,8 +23,8 @@ void UReloadAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 void UReloadAbility::HandleReload()
 {
 	// Find the active ranged weapon to get its montage, ammo reload effect and to activate it later
-	AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
-	if (Character)
+	
+	if (AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo()))
 	{
 		ActiveWeapon = Character->GetEquippedPrimaryWeapon();
 		Character->bIsReloading = true;
@@ -34,9 +33,9 @@ void UReloadAbility::HandleReload()
 	const UWeaponAttributeSet* WeaponAS = GetAbilitySystemComponentFromActorInfo()->GetSet<UWeaponAttributeSet>();
 	bool bFound = false;
 	
-	float CurrentAmmoInMag = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(ActiveWeapon->GetCurrentAmmoAttribute(), bFound);
-	float MaxAmmoInMag = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(ActiveWeapon->GetMaxAmmoAttribute(), bFound);
-	float ReserveAmmo = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(ActiveWeapon->GetCurrentReserveAmmoAttribute(), bFound);
+	const float CurrentAmmoInMag = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(ActiveWeapon->GetCurrentAmmoAttribute(), bFound);
+	const float MaxAmmoInMag = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(ActiveWeapon->GetMaxAmmoAttribute(), bFound);
+	const float ReserveAmmo = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(ActiveWeapon->GetCurrentReserveAmmoAttribute(), bFound);
 	
 	// Can't reload if there's no more reserve ammo
 	if (WeaponAS && ReserveAmmo <= 0.f)
@@ -102,11 +101,10 @@ void UReloadAbility::OnReloadCompleted()
 {
 	if (ActiveWeapon)
 	{
-		float AmmoSpent = 0.f;
 		bool bFound = false;
 		const float CurrentAmmo = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(ActiveWeapon->GetCurrentAmmoAttribute(), bFound);
 		const float MaxAmmo = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(ActiveWeapon->GetMaxAmmoAttribute(), bFound);
-		AmmoSpent = MaxAmmo - CurrentAmmo;
+		const float AmmoSpent = MaxAmmo - CurrentAmmo;
 
 		FGameplayEffectContextHandle ReserveAmmoContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
 		FGameplayEffectSpecHandle ReserveAmmoSpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(ActiveWeapon->ReduceReserveAmmoEffectClass, 1.f, ReserveAmmoContextHandle);
@@ -151,8 +149,7 @@ void UReloadAbility::OnReloadCanceled()
 void UReloadAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
                                 const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
-	if (Character)
+	if (AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo()))
 	{
 		Character->bIsReloading = false;
 	}

@@ -41,7 +41,7 @@ void AMechProjectile::BeginPlay()
 	LaunchProjectile();
 }
 
-void AMechProjectile::OnRep_InitialVelocity()
+void AMechProjectile::OnRep_InitialVelocity() const
 {
 	ProjectileMovementComp->Velocity = InitialVelocity;
 }
@@ -60,7 +60,7 @@ void AMechProjectile::LaunchProjectile()
 
 	// Sets the velocity of the projectile with an arc with a destination to the target location (target actor's location)
 	FVector LaunchVelocity;
-	bool bSuccess = UGameplayStatics::SuggestProjectileVelocity_CustomArc(
+	const bool bSuccess = UGameplayStatics::SuggestProjectileVelocity_CustomArc(
 		this, LaunchVelocity, StartLoc, TargetLoc, 0.f, 0.35f
 	);
 

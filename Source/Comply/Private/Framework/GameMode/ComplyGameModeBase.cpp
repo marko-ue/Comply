@@ -20,7 +20,7 @@ void AComplyGameModeBase::BeginPlay()
 }
 
 // Checks if all players have unique characters selected to determine whether a mission can be started and other checks
-bool AComplyGameModeBase::AllPlayersHaveUniqueCharacters()
+bool AComplyGameModeBase::AllPlayersHaveUniqueCharacters() const
 {
 	TArray<TSubclassOf<AComplyPlayerCharacter>> SelectedClasses;
 

@@ -40,13 +40,13 @@ protected:
 	virtual void BeginPlay() override;
 	
 private:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Components")
 	TObjectPtr<UStaticMeshComponent> ProjectileMesh;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Components")
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovementComp;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Components")
 	TSubclassOf<AMechProjectileAreaEffect> AreaEffectClass;
 	
 	UFUNCTION()
@@ -57,5 +57,5 @@ private:
 	FVector InitialVelocity;
 	
 	UFUNCTION()
-	void OnRep_InitialVelocity();
+	void OnRep_InitialVelocity() const;
 };

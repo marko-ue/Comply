@@ -5,7 +5,7 @@
 
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "GameFramework/Character.h"
+
 
 
 UBTService_FaceTarget::UBTService_FaceTarget()
@@ -27,16 +27,16 @@ void UBTService_FaceTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* N
 
 	APawn* ControlledPawn = AIController->GetPawn();
 	UBlackboardComponent* BB = OwnerComp.GetBlackboardComponent();
-	AActor* Target = Cast<AActor>(BB->GetValueAsObject(TargetActorKey.SelectedKeyName));
+	const AActor* Target = Cast<AActor>(BB->GetValueAsObject(TargetActorKey.SelectedKeyName));
 
 	if (!ControlledPawn || !Target) return;
 
-	FVector Direction = Target->GetActorLocation() - ControlledPawn->GetActorLocation();
+	const FVector Direction = Target->GetActorLocation() - ControlledPawn->GetActorLocation();
 	FRotator TargetRotation = Direction.Rotation();
 	TargetRotation.Pitch = 0.f;
 
-	FRotator CurrentRotation = ControlledPawn->GetActorRotation();
-	FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaSeconds, RotationInterpSpeed);
+	const FRotator CurrentRotation = ControlledPawn->GetActorRotation();
+	const FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaSeconds, RotationInterpSpeed);
 
 	ControlledPawn->SetActorRotation(NewRotation);
 	AIController->SetControlRotation(NewRotation);

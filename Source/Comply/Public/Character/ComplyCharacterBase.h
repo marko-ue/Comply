@@ -48,7 +48,7 @@ public:
 	
 	void Die(AActor* DeadActor);
 	
-	void HandleHit(AActor* HitActor);
+	void HandleHit(const AActor* HitActor);
 
 protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

@@ -46,6 +46,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "GAS")
 	FGameplayTag AbilityEventTag;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Blackboard")
 	FBlackboardKeySelector TargetActorKey;
 };

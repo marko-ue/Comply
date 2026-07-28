@@ -23,9 +23,9 @@ protected:
 	virtual void OnAttackAnimationFinished() override;
 	
 private:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Attack Settings")
 	float SweepRange = 500.f;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Attack Settings")
 	float ConeHalfAngleDot = 0.0f;
 };

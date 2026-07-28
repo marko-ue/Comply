@@ -60,8 +60,8 @@ void ABuffTotem::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor
 		{
 			OverlappingActors.Add(OtherActor);
 			
-			FGameplayEffectContextHandle ContextHandle = ASC->MakeEffectContext();
-			FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(ApplyTotemBuffEffectClass, 1.f, ContextHandle);
+			const FGameplayEffectContextHandle ContextHandle = ASC->MakeEffectContext();
+			const FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(ApplyTotemBuffEffectClass, 1.f, ContextHandle);
 			ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 			
 			FGameplayCueParameters CueParams;

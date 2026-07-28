@@ -12,7 +12,6 @@
 #include "Character/ComplyPlayerCharacter.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
-#include "Engine/OverlapResult.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Interface/Player/PlayerInterface.h"
 #include "Kismet/GameplayStatics.h"
@@ -63,7 +62,7 @@ void AMechProjectileAreaEffect::ApplyDamageToTarget(UAbilitySystemComponent* Tar
 	FGameplayEffectContextHandle ContextHandle(Context);
 	ContextHandle.AddSourceObject(this);
 
-	FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, 1.f, ContextHandle);
+	const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, 1.f, ContextHandle);
 	if (!SpecHandle.IsValid()) return;
 
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, DamageType, ExplicitDamage.GetValueAtLevel(1.f));

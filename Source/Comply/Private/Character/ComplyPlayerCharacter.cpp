@@ -6,7 +6,6 @@
 #include "Framework/PlayerState/ComplyPlayerState.h"
 #include "EnhancedInputComponent.h"
 #include "AbilitySystemComponent.h"
-#include "CableComponent.h"
 #include "Comply.h"
 #include "ComplyPlayerController.h"
 #include "NiagaraComponent.h"
@@ -21,7 +20,6 @@
 #include "Components/DecalComponent.h"
 #include "Framework/GameState/ComplyGameStateBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/SpectatorPawn.h"
 #include "Interface/Player/InteractableInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -114,7 +112,7 @@ void AComplyPlayerCharacter::PossessedBy(AController* NewController)
 	GetAbilitySystemComponent()->SetNumericAttributeBase(UComplyAttributeSet::GetArmorAttribute(), BaseArmor);
 	
 	// Only give startup abilities if not in the lobby map
-	FString MapName = GetWorld()->GetMapName();
+	const FString MapName = GetWorld()->GetMapName();
 	if (!MapName.Contains("Lobby"))
 	{
 		GiveStartupAbilities();
@@ -236,8 +234,8 @@ void AComplyPlayerCharacter::RevivePlayer()
 {
 	// Trace down from capsule to find ground to spawn the actor there
 	FHitResult GroundHit;
-	FVector Start = GetCapsuleComponent()->GetComponentLocation();
-	FVector End = Start - FVector(0.f, 0.f, 500.f);
+	const FVector Start = GetCapsuleComponent()->GetComponentLocation();
+	const FVector End = Start - FVector(0.f, 0.f, 500.f);
 	GetWorld()->LineTraceSingleByChannel(GroundHit, Start, End, ECC_Visibility);
     
 	if (GroundHit.bBlockingHit)
@@ -247,8 +245,8 @@ void AComplyPlayerCharacter::RevivePlayer()
 	}
 	
 	// Restore relevant attributes to defaults before death
-	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
-	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(ReviveEffectClass, 1.f, ContextHandle);
+	const FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(ReviveEffectClass, 1.f, ContextHandle);
 	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	
 	// Restore to settings from before ragdoll
@@ -273,10 +271,10 @@ void AComplyPlayerCharacter::RevivePlayer()
 	}
 }
 
-void AComplyPlayerCharacter::SpawnImpactEffectsLocal(FVector ImpactPoint, FVector ImpactNormal, FVector MuzzleLocation)
+void AComplyPlayerCharacter::SpawnImpactEffectsLocal(const FVector& ImpactPoint, const FVector& ImpactNormal, const FVector& MuzzleLocation)
 {
 	// Spawns a random decal from an array
-	float DecalIndex = FMath::RandRange(0, BulletImpactDecals.Max() - 1);
+	const float DecalIndex = FMath::RandRange(0, BulletImpactDecals.Max() - 1);
 	UDecalComponent* Decal = UGameplayStatics::SpawnDecalAtLocation(
 		GetWorld(), BulletImpactDecals[DecalIndex], FVector(5.f, 10.f, 10.f), ImpactPoint,
 		UKismetMathLibrary::MakeRotFromX(ImpactNormal), 5.f
@@ -296,7 +294,7 @@ void AComplyPlayerCharacter::SpawnImpactEffectsLocal(FVector ImpactPoint, FVecto
 	if (Tracer)
 	{
 		// Local offset from the muzzle, Niagara was interpreting world space vector as local relative to the spawn location
-		FVector BeamEndLocal = ImpactPoint - MuzzleLocation;
+		const FVector BeamEndLocal = ImpactPoint - MuzzleLocation;
 		Tracer->SetNiagaraVariableVec3("BeamEnd", BeamEndLocal);
 	}
 }
@@ -309,7 +307,7 @@ void AComplyPlayerCharacter::Multicast_SpawnImpactEffects_Implementation(FVector
 	if (IsLocallyControlled()) return;
 	
 	// Spawns a random decal from an array
-	float DecalIndex = FMath::RandRange(0, BulletImpactDecals.Max() - 1);
+	const float DecalIndex = FMath::RandRange(0, BulletImpactDecals.Max() - 1);
 	UDecalComponent* Decal = UGameplayStatics::SpawnDecalAtLocation(
 		GetWorld(), BulletImpactDecals[DecalIndex], FVector(5.f, 10.f, 10.f), ImpactPoint,
 		UKismetMathLibrary::MakeRotFromX(ImpactNormal), 5.f
@@ -329,7 +327,7 @@ void AComplyPlayerCharacter::Multicast_SpawnImpactEffects_Implementation(FVector
 	if (Tracer)
 	{
 		// Local offset from the muzzle, Niagara was interpreting world space vector as local relative to the spawn location
-		FVector BeamEndLocal = ImpactPoint - MuzzleLocation;
+		const FVector BeamEndLocal = ImpactPoint - MuzzleLocation;
 		Tracer->SetNiagaraVariableVec3("BeamEnd", BeamEndLocal);
 	}
 }
@@ -346,7 +344,7 @@ void AComplyPlayerCharacter::Server_FaceTarget_Implementation(ACharacter* Target
 {
 	if (!Target) return;
 	bUseControllerRotationYaw = false;
-	FRotator LookAt = UKismetMathLibrary::FindLookAtRotation(
+	const FRotator LookAt = UKismetMathLibrary::FindLookAtRotation(
 		GetActorLocation(), Target->GetActorLocation());
 	SetActorRotation(FRotator(0.f, LookAt.Yaw, 0.f));
 }
@@ -521,7 +519,7 @@ void AComplyPlayerCharacter::SprintActionReleased()
 	// Predictively set max walk speed back to the base value on the client, since GE removal is not replicated
 	if (GetCharacterMovement() && IsLocallyControlled() && !HasAuthority())
 	{
-		int32 TotemStacks = GetAbilitySystemComponent()->GetTagCount(ComplyTags::States::State_TotemBuffed);
+		const int32 TotemStacks = GetAbilitySystemComponent()->GetTagCount(ComplyTags::States::State_TotemBuffed);
 		float CorrectSpeed = 500.f + (TotemStacks * TotemSpeedBonusPerStack);
 		
 		if (GetAbilitySystemComponent()->HasMatchingGameplayTag(ComplyTags::States::State_Slowed))
@@ -611,7 +609,7 @@ void AComplyPlayerCharacter::EquipThrowableActionPressed()
 	}
 }
 
-void AComplyPlayerCharacter::ZoomIn(float DeltaTime)
+void AComplyPlayerCharacter::ZoomIn(float DeltaTime) const
 {
 	if (!IsLocallyControlled()) return;
 	UCameraComponent* CameraComp = FindComponentByClass<UCameraComponent>();
@@ -619,7 +617,7 @@ void AComplyPlayerCharacter::ZoomIn(float DeltaTime)
 		CameraComp->FieldOfView, AimFOV, DeltaTime, ZoomSpeed);
 }
 
-void AComplyPlayerCharacter::ZoomOut(float DeltaTime)
+void AComplyPlayerCharacter::ZoomOut(float DeltaTime) const
 {
 	if (!IsLocallyControlled()) return;
 	UCameraComponent* CameraComp = FindComponentByClass<UCameraComponent>();
@@ -710,8 +708,8 @@ void AComplyPlayerCharacter::OnDistractedTagChanged(const FGameplayTag Tag, int3
 	AComplyGameStateBase* GS = GetWorld()->GetGameState<AComplyGameStateBase>();
 	if (GS && GS->bFriendlyFire)
 	{
-		AComplyPlayerController* PC = Cast<AComplyPlayerController>(GetController());
-		if (PC) PC->ShowFlashbangEffect();
+		
+		if (AComplyPlayerController* PC = Cast<AComplyPlayerController>(GetController())) PC->ShowFlashbangEffect();
 	}
 }
 
@@ -726,10 +724,11 @@ void AComplyPlayerCharacter::OnTotemBuffedTagChanged(const FGameplayTag Tag, int
 	if (NewCount <= 0) return;
 
 	// Apply the movement speed buff, stacking with the amount of buffs
-	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
-	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(TotemSpeedBuffEffectClass, 1.f, ContextHandle);
+	const FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(TotemSpeedBuffEffectClass, 1.f, ContextHandle);
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, 
-		ComplyTags::SetByCaller::SBC_TotemSpeedBuff, TotemSpeedBonusPerStack * NewCount);
+		ComplyTags::SetByCaller::SBC_TotemSpeedBuff, TotemSpeedBonusPerStack * NewCount
+	);
 	ActiveTotemSpeedBuffEffectHandle = GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 }
 

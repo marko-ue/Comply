@@ -35,7 +35,7 @@ protected:
 	
 private:
 	// This will be a scalable float in the future for upgrades
-	UPROPERTY(EditAnywhere, Category = "Ability Properties")
+	UPROPERTY(EditAnywhere, Category = "Totem Settings")
 	float BuffTotemLifetime = 20.f;
 	
 	void SpawnPreview(const FGameplayAbilityActorInfo* ActorInfo);

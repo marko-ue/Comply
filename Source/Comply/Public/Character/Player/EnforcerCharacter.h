@@ -20,6 +20,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UCableComponent> GrappleCable;
 	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<USceneComponent> GrappleAnchorPoint;
 };

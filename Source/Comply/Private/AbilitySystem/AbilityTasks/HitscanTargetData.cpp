@@ -56,8 +56,7 @@ void UHitscanTargetData::SendHitscanTargetData(float TraceDistance)
 	}
 	else
 	{
-		UPrimary_Disruptor* Primary = Cast<UPrimary_Disruptor>(Ability);
-		if (Primary)
+		if (UPrimary_Disruptor* Primary = Cast<UPrimary_Disruptor>(Ability))
 		{
 			TArray<FHitResult> Hits;
 			bool bPassedThroughShield = false;

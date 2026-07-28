@@ -22,11 +22,11 @@ public:
 	FORCEINLINE virtual FGameplayTag GetReduceReserveAmmoTag() const override { return ComplyTags::SetByCaller::SBC_ReduceShotgunReserveAmmo; }
 	FORCEINLINE virtual FGameplayAttribute GetCurrentReserveAmmoAttribute() const override { return UWeaponAttributeSet::GetShotgunCurrentReserveAmmoAttribute(); }
 
-	UPROPERTY(EditAnywhere, Category = "Ability Properties")
+	UPROPERTY(EditAnywhere, Category = "Shotgun Settings")
 	int32 NumberOfPellets = 8;
 	
 	// TODO: Turn into a scalable float for upgrades
-	UPROPERTY(EditAnywhere, Category = "Ability Properties")
+	UPROPERTY(EditAnywhere, Category = "Shotgun Settings")
 	float SpreadAngle = 75.f;
 	
 protected:

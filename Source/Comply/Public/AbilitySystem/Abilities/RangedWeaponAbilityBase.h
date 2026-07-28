@@ -57,21 +57,21 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects|Reloading")
 	TSubclassOf<UGameplayEffect> ReloadEffectClass;
 	
-	UPROPERTY(EditAnywhere, Category = "Ability Properties|Trace")
+	UPROPERTY(EditAnywhere, Category = "Weapon Settings|Trace")
 	float TraceDistance = 10000.f;
 	
 	// This will be a scalable float in the future for upgrades
-	UPROPERTY(EditAnywhere, Category = "Ability Properties")
+	UPROPERTY(EditAnywhere, Category = "Weapon Settings|Fire")
 	float FireInterval = 60.f;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Ability Properties|Types")
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon Settings|Types")
 	ERangedWeaponType RangedWeaponType = ERangedWeaponType::Automatic;
 	
-	UPROPERTY(EditAnywhere, Category = "Ability Properties|Upgrades")
+	UPROPERTY(EditAnywhere, Category = "Weapon Settings|Upgrades")
 	float ShieldShotDamageMultiplier = 1.5f;
 	
 	// If the ranged weapon uses a simple line trace to the crosshair
-	UPROPERTY(EditDefaultsOnly, Category = "Ability Properties|Types")
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon Settings|Types")
 	bool bUsesSingleCrosshairTrace = true;
 	
 	// Derived weapon classes override these to expose their own attributes and tags
@@ -88,10 +88,10 @@ public:
 protected:
 	virtual bool Fire();
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Ability Properties|Trace")
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon Settings|Trace")
 	FVector Start;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Ability Properties|Trace")
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon Settings|Trace")
 	FVector End;
 	
 	UFUNCTION()

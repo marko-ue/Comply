@@ -46,7 +46,12 @@ void UUtility_Disruptor::SpawnPreview(const FGameplayAbilityActorInfo* ActorInfo
 	SpawnParams.Owner = Avatar;
 	SpawnParams.Instigator = Cast<APawn>(Avatar);
 
-	SpawnedBuffTotemPreviewActor = GetWorld()->SpawnActor<ABuffTotemPreview>(BuffTotemPreviewActorClass, GetAvatarActorFromActorInfo()->GetActorLocation(), FRotator::ZeroRotator, SpawnParams);
+	SpawnedBuffTotemPreviewActor = GetWorld()->SpawnActor<ABuffTotemPreview>(
+		BuffTotemPreviewActorClass, 
+		GetAvatarActorFromActorInfo()->GetActorLocation(), 
+		FRotator::ZeroRotator, 
+		SpawnParams
+	);
 
 	if (SpawnedBuffTotemPreviewActor)
 	{
@@ -127,12 +132,9 @@ void UUtility_Disruptor::TraceAndSpawnBuffTotem()
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = Avatar;
 		SpawnParams.Instigator = Cast<APawn>(Avatar);
-		
-		const FGameplayAbilityActivationInfo ActivationInfo = GetCurrentActivationInfo();
 
 		// A server RPC is used to handle spawning the buff totem
-		UComplyAbilitySystemComponent* ASC = Cast<UComplyAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
-		if (ASC)
+		if (UComplyAbilitySystemComponent* ASC = Cast<UComplyAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo()))
 		{
 			ASC->Server_PlaceBuffTotem(GetCurrentAbilitySpecHandle(), SpawnLocation, BuffTotemLifetime);
 		}
@@ -140,7 +142,8 @@ void UUtility_Disruptor::TraceAndSpawnBuffTotem()
 	
 	// Automatically equip the primary ability once the buff totem is thrown, as the player should not be able to equip the buff totem while it's on cooldown
 	GetAbilitySystemComponentFromActorInfo()->TryActivateAbilitiesByTag(
-				FGameplayTagContainer(ComplyTags::ComplyAbilities::AssetTags::Equip_Primary));
+		FGameplayTagContainer(ComplyTags::ComplyAbilities::AssetTags::Equip_Primary)
+	);
 	
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }

@@ -53,12 +53,12 @@ void AComplyCharacterBase::InitializeAttributes() const
 	checkf(IsValid(InitializeAttributesEffect), TEXT("InitializeAttributesEffect not set"));
 	checkf(IsValid(InitializeWeaponAttributesEffect), TEXT("InitializeWeaponAttributesEffect not set"));
 	
-	FGameplayEffectContextHandle AttributesContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
-	FGameplayEffectSpecHandle AttributesSpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(InitializeAttributesEffect, 1.f, AttributesContextHandle);
+	const FGameplayEffectContextHandle AttributesContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+	const FGameplayEffectSpecHandle AttributesSpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(InitializeAttributesEffect, 1.f, AttributesContextHandle);
 	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*AttributesSpecHandle.Data.Get());
 	
-	FGameplayEffectContextHandle WeaponAttributesContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
-	FGameplayEffectSpecHandle WeaponAttributesSpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(InitializeWeaponAttributesEffect, 1.f, WeaponAttributesContextHandle);
+	const FGameplayEffectContextHandle WeaponAttributesContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+	const FGameplayEffectSpecHandle WeaponAttributesSpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(InitializeWeaponAttributesEffect, 1.f, WeaponAttributesContextHandle);
 	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*WeaponAttributesSpecHandle.Data.Get());
 }
 
@@ -89,15 +89,14 @@ void AComplyCharacterBase::ClearStartupAbilities()
 
 	for (const FAbilitySet& Set : StartupAbilities)
 	{
-		FGameplayAbilitySpec* AbilitySpec = GetAbilitySystemComponent()->FindAbilitySpecFromClass(Set.AbilityClass);
-		if (AbilitySpec)
+		if (const FGameplayAbilitySpec* AbilitySpec = GetAbilitySystemComponent()->FindAbilitySpecFromClass(Set.AbilityClass))
 		{
 			GetAbilitySystemComponent()->ClearAbility(AbilitySpec->Handle);
 		}
 	}
 }
 
-void AComplyCharacterBase::HandleHit(AActor* HitActor)
+void AComplyCharacterBase::HandleHit(const AActor* HitActor)
 {
 	if (HitActor && HitActor->Implements<UPlayerInterface>())
 	{

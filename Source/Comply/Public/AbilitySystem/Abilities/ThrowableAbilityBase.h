@@ -17,17 +17,17 @@ class COMPLY_API UThrowableAbilityBase : public UDamageAbilityBase
 public:
 	virtual void ConfirmThrow();
 
-	UPROPERTY(EditDefaultsOnly, Category = "Ability Properties|Types")
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon Settings|Types")
 	bool bConfirmOnRelease = true;
 	
-	UPROPERTY(EditAnywhere, Category = "Ability Properties")
+	UPROPERTY(EditAnywhere, Category = "Weapon Settings")
 	float ThrowSpeed = 1000.f;
 	
 protected:
 	virtual void SpawnPreview();
 	virtual void ThrowOnServer(FVector LaunchVelocity, FVector SpawnPosition);
 	virtual void CancelThrow();
-	void SafeRemoveThrowingTag();
+	void SafeRemoveThrowingTag() const;
 	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UGameplayEffect> NoThrowablesEffectClass;

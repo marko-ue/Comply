@@ -36,20 +36,20 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
 	TSubclassOf<UGameplayEffect> InitializeAttributesEffect;
 	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Components")
 	TObjectPtr<UAbilitySystemComponent> ASC;
 	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Actor Properties")
 	bool bWasKilledByEnemies = false;
 	
 private:
 	UPROPERTY()
 	TObjectPtr<UComplyAttributeSet> AttributeSet;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess=true), Category = "Sounds")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess=true), Category = "Audio")
 	TObjectPtr<USoundCue> DamageSound;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess=true), Category = "Sounds")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess=true), Category = "Audio")
 	TObjectPtr<USoundCue> DeathSound;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess=true), Category = "Effects")

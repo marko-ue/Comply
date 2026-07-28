@@ -2,14 +2,9 @@
 
 
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
-
-#include <filesystem>
-
 #include "AbilitySystemComponent.h"
 #include "Comply.h"
 #include "GameplayCueManager.h"
-#include "NiagaraComponent.h"
-#include "NiagaraFunctionLibrary.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "AbilitySystem/ComplyAbilityTypes.h"
@@ -19,9 +14,8 @@
 #include "AbilitySystem/Abilities/Player/Disruptor/Primary_Disruptor.h"
 #include "Character/ComplyCharacterBase.h"
 #include "Character/ComplyPlayerCharacter.h"
-#include "Components/DecalComponent.h"
 #include "Framework/GameMode/ComplyGameModeBase.h"
-#include "Kismet/KismetMathLibrary.h"
+
 
 // Traces to the middle of the screen
 // This function is called in HitscanTargetData for transferring hitscan data from client to server
@@ -458,8 +452,7 @@ void URangedWeaponAbilityBase::OnFireDelayFinished()
 
 void URangedWeaponAbilityBase::PlayAnimationBasedOnState()
 {
-	AComplyCharacterBase* Character = Cast<AComplyCharacterBase>(GetAvatarActorFromActorInfo());
-	if (Character)
+	if (AComplyCharacterBase* Character = Cast<AComplyCharacterBase>(GetAvatarActorFromActorInfo()))
 	{
 		if (Character)
 		{
@@ -538,8 +531,10 @@ void URangedWeaponAbilityBase::EndAbility(const FGameplayAbilitySpecHandle Handl
                                           const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
                                           bool bReplicateEndAbility, bool bWasCancelled)
 {
-	AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
-	if (Character) Character->bIsFiring = false;
+	if (AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo()))
+	{
+		Character->bIsFiring = false;
+	}
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

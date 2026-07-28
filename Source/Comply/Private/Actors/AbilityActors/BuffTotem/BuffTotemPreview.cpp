@@ -71,7 +71,7 @@ void ABuffTotemPreview::UpdatePosition()
 		if (GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_WorldStatic, Params))
 		{
 			// Check the slope of where the turret is attempted to get placed
-			// Prevents placing the turret on steep slopes or in mid-air
+			// Prevents placing the turret on steep slopes or in midair
 			float SlopeDot = FVector::DotProduct(Hit.ImpactNormal, FVector::UpVector);
 			bCanPlace = SlopeDot >= 0.85f;
 

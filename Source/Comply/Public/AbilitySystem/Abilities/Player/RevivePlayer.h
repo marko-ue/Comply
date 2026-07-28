@@ -33,10 +33,10 @@ private:
 	UPROPERTY()
 	TObjectPtr<AComplyPlayerCharacter> TargetPlayer;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Revive Settings")
 	float ReviveTime = 5.f;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere = "Revive Settings")
 	float ReviveSphereTraceRadius = 100.f;
 	
 	UPROPERTY()

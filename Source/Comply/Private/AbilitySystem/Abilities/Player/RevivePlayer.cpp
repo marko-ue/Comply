@@ -7,7 +7,6 @@
 #include "AbilitySystemComponent.h"
 #include "Comply.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
-#include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "Character/ComplyPlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
@@ -21,7 +20,7 @@ void URevivePlayer::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	AComplyPlayerCharacter* Avatar = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
 	if (!Avatar) { EndAbility(Handle, ActorInfo, ActivationInfo, true, false); return; }
 
-	AActor* Owner = GetOwningActorFromActorInfo();
+	const AActor* Owner = GetOwningActorFromActorInfo();
 
 	if (!Avatar || !Owner) return;
 	
@@ -69,9 +68,8 @@ void URevivePlayer::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 				FRotator LookAt = UKismetMathLibrary::FindLookAtRotation(
 					Reviver->GetActorLocation(), TargetPlayer->GetActorLocation());
 				Reviver->SetActorRotation(FRotator(0.f, LookAt.Yaw, 0.f));
-
-				APlayerController* PC = Cast<APlayerController>(Avatar->GetController());
-				if (PC)
+				
+				if (APlayerController* PC = Cast<APlayerController>(Avatar->GetController()))
 				{
 				 	PC->SetIgnoreMoveInput(true);
 				}
@@ -126,11 +124,9 @@ void URevivePlayer::OnMontageCancelled()
 void URevivePlayer::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
                                const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	AComplyPlayerCharacter* Avatar = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
-	if (Avatar)
+	if (const AComplyPlayerCharacter* Avatar = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo()))
 	{
-		APlayerController* PC = Cast<APlayerController>(Avatar->GetController());
-		if (PC)
+		if (APlayerController* PC = Cast<APlayerController>(Avatar->GetController()))
 		{
 			PC->ResetIgnoreMoveInput();
 

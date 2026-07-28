@@ -56,7 +56,7 @@ void AElectricHazardZone::OnComponentBeginOverlap(UPrimitiveComponent* Overlappe
 {
 	if (!OtherActor->Implements<UPlayerInterface>()) return;
 	
-	// Immediately add back speed on the local client
+	// Immediately reduce speed on the local client
 	if (AComplyPlayerCharacter* PlayerCharacter = Cast<AComplyPlayerCharacter>(OtherActor))
 	{
 		if (PlayerCharacter->IsLocallyControlled() && !PlayerCharacter->HasAuthority() && PlayerCharacter->GetCharacterMovement())

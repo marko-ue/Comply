@@ -12,7 +12,6 @@
 #include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
 #include "Actors/AbilityActors/DecoyGrenade/DecoyGrenade.h"
 #include "Actors/AbilityActors/DecoyGrenade/DecoyGrenadePreview.h"
-#include "GameFramework/ProjectileMovementComponent.h"
 #include "Interface/Player/WeaponInterface.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -24,8 +23,9 @@ void UThrowable_Disruptor::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
 	bool bFound = false;
-	float Charges = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(
-		UWeaponAttributeSet::GetDecoyGrenadeCurrentChargesAttribute(), bFound);
+	const float Charges = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(
+		UWeaponAttributeSet::GetDecoyGrenadeCurrentChargesAttribute(), bFound
+	);
 	if (Charges <= 0.f)
 	{
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
@@ -88,7 +88,11 @@ void UThrowable_Disruptor::SpawnPreview()
 	);
 	
 	SpawnedDecoyGrenadePreviewActor = GetWorld()->SpawnActorDeferred<ADecoyGrenadePreview>(
-		DecoyGrenadePreviewActorClass, SpawnTransform, GetOwningActorFromActorInfo(), InstigatorPawn, ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+		DecoyGrenadePreviewActorClass,
+		SpawnTransform,
+		GetOwningActorFromActorInfo(),
+		InstigatorPawn,
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 	);
 	
 	// Information needed to predict the path correctly
@@ -110,7 +114,14 @@ void UThrowable_Disruptor::ThrowOnServer(FVector LaunchVelocity, FVector SpawnPo
 	
 	const FTransform SpawnTransform(GetAvatarActorFromActorInfo()->GetActorRotation(), SpawnPosition);
 	
-	ADecoyGrenade* DecoyGrenade = GetWorld()->SpawnActorDeferred<ADecoyGrenade>(DecoyGrenadeActorClass, SpawnTransform, GetOwningActorFromActorInfo(), GetAvatarActorFromActorInfo()->GetInstigator(), ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	ADecoyGrenade* DecoyGrenade = GetWorld()->SpawnActorDeferred<ADecoyGrenade>(
+		DecoyGrenadeActorClass, 
+		SpawnTransform, 
+		GetOwningActorFromActorInfo(), 
+		GetAvatarActorFromActorInfo()->GetInstigator(), 
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+	);
+	
 	if (DecoyGrenade)
 	{
 		DecoyGrenade->PullRadius = PullRadius;
@@ -144,11 +155,11 @@ void UThrowable_Disruptor::ConfirmThrow()
 	ThrowTask->ReadyForActivation();
 }
 
-void UThrowable_Disruptor::EquipWeaponBasedOnCharges(IWeaponInterface* WeaponOwner, UAbilitySystemComponent* ASC)
+void UThrowable_Disruptor::EquipWeaponBasedOnCharges(IWeaponInterface* WeaponOwner, UAbilitySystemComponent* ASC) const
 {
 	const UWeaponAttributeSet* WeaponAS = ASC->GetSet<UWeaponAttributeSet>();
 	bool bFound = false;
-	float GrenadeCurrentCharges = ASC->GetGameplayAttributeValue(
+	const float GrenadeCurrentCharges = ASC->GetGameplayAttributeValue(
 		UWeaponAttributeSet::GetDecoyGrenadeCurrentChargesAttribute(), bFound);
 
 	// Clear equip slot and equip the throwable again to simulate grabbing another grenade from the inventory
@@ -168,7 +179,7 @@ void UThrowable_Disruptor::EquipWeaponBasedOnCharges(IWeaponInterface* WeaponOwn
 		if (WeaponOwner)
 		{
 			// GE that applies the NoThrowables tag so grenades can't be equipped when there's no throwables
-			FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(NoThrowablesEffectClass, 1.f);
+			const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(NoThrowablesEffectClass, 1.f);
 			GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 			
 			WeaponOwner->ClearEquippedWeapon();
@@ -183,17 +194,15 @@ void UThrowable_Disruptor::EquipWeaponBasedOnCharges(IWeaponInterface* WeaponOwn
 // Only throw the grenade and end the ability after the throw section of the animation finishes
 void UThrowable_Disruptor::OnThrowMontageCompleted()
 {
-	AActor* Avatar = GetAvatarActorFromActorInfo();
-	IWeaponInterface* WeaponOwner = Cast<IWeaponInterface>(Avatar);
+	const AActor* Avatar = GetAvatarActorFromActorInfo();
 	
 	if (SpawnedDecoyGrenadePreviewActor) SpawnedDecoyGrenadePreviewActor->Destroy(); SpawnedDecoyGrenadePreviewActor = nullptr;
 	
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
-
-	UComplyAbilitySystemComponent* ASC = Cast<UComplyAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
-	if (ASC)
+	
+	if (UComplyAbilitySystemComponent* ASC = Cast<UComplyAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo()))
 	{
-		AActor* Owner = GetOwningActorFromActorInfo();
+		const AActor* Owner = GetOwningActorFromActorInfo();
 	
 		if (!Avatar || !Owner) return;
 	

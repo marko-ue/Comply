@@ -2,8 +2,6 @@
 
 
 #include "Actors/AbilityActors/DeployableTurret/DeployableTurretPreview.h"
-
-#include "Components/ArrowComponent.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 

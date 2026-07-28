@@ -4,7 +4,6 @@
 #include "AbilitySystem/Abilities/Player/EquipAbilities/EquipPrimaryAbility.h"
 #include "AbilitySystemComponent.h"
 #include "GameplayTagContainer.h"
-#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "Interface/Player/WeaponInterface.h"
 

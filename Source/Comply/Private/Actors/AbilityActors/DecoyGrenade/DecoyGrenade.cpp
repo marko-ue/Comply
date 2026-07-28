@@ -57,7 +57,7 @@ void ADecoyGrenade::BeginPlay()
 	ProjectileMovementComp->Velocity = LaunchVelocity; 
 }
 
-void ADecoyGrenade::OnRep_LaunchVelocity()
+void ADecoyGrenade::OnRep_LaunchVelocity() const
 {
 	ProjectileMovementComp->Velocity = LaunchVelocity;
 }
@@ -72,7 +72,7 @@ void ADecoyGrenade::Explode()
 	if (!HasAuthority()) return;
 
 	TArray<FOverlapResult> Overlaps;
-	FCollisionShape Sphere = FCollisionShape::MakeSphere(PullRadius);
+	const FCollisionShape Sphere = FCollisionShape::MakeSphere(PullRadius);
 	GetWorld()->OverlapMultiByChannel(Overlaps, GetActorLocation(), FQuat::Identity, ECC_Pawn, Sphere);
 
 	for (const FOverlapResult& Overlap : Overlaps)
@@ -93,8 +93,8 @@ void ADecoyGrenade::Explode()
 		// When the decoy grenade explodes, the blackboard key responsible for moving the enemy to a distraction is set
 		if (AAIController* AIC = Cast<AAIController>(HitActor->GetInstigatorController()))
 		{
-			UBlackboardComponent* BB = AIC->GetBlackboardComponent();
-			if (BB)
+			
+			if (UBlackboardComponent* BB = AIC->GetBlackboardComponent())
 			{
 				// Set the distraction location to this actor's location upon the explosion
 				// All enemies will now go to this location

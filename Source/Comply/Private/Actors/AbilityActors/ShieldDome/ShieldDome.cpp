@@ -44,11 +44,9 @@ void AShieldDome::BeginPlay()
 void AShieldDome::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (IAbilitySystemInterface* ASCInterface = Cast<IAbilitySystemInterface>(OtherActor))
+	if (const IAbilitySystemInterface* ASCInterface = Cast<IAbilitySystemInterface>(OtherActor))
 	{
-		UAbilitySystemComponent* ASC = ASCInterface->GetAbilitySystemComponent();
-
-		if (ASC)
+		if (UAbilitySystemComponent* ASC = ASCInterface->GetAbilitySystemComponent())
 		{
 			if (OtherActor->Implements<UPlayerInterface>())
 			{
@@ -61,11 +59,9 @@ void AShieldDome::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 void AShieldDome::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (IAbilitySystemInterface* ASCInterface = Cast<IAbilitySystemInterface>(OtherActor))
+	if (const IAbilitySystemInterface* ASCInterface = Cast<IAbilitySystemInterface>(OtherActor))
 	{
-		UAbilitySystemComponent* ASC = ASCInterface->GetAbilitySystemComponent();
-
-		if (ASC)
+		if (UAbilitySystemComponent* ASC = ASCInterface->GetAbilitySystemComponent())
 		{
 			if (OtherActor->Implements<UPlayerInterface>())
 			{

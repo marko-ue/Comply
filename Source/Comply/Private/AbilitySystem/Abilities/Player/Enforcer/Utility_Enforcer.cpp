@@ -8,7 +8,6 @@
 #include "GameplayCueManager.h"
 #include "Abilities/Tasks/AbilityTask_ApplyRootMotionMoveToForce.h"
 #include "AbilitySystem/ComplyTags.h"
-#include "Character/ComplyPlayerCharacter.h"
 #include "Character/Player/EnforcerCharacter.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -60,8 +59,8 @@ void UUtility_Enforcer::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 bool UUtility_Enforcer::PerformGrappleTrace(FHitResult& OutHitResult, float GrappleRange) const
 {
-	AActor* Owner = GetOwningActorFromActorInfo();
-	AActor* Avatar = GetAvatarActorFromActorInfo();
+	const AActor* Owner = GetOwningActorFromActorInfo();
+	const AActor* Avatar = GetAvatarActorFromActorInfo();
 
 	if (!Avatar || !Owner) return false;
     
@@ -132,10 +131,18 @@ void UUtility_Enforcer::OnTargetDataReceived(const FGameplayAbilityTargetDataHan
 	}
 
 	const FHitResult* HitResult = DataHandle.Get(0)->GetHitResult();
-	if (!HitResult) { EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false); return; }
+	if (!HitResult)
+	{
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false); 
+		return;
+	}
 
 	ACharacter* Character = Cast<ACharacter>(GetCurrentActorInfo()->AvatarActor.Get());
-	if (!Character) { EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false); return; }
+	if (!Character)
+	{
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false); 
+		return;
+	}
 
 	Character->GetCharacterMovement()->SetMovementMode(MOVE_Flying);
 
@@ -199,15 +206,14 @@ void UUtility_Enforcer::FinishGrapple()
 		Character->GetCharacterMovement()->SetMovementMode(MOVE_Falling);
 	}
 
-	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(),
-			   GetCurrentActivationInfo(), true, false);
+	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
 // Ensuring cleanup whenever the ability ends
 void UUtility_Enforcer::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	if (ACharacter* Character = Cast<ACharacter>(ActorInfo->AvatarActor.Get()))
+	if (const ACharacter* Character = Cast<ACharacter>(ActorInfo->AvatarActor.Get()))
 	{
 		UCharacterMovementComponent* CMC = Character->GetCharacterMovement();
 		if (CMC && CMC->MovementMode == MOVE_Flying)

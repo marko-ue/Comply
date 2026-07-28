@@ -27,7 +27,7 @@ public:
 	TObjectPtr<ADeployableTurretPreview> SpawnedTurretPreviewActor = nullptr;
 	
 	// This will be a scalable float in the future for upgrades
-	UPROPERTY(EditAnywhere, Category = "Ability Properties")
+	UPROPERTY(EditAnywhere, Category = "Turret Settings")
 	float TurretLifetime = 10.f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Actors")

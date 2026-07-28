@@ -63,14 +63,14 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_FaceTarget(ACharacter* Target);
 	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Player Properties")
 	float NextSlowMagnitude;
 	
 	// Impact Effects
 	UFUNCTION(NetMulticast, Unreliable)
 	void Multicast_SpawnImpactEffects(FVector ImpactPoint, FVector ImpactNormal, FVector MuzzleLocation);
 	
-	void SpawnImpactEffectsLocal(FVector ImpactPoint, FVector ImpactNormal, FVector MuzzleLocation);
+	void SpawnImpactEffectsLocal(const FVector& ImpactPoint, const FVector& ImpactNormal, const FVector& MuzzleLocation);
 	
 	UPROPERTY(EditDefaultsOnly)
 	TArray<TObjectPtr<UMaterialInstance>> BulletImpactDecals;
@@ -80,20 +80,20 @@ public:
 	// End Impact Effects
 	
 	// Zoom
-	UPROPERTY(EditAnywhere, Category = "Zoom")
+	UPROPERTY(EditAnywhere, Category = "Player Settings|Zoom")
 	float DefaultFOV = 90.f;
 
-	UPROPERTY(EditAnywhere, Category = "Zoom")
+	UPROPERTY(EditAnywhere, Category = "Player Settings|Zoom")
 	float AimFOV = 60.f;
 
-	UPROPERTY(EditAnywhere, Category = "Zoom")
+	UPROPERTY(EditAnywhere, Category = "Player Settings|Zoom")
 	float ZoomSpeed = 10.f;
 	// End Zoom
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Stats")
+	UPROPERTY(EditDefaultsOnly, Category = "Player Settings|Stats")
 	float BaseArmor = 5.f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Stats")
+	UPROPERTY(EditDefaultsOnly, Category = "Player Settings|Stats")
 	float BaseMaxArmor = 5.f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilities|Effect Application")
@@ -134,40 +134,40 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool bIsReloading = false;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Meshes")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Player Settings|Meshes")
 	TObjectPtr<UStaticMeshComponent> WeaponMesh;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Meshes", BlueprintreadOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Player Settings|Meshes", BlueprintreadOnly)
 	TObjectPtr<UStaticMesh> PrimaryMesh;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Meshes")
+	UPROPERTY(EditDefaultsOnly, Category = "Player Settings|Meshes")
 	TObjectPtr<UStaticMesh> UtilityMesh;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Meshes")
+	UPROPERTY(EditDefaultsOnly, Category = "Player Settings|Meshes")
 	TObjectPtr<UStaticMesh> ThrowableMesh;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Meshes")
+	UPROPERTY(EditDefaultsOnly, Category = "Player Settings|Meshes")
 	FVector PrimaryMeshScale = FVector(1.0f);
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Meshes")
+	UPROPERTY(EditDefaultsOnly, Category = "Player Settings|Meshes")
 	FVector UtilityMeshScale = FVector(1.0f);
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Meshes")
+	UPROPERTY(EditDefaultsOnly, Category = "Player Settings|Meshes")
 	FVector ThrowableMeshScale = FVector(1.0f);
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Animations")
+	UPROPERTY(EditDefaultsOnly, Category = "Player Settings|Animations")
 	TObjectPtr<UAnimMontage> PrimaryEquipMontage;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Animations")
+	UPROPERTY(EditDefaultsOnly, Category = "Player Settings|Animations")
 	TObjectPtr<UAnimMontage> UtilityEquipMontage;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Animations")
+	UPROPERTY(EditDefaultsOnly, Category = "Player Settings|Animations")
 	TObjectPtr<UAnimMontage> ThrowableEquipMontage;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Animations")
+	UPROPERTY(EditDefaultsOnly, Category = "Player Settings|Animations")
 	TObjectPtr<UAnimMontage> PrepareReloadMontage;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Animations")
+	UPROPERTY(EditDefaultsOnly, Category = "Player Settings|Animations")
 	TObjectPtr<UAnimMontage> ReviveMontage;
 	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CurrentEquippedSlot)
@@ -242,8 +242,8 @@ private:
 	UCameraComponent* FollowCamera;
 	
 	// Zoom
-	void ZoomIn(float DeltaTime);
-	void ZoomOut(float DeltaTime);
+	void ZoomIn(float DeltaTime) const;
+	void ZoomOut(float DeltaTime) const;
 	
 	// Whenever the tag for the Aiming State changes, call this function which will set a boolean to true or false depending on NewCount (whether it exists)
 	UFUNCTION()
@@ -284,7 +284,7 @@ private:
 	
 	FActiveGameplayEffectHandle ActiveTotemSpeedBuffEffectHandle;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Player Settings|Buffs")
 	int32 TotemSpeedBonusPerStack = 48;
 	
 	void OnMovementSpeedAttributeChanged(const FOnAttributeChangeData& Data);

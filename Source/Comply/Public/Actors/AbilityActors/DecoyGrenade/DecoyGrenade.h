@@ -28,12 +28,6 @@ public:
 	
 	virtual void Tick(float DeltaTime) override;
 	
-	UPROPERTY(EditAnywhere, Category = "Components")
-	UProjectileMovementComponent* ProjectileMovementComp;
-	
-	UPROPERTY(EditAnywhere, Category = "Components")
-	UStaticMeshComponent* GrenadeMesh;
-	
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
 	TSubclassOf<UGameplayEffect> ApplyDistractedEffectClass;
 	
@@ -56,7 +50,7 @@ public:
 	FVector LaunchVelocity;
 	
 	UFUNCTION()
-	void OnRep_LaunchVelocity();
+	void OnRep_LaunchVelocity() const;
 	
 	virtual void Destroyed() override;
 
@@ -64,13 +58,22 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	UPROPERTY(EditAnywhere, Category = "Components")
+	UProjectileMovementComponent* ProjectileMovementComp;
+	
+	UPROPERTY(EditAnywhere, Category = "Components")
+	UStaticMeshComponent* GrenadeMesh;
+	
+	UPROPERTY(EditAnywhere, Category = "Components")
+	TObjectPtr<URotatingMovementComponent> RotatingMovementComp;
+	
 	UFUNCTION()
 	void Explode();
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Grenade Settings")
 	float MinDamage = 10.f;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Grenade Settings")
 	float ExplosionDelay = 2.f;
 	
 	UPROPERTY()
@@ -86,14 +89,11 @@ private:
 	
 	FTimerHandle DestroyDelayTimerHandle;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(AllowPrivateAccess))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(AllowPrivateAccess), Category = "Audio")
 	TObjectPtr<USoundCue> ExplodeSound;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(AllowPrivateAccess))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(AllowPrivateAccess), Category = "Effects")
 	TObjectPtr<UNiagaraSystem> ExplodeParticles;
-	
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<URotatingMovementComponent> RotatingMovementComp;
 	
 	UFUNCTION()
 	void OnGrenadeLanded(const FHitResult& ImpactResult);

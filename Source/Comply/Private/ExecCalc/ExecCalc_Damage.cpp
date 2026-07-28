@@ -90,6 +90,8 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	const float FinalDamage = FinalPhysicalDamage + FinalElectricalDamage;
 
 	const FGameplayModifierEvaluatedData EvaluatedData(
-		UComplyAttributeSet::GetIncomingDamageAttribute(), EGameplayModOp::Additive, FinalDamage);
+		UComplyAttributeSet::GetIncomingDamageAttribute(), EGameplayModOp::Additive, FinalDamage
+	);
+	
 	OutExecutionOutput.AddOutputModifier(EvaluatedData);
 }

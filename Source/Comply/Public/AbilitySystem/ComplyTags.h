@@ -7,15 +7,15 @@ namespace ComplyTags
 {
 	namespace ComplyAbilities
 	{
-		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Primary);
-		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Utility);
-		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Throwable);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Primary)
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Utility)
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Throwable)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Sprint)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Reload)
 		
 		namespace AssetTags
 		{
-			UE_DECLARE_GAMEPLAY_TAG_EXTERN(ApplyShieldedEffectAbility);
+			UE_DECLARE_GAMEPLAY_TAG_EXTERN(ApplyShieldedEffectAbility)
 			
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Equip_Primary)
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Equip_Throwable)
@@ -23,27 +23,27 @@ namespace ComplyTags
 		
 		namespace InputTags
 		{
-			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Input_Primary);
+			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Input_Primary)
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Input_Interact)
-			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Input_OneShotUtility);
-			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Input_Reload);
+			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Input_OneShotUtility)
+			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Input_Reload)
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Input_Sprint)
 		}
 		
 		namespace DamageTypes
 		{
-			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Damage_Physical);
+			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Damage_Physical)
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Damage_Electrical)
 		}
 	}
 	
 	namespace States
 	{
-		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Aiming);
-		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Firing);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Aiming)
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Firing)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_FiringBlocked)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Shielded)
-		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Reloading);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Reloading)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Distracted)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Equipping)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_TotemBuffed)
@@ -59,17 +59,17 @@ namespace ComplyTags
 	
 	namespace SetByCaller
 	{
-		UE_DECLARE_GAMEPLAY_TAG_EXTERN(SBC_ReduceRifleReserveAmmo);
-		UE_DECLARE_GAMEPLAY_TAG_EXTERN(SBC_ReduceMagnumReserveAmmo);
-		UE_DECLARE_GAMEPLAY_TAG_EXTERN(SBC_ReduceShotgunReserveAmmo);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(SBC_ReduceRifleReserveAmmo)
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(SBC_ReduceMagnumReserveAmmo)
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(SBC_ReduceShotgunReserveAmmo)
 		
-		UE_DECLARE_GAMEPLAY_TAG_EXTERN(SBC_TotemSpeedBuff);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(SBC_TotemSpeedBuff)
 	}
 	
 	namespace Events
 	{
-		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_MeleeAttackRobot);
-		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_AttackTank);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_MeleeAttackRobot)
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_AttackTank)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_ChargeAttackTank)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_AttackMech)
 		
@@ -78,7 +78,7 @@ namespace ComplyTags
 	
 	namespace GameplayCues
 	{
-		UE_DECLARE_GAMEPLAY_TAG_EXTERN(HitscanWeaponImpact);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(HitscanWeaponImpact)
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(ShotgunImpact)
 		
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(HitscanWeaponFire)

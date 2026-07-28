@@ -9,7 +9,6 @@
 #include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "AbilitySystem/ComplyTags.h"
-#include "AbilitySystem/AbilityTasks/HitscanTargetData.h"
 #include "Actors/AbilityActors/DeployableTurret/DeployableTurretPreview.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
@@ -36,8 +35,7 @@ void UThrowable_Enforcer::ThrowOnServer(FVector LaunchVelocity, FVector SpawnPos
 	{
 		// On the server, bind to the target data callback and wait for the client to send confirmed placement location via target data
 		GetAbilitySystemComponentFromActorInfo()->AbilityTargetDataSetDelegate(
-			GetCurrentAbilitySpecHandle(),
-			GetCurrentActivationInfo().GetActivationPredictionKey()
+			GetCurrentAbilitySpecHandle(), GetCurrentActivationInfo().GetActivationPredictionKey()
 		).AddUObject(this, &UThrowable_Enforcer::OnTargetDataReceived);
 	}
 }
@@ -56,7 +54,12 @@ void UThrowable_Enforcer::SpawnPreview(const FGameplayAbilityActorInfo* ActorInf
 	SpawnParams.Owner = Avatar;
 	SpawnParams.Instigator = Cast<APawn>(Avatar);
 
-	SpawnedTurretPreviewActor = GetWorld()->SpawnActor<ADeployableTurretPreview>(TurretPreviewActorClass, GetAvatarActorFromActorInfo()->GetActorLocation(), FRotator::ZeroRotator, SpawnParams);
+	SpawnedTurretPreviewActor = GetWorld()->SpawnActor<ADeployableTurretPreview>(
+		TurretPreviewActorClass,
+		GetAvatarActorFromActorInfo()->GetActorLocation(),
+		FRotator::ZeroRotator,
+		SpawnParams
+	);
 
 	if (SpawnedTurretPreviewActor)
 	{
@@ -105,8 +108,7 @@ void UThrowable_Enforcer::PlayPlaceTurretAnimation()
         }
         
         // Bypass ASC replication, trigger directly on local client only
-        UGameplayCueManager* CueManager = UAbilitySystemGlobals::Get().GetGameplayCueManager();
-        if (CueManager)
+        if (UGameplayCueManager* CueManager = UAbilitySystemGlobals::Get().GetGameplayCueManager())
         {
             FGameplayCueParameters CueParams;
             CueParams.Location = GetAvatarActorFromActorInfo()->GetActorLocation();
@@ -128,13 +130,13 @@ void UThrowable_Enforcer::PlaceTurretAnimationInterrupted()
 {
 	GetAbilitySystemComponentFromActorInfo()->RemoveGameplayCue(ComplyTags::GameplayCues::TurretTyping);
 	
-	FGameplayCueParameters CueParams;
-	UGameplayCueManager* CueManager = UAbilitySystemGlobals::Get().GetGameplayCueManager();
-	if (CueManager)
+	if (UGameplayCueManager* CueManager = UAbilitySystemGlobals::Get().GetGameplayCueManager())
 	{
+		const FGameplayCueParameters CueParams;
 		CueManager->HandleGameplayCue(GetAvatarActorFromActorInfo(),
 			ComplyTags::GameplayCues::TurretTyping,
-			EGameplayCueEvent::Removed, CueParams);
+			EGameplayCueEvent::Removed, CueParams
+		);
 	}
 }
 
@@ -180,13 +182,13 @@ void UThrowable_Enforcer::ConfirmThrow()
 {
 	GetAbilitySystemComponentFromActorInfo()->RemoveGameplayCue(ComplyTags::GameplayCues::TurretTyping);
 	
-	FGameplayCueParameters CueParams;
-	UGameplayCueManager* CueManager = UAbilitySystemGlobals::Get().GetGameplayCueManager();
-	if (CueManager)
+	if (UGameplayCueManager* CueManager = UAbilitySystemGlobals::Get().GetGameplayCueManager())
 	{
+		const FGameplayCueParameters CueParams;
 		CueManager->HandleGameplayCue(GetAvatarActorFromActorInfo(),
 			ComplyTags::GameplayCues::TurretTyping,
-			EGameplayCueEvent::Removed, CueParams);
+			EGameplayCueEvent::Removed, CueParams
+		);
 	}
 	
 	if (!SpawnedTurretPreviewActor || !SpawnedTurretPreviewActor->bCanPlace)
@@ -254,8 +256,7 @@ void UThrowable_Enforcer::PlaceTurret()
 		SpawnParams.Instigator = Cast<APawn>(Avatar);
 
 		// A server RPC is used to handle spawning the turret
-		UComplyAbilitySystemComponent* ASC = Cast<UComplyAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
-		if (ASC)
+		if (UComplyAbilitySystemComponent* ASC = Cast<UComplyAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo()))
 		{
 			ASC->Server_PlaceTurret(GetCurrentAbilitySpecHandle(), SpawnedTurretPreviewActor->PlacementLocation, SpawnedTurretPreviewActor->PlacementRotation);
 		}

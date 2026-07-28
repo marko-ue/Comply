@@ -12,7 +12,6 @@
 #include "Actors/AbilityActors/BuffTotem/BuffTotem.h"
 #include "Actors/AbilityActors/DecoyGrenade/DecoyGrenade.h"
 #include "Actors/AbilityActors/DeployableTurret/DeployableTurret.h"
-#include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -62,7 +61,13 @@ void UComplyAbilitySystemComponent::Server_ThrowPlasmaGrenade_Implementation(FGa
 
 	const FTransform SpawnTransform(SpawnRotation, SpawnLocation);
 	
-	APlasmaGrenade* Grenade = GetWorld()->SpawnActorDeferred<APlasmaGrenade>(Ability->GrenadeActorClass, SpawnTransform, GetOwnerActor(), InstigatorPawn, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	APlasmaGrenade* Grenade = GetWorld()->SpawnActorDeferred<APlasmaGrenade>(
+		Ability->GrenadeActorClass,
+		SpawnTransform, GetOwnerActor(),
+		InstigatorPawn,
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+	);
+	
 	if (Grenade)
 	{
 		Grenade->ExplosionRadius = Ability->ExplosionRadius;
@@ -110,7 +115,13 @@ void UComplyAbilitySystemComponent::Server_ThrowDecoyGrenade_Implementation(FGam
 
 	const FTransform SpawnTransform(SpawnRotation, SpawnLocation);
 	
-	ADecoyGrenade* DecoyGrenade = GetWorld()->SpawnActorDeferred<ADecoyGrenade>(Ability->DecoyGrenadeActorClass, SpawnTransform, GetOwnerActor(), InstigatorPawn, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	ADecoyGrenade* DecoyGrenade = GetWorld()->SpawnActorDeferred<ADecoyGrenade>(
+		Ability->DecoyGrenadeActorClass,
+		SpawnTransform, GetOwnerActor(),
+		InstigatorPawn,
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+	);
+	
 	if (DecoyGrenade)
 	{
 		DecoyGrenade->PullRadius = Ability->PullRadius;
@@ -145,7 +156,13 @@ void UComplyAbilitySystemComponent::Server_PlaceTurret_Implementation(FGameplayA
 
 	FTransform SpawnTransform(SpawnRotation, SpawnLocation);
 
-	ADeployableTurret* Turret = GetWorld()->SpawnActorDeferred<ADeployableTurret>(Ability->TurretActorClass, SpawnTransform, GetOwnerActor(), InstigatorPawn, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	ADeployableTurret* Turret = GetWorld()->SpawnActorDeferred<ADeployableTurret>(
+		Ability->TurretActorClass,
+		SpawnTransform, GetOwnerActor(),
+		InstigatorPawn,
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+	);
+	
 	if (Turret)
 	{
 		Turret->Damage = Ability->Damage.GetValueAtLevel(Ability->GetAbilityLevel());
@@ -177,7 +194,13 @@ void UComplyAbilitySystemComponent::Server_PlaceBuffTotem_Implementation(FGamepl
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Instigator = Cast<APawn>(InstigatorPawn);
 
-	ABuffTotem* BuffTotem = GetWorld()->SpawnActor<ABuffTotem>(Ability->BuffTotemActorClass, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
+	ABuffTotem* BuffTotem = GetWorld()->SpawnActor<ABuffTotem>(
+		Ability->BuffTotemActorClass,
+		SpawnLocation,
+		FRotator::ZeroRotator,
+		SpawnParams
+	);
+	
 	if (BuffTotem)
 	{
 		BuffTotem->SetLifeSpan(BuffTotemLifetime);

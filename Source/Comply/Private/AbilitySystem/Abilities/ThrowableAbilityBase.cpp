@@ -22,9 +22,10 @@ void UThrowableAbilityBase::CancelThrow()
 {
 }
 
-void UThrowableAbilityBase::SafeRemoveThrowingTag()
+void UThrowableAbilityBase::SafeRemoveThrowingTag() const
 {
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
+	
 	// Only remove if we actually own a count of this tag
 	if (ASC->GetTagCount(ComplyTags::States::State_ThrowableThrowing) > 0)
 	{

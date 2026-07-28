@@ -76,3 +76,6 @@ DerivedDataCache/*
 
 # Large asset files
 Content/Assets
+
+# JetBrains Rider plugin
+Plugins/Developer/RiderLink/

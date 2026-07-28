@@ -5,11 +5,11 @@
 
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
+#include "AbilitySystem/ComplyAbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "Actors/AbilityActors/BuffTotem/BuffTotemPreview.h"
 #include "GameFramework/Character.h"
-#include "Kismet/GameplayStatics.h"
 
 
 void UUtility_Disruptor::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -89,56 +89,35 @@ void UUtility_Disruptor::TraceAndSpawnBuffTotem()
 	AActor* Avatar = GetAvatarActorFromActorInfo();
 	if (!Avatar) return;
 	
-	// Trace to the middle of the screen (crosshair)
-	FVector2D ViewportSize = FVector2D();
-	if (GEngine && GEngine->GameViewport)
+	FVector TraceStart, TraceEnd, TraceDirection;
+	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, Avatar, 500.f, TraceStart, TraceEnd, TraceDirection)) return;
+	
+	FHitResult Hit;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(Avatar);
+	
+	FVector SpawnLocation = TraceStart;
+	if (GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_WorldStatic, Params))
 	{
-		GEngine->GameViewport->GetViewportSize(ViewportSize);
+		SpawnLocation = Hit.ImpactPoint;
 	}
 	
-	const FVector2D CrosshairLocation(ViewportSize.X / 2, ViewportSize.Y / 2);
-	FVector CrosshairWorldPosition;
-	FVector CrosshairWorldDirection;
-	const bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(UGameplayStatics::GetPlayerController(
-		this, 0), CrosshairLocation, CrosshairWorldPosition, CrosshairWorldDirection);
-	if (bScreenToWorld)
-	{
-		FVector Start = CrosshairWorldPosition;
-		
-		if (Avatar)
-		{
-			float DistanceToCharacter = (Avatar->GetActorLocation() - Start).Size();
-			Start += CrosshairWorldDirection * (DistanceToCharacter + 100);
-		}
-		
-		FVector End = Start + CrosshairWorldDirection * 500;
-		
-		FHitResult Hit;
-		FCollisionQueryParams Params;
-		Params.AddIgnoredActor(Avatar);
-		
-		FVector SpawnLocation = Start;
-		if (GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_WorldStatic, Params))
-		{
-			SpawnLocation = Hit.ImpactPoint;
-		}
-		
-		// The buff totem will spawn rotated towards the crosshair's world direction rotation
-		FRotator SpawnRotation = CrosshairWorldDirection.Rotation();
-		SpawnRotation.Yaw += 0.f;
-		SpawnRotation.Pitch = 0.f;
-		SpawnRotation.Roll = 0.f;
-		
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = Avatar;
-		SpawnParams.Instigator = Cast<APawn>(Avatar);
+	// The buff totem will spawn rotated towards the crosshair's world direction rotation
+	FRotator SpawnRotation = TraceDirection.Rotation();
+	SpawnRotation.Yaw += 0.f;
+	SpawnRotation.Pitch = 0.f;
+	SpawnRotation.Roll = 0.f;
+	
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = Avatar;
+	SpawnParams.Instigator = Cast<APawn>(Avatar);
 
-		// A server RPC is used to handle spawning the buff totem
-		if (UComplyAbilitySystemComponent* ASC = Cast<UComplyAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo()))
-		{
-			ASC->Server_PlaceBuffTotem(GetCurrentAbilitySpecHandle(), SpawnLocation, BuffTotemLifetime);
-		}
+	// A server RPC is used to handle spawning the buff totem
+	if (UComplyAbilitySystemComponent* ASC = Cast<UComplyAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo()))
+	{
+		ASC->Server_PlaceBuffTotem(GetCurrentAbilitySpecHandle(), SpawnLocation, BuffTotemLifetime);
 	}
+
 	
 	// Automatically equip the primary ability once the buff totem is thrown, as the player should not be able to equip the buff totem while it's on cooldown
 	GetAbilitySystemComponentFromActorInfo()->TryActivateAbilitiesByTag(

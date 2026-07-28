@@ -54,7 +54,7 @@ void ADeployableTurret::Tick(float DeltaTime)
 		ToTargetRotation.Pitch = 0.f;
 		ToTargetRotation.Roll = 0.f;
 		/* Interp speed could be upgradeable in the future */
-		FRotator LerpRotation = FMath::RInterpTo(GetActorRotation(), ToTargetRotation, DeltaTime, 10.f);
+		const FRotator LerpRotation = FMath::RInterpTo(GetActorRotation(), ToTargetRotation, DeltaTime, 10.f);
 		SetActorRotation(LerpRotation);
 	}
 }
@@ -78,7 +78,7 @@ void ADeployableTurret::TryFire()
 		FHitResult Hit;
 		FVector TraceStart = GetActorLocation() + FVector(0.f, 0.f, 50.f);
 		FVector TraceEnd = Target->GetActorLocation() + FVector(0.f, 0.f, 50.f);
-		bool bBlocked = GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility);
+		const bool bBlocked = GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility);
 		if (bBlocked) continue; // A wall is in the way
 
 		CurrentTarget = Target;

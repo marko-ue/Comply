@@ -36,6 +36,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Revive Settings")
 	float ReviveTime = 5.f;
 	
+	UPROPERTY(EditAnywhere, Category = "Revive Settings")
+	float TraceLength = 250.f;
+	
 	UPROPERTY(EditAnywhere = "Revive Settings")
 	float ReviveSphereTraceRadius = 100.f;
 	

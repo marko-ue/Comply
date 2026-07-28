@@ -2,6 +2,8 @@
 
 
 #include "Actors/AbilityActors/DecoyGrenade/DecoyGrenadePreview.h"
+
+#include "AbilitySystem/ComplyAbilitySystemBlueprintLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/GameplayStaticsTypes.h"
 
@@ -21,20 +23,11 @@ void ADecoyGrenadePreview::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	
 	FVector LaunchVelocity = FVector::ZeroVector;
-	FVector2D ViewportSize = FVector2D();
-	if (GEngine && GEngine->GameViewport)
-	{
-		GEngine->GameViewport->GetViewportSize(ViewportSize);
-	}
 	
-	const FVector2D CrosshairLocation(ViewportSize.X / 2, ViewportSize.Y / 2);
-	FVector CrosshairWorldPosition;
-	FVector CrosshairWorldDirection;
-	const bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(UGameplayStatics::GetPlayerController(
-		this, 0), CrosshairLocation, CrosshairWorldPosition, CrosshairWorldDirection);
-	if (bScreenToWorld)
+	FVector TraceStart, TraceEnd, TraceDirection;
+	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, OwningPawn, 0.f, TraceStart, TraceEnd, TraceDirection)) return;
 	{
-		LaunchVelocity = CrosshairWorldDirection * ThrowSpeed;
+		LaunchVelocity = TraceDirection * ThrowSpeed;
 	}
 
 	FPredictProjectilePathParams PredictParams;

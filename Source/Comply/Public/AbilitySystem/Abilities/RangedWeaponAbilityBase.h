@@ -86,6 +86,8 @@ public:
 	TObjectPtr<URangedWeaponAbilityBase> ActiveWeapon;
 
 protected:
+	void BuildWeaponCollisionParams(const AActor* Avatar, FCollisionQueryParams& OutQueryParams, FCollisionObjectQueryParams& OutObjectParams);
+	
 	virtual bool Fire();
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Settings|Trace")

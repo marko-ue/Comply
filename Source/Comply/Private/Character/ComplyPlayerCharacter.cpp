@@ -10,6 +10,7 @@
 #include "ComplyPlayerController.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "AbilitySystem/ComplyAbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "AbilitySystem/Abilities/ThrowableAbilityBase.h"
@@ -306,30 +307,7 @@ void AComplyPlayerCharacter::Multicast_SpawnImpactEffects_Implementation(FVector
 	// Decal and effects are spawned locally for clients, don't multicast to them again
 	if (IsLocallyControlled()) return;
 	
-	// Spawns a random decal from an array
-	const float DecalIndex = FMath::RandRange(0, BulletImpactDecals.Max() - 1);
-	UDecalComponent* Decal = UGameplayStatics::SpawnDecalAtLocation(
-		GetWorld(), BulletImpactDecals[DecalIndex], FVector(5.f, 10.f, 10.f), ImpactPoint,
-		UKismetMathLibrary::MakeRotFromX(ImpactNormal), 5.f
-	);
-
-	if (Decal)
-	{
-		Decal->SetFadeScreenSize(0.f);
-		Decal->SetFadeOut(5.f, 1.f, true);
-	}
-
-	// Spawns a tracer niagara effect and sets its beam end to the impact point
-	UNiagaraComponent* Tracer = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-		GetWorld(), BulletTracerEffect, MuzzleLocation, FRotator::ZeroRotator, FVector(1.f)
-	);
-			
-	if (Tracer)
-	{
-		// Local offset from the muzzle, Niagara was interpreting world space vector as local relative to the spawn location
-		const FVector BeamEndLocal = ImpactPoint - MuzzleLocation;
-		Tracer->SetNiagaraVariableVec3("BeamEnd", BeamEndLocal);
-	}
+	SpawnImpactEffectsLocal(ImpactPoint, ImpactNormal, MuzzleLocation);
 }
 
 // Server RPC called from the revive ability
@@ -628,40 +606,22 @@ void AComplyPlayerCharacter::ZoomOut(float DeltaTime) const
 // Traces to the camera each tick, checking for interactable actors
 void AComplyPlayerCharacter::TraceForInteractable()
 {
-	FVector2D ViewportSize = FVector2D();
-	if (GEngine && GEngine->GameViewport)
-	{
-		GEngine->GameViewport->GetViewportSize(ViewportSize);
-	}
+	FVector TraceStart, TraceEnd, TraceDirection;
+	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, this, 200.f, TraceStart, TraceEnd, TraceDirection)) return;
 	
-	const FVector2D CrosshairLocation(ViewportSize.X / 2, ViewportSize.Y / 2);
-	FVector CrosshairWorldPosition;
-	FVector CrosshairWorldDirection;
-	const bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(UGameplayStatics::GetPlayerController(
-		this, 0), CrosshairLocation, CrosshairWorldPosition, CrosshairWorldDirection);
-	if (bScreenToWorld)
+	FHitResult Hit;
+	bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility);
+
+	AActor* HitActor = bHit ? Hit.GetActor() : nullptr;
+	IInteractableInterface* Interactable = HitActor ? Cast<IInteractableInterface>(HitActor) : nullptr;
+
+	if (Interactable != CurrentFocusedInteractable)
 	{
-		FVector Start = CrosshairWorldPosition;
-		
-		float DistanceToCharacter = (GetActorLocation() - Start).Size();
-		Start += CrosshairWorldDirection * (DistanceToCharacter + 100);
-		
-		FVector End = Start + CrosshairWorldDirection * 200;
-		
-		FHitResult Hit;
-		bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility);
+		if (CurrentFocusedInteractable) CurrentFocusedInteractable->HideInteractionPrompt();
 
-		AActor* HitActor = bHit ? Hit.GetActor() : nullptr;
-		IInteractableInterface* Interactable = HitActor ? Cast<IInteractableInterface>(HitActor) : nullptr;
+		CurrentFocusedInteractable = Interactable;
 
-		if (Interactable != CurrentFocusedInteractable)
-		{
-			if (CurrentFocusedInteractable) CurrentFocusedInteractable->HideInteractionPrompt();
-
-			CurrentFocusedInteractable = Interactable;
-
-			if (CurrentFocusedInteractable) CurrentFocusedInteractable->ShowInteractionPrompt();
-		}
+		if (CurrentFocusedInteractable) CurrentFocusedInteractable->ShowInteractionPrompt();
 	}
 }
 

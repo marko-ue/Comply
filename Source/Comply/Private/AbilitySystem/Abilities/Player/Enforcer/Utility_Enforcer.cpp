@@ -7,6 +7,7 @@
 #include "Comply.h"
 #include "GameplayCueManager.h"
 #include "Abilities/Tasks/AbilityTask_ApplyRootMotionMoveToForce.h"
+#include "AbilitySystem/ComplyAbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "Character/Player/EnforcerCharacter.h"
 #include "GameFramework/Character.h"
@@ -57,49 +58,18 @@ void UUtility_Enforcer::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	}
 }
 
-bool UUtility_Enforcer::PerformGrappleTrace(FHitResult& OutHitResult, float GrappleRange) const
+bool UUtility_Enforcer::PerformGrappleTrace(FHitResult& OutHitResult, const float GrappleRange) const
 {
-	const AActor* Owner = GetOwningActorFromActorInfo();
 	const AActor* Avatar = GetAvatarActorFromActorInfo();
-
-	if (!Avatar || !Owner) return false;
+	if (!Avatar) return false;
     
-	FVector2D ViewportSize = FVector2D();
-	if (GEngine && GEngine->GameViewport)
-	{
-		GEngine->GameViewport->GetViewportSize(ViewportSize);
-	}
-    
-	const FVector2D CrosshairLocation(ViewportSize.X / 2, ViewportSize.Y / 2);
-	FVector CrosshairWorldPosition;
-	FVector CrosshairWorldDirection;
-	const bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(UGameplayStatics::GetPlayerController(
-	   this, 0), CrosshairLocation, CrosshairWorldPosition, CrosshairWorldDirection);
-	if (bScreenToWorld)
-	{
-		FVector Start = CrosshairWorldPosition;
-       
-		if (Avatar)
-		{
-			float DistanceToCharacter = (Avatar->GetActorLocation() - Start).Size();
-			Start += CrosshairWorldDirection * (DistanceToCharacter + 100);
-		}
-       
-		FVector End = Start + CrosshairWorldDirection * GrappleRange;
+	FVector TraceStart, TraceEnd, TraceDirection;
+	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, Avatar, GrappleRange, TraceStart, TraceEnd, TraceDirection)) return false;
 
-		FCollisionQueryParams CollisionParams;
-		CollisionParams.AddIgnoredActor(Avatar);
-       
-		return GetWorld()->LineTraceSingleByChannel(
-		   OutHitResult,
-		   Start,
-		   End,
-		   ECC_GrappleTarget,
-		   CollisionParams
-		);
-	}
-
-	return false;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(Avatar);
+   
+	return GetWorld()->LineTraceSingleByChannel(OutHitResult, TraceStart, TraceEnd, ECC_GrappleTarget, CollisionParams);
 }
 
 // Now location related things can be used, as the server gets correct information from the client via target data

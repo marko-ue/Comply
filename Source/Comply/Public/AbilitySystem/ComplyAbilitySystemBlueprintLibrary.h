@@ -23,4 +23,7 @@ public:
 	static int32 GetShotgunTargetDataNum(const FGameplayAbilityTargetDataHandle& Handle);
 	/* End shotgun trace target data */
 	
+	// Helper function that outputs a trace start, end and direction
+	UFUNCTION(Category = "Trace")
+	static bool GetCrosshairTraceStartEnd(const UObject* WorldContextObject, const AActor* Avatar, const float TraceLength, FVector& OutStart, FVector& OutEnd, FVector& OutDirection);
 };

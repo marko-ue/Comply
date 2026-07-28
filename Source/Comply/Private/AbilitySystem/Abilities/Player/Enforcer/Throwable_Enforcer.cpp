@@ -7,6 +7,7 @@
 #include "GameplayCueManager.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
+#include "AbilitySystem/ComplyAbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "Actors/AbilityActors/DeployableTurret/DeployableTurretPreview.h"
@@ -211,62 +212,40 @@ void UThrowable_Enforcer::PlaceTurret()
 	AActor* Avatar = GetAvatarActorFromActorInfo();
 	if (!Avatar) return;
 	
-	// Trace to the middle of the screen (crosshair)
-	FVector2D ViewportSize = FVector2D();
-	if (GEngine && GEngine->GameViewport)
+	FVector TraceStart, TraceEnd, TraceDirection;
+	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, Avatar, 0.f, TraceStart, TraceEnd, TraceDirection)) return;
+
+	FHitResult Hit;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(Avatar);
+	
+	if (GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_WorldStatic, Params))
 	{
-		GEngine->GameViewport->GetViewportSize(ViewportSize);
+		FVector SpawnLocation = TraceStart;
+		SpawnLocation = Hit.ImpactPoint;
 	}
 	
-	const FVector2D CrosshairLocation(ViewportSize.X / 2, ViewportSize.Y / 2);
-	FVector CrosshairWorldPosition;
-	FVector CrosshairWorldDirection;
-	const bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(UGameplayStatics::GetPlayerController(
-		this, 0), CrosshairLocation, CrosshairWorldPosition, CrosshairWorldDirection);
-	if (bScreenToWorld)
-	{
-		FVector Start = CrosshairWorldPosition;
-		
-		if (Avatar)
-		{
-			float DistanceToCharacter = (Avatar->GetActorLocation() - Start).Size();
-			Start += CrosshairWorldDirection * (DistanceToCharacter + 100);
-		}
-		
-		FVector End = Start + CrosshairWorldDirection * 500;
-		
-		FHitResult Hit;
-		FCollisionQueryParams Params;
-		Params.AddIgnoredActor(Avatar);
-		
-		FVector SpawnLocation = Start;
-		if (GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_WorldStatic, Params))
-		{
-			SpawnLocation = Hit.ImpactPoint;
-		}
-		
-		// The turret will spawn rotated towards the crosshair's world direction rotation
-		FRotator SpawnRotation = CrosshairWorldDirection.Rotation();
-		SpawnRotation.Yaw += 0.f;
-		SpawnRotation.Pitch = 0.f;
-		SpawnRotation.Roll = 0.f;
-		
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = Avatar;
-		SpawnParams.Instigator = Cast<APawn>(Avatar);
+	// The turret will spawn rotated towards the crosshair's world direction rotation
+	FRotator SpawnRotation = TraceDirection.Rotation();
+	SpawnRotation.Yaw += 0.f;
+	SpawnRotation.Pitch = 0.f;
+	SpawnRotation.Roll = 0.f;
+	
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = Avatar;
+	SpawnParams.Instigator = Cast<APawn>(Avatar);
 
-		// A server RPC is used to handle spawning the turret
-		if (UComplyAbilitySystemComponent* ASC = Cast<UComplyAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo()))
-		{
-			ASC->Server_PlaceTurret(GetCurrentAbilitySpecHandle(), SpawnedTurretPreviewActor->PlacementLocation, SpawnedTurretPreviewActor->PlacementRotation);
-		}
-		
-		// Destroy the preview actor now, as the actual turret is now placed
-		if (SpawnedTurretPreviewActor)
-		{
-			SpawnedTurretPreviewActor->Destroy();
-			SpawnedTurretPreviewActor = nullptr;
-		}
+	// A server RPC is used to handle spawning the turret
+	if (UComplyAbilitySystemComponent* ASC = Cast<UComplyAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo()))
+	{
+		ASC->Server_PlaceTurret(GetCurrentAbilitySpecHandle(), SpawnedTurretPreviewActor->PlacementLocation, SpawnedTurretPreviewActor->PlacementRotation);
+	}
+	
+	// Destroy the preview actor now, as the actual turret is now placed
+	if (SpawnedTurretPreviewActor)
+	{
+		SpawnedTurretPreviewActor->Destroy();
+		SpawnedTurretPreviewActor = nullptr;
 	}
 }
 

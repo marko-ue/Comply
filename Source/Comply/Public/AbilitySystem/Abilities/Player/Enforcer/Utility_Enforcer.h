@@ -31,7 +31,10 @@ protected:
 	UCurveVector* PathOffsetCurve = nullptr;
 	
 private:
-	bool PerformGrappleTrace(FHitResult& OutHitResult, float GrappleRange = 3000.f) const;
+	UPROPERTY(EditAnywhere, Category = "Grappling Hook Settings")
+	float TraceLength = 100.f;
+	
+	bool PerformGrappleTrace(FHitResult& OutHitResult, const float GrappleRange = 3000.f) const;
 	
 	UFUNCTION()
 	void OnPullReachedDestination();

@@ -7,8 +7,8 @@
 #include "GameplayCueManager.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
+#include "AbilitySystem/ComplyAbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/ComplyAbilityTypes.h"
-#include "Kismet/GameplayStatics.h"
 #include "AbilitySystem/AbilityTasks/HitscanTargetData.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/Abilities/Player/Disruptor/Primary_Disruptor.h"
@@ -21,87 +21,55 @@
 // This function is called in HitscanTargetData for transferring hitscan data from client to server
 void URangedWeaponAbilityBase::TraceToCrosshair(FHitResult& TraceHitResult, const float TraceLength, bool& OutPassedThroughShield)
 {
-	AActor* Owner = GetOwningActorFromActorInfo();
-	AActor* Avatar = GetAvatarActorFromActorInfo();
-
+	const AActor* Owner = GetOwningActorFromActorInfo();
+	const AActor* Avatar = GetAvatarActorFromActorInfo();
 	if (!Avatar || !Owner) return;
 	
-	FVector2D ViewportSize = FVector2D();
-	if (GEngine && GEngine->GameViewport)
-	{
-		GEngine->GameViewport->GetViewportSize(ViewportSize);
-	}
+	FVector TraceStart, TraceEnd, TraceDirection;
+	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, Avatar, TraceLength, TraceStart, TraceEnd, TraceDirection)) return;
 	
-	const FVector2D CrosshairLocation(ViewportSize.X / 2, ViewportSize.Y / 2);
-	FVector CrosshairWorldPosition;
-	FVector CrosshairWorldDirection;
-	const bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(UGameplayStatics::GetPlayerController(
-		this, 0), CrosshairLocation, CrosshairWorldPosition, CrosshairWorldDirection);
-	if (bScreenToWorld)
+	FCollisionQueryParams CollisionParams;
+	FCollisionObjectQueryParams ObjectParams;
+	BuildWeaponCollisionParams(Avatar, CollisionParams, ObjectParams);
+
+	TArray<FHitResult> MultiHitResults;
+	GetWorld()->LineTraceMultiByObjectType(MultiHitResults, TraceStart, TraceEnd, ObjectParams, CollisionParams);
+	
+	for (const FHitResult& Hit : MultiHitResults)
 	{
-		Start = CrosshairWorldPosition;
-		
-		if (Avatar)
-		{
-			float DistanceToCharacter = (Avatar->GetActorLocation() - Start).Size();
-			Start += CrosshairWorldDirection * (DistanceToCharacter + 25);
-		}
-		
-		End = Start + CrosshairWorldDirection * TraceLength;
+		const AActor* HitActor = Hit.GetActor();
+		if (!HitActor) continue;
 
-		FCollisionQueryParams CollisionParams;
-		CollisionParams.AddIgnoredActor(Avatar);
-		
-		FCollisionObjectQueryParams ObjectParams;
-		ObjectParams.AddObjectTypesToQuery(ECC_Enemy);
-		ObjectParams.AddObjectTypesToQuery(ECC_Shield);
-		ObjectParams.AddObjectTypesToQuery(ECC_WorldStatic);
-		// Trace against the player and player friends too if friendly fire is enabled
-		AComplyGameModeBase* GameMode = GetWorld()->GetAuthGameMode<AComplyGameModeBase>();
-		if (GameMode && GameMode->bFriendlyFire)
+		if (HitActor->ActorHasTag(FName("Shield")))
 		{
-			ObjectParams.AddObjectTypesToQuery(ECC_Player);
-			ObjectParams.AddObjectTypesToQuery(ECC_PlayerFriend);
-		}
-		
-		// A multi trace is used because overlap events are required, as well as direct hits for applying damage
-		TArray<FHitResult> MultiHitResults;
-		GetWorld()->LineTraceMultiByObjectType(MultiHitResults, Start, End, ObjectParams, CollisionParams);
-		
-		for (const FHitResult& Hit : MultiHitResults)
-		{
-			AActor* HitActor = Hit.GetActor();
-			if (!HitActor) continue;
-
-			if (HitActor->ActorHasTag(FName("Shield")))
-			{
-				// An out parameter boolean is set to true if the overlapping actor is the dome shield
-				OutPassedThroughShield = true;
-				
-				// Impact point and normal for the trace that overlapped with the shield actor
-				FGameplayCueParameters CueParams;
-				CueParams.Location = Hit.ImpactPoint;
-				CueParams.Normal = Hit.ImpactNormal;
-				UGameplayCueManager::ExecuteGameplayCue_NonReplicated(
-				GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::ShieldHitscanWeaponImpact, CueParams);
-				
-				continue;
-			}
-
-			// The trace hit result is also stored here
-			TraceHitResult = Hit;
+			// An out parameter boolean is set to true if the overlapping actor is the dome shield
+			OutPassedThroughShield = true;
 			
-			if (CurrentActorInfo->IsLocallyControlled())
-			{
-				FGameplayCueParameters CueParams;
-				CueParams.Location = Hit.ImpactPoint;
-				CueParams.Normal = Hit.ImpactNormal;
-				UGameplayCueManager::ExecuteGameplayCue_NonReplicated(
-					GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::HitscanWeaponImpact, CueParams);
-			}
+			// Impact point and normal for the trace that overlapped with the shield actor
+			FGameplayCueParameters CueParams;
+			CueParams.Location = Hit.ImpactPoint;
+			CueParams.Normal = Hit.ImpactNormal;
+			UGameplayCueManager::ExecuteGameplayCue_NonReplicated(
+				GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::ShieldHitscanWeaponImpact, CueParams
+			);
 			
-			return;
+			continue;
 		}
+
+		// The trace hit result is also stored here
+		TraceHitResult = Hit;
+		
+		if (CurrentActorInfo->IsLocallyControlled())
+		{
+			FGameplayCueParameters CueParams;
+			CueParams.Location = Hit.ImpactPoint;
+			CueParams.Normal = Hit.ImpactNormal;
+			UGameplayCueManager::ExecuteGameplayCue_NonReplicated(
+				GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::HitscanWeaponImpact, CueParams
+			);
+		}
+		
+		return;
 	}
 }
 
@@ -109,135 +77,114 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 {
 	AActor* Owner = GetOwningActorFromActorInfo();
 	AActor* Avatar = GetAvatarActorFromActorInfo();
-
 	const UPrimary_Disruptor* Ability = Cast<UPrimary_Disruptor>(GetCurrentAbilitySpec()->GetPrimaryInstance());
-
 	if (!Avatar || !Owner || !Ability) return;
 	
-	FVector2D ViewportSize = FVector2D();
-	if (GEngine && GEngine->GameViewport)
+	FVector TraceStart, TraceEnd, TraceDirection;
+	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, Avatar, TraceLength, TraceStart, TraceEnd, TraceDirection)) return;
+	
+	FCollisionQueryParams CollisionParams;
+	FCollisionObjectQueryParams ObjectParams;
+	BuildWeaponCollisionParams(Avatar, CollisionParams, ObjectParams);
+
+	FGameplayAbilityTargetDataHandle TargetDataHandle;
+	TArray<FHitResult> ShieldHits;
+	// A multi trace is used because overlap events are required, as well as direct hits for applying damage
+	for (int32 i = 0; i < NumPellets; i++)
 	{
-		GEngine->GameViewport->GetViewportSize(ViewportSize);
+		const FVector PelletDirection = FMath::VRandCone(TraceDirection, FMath::DegreesToRadians(Ability->SpreadAngle));
+		const FVector PelletEnd = TraceStart + PelletDirection * TraceLength;
+
+		TArray<FHitResult> MultiHitResults;
+		GetWorld()->LineTraceMultiByObjectType(MultiHitResults, TraceStart, PelletEnd, ObjectParams, CollisionParams);
+		
+		for (const FHitResult& Hit : MultiHitResults)
+		{
+			if (!Hit.GetActor()) continue;
+			
+			if (Hit.GetActor()->ActorHasTag(FName("Shield")))
+			{
+				// An out parameter boolean is set to true if the overlapping actor is the dome shield
+				OutPassedThroughShield = true;
+				ShieldHits.Add(Hit);
+				continue;
+			}
+			OutHitResults.Add(Hit);
+			
+			// Hit result added to target data handle
+			TargetDataHandle.Add(new FGameplayAbilityTargetData_SingleTargetHit(Hit));
+			break;
+		}
 	}
 	
-	const FVector2D CrosshairLocation(ViewportSize.X / 2, ViewportSize.Y / 2);
-	FVector CrosshairWorldPosition;
-	FVector CrosshairWorldDirection;
-	const bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(UGameplayStatics::GetPlayerController(
-		this, 0), CrosshairLocation, CrosshairWorldPosition, CrosshairWorldDirection);
-	if (bScreenToWorld)
+	// Execute cue outside the loop, pass in information from each hit
+	if (ShieldHits.Num() > 0)
 	{
-		Start = CrosshairWorldPosition;
-		
-		if (Avatar)
-		{
-			float DistanceToCharacter = (Avatar->GetActorLocation() - Start).Size();
-			Start += CrosshairWorldDirection * (DistanceToCharacter + 25);
-		}
-		
-		End = Start + CrosshairWorldDirection * TraceLength;
-		
-		FCollisionQueryParams CollisionParams;
-		CollisionParams.AddIgnoredActor(Avatar);
-		FCollisionObjectQueryParams ObjectParams;
-		ObjectParams.AddObjectTypesToQuery(ECC_Enemy);
-		ObjectParams.AddObjectTypesToQuery(ECC_Shield);
-		ObjectParams.AddObjectTypesToQuery(ECC_WorldStatic);
-		// Trace against the player too if friendly fire is enabled
-		AComplyGameModeBase* GameMode = GetWorld()->GetAuthGameMode<AComplyGameModeBase>();
-		if (GameMode && GameMode->bFriendlyFire)
-		{
-			ObjectParams.AddObjectTypesToQuery(ECC_Player);
-			ObjectParams.AddObjectTypesToQuery(ECC_PlayerFriend);
-		}
-		
-		// Target data for shotgun impact points
-		FGameplayAbilityTargetDataHandle TargetDataHandle;
-		
-		TArray<FHitResult> ShieldHits;
-		
-		// A multi trace is used because overlap events are required, as well as direct hits for applying damage
-		for (int32 i = 0; i < NumPellets; i++)
-		{
-			const FVector PelletDirection = FMath::VRandCone(CrosshairWorldDirection, FMath::DegreesToRadians(Ability->SpreadAngle));
-			const FVector PelletEnd = Start + PelletDirection * TraceLength;
-
-			TArray<FHitResult> MultiHitResults;
-			GetWorld()->LineTraceMultiByObjectType(MultiHitResults, Start, PelletEnd, ObjectParams, CollisionParams);
-
-			for (const FHitResult& Hit : MultiHitResults)
-			{
-				if (!Hit.GetActor()) continue;
-				if (Hit.GetActor()->ActorHasTag(FName("Shield")))
-				{
-					// An out parameter boolean is set to true if the overlapping actor is the dome shield
-					OutPassedThroughShield = true;
-					ShieldHits.Add(Hit);
-					// DEBUG: shield hit point
-					DrawDebugSphere(GetWorld(), Hit.ImpactPoint, 5.f, 8, FColor::Yellow, false, 2.f);
-					continue;
-				}
-				OutHitResults.Add(Hit);
-				
-				// Hit result added to target data handle
-				TargetDataHandle.Add(new FGameplayAbilityTargetData_SingleTargetHit(Hit));
-				// DEBUG: enemy/world hit point
-				DrawDebugSphere(GetWorld(), Hit.ImpactPoint, 5.f, 8, FColor::Green, false, 2.f);
-				break;
-			}
-		}
-		
-		// Execute cue outside the loop, pass in information from each hit
-		if (ShieldHits.Num() > 0)
-		{
-			// Context with shotgun traces target data passed in, in order to only activate one cue for all shots
-			FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
-			FComplyGameplayEffectContext* Context = static_cast<FComplyGameplayEffectContext*>(ContextHandle.Get());
-			if (Context)
-			{
-				// Pack shield hits into target data the same way it's done for regular pellets so only one cue is used
-				FGameplayAbilityTargetDataHandle ShieldTargetData;
-				for (const FHitResult& Hit : ShieldHits)
-				{
-					ShieldTargetData.Add(new FGameplayAbilityTargetData_SingleTargetHit(Hit));
-				}
-				Context->ShotgunTracesTargetData = ShieldTargetData;
-			}
-
-			FGameplayCueParameters CueParams;
-			CueParams.EffectContext = ContextHandle;
-			UGameplayCueManager::ExecuteGameplayCue_NonReplicated(
-				GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::ShieldShotgunImpact, CueParams);
-		}
-		
-		/*
-		 * One cue is created, and the context with the shotgun trace target data is created and passed in the params
-		 * In the cue blueprint, we iterate over reach hit result to spawn particles at each location
-		 * All the particles are spawned at once from one cue, so only one multicast RPC is needed
-		 */
+		// Context with shotgun traces target data passed in, in order to only activate one cue for all shots
 		FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
 		FComplyGameplayEffectContext* Context = static_cast<FComplyGameplayEffectContext*>(ContextHandle.Get());
 		if (Context)
 		{
-			Context->ShotgunTracesTargetData = TargetDataHandle;
+			// Pack shield hits into target data the same way it's done for regular pellets so only one cue is used
+			FGameplayAbilityTargetDataHandle ShieldTargetData;
+			for (const FHitResult& Hit : ShieldHits)
+			{
+				ShieldTargetData.Add(new FGameplayAbilityTargetData_SingleTargetHit(Hit));
+			}
+			Context->ShotgunTracesTargetData = ShieldTargetData;
 		}
+
+		FGameplayCueParameters CueParams;
+		CueParams.EffectContext = ContextHandle;
+		UGameplayCueManager::ExecuteGameplayCue_NonReplicated(
+			GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::ShieldShotgunImpact, CueParams);
+	}
+	
+	/*
+	 * One cue is created, and the context with the shotgun trace target data is created and passed in the params
+	 * In the cue blueprint, we iterate over reach hit result to spawn particles at each location
+	 * All the particles are spawned at once from one cue, so only one multicast RPC is needed
+	 */
+	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
+	FComplyGameplayEffectContext* Context = static_cast<FComplyGameplayEffectContext*>(ContextHandle.Get());
+	if (Context)
+	{
+		Context->ShotgunTracesTargetData = TargetDataHandle;
+	}
+	
+	if (CurrentActorInfo->IsLocallyControlled())
+	{
+		FGameplayCueParameters CueParams;
+		CueParams.EffectContext = ContextHandle;
+		UGameplayCueManager::ExecuteGameplayCue_NonReplicated(GetAvatarActorFromActorInfo(),ComplyTags::GameplayCues::ShotgunImpact, CueParams);
+	}
+	
+	if (GetAbilitySystemComponentFromActorInfo()->IsOwnerActorAuthoritative() && !CurrentActorInfo->IsLocallyControlled())
+	{
+		FScopedPredictionWindow ScopedPrediction(GetAbilitySystemComponentFromActorInfo(),
+			CurrentActivationInfo.GetActivationPredictionKey());
 		
-		if (CurrentActorInfo->IsLocallyControlled())
-		{
-			FGameplayCueParameters CueParams;
-			CueParams.EffectContext = ContextHandle;
-			UGameplayCueManager::ExecuteGameplayCue_NonReplicated(GetAvatarActorFromActorInfo(),ComplyTags::GameplayCues::ShotgunImpact, CueParams);
-		}
-		
-		if (GetAbilitySystemComponentFromActorInfo()->IsOwnerActorAuthoritative() && !CurrentActorInfo->IsLocallyControlled())
-		{
-			FScopedPredictionWindow ScopedPrediction(GetAbilitySystemComponentFromActorInfo(),
-				CurrentActivationInfo.GetActivationPredictionKey());
-			
-			FGameplayCueParameters CueParams;
-			CueParams.EffectContext = ContextHandle;
-			GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::ShotgunImpact, CueParams);
-		}
+		FGameplayCueParameters CueParams;
+		CueParams.EffectContext = ContextHandle;
+		GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::ShotgunImpact, CueParams);
+	}
+}
+
+// Helper function that sets appropriate query and object params
+void URangedWeaponAbilityBase::BuildWeaponCollisionParams(const AActor* Avatar, FCollisionQueryParams& OutQueryParams, FCollisionObjectQueryParams& OutObjectParams)
+{
+	OutQueryParams.AddIgnoredActor(Avatar);
+
+	OutObjectParams.AddObjectTypesToQuery(ECC_Enemy);
+	OutObjectParams.AddObjectTypesToQuery(ECC_Shield);
+	OutObjectParams.AddObjectTypesToQuery(ECC_WorldStatic);
+
+	// Trace against the player too if friendly fire is enabled
+	const AComplyGameModeBase* GameMode = GetWorld()->GetAuthGameMode<AComplyGameModeBase>();
+	if (GameMode && GameMode->bFriendlyFire)
+	{
+		OutObjectParams.AddObjectTypesToQuery(ECC_Player);
+		OutObjectParams.AddObjectTypesToQuery(ECC_PlayerFriend);
 	}
 }
 
@@ -263,7 +210,7 @@ bool URangedWeaponAbilityBase::Fire()
 	}
 	
 	bool bFound = false;
-	float CurrentAmmo = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(ActiveWeapon->GetCurrentAmmoAttribute(), bFound);
+	const float CurrentAmmo = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(ActiveWeapon->GetCurrentAmmoAttribute(), bFound);
 	if (CurrentAmmo <= 0.f)
 	{
 		FGameplayCueParameters CueParams;
@@ -343,7 +290,7 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
 
 	AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
 	
-	FVector MuzzleLocation = Character->WeaponMesh->GetSocketLocation(FName("MuzzleFlash"));
+	const FVector MuzzleLocation = Character->WeaponMesh->GetSocketLocation(FName("MuzzleFlash"));
 
 	for (const TSharedPtr<FGameplayAbilityTargetData>& Data : DataHandle.Data)
 	{
@@ -389,7 +336,7 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
 
 			if (UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo())
 			{
-				int32 TotemStacks = ASC->GetTagCount(ComplyTags::States::State_TotemBuffed);
+				const int32 TotemStacks = ASC->GetTagCount(ComplyTags::States::State_TotemBuffed);
 				FinalDamage *= (1.f + TotemDamageBonusPerStack * TotemStacks);
 			}
 
@@ -439,7 +386,7 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
 
 void URangedWeaponAbilityBase::OnFireDelayFinished()
 {
-	AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
+	const AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
 	if (!Character || !Character->bIsFiring)
 	{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
@@ -452,7 +399,7 @@ void URangedWeaponAbilityBase::OnFireDelayFinished()
 
 void URangedWeaponAbilityBase::PlayAnimationBasedOnState()
 {
-	if (AComplyCharacterBase* Character = Cast<AComplyCharacterBase>(GetAvatarActorFromActorInfo()))
+	if (const AComplyCharacterBase* Character = Cast<AComplyCharacterBase>(GetAvatarActorFromActorInfo()))
 	{
 		if (Character)
 		{

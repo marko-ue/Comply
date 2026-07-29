@@ -53,4 +53,6 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Animations")
 	TObjectPtr<UAnimMontage> PlaceBuffTotemMontage;
+	
+	FVector CachedPlaceLocation;
 };

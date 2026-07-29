@@ -70,10 +70,11 @@ void UUtility_Disruptor::ConfirmPlacement()
 		WaitConfirm->ReadyForActivation();
 		return;
 	}
-
+	
 	// Destroy the preview actor now, as the actual buff totem is already placed
 	if (SpawnedBuffTotemPreviewActor)
 	{
+		CachedPlaceLocation = SpawnedBuffTotemPreviewActor->GetActorLocation();
 		SpawnedBuffTotemPreviewActor->Destroy();
 		SpawnedBuffTotemPreviewActor = nullptr;
 	}
@@ -86,38 +87,11 @@ void UUtility_Disruptor::ConfirmPlacement()
 
 void UUtility_Disruptor::TraceAndSpawnBuffTotem()
 {
-	AActor* Avatar = GetAvatarActorFromActorInfo();
-	if (!Avatar) return;
-	
-	FVector TraceStart, TraceEnd, TraceDirection;
-	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, Avatar, 500.f, TraceStart, TraceEnd, TraceDirection)) return;
-	
-	FHitResult Hit;
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(Avatar);
-	
-	FVector SpawnLocation = TraceStart;
-	if (GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_WorldStatic, Params))
-	{
-		SpawnLocation = Hit.ImpactPoint;
-	}
-	
-	// The buff totem will spawn rotated towards the crosshair's world direction rotation
-	FRotator SpawnRotation = TraceDirection.Rotation();
-	SpawnRotation.Yaw += 0.f;
-	SpawnRotation.Pitch = 0.f;
-	SpawnRotation.Roll = 0.f;
-	
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = Avatar;
-	SpawnParams.Instigator = Cast<APawn>(Avatar);
-
 	// A server RPC is used to handle spawning the buff totem
 	if (UComplyAbilitySystemComponent* ASC = Cast<UComplyAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo()))
 	{
-		ASC->Server_PlaceBuffTotem(GetCurrentAbilitySpecHandle(), SpawnLocation, BuffTotemLifetime);
+		ASC->Server_PlaceBuffTotem(GetCurrentAbilitySpecHandle(), CachedPlaceLocation, BuffTotemLifetime);
 	}
-
 	
 	// Automatically equip the primary ability once the buff totem is thrown, as the player should not be able to equip the buff totem while it's on cooldown
 	GetAbilitySystemComponentFromActorInfo()->TryActivateAbilitiesByTag(

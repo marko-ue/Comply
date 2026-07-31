@@ -610,7 +610,7 @@ void AComplyPlayerCharacter::TraceForInteractable()
 	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, this, 200.f, TraceStart, TraceEnd, TraceDirection)) return;
 	
 	FHitResult Hit;
-	bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility);
+	const bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility);
 
 	AActor* HitActor = bHit ? Hit.GetActor() : nullptr;
 	IInteractableInterface* Interactable = HitActor ? Cast<IInteractableInterface>(HitActor) : nullptr;

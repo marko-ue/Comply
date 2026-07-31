@@ -6,6 +6,7 @@
 #include "AbilitySystemInterface.h"
 #include "ComplyCharacter.h"
 #include "GameplayTagContainer.h"
+#include "Interface/CombatantInterface.h"
 #include "ComplyCharacterBase.generated.h"
 
 
@@ -29,7 +30,7 @@ struct FAbilitySet
 };
 
 UCLASS(Abstract)
-class COMPLY_API AComplyCharacterBase : public AComplyCharacter, public IAbilitySystemInterface
+class COMPLY_API AComplyCharacterBase : public AComplyCharacter, public IAbilitySystemInterface, public ICombatantInterface
 {
 	GENERATED_BODY()
 
@@ -46,9 +47,9 @@ public:
 	// This ensures the old class abilities are cleared, and the new character's abilities can be used
 	void ClearStartupAbilities();
 	
-	void Die(AActor* DeadActor);
+	virtual void Die(AActor* DeadActor) override;
 	
-	void HandleHit(const AActor* HitActor);
+	virtual void HandleHit(const AActor* HitActor) override;
 
 protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

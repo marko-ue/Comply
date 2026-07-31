@@ -4,7 +4,7 @@
 #include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
 #include "Framework/GameMode/ComplyGameModeBase.h"
 #include "GameplayEffectExtension.h"
-#include "Character/ComplyCharacterBase.h"
+#include "Interface/CombatantInterface.h"
 #include "Interface/TargetableInterface.h"
 #include "Interface/Enemy/EnemyInterface.h"
 #include "Interface/Player/PlayerInterface.h"
@@ -117,9 +117,9 @@ void UComplyAttributeSet::HandleIncomingDamage(const struct FGameplayEffectModCa
 
     AActor* AvatarActor = Data.Target.GetAvatarActor();
 
-    if (AComplyCharacterBase* Character = Cast<AComplyCharacterBase>(AvatarActor))
+    if (ICombatantInterface* Combatant = Cast<ICombatantInterface>(AvatarActor))
     {
-        Character->HandleHit(AvatarActor);
+        Combatant->HandleHit(AvatarActor);
     }
 
     if (AvatarActor && AvatarActor->Implements<UTargetableInterface>())
@@ -130,10 +130,10 @@ void UComplyAttributeSet::HandleIncomingDamage(const struct FGameplayEffectModCa
     // If fatal damage
     if (NewHealth <= 0)
     {
-        if (AComplyCharacterBase* Character = Cast<AComplyCharacterBase>(AvatarActor))
-        {
-            Character->Die(AvatarActor);
-        }
+    	if (ICombatantInterface* Combatant = Cast<ICombatantInterface>(AvatarActor))
+    	{
+    		Combatant->Die(AvatarActor);
+    	}
 
         if (AvatarActor && AvatarActor->Implements<UTargetableInterface>())
         {

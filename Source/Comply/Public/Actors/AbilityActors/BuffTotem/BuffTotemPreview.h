@@ -17,9 +17,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	
 	void UpdatePosition();
-	
-	bool bCanPlace = false;
-	
+
 	UPROPERTY(EditDefaultsOnly, Category = "Materials")
 	TObjectPtr<UMaterialInterface> ValidMaterial;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials")

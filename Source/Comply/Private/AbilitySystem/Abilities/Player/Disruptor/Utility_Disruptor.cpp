@@ -44,6 +44,7 @@ void UUtility_Disruptor::TraceAndSpawn()
 	GetAbilitySystemComponentFromActorInfo()->TryActivateAbilitiesByTag(
 		FGameplayTagContainer(ComplyTags::ComplyAbilities::AssetTags::Equip_Primary)
 	);
+
 	
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }

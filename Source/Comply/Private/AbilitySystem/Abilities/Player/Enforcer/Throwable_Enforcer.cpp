@@ -70,15 +70,15 @@ void UThrowable_Enforcer::SpawnPreview()
 
 void UThrowable_Enforcer::PlayPlaceTurretAnimation()
 {
-	UAbilityTask_PlayMontageAndWait* PlaceTurretMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-		this, NAME_None, PlaceTurretMontage, 1.f, NAME_None, true);
-	PlaceTurretMontageTask->OnCompleted.AddDynamic(this, &UThrowable_Enforcer::ConfirmPlace);
-	PlaceTurretMontageTask->OnCancelled.AddDynamic(this, &UThrowable_Enforcer::PlaceTurretAnimationInterrupted);
-	PlaceTurretMontageTask->OnInterrupted.AddDynamic(this, &UThrowable_Enforcer::PlaceTurretAnimationInterrupted);
-	PlaceTurretMontageTask->ReadyForActivation();
-	
-    if (SpawnedTurretPreviewActor->bCanPlace)
-    {
+	if (SpawnedTurretPreviewActor->bCanPlace)
+	{
+		UAbilityTask_PlayMontageAndWait* PlaceTurretMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
+			this, NAME_None, PlaceTurretMontage, 1.f, NAME_None, true);
+		PlaceTurretMontageTask->OnCompleted.AddDynamic(this, &UThrowable_Enforcer::ConfirmPlace);
+		PlaceTurretMontageTask->OnCancelled.AddDynamic(this, &UThrowable_Enforcer::PlaceTurretAnimationInterrupted);
+		PlaceTurretMontageTask->OnInterrupted.AddDynamic(this, &UThrowable_Enforcer::PlaceTurretAnimationInterrupted);
+		PlaceTurretMontageTask->ReadyForActivation();
+		
         SpawnedTurretPreviewActor->bShouldUpdatePosition = false;
 
         if (GetCurrentActorInfo()->IsLocallyControlled() && GetCurrentActorInfo()->IsNetAuthority())

@@ -17,5 +17,5 @@ public:
 	
 	void InitPreviewData(ACharacter* OwnerChar);
 	
-	bool bCanPlace = true;
+	bool bCanPlace = false;
 };

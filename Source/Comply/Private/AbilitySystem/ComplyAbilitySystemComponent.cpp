@@ -180,7 +180,7 @@ void UComplyAbilitySystemComponent::Server_PlaceBuffTotem_Implementation(FGamepl
                                                                       FVector SpawnLocation, float BuffTotemLifetime)
 {
 	const FGameplayAbilitySpec* Spec = FindAbilitySpecFromHandle(AbilityHandle);
-	UUtility_Disruptor* Ability = Cast<UUtility_Disruptor>(Spec->GetPrimaryInstance());
+	UUtilityAbilityBase* Ability = Cast<UUtilityAbilityBase>(Spec->GetPrimaryInstance());
 	
 	if (!Spec || !Ability) return;
 	
@@ -196,7 +196,7 @@ void UComplyAbilitySystemComponent::Server_PlaceBuffTotem_Implementation(FGamepl
 	SpawnParams.Instigator = Cast<APawn>(InstigatorPawn);
 
 	ABuffTotem* BuffTotem = GetWorld()->SpawnActor<ABuffTotem>(
-		Ability->BuffTotemActorClass,
+		Ability->UtilityActorClass,
 		SpawnLocation,
 		FRotator::ZeroRotator,
 		SpawnParams
@@ -204,6 +204,6 @@ void UComplyAbilitySystemComponent::Server_PlaceBuffTotem_Implementation(FGamepl
 	
 	if (BuffTotem)
 	{
-		BuffTotem->SetLifeSpan(BuffTotemLifetime);
+		BuffTotem->SetLifeSpan(Ability->UtilityLifetime);
 	}
 }

@@ -296,7 +296,7 @@ void AComplyPlayerCharacter::SpawnImpactEffectsLocal(const FVector& ImpactPoint,
 	{
 		// Local offset from the muzzle, Niagara was interpreting world space vector as local relative to the spawn location
 		const FVector BeamEndLocal = ImpactPoint - MuzzleLocation;
-		Tracer->SetNiagaraVariableVec3("BeamEnd", BeamEndLocal);
+		Tracer->SetVariableVec3(FName("BeamEnd"), BeamEndLocal);
 	}
 }
 

@@ -3,19 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "Actors/UtilityActors/UtilityPreviewBase.h"
 #include "BuffTotemPreview.generated.h"
 
 UCLASS()
-class COMPLY_API ABuffTotemPreview : public AActor
+class COMPLY_API ABuffTotemPreview : public AUtilityPreviewBase
 {
 	GENERATED_BODY()
 
 public:
 	ABuffTotemPreview();
-	
-	void InitPreviewData(ACharacter* OwnerChar);
-	
+
 	virtual void Tick(float DeltaTime) override;
 	
 	void UpdatePosition();
@@ -29,8 +27,4 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
-private:
-	UPROPERTY()
-	ACharacter* OwnerCharacter;
 };

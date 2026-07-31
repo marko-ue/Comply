@@ -18,14 +18,11 @@ void ABuffTotemPreview::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ABuffTotemPreview::InitPreviewData(ACharacter* OwnerChar)
-{
-	OwnerCharacter = OwnerChar;
-}
-
 void ABuffTotemPreview::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	UE_LOG(LogTemp, Warning, TEXT("Can place: %s"), bCanPlace ? TEXT("true") : TEXT("false"));
 	
 	UpdatePosition();
 }

@@ -3,6 +3,7 @@
 
 #include "Actors/AbilityActors/Projectiles/MechProjectile/MechProjectile.h"
 
+#include "AbilitySystem/Data/Enemy/Abilities/Mech/MechProjectileData.h"
 #include "Actors/AbilityActors/Projectiles/MechProjectile/MechProjectileAreaEffect.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -33,8 +34,13 @@ void AMechProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	checkf(ProjectileData, TEXT("ProjectileData not passed into %s"), *GetName());
+	
 	// Movement shouldn't be replicated as clients now have a local projectile for smoothness
 	SetReplicateMovement(false);
+	
+	ProjectileMesh->SetStaticMesh(ProjectileData->ProjectileMesh);
+	ProjectileMesh->SetMaterial(0, ProjectileData->ProjectileMaterial);
 	
 	ProjectileMesh->OnComponentHit.AddDynamic(this, &ThisClass::OnHit);
 	
@@ -82,13 +88,14 @@ void AMechProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 	if (HasAuthority())
 	{
 		AMechProjectileAreaEffect* MechProjectileAreaEffect = GetWorld()->SpawnActorDeferred<AMechProjectileAreaEffect>(
-			AreaEffectClass, SpawnTransform, OwnerActor, InstigatorPawn, ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+			ProjectileData->AreaEffectActorClass, SpawnTransform, OwnerActor, InstigatorPawn, ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 		);
 		
 		if (MechProjectileAreaEffect)
 		{
 			MechProjectileAreaEffect->SourceASC = SourceASC;
 			MechProjectileAreaEffect->TargetActor = TargetActor;
+			MechProjectileAreaEffect->ProjectileData = ProjectileData;
 
 			UGameplayStatics::FinishSpawningActor(MechProjectileAreaEffect, SpawnTransform);
 		}

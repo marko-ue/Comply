@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystem/Abilities/DamageAbilityBase.h"
+#include "AbilitySystem/Data/Enemy/Abilities/ComplyEnemyAbilityData.h"
+#include "AbilitySystem/Data/Enemy/Damage/ComplyEnemyDamageData.h"
+#include "Character/ComplyEnemyCharacter.h"
 #include "EnemyAbilityBase.generated.h"
 
 /**

@@ -6,6 +6,7 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/ComplyTags.h"
+#include "AbilitySystem/Data/Player/Abilities/Utilities/ShieldUtilityData.h"
 #include "Components/AudioComponent.h"
 #include "Interface/Player/PlayerInterface.h"
 #include "Components/SphereComponent.h"
@@ -36,9 +37,17 @@ void AShieldDome::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	checkf(ShieldData, TEXT("ShieldData not passed into %s"), *GetName());
+	
+	ShieldStaticMeshComp->SetStaticMesh(ShieldData->UtilityMesh);
+	ShieldObjectStaticMeshComp->SetStaticMesh(ShieldData->ShieldObjectMesh);
+	
+	ShieldStaticMeshComp->SetMaterial(0, ShieldData->UtilityMaterial);
+	ShieldObjectStaticMeshComp->SetMaterial(0, ShieldData->ShieldObjectMaterial);
+	
 	// The looping effects and sounds for the shield actor are handled at BeginPlay since the actor is replicated, no need for a cue
-	ShieldHumNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ShieldParticles, GetActorLocation());
-	HumAudioComponent = UGameplayStatics::SpawnSoundAttached(ShieldHummingSound, RootComponent);
+	ShieldHumNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ShieldData->ShieldParticles, GetActorLocation());
+	HumAudioComponent = UGameplayStatics::SpawnSoundAttached(ShieldData->ShieldHummingSound, RootComponent);
 }
 
 void AShieldDome::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -50,7 +59,7 @@ void AShieldDome::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 		{
 			if (OtherActor->Implements<UPlayerInterface>())
 			{
-				ASC->TryActivateAbilityByClass(ApplyShieldedEffectAbilityClass);
+				ASC->TryActivateAbilityByClass(ShieldData->ApplyShieldedEffectAbilityClass);
 			}
 		}
 	}

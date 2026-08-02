@@ -20,6 +20,12 @@ void UAttack_Tank::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 {
 	if (!CommitAbility(Handle, ActorInfo, ActivationInfo)) return; 
 	
+	const AComplyEnemyCharacter* Enemy = Cast<AComplyEnemyCharacter>(GetAvatarActorFromActorInfo());
+	if (!Enemy) return;
+	
+	checkf(Enemy->EnemyAbilityData, TEXT("EnemyAbilityData not set on %s"), *Enemy->GetName());
+	checkf(Enemy->EnemyAbilityData->EnemyDamageData, TEXT("EnemyDamageData not set on %s"), *Enemy->GetName());
+	
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
 	if (TriggerEventData && TriggerEventData->Target)
@@ -32,8 +38,8 @@ void UAttack_Tank::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	AttackMontageTask->OnCompleted.AddDynamic(this, &ThisClass::OnAttackAnimationFinished);
 	AttackMontageTask->ReadyForActivation();
 	
-	FVector EnemyLocation = GetAvatarActorFromActorInfo()->GetActorLocation();
-	FVector EnemyForward = GetAvatarActorFromActorInfo()->GetActorForwardVector();
+	const FVector EnemyLocation = GetAvatarActorFromActorInfo()->GetActorLocation();
+	const FVector EnemyForward = GetAvatarActorFromActorInfo()->GetActorForwardVector();
 	
 	bool bHitAnything = false;
 
@@ -43,7 +49,7 @@ void UAttack_Tank::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	// Players
 	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 	{
-		if (APlayerController* PC = It->Get())
+		if (const APlayerController* PC = It->Get())
 		{
 			if (APawn* PlayerPawn = PC->GetPawn())
 			{
@@ -63,16 +69,18 @@ void UAttack_Tank::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	for (AActor* Candidate : Candidates)
 	{
 		FVector ToTarget = Candidate->GetActorLocation() - EnemyLocation;
-		float Distance = ToTarget.Size();
+		const float Distance = ToTarget.Size();
 
 		if (Distance <= SweepRange)
 		{
 			FVector ToTargetNormalized = ToTarget.GetSafeNormal();
 			float DotProduct = FVector::DotProduct(EnemyForward, ToTargetNormalized);
 
-			if (DotProduct >= ConeHalfAngleDot)
+			if (Enemy && DotProduct >= ConeHalfAngleDot)
 			{
-				CauseDamage(Candidate, Damage.GetValueAtLevel(GetAbilityLevel()));
+				if (!Enemy->EnemyAbilityData || !Enemy->EnemyAbilityData->EnemyDamageData) return;
+				
+				CauseDamage(Candidate, Enemy->EnemyAbilityData->EnemyDamageData->Damage.GetValueAtLevel(GetAbilityLevel()));
 				bHitAnything = true;
 			}
 		}
@@ -81,8 +89,7 @@ void UAttack_Tank::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	// Also charge if the target actor gets hit
 	if (bHitAnything)
 	{
-		UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
-		if (ASC)
+		if (UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo())
 		{
 			FGameplayEventData ChargeEventData;
 			ChargeEventData.Target = TargetActor;

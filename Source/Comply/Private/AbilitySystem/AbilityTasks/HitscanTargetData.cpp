@@ -3,6 +3,7 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/ComplyAbilityTypes.h"
 #include "AbilitySystem/Abilities/Player/Disruptor/Primary_Disruptor.h"
+#include "AbilitySystem/Data/Player/Weapons/ShotgunWeaponData.h"
 
 UHitscanTargetData* UHitscanTargetData::CreateHitScanData(UGameplayAbility* OwningAbility)
 {
@@ -11,9 +12,13 @@ UHitscanTargetData* UHitscanTargetData::CreateHitScanData(UGameplayAbility* Owni
 
 void UHitscanTargetData::Activate()
 {
+	const URangedWeaponAbilityBase* RangedWeaponBase = Cast<URangedWeaponAbilityBase>(Ability);
+	if (!RangedWeaponBase) return;
+	checkf(RangedWeaponBase->WeaponData, TEXT("WeaponData not set on %s"), *GetName());
+
 	if (Ability->GetCurrentActorInfo()->IsLocallyControlled())
 	{
-		SendHitscanTargetData(Cast<URangedWeaponAbilityBase>(Ability)->TraceDistance);
+		SendHitscanTargetData(RangedWeaponBase->WeaponData->TraceDistance);
 	}
 	else
 	{
@@ -35,6 +40,7 @@ void UHitscanTargetData::Activate()
 
 void UHitscanTargetData::SendHitscanTargetData(float TraceDistance)
 {
+	
 	FScopedPredictionWindow ScopedPrediction(AbilitySystemComponent.Get());
 
 	URangedWeaponAbilityBase* RangedWeaponBase = Cast<URangedWeaponAbilityBase>(Ability);
@@ -58,19 +64,18 @@ void UHitscanTargetData::SendHitscanTargetData(float TraceDistance)
 	{
 		if (UPrimary_Disruptor* Primary = Cast<UPrimary_Disruptor>(Ability))
 		{
+			checkf(Primary->ShotgunWeaponData, TEXT("ShotgunWeaponData not set on %s"), *Primary->GetName());
+
 			TArray<FHitResult> Hits;
 			bool bPassedThroughShield = false;
 
-			Primary->PerformShotgunTraces(Hits, Primary->NumberOfPellets, 10000.f, bPassedThroughShield);
+			Primary->PerformShotgunTraces(Hits, Primary->ShotgunWeaponData->NumberOfPellets, 10000.f, bPassedThroughShield);
 
 			for (const FHitResult& Hit : Hits)
 			{
-				FComplyGameplayAbilityTargetData_SingleHit* Data =
-					new FComplyGameplayAbilityTargetData_SingleHit();
-
+				FComplyGameplayAbilityTargetData_SingleHit* Data = new FComplyGameplayAbilityTargetData_SingleHit();
 				Data->HitResult = Hit;
 				Data->bPassedThroughShield = bPassedThroughShield;
-
 				DataHandle.Add(Data);
 			}
 		}

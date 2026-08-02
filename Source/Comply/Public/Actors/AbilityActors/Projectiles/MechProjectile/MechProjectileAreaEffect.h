@@ -9,12 +9,11 @@
 #include "GameFramework/Actor.h"
 #include "MechProjectileAreaEffect.generated.h"
 
+class UMechProjectileData;
 class UGameplayEffect;
 class USphereComponent;
 class UNiagaraComponent;
-class UNiagaraSystem;
 class UAbilitySystemComponent;
-class USoundCue;
 
 UCLASS()
 class COMPLY_API AMechProjectileAreaEffect : public AActor
@@ -25,6 +24,9 @@ public:
 	AMechProjectileAreaEffect();
 
 	virtual void Tick(float DeltaTime) override;
+	
+	UPROPERTY()
+	TObjectPtr<UMechProjectileData> ProjectileData;
 	
 	UPROPERTY() 
 	TObjectPtr<UAbilitySystemComponent> SourceASC;
@@ -42,33 +44,12 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Components")
 	TObjectPtr<USphereComponent> SphereComp;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
-	TSubclassOf<UGameplayEffect> DamageEffectClass;
-	
 	FActiveGameplayEffectHandle ActiveDamageEffectHandle;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
-	TSubclassOf<UGameplayEffect> SlowEffectClass;
 	
 	FActiveGameplayEffectHandle ActiveSlowEffectHandle;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Area Effect Settings")
-	FGameplayTag DamageType;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Area Effect Settings")
-	FScalableFloat ExplicitDamage = 10.f;
-	
-	UPROPERTY(EditAnywhere, Category = "Area Effect Settings")
-	float AreaEffectRadius = 200.f;
-
-	UPROPERTY(EditAnywhere, Category = "Audio")
-	TObjectPtr<USoundCue> AreaEffectSound;
-	
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> AreaEffectAudioComponent;
-	
-	UPROPERTY(EditAnywhere, Category = "Effects")
-	TObjectPtr<UNiagaraSystem> AreaEffectParticles;
 	
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> AreaEffectNiagaraComponent;

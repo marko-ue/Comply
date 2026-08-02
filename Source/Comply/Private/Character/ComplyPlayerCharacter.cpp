@@ -15,6 +15,11 @@
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "AbilitySystem/Abilities/ThrowableAbilityBase.h"
 #include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
+#include "AbilitySystem/Data/Player/ComplyPlayerData.h"
+#include "AbilitySystem/Data/Player/Input/ComplyInputData.h"
+#include "AbilitySystem/Data/Player/Stats/DisruptorData.h"
+#include "AbilitySystem/Data/Player/Stats/EnforcerData.h"
+#include "AbilitySystem/Data/Player/Stats/RangerData.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -79,19 +84,19 @@ void AComplyPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Started, this, &ThisClass::PrimaryActionPressed);
-		EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Completed, this, &ThisClass::PrimaryActionReleased);
-		EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Started, this, &ThisClass::SecondaryActionPressed);
-		EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Completed, this, &ThisClass::SecondaryActionReleased);
-		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &ThisClass::SprintActionPressed);
-		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &ThisClass::SprintActionReleased);
-		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ThisClass::InteractActionPressed);
-		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &ThisClass::InteractActionReleased);
-		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Started, this, &ThisClass::ReloadActionPressed);
-		EnhancedInputComponent->BindAction(CancelPreviewAction, ETriggerEvent::Started, this, &ThisClass::CancelPreviewActionPressed);
-		EnhancedInputComponent->BindAction(EquipPrimaryAction, ETriggerEvent::Started, this, &ThisClass::EquipPrimaryActionPressed);
-		EnhancedInputComponent->BindAction(EquipUtilityAction, ETriggerEvent::Started, this, &ThisClass::EquipUtilityActionPressed);
-		EnhancedInputComponent->BindAction(EquipThrowableAction, ETriggerEvent::Started, this, &ThisClass::EquipThrowableActionPressed);
+		EnhancedInputComponent->BindAction(InputData->PrimaryAction, ETriggerEvent::Started, this, &ThisClass::PrimaryActionPressed);
+		EnhancedInputComponent->BindAction(InputData->PrimaryAction, ETriggerEvent::Completed, this, &ThisClass::PrimaryActionReleased);
+		EnhancedInputComponent->BindAction(InputData->SecondaryAction, ETriggerEvent::Started, this, &ThisClass::SecondaryActionPressed);
+		EnhancedInputComponent->BindAction(InputData->SecondaryAction, ETriggerEvent::Completed, this, &ThisClass::SecondaryActionReleased);
+		EnhancedInputComponent->BindAction(InputData->SprintAction, ETriggerEvent::Started, this, &ThisClass::SprintActionPressed);
+		EnhancedInputComponent->BindAction(InputData->SprintAction, ETriggerEvent::Completed, this, &ThisClass::SprintActionReleased);
+		EnhancedInputComponent->BindAction(InputData->InteractAction, ETriggerEvent::Started, this, &ThisClass::InteractActionPressed);
+		EnhancedInputComponent->BindAction(InputData->InteractAction, ETriggerEvent::Completed, this, &ThisClass::InteractActionReleased);
+		EnhancedInputComponent->BindAction(InputData->ReloadAction, ETriggerEvent::Started, this, &ThisClass::ReloadActionPressed);
+		EnhancedInputComponent->BindAction(InputData->CancelPreviewAction, ETriggerEvent::Started, this, &ThisClass::CancelPreviewActionPressed);
+		EnhancedInputComponent->BindAction(InputData->EquipPrimaryAction, ETriggerEvent::Started, this, &ThisClass::EquipPrimaryActionPressed);
+		EnhancedInputComponent->BindAction(InputData->EquipUtilityAction, ETriggerEvent::Started, this, &ThisClass::EquipUtilityActionPressed);
+		EnhancedInputComponent->BindAction(InputData->EquipThrowableAction, ETriggerEvent::Started, this, &ThisClass::EquipThrowableActionPressed);
 	}
 }
 
@@ -101,16 +106,15 @@ void AComplyPlayerCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	
+	checkf(PlayerData, TEXT("PlayerData not set on %s"), *GetName());
+	checkf(InputData, TEXT("InputData not set on %s"), *GetName());
+	
 	if (!GetAbilitySystemComponent() || !HasAuthority()) return;
 	
 	GetAbilitySystemComponent()->InitAbilityActorInfo(GetPlayerState(), this);
-	
-	WeaponMesh->SetStaticMesh(PrimaryMesh);
+	WeaponMesh->SetStaticMesh(PlayerData->PrimaryMesh);
 	
 	InitializeAttributes();
-	
-	GetAbilitySystemComponent()->SetNumericAttributeBase(UComplyAttributeSet::GetMaxArmorAttribute(), BaseMaxArmor);
-	GetAbilitySystemComponent()->SetNumericAttributeBase(UComplyAttributeSet::GetArmorAttribute(), BaseArmor);
 	
 	// Only give startup abilities if not in the lobby map
 	const FString MapName = GetWorld()->GetMapName();
@@ -140,11 +144,14 @@ void AComplyPlayerCharacter::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 	
+	checkf(PlayerData, TEXT("PlayerData not set on %s"), *GetName());
+	checkf(InputData, TEXT("InputData not set on %s"), *GetName());
+	
 	if (!GetAbilitySystemComponent()) return;
 	
 	GetAbilitySystemComponent()->InitAbilityActorInfo(GetPlayerState(), this);
 	
-	WeaponMesh->SetStaticMesh(PrimaryMesh);
+	WeaponMesh->SetStaticMesh(PlayerData->PrimaryMesh);
 	
 	ActivateInitialAbility();
 	
@@ -179,6 +186,50 @@ UAbilitySystemComponent* AComplyPlayerCharacter::GetAbilitySystemComponent() con
 	if (!IsValid(ComplyPlayerState)) return nullptr;
 	
 	return ComplyPlayerState->GetAbilitySystemComponent();
+}
+
+void AComplyPlayerCharacter::InitializeAttributes() const
+{
+    if (!PlayerData) return;
+
+    checkf(IsValid(PlayerData->InitializeAttributesEffect), TEXT("InitializeAttributesEffect not set"));
+
+    const FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+
+    // Base attributes shared across all players
+    const FGameplayEffectSpecHandle BaseSpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(PlayerData->InitializeAttributesEffect, 1.f, ContextHandle);
+    UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(BaseSpecHandle, ComplyTags::SetByCaller::Stats::SBC_MaxHealth, PlayerData->MaxHealth);
+    UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(BaseSpecHandle, ComplyTags::SetByCaller::Stats::SBC_MaxArmor, PlayerData->MaxArmor);
+    UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(BaseSpecHandle, ComplyTags::SetByCaller::Stats::SBC_MovementSpeed, PlayerData->MovementSpeed);
+    GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*BaseSpecHandle.Data.Get());
+
+    // Ranger
+    if (const URangerData* RangerData = Cast<URangerData>(PlayerData))
+    {
+        const FGameplayEffectSpecHandle WeaponSpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(RangerData->InitializeWeaponAttributesEffect, 1.f, ContextHandle);
+        UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(WeaponSpecHandle, ComplyTags::SetByCaller::Stats::SBC_RifleMaxAmmo, RangerData->RifleMaxAmmo);
+        UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(WeaponSpecHandle, ComplyTags::SetByCaller::Stats::SBC_RifleMaxReserveAmmo, RangerData->RifleMaxReserveAmmo);
+        UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(WeaponSpecHandle, ComplyTags::SetByCaller::Stats::SBC_PlasmaGrenadeMaxCharges, RangerData->PlasmaGrenadeMaxCharges);
+        GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*WeaponSpecHandle.Data.Get());
+    }
+    // Enforcer
+    else if (const UEnforcerData* EnforcerData = Cast<UEnforcerData>(PlayerData))
+    {
+        const FGameplayEffectSpecHandle WeaponSpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(EnforcerData->InitializeWeaponAttributesEffect, 1.f, ContextHandle);
+        UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(WeaponSpecHandle, ComplyTags::SetByCaller::Stats::SBC_MagnumMaxAmmo, EnforcerData->MagnumMaxAmmo);
+        UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(WeaponSpecHandle, ComplyTags::SetByCaller::Stats::SBC_MagnumMaxReserveAmmo, EnforcerData->MagnumMaxReserveAmmo);
+        UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(WeaponSpecHandle, ComplyTags::SetByCaller::Stats::SBC_TurretMaxCharges, EnforcerData->TurretMaxCharges);
+        GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*WeaponSpecHandle.Data.Get());
+    }
+    // Disruptor
+    else if (const UDisruptorData* DisruptorData = Cast<UDisruptorData>(PlayerData))
+    {
+        const FGameplayEffectSpecHandle WeaponSpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(DisruptorData->InitializeWeaponAttributesEffect, 1.f, ContextHandle);
+        UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(WeaponSpecHandle, ComplyTags::SetByCaller::Stats::SBC_ShotgunMaxAmmo, DisruptorData->ShotgunMaxAmmo);
+        UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(WeaponSpecHandle, ComplyTags::SetByCaller::Stats::SBC_ShotgunMaxReserveAmmo, DisruptorData->ShotgunMaxReserveAmmo);
+        UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(WeaponSpecHandle, ComplyTags::SetByCaller::Stats::SBC_DecoyGrenadeMaxCharges, DisruptorData->DecoyGrenadeMaxCharges);
+        GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*WeaponSpecHandle.Data.Get());
+    }
 }
 
 URangedWeaponAbilityBase* AComplyPlayerCharacter::GetEquippedPrimaryWeapon() const
@@ -274,10 +325,16 @@ void AComplyPlayerCharacter::RevivePlayer()
 
 void AComplyPlayerCharacter::SpawnImpactEffectsLocal(const FVector& ImpactPoint, const FVector& ImpactNormal, const FVector& MuzzleLocation)
 {
+	const URangedWeaponAbilityBase* Weapon = GetEquippedPrimaryWeapon();
+	if (!Weapon || !Weapon->WeaponData) return;
+
 	// Spawns a random decal from an array
-	const float DecalIndex = FMath::RandRange(0, BulletImpactDecals.Max() - 1);
+	const TArray<TObjectPtr<UMaterialInstance>>& Decals = GetEquippedPrimaryWeapon()->WeaponData->BulletImpactDecals;
+	if (Decals.IsEmpty()) return;
+
+	const int32 DecalIndex = FMath::RandRange(0, Decals.Num() - 1);
 	UDecalComponent* Decal = UGameplayStatics::SpawnDecalAtLocation(
-		GetWorld(), BulletImpactDecals[DecalIndex], FVector(5.f, 10.f, 10.f), ImpactPoint,
+		GetWorld(), Decals[DecalIndex], FVector(5.f, 10.f, 10.f), ImpactPoint,
 		UKismetMathLibrary::MakeRotFromX(ImpactNormal), 5.f
 	);
 
@@ -289,7 +346,7 @@ void AComplyPlayerCharacter::SpawnImpactEffectsLocal(const FVector& ImpactPoint,
 
 	// Spawns a tracer niagara effect and sets its beam end to the impact point
 	UNiagaraComponent* Tracer = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-		GetWorld(), BulletTracerEffect, MuzzleLocation, FRotator::ZeroRotator, FVector(1.f)
+		GetWorld(), GetEquippedPrimaryWeapon()->WeaponData->BulletTracerEffect, MuzzleLocation, FRotator::ZeroRotator, FVector(1.f)
 	);
 			
 	if (Tracer)
@@ -396,7 +453,7 @@ void AComplyPlayerCharacter::PrimaryActionReleased()
 		// Confirm the throw of the throwable once the primary input is released, removing the preview path
 		// Only for throwable abilities that use confirm input on release
 		if (Spec.Ability->GetAssetTags().HasTagExact(ComplyTags::ComplyAbilities::Throwable)
-			&& Spec.IsActive() && Cast<UThrowableAbilityBase>(Spec.GetPrimaryInstance())->bConfirmOnRelease == true) 
+			&& Spec.IsActive() && Cast<UThrowableAbilityBase>(Spec.GetPrimaryInstance())->GrenadeData != true) 
 		{
 			GetAbilitySystemComponent()->LocalInputConfirm();
 			break;
@@ -498,7 +555,7 @@ void AComplyPlayerCharacter::SprintActionReleased()
 	if (GetCharacterMovement() && IsLocallyControlled() && !HasAuthority())
 	{
 		const int32 TotemStacks = GetAbilitySystemComponent()->GetTagCount(ComplyTags::States::State_TotemBuffed);
-		float CorrectSpeed = 500.f + (TotemStacks * TotemSpeedBonusPerStack);
+		float CorrectSpeed = 500.f + (TotemStacks * PlayerData->TotemSpeedBonusPerStack);
 		
 		if (GetAbilitySystemComponent()->HasMatchingGameplayTag(ComplyTags::States::State_Slowed))
 		{
@@ -534,7 +591,7 @@ void AComplyPlayerCharacter::ReloadActionPressed()
 					if (!FMath::IsNearlyEqual(CurrentAmmo, MaxAmmo) && ReserveAmmo > 0.f &&
 						!GetAbilitySystemComponent()->HasMatchingGameplayTag(ComplyTags::States::State_Firing))
 					{
-						PlayAnimMontage(PrepareReloadMontage);
+						PlayAnimMontage(PlayerData->PrepareReloadMontage);
 					}
 				}
 			}
@@ -592,7 +649,7 @@ void AComplyPlayerCharacter::ZoomIn(float DeltaTime) const
 	if (!IsLocallyControlled()) return;
 	UCameraComponent* CameraComp = FindComponentByClass<UCameraComponent>();
 	CameraComp->FieldOfView = FMath::FInterpTo(
-		CameraComp->FieldOfView, AimFOV, DeltaTime, ZoomSpeed);
+		CameraComp->FieldOfView, PlayerData->AimFOV, DeltaTime, PlayerData->ZoomSpeed);
 }
 
 void AComplyPlayerCharacter::ZoomOut(float DeltaTime) const
@@ -600,7 +657,7 @@ void AComplyPlayerCharacter::ZoomOut(float DeltaTime) const
 	if (!IsLocallyControlled()) return;
 	UCameraComponent* CameraComp = FindComponentByClass<UCameraComponent>();
 	CameraComp->FieldOfView = FMath::FInterpTo(
-		CameraComp->FieldOfView, DefaultFOV, DeltaTime, ZoomSpeed);
+		CameraComp->FieldOfView, PlayerData->DefaultFOV, DeltaTime, PlayerData->ZoomSpeed);
 }
 
 // Traces to the camera each tick, checking for interactable actors
@@ -687,7 +744,7 @@ void AComplyPlayerCharacter::OnTotemBuffedTagChanged(const FGameplayTag Tag, int
 	const FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
 	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(TotemSpeedBuffEffectClass, 1.f, ContextHandle);
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, 
-		ComplyTags::SetByCaller::SBC_TotemSpeedBuff, TotemSpeedBonusPerStack * NewCount
+		ComplyTags::SetByCaller::SBC_TotemSpeedBuff, PlayerData->TotemSpeedBonusPerStack * NewCount
 	);
 	ActiveTotemSpeedBuffEffectHandle = GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 }
@@ -703,9 +760,9 @@ FVector AComplyPlayerCharacter::GetScaleForSlot(EWeaponSlot Slot)
 	switch (Slot)
 	{
 		case EWeaponSlot::None:		 return FVector::ZeroVector;
-		case EWeaponSlot::Primary:   return PrimaryMeshScale;
-		case EWeaponSlot::Utility:   return UtilityMeshScale;
-		case EWeaponSlot::Throwable: return ThrowableMeshScale;
+		case EWeaponSlot::Primary:   return PlayerData->PrimaryMeshScale;
+		case EWeaponSlot::Utility:   return PlayerData->UtilityMeshScale;
+		case EWeaponSlot::Throwable: return PlayerData->ThrowableMeshScale;
 	}
 	return FVector::ZeroVector;
 }
@@ -715,9 +772,9 @@ UStaticMesh* AComplyPlayerCharacter::GetMeshForSlot(EWeaponSlot Slot)
 	switch (Slot)
 	{
 		case EWeaponSlot::None:		 return nullptr;
-		case EWeaponSlot::Primary:   return PrimaryMesh;
-		case EWeaponSlot::Utility:   return UtilityMesh;
-		case EWeaponSlot::Throwable: return ThrowableMesh;
+		case EWeaponSlot::Primary:   return PlayerData->PrimaryMesh;
+		case EWeaponSlot::Utility:   return PlayerData->UtilityMesh;
+		case EWeaponSlot::Throwable: return PlayerData->ThrowableMesh;
 	}
 	return nullptr;
 }
@@ -735,9 +792,9 @@ void AComplyPlayerCharacter::OnWeaponEquipped(EWeaponSlot Slot)
 	UAnimMontage* Montage = nullptr;
 	switch (Slot)
 	{
-		case EWeaponSlot::Primary:   Montage = PrimaryEquipMontage;   break;
-		case EWeaponSlot::Utility:   Montage = UtilityEquipMontage;   break;
-		case EWeaponSlot::Throwable: Montage = ThrowableEquipMontage; break;
+		case EWeaponSlot::Primary:   Montage = PlayerData->PrimaryEquipMontage;   break;
+		case EWeaponSlot::Utility:   Montage = PlayerData->UtilityEquipMontage;   break;
+		case EWeaponSlot::Throwable: Montage = PlayerData->ThrowableEquipMontage; break;
 		default: break;
 	}
 
@@ -751,9 +808,9 @@ void AComplyPlayerCharacter::OnRep_CurrentEquippedSlot()
 	switch (CurrentEquippedSlot)
 	{
 		case EWeaponSlot::None:		 Montage = nullptr;
-		case EWeaponSlot::Primary:   Montage = PrimaryEquipMontage;   break;
-		case EWeaponSlot::Utility:   Montage = UtilityEquipMontage;   break;
-		case EWeaponSlot::Throwable: Montage = ThrowableEquipMontage; break;
+		case EWeaponSlot::Primary:   Montage = PlayerData->PrimaryEquipMontage;   break;
+		case EWeaponSlot::Utility:   Montage = PlayerData->UtilityEquipMontage;   break;
+		case EWeaponSlot::Throwable: Montage = PlayerData->ThrowableEquipMontage; break;
 	}
 	if (Montage) PlayAnimMontage(Montage);
 }

@@ -8,6 +8,7 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/ComplyTags.h"
+#include "AbilitySystem/Data/Player/Abilities/Turret/DeployableTurretAbilityData.h"
 #include "Components/ArrowComponent.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -36,8 +37,13 @@ void ADeployableTurret::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	PlaceTurretNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, PlaceTurretParticles, GetActorLocation());
+	checkf(TurretData, TEXT("TurretData not passed into %s"), *GetName());
 	
+	TurretMesh->SetStaticMesh(TurretData->TurretMesh);
+	TurretMesh->SetMaterial(0, TurretData->TurretMaterial);
+	
+	PlaceTurretNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, TurretData->PlaceTurretParticles, GetActorLocation());
+
 	GetOverlappingActors(TargetsInRange);
 	
 	GetWorld()->GetTimerManager().SetTimer(FireTimerHandle, this, &ThisClass::TryFire, .2f, true);
@@ -91,13 +97,13 @@ void ADeployableTurret::TryFire()
 
 void ADeployableTurret::Fire(AActor* TargetActor)
 {
-	if (!SourceASC || !DamageEffectClass) return;
+	if (!SourceASC) return;
 
 	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
 	if (!TargetASC) return;
 
-	const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, 1.f, SourceASC->MakeEffectContext());
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, DamageTypeTag, Damage);
+	const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(TurretData->DamageEffectClass, 1.f, SourceASC->MakeEffectContext());
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, TurretData->DamageTypeTag, TurretData->Damage);
 	SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
 	
 	FGameplayCueParameters CueParams;
@@ -110,9 +116,9 @@ void ADeployableTurret::Fire(AActor* TargetActor)
 
 void ADeployableTurret::Multicast_TurretFire_Implementation()
 {
-	if (TurretFireSound)
+	if (TurretData->TurretFireSound)
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, TurretFireSound, GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(this, TurretData->TurretFireSound, GetActorLocation());
 	}
 }
 
@@ -122,14 +128,16 @@ void ADeployableTurret::Destroyed()
 	if (SourceASC)
 	{
 		TWeakObjectPtr<UAbilitySystemComponent> WeakASC = SourceASC;
-		TSubclassOf<UGameplayEffect> EffectClass = RechargeTurretChargeClass;
+		TWeakObjectPtr<UDeployableTurretAbilityData> WeakTurretData = TurretData;
+		TSubclassOf<UGameplayEffect> EffectClass = TurretData->RechargeTurretChargeClass;
 
 		FTimerHandle RechargeTimer;
-		GetWorld()->GetTimerManager().SetTimer(RechargeTimer, [WeakASC, EffectClass]()
+		GetWorld()->GetTimerManager().SetTimer(RechargeTimer, [WeakASC, EffectClass, WeakTurretData]()
 		{
-			if (WeakASC.IsValid() && EffectClass)
+			if (WeakASC.IsValid() && EffectClass && WeakTurretData.IsValid())
 			{
-				FGameplayEffectSpecHandle SpecHandle = WeakASC->MakeOutgoingSpec(EffectClass, 1.f, WeakASC->MakeEffectContext());
+				const FGameplayEffectSpecHandle SpecHandle = WeakASC->MakeOutgoingSpec(EffectClass, 1.f, WeakASC->MakeEffectContext());
+				UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, ComplyTags::SetByCaller::SBC_TurretRecharge, WeakTurretData->RechargeAmount);
 				WeakASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 			}
 		}, 30.f, false);

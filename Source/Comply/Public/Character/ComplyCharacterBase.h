@@ -56,7 +56,7 @@ protected:
 	
 	// Applies the gameplay effect that initializes attribute values 
 	// The function will be implemented here and called on child classes after we know the ASC is valid (server only)
-	void InitializeAttributes() const;
+	virtual void InitializeAttributes() const;
 	
 	// Gives each ability in the StartupAbilities TArray to the character's ASC, and sets its input tag (server only)
 	void GiveStartupAbilities();

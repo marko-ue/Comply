@@ -7,6 +7,8 @@
 #include "Interface/Enemy/EnemyInterface.h"
 #include "ComplyEnemyCharacter.generated.h"
 
+class UComplyEnemyCharacterStatData;
+class UComplyEnemyAbilityData;
 class UComplyAttributeSet;
 class USoundCue;
 /**
@@ -18,6 +20,12 @@ class COMPLY_API AComplyEnemyCharacter : public AComplyCharacterBase, public IEn
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditDefaultsOnly, Category = "Data")
+	TObjectPtr<UComplyEnemyAbilityData> EnemyAbilityData;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Data")
+	TObjectPtr<UComplyEnemyCharacterStatData> EnemyStatData;
+	
 	AComplyEnemyCharacter();
 	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
@@ -34,22 +42,12 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	
+	virtual void InitializeAttributes() const override;
+	
 private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> ASC;
 	
 	UPROPERTY()
 	TObjectPtr<UComplyAttributeSet> AttributeSet;
-	
-	UPROPERTY(EditAnywhere, Category = "Stats")
-	float BaseHealth = 100.f;
-
-	UPROPERTY(EditAnywhere, Category = "Stats")
-	float BaseMaxHealth = 100.f;
-	
-	UPROPERTY(EditAnywhere, Category = "Stats")
-	float BaseArmorPenetration = 0.1f;
-	
-	UPROPERTY(EditAnywhere, Category = "Stats")
-	float BaseMaxArmorPenetration = 0.1f;
 };

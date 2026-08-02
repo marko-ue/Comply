@@ -9,6 +9,7 @@
 #include "GameplayCueNotifyTypes.h"
 #include "NiagaraComponent.h"
 #include "AbilitySystem/ComplyAbilityTypes.h"
+#include "AbilitySystem/Data/Environment/ElectricHazardZoneData.h"
 #include "Character/ComplyPlayerCharacter.h"
 #include "Components/AudioComponent.h"
 #include "Components/BoxComponent.h"
@@ -39,6 +40,10 @@ void AElectricHazardZone::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	checkf(ElectricHazardZoneData, TEXT("ElectricHazardZoneData not set on %s"), *GetName());
+	
+	ElectricEffect->SetAsset(ElectricHazardZoneData->ElectricEffect);
+	ElectricSound->SetSound(ElectricHazardZoneData->ElectricSound);
 }
 
 void AElectricHazardZone::Tick(float DeltaTime)
@@ -70,7 +75,7 @@ void AElectricHazardZone::OnComponentBeginOverlap(UPrimitiveComponent* Overlappe
 	{
 		if (UAbilitySystemComponent* TargetASC = ASCInterface->GetAbilitySystemComponent())
 		{
-			if (!GetAbilitySystemComponent() || !TargetASC || !DamageEffectClass) return;
+			if (!GetAbilitySystemComponent() || !TargetASC || !ElectricHazardZoneData->DamageEffectClass) return;
 
 			ApplyEffectToTarget(TargetASC);
 			
@@ -120,7 +125,7 @@ void AElectricHazardZone::OnComponentEndOverlap(UPrimitiveComponent* OverlappedC
 
 void AElectricHazardZone::ApplyEffectToTarget(UAbilitySystemComponent* TargetASC)
 {
-	if (!TargetASC || !DamageEffectClass) return;
+	if (!TargetASC || !ElectricHazardZoneData->DamageEffectClass) return;
 	
 	if (AffectedActors.Contains(TargetASC->GetAvatarActor())) return;
 	AffectedActors.Add(TargetASC->GetAvatarActor());
@@ -131,12 +136,12 @@ void AElectricHazardZone::ApplyEffectToTarget(UAbilitySystemComponent* TargetASC
 
 void AElectricHazardZone::ApplyStunToTarget(UAbilitySystemComponent* TargetASC)
 {
-	if (!GetAbilitySystemComponent() || !TargetASC || !StunEffectClass) return;
+	if (!GetAbilitySystemComponent() || !TargetASC || !ElectricHazardZoneData->StunEffectClass) return;
 	
 	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
 	ContextHandle.AddSourceObject(GetAbilitySystemComponent()->GetAvatarActor());
 
-	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(StunEffectClass, 1.f, ContextHandle);
+	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(ElectricHazardZoneData->StunEffectClass, 1.f, ContextHandle);
 	if (SpecHandle.IsValid())
 	{
 		ActiveStunEffectHandle = GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
@@ -149,10 +154,10 @@ void AElectricHazardZone::ApplyDamageToTarget(UAbilitySystemComponent* TargetASC
 	FGameplayEffectContextHandle ContextHandle(Context);
 	ContextHandle.AddSourceObject(this);
 
-	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(DamageEffectClass, 1.f, ContextHandle);
+	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(ElectricHazardZoneData->DamageEffectClass, 1.f, ContextHandle);
 	if (!SpecHandle.IsValid()) return;
 
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, DamageType, ExplicitDamage.GetValueAtLevel(1.f));
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, ElectricHazardZoneData->DamageType, ElectricHazardZoneData->Damage.GetValueAtLevel(1.f));
 
 	ActiveDamageEffectHandle = GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
 }

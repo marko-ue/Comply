@@ -11,6 +11,7 @@
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
+#include "AbilitySystem/Data/Player/Abilities/Turret/DeployableTurretAbilityData.h"
 #include "Actors/AbilityActors/DeployableTurret/DeployableTurretPreview.h"
 #include "GameFramework/Character.h"
 
@@ -19,6 +20,8 @@ void UThrowable_Enforcer::ActivateAbility(const FGameplayAbilitySpecHandle Handl
                                           const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
                                           const FGameplayEventData* TriggerEventData)
 {
+	checkf(TurretData, TEXT("TurretData not set on %s"), *GetName());
+	
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
 	PlaceOnServer(FVector::ZeroVector, FVector::ZeroVector);
@@ -56,7 +59,7 @@ void UThrowable_Enforcer::SpawnPreview()
 	SpawnParams.Instigator = Cast<APawn>(Avatar);
 
 	SpawnedTurretPreviewActor = GetWorld()->SpawnActor<ADeployableTurretPreview>(
-		TurretPreviewActorClass,
+		TurretData->TurretPreviewActorClass,
 		GetAvatarActorFromActorInfo()->GetActorLocation(),
 		FRotator::ZeroRotator,
 		SpawnParams
@@ -64,7 +67,7 @@ void UThrowable_Enforcer::SpawnPreview()
 
 	if (SpawnedTurretPreviewActor)
 	{
-		SpawnedTurretPreviewActor->InitPreviewData(Cast<ACharacter>(GetCurrentActorInfo()->AvatarActor.Get()));
+		SpawnedTurretPreviewActor->InitPreviewData(Cast<ACharacter>(GetCurrentActorInfo()->AvatarActor.Get()), TurretData);
 	}
 }
 
@@ -73,7 +76,7 @@ void UThrowable_Enforcer::PlayPlaceTurretAnimation()
 	if (SpawnedTurretPreviewActor->bCanPlace)
 	{
 		UAbilityTask_PlayMontageAndWait* PlaceTurretMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-			this, NAME_None, PlaceTurretMontage, 1.f, NAME_None, true);
+			this, NAME_None, TurretData->PlaceTurretMontage, 1.f, NAME_None, true);
 		PlaceTurretMontageTask->OnCompleted.AddDynamic(this, &UThrowable_Enforcer::ConfirmPlace);
 		PlaceTurretMontageTask->OnCancelled.AddDynamic(this, &UThrowable_Enforcer::PlaceTurretAnimationInterrupted);
 		PlaceTurretMontageTask->OnInterrupted.AddDynamic(this, &UThrowable_Enforcer::PlaceTurretAnimationInterrupted);
@@ -162,7 +165,7 @@ void UThrowable_Enforcer::OnTargetDataReceived(const FGameplayAbilityTargetDataH
 	SpawnParams.Instigator = Cast<APawn>(Avatar);
 
 	SpawnedTurretPreviewActor = GetWorld()->SpawnActor<ADeployableTurretPreview>(
-		TurretPreviewActorClass, HitResult->ImpactPoint, HitResult->ImpactNormal.Rotation(), SpawnParams
+		TurretData->TurretPreviewActorClass, HitResult->ImpactPoint, HitResult->ImpactNormal.Rotation(), SpawnParams
 	);
 
 	if (SpawnedTurretPreviewActor)
@@ -172,7 +175,7 @@ void UThrowable_Enforcer::OnTargetDataReceived(const FGameplayAbilityTargetDataH
 	}
 	
 	UAbilityTask_PlayMontageAndWait* PlaceTurretMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-		this, NAME_None, PlaceTurretMontage, 1.f, NAME_None, true);
+		this, NAME_None, TurretData->PlaceTurretMontage, 1.f, NAME_None, true);
 	PlaceTurretMontageTask->OnCompleted.AddDynamic(this, &UThrowable_Enforcer::ConfirmPlace);
 	PlaceTurretMontageTask->OnCancelled.AddDynamic(this, &UThrowable_Enforcer::PlaceTurretAnimationInterrupted);
 	PlaceTurretMontageTask->OnInterrupted.AddDynamic(this, &UThrowable_Enforcer::PlaceTurretAnimationInterrupted);

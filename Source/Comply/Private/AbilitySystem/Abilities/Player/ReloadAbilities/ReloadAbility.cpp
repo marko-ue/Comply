@@ -15,6 +15,8 @@ void UReloadAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                      const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
                                      const FGameplayEventData* TriggerEventData)
 {
+	checkf(ActiveWeapon->WeaponData, TEXT("WeaponData not set on %s"), *GetName());
+	
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
 	HandleReload();
@@ -81,7 +83,7 @@ void UReloadAbility::HandleReload()
 	
 	// Play reload animation
 	ReloadMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-		this, NAME_None, ActiveWeapon->ReloadMontage, 1.f, NAME_None, true
+		this, NAME_None, ActiveWeapon->WeaponData->ReloadMontage, 1.f, NAME_None, true
 	);
 		
 	ReloadMontageTask->OnCompleted.AddDynamic(this, &UReloadAbility::OnReloadCompleted);
@@ -107,12 +109,12 @@ void UReloadAbility::OnReloadCompleted()
 		const float AmmoSpent = MaxAmmo - CurrentAmmo;
 
 		FGameplayEffectContextHandle ReserveAmmoContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
-		FGameplayEffectSpecHandle ReserveAmmoSpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(ActiveWeapon->ReduceReserveAmmoEffectClass, 1.f, ReserveAmmoContextHandle);
+		FGameplayEffectSpecHandle ReserveAmmoSpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(ActiveWeapon->WeaponData->ReduceReserveAmmoEffectClass, 1.f, ReserveAmmoContextHandle);
 		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(ReserveAmmoSpecHandle, ActiveWeapon->GetReduceReserveAmmoTag(), -AmmoSpent);
 		GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*ReserveAmmoSpecHandle.Data.Get());
 
 		FGameplayEffectContextHandle CurrentAmmoContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
-		FGameplayEffectSpecHandle CurrentAmmoSpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(ActiveWeapon->ReloadEffectClass, 1.f, CurrentAmmoContextHandle);
+		FGameplayEffectSpecHandle CurrentAmmoSpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(ActiveWeapon->WeaponData->ReloadEffectClass, 1.f, CurrentAmmoContextHandle);
 		GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*CurrentAmmoSpecHandle.Data);
 	}
 	

@@ -6,6 +6,7 @@
 #include "AbilitySystem/Abilities/ThrowableAbilityBase.h"
 #include "Throwable_Disruptor.generated.h"
 
+class UDecoyGrenadeData;
 /**
  * 
  */
@@ -13,16 +14,7 @@ UCLASS()
 class COMPLY_API UThrowable_Disruptor : public UThrowableAbilityBase
 {
 	GENERATED_BODY()
-	
-public:
-	// This will be a scalable float in the future for upgrades
-	UPROPERTY(EditAnywhere, Category = "Grenade Settings")
-	float PullRadius = 1000.f;
 
-	// This will be a scalable float in the future for upgrades
-	UPROPERTY(EditAnywhere, Category = "Grenade Settings")
-	float DecoyGrenadeLifetime = 20.f;
-	
 protected:
 	virtual void ThrowOnServer(FVector LaunchVelocity, FVector SpawnPosition) override;
 	

@@ -6,6 +6,7 @@
 #include "AbilitySystem/Abilities/ThrowableAbilityBase.h"
 #include "Throwable_Ranger.generated.h"
 
+class UPlasmaGrenadeData;
 /**
  * 
  */
@@ -13,11 +14,6 @@ UCLASS()
 class COMPLY_API UThrowable_Ranger : public UThrowableAbilityBase
 {
 	GENERATED_BODY()
-	
-public:
-	// This will be a scalable float in the future for upgrades
-	UPROPERTY(EditAnywhere, Category = "Grenade Settings")
-	float ExplosionRadius = 1000.f;
 
 protected:
 	virtual void ThrowOnServer(FVector LaunchVelocity, FVector SpawnPosition) override;

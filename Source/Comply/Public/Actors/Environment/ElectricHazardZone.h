@@ -5,11 +5,10 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "ActiveGameplayEffectHandle.h"
-#include "GameplayTagContainer.h"
-#include "ScalableFloat.h"
 #include "GameFramework/Actor.h"
 #include "ElectricHazardZone.generated.h"
 
+class UElectricHazardZoneData;
 class UAbilitySystemComponent;
 class UGameplayEffect;
 class UBoxComponent;
@@ -22,6 +21,9 @@ class COMPLY_API AElectricHazardZone : public AActor, public IAbilitySystemInter
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditDefaultsOnly, Category = "Data")
+	TObjectPtr<UElectricHazardZoneData> ElectricHazardZoneData;
+	
 	AElectricHazardZone();
 	
 	virtual void Tick(float DeltaTime) override;
@@ -44,13 +46,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Audio")
 	TObjectPtr<UAudioComponent> ElectricSound;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
-	TSubclassOf<UGameplayEffect> DamageEffectClass;
-	
 	FActiveGameplayEffectHandle ActiveDamageEffectHandle;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
-	TSubclassOf<UGameplayEffect> StunEffectClass;
 	
 	FActiveGameplayEffectHandle ActiveStunEffectHandle;
 	
@@ -71,10 +67,4 @@ private:
 	// Tracks already affected actors to prevent multiple function calls on the same actor
 	UPROPERTY()
 	TSet<TObjectPtr<AActor>> AffectedActors;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Electric Zone Settings")
-	FGameplayTag DamageType;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Electric Zone Settings")
-	FScalableFloat ExplicitDamage = 10.f;
 };

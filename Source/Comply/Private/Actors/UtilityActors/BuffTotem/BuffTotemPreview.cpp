@@ -4,13 +4,16 @@
 #include "Actors/AbilityActors/BuffTotem/BuffTotemPreview.h"
 
 #include "AbilitySystem/ComplyAbilitySystemBlueprintLibrary.h"
+#include "AbilitySystem/Data/Player/Abilities/Utilities/BuffTotemUtilityData.h"
 #include "GameFramework/Character.h"
-#include "Kismet/GameplayStatics.h"
 
 
 ABuffTotemPreview::ABuffTotemPreview()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	
+	BuffTotemMesh = CreateDefaultSubobject<UStaticMeshComponent>("TurretMesh");
+	BuffTotemMesh->SetupAttachment(RootComponent);
 }
 
 void ABuffTotemPreview::BeginPlay()
@@ -23,6 +26,20 @@ void ABuffTotemPreview::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	
 	UpdatePosition();
+}
+
+void ABuffTotemPreview::InitPreviewData(ACharacter* OwnerChar, const UComplyUtilityData* InUtilityData)
+{
+	checkf(InUtilityData, TEXT("UtilityData not passed into InitPreviewData on %s"), *GetName());
+	
+	Super::InitPreviewData(OwnerChar, InUtilityData);
+	
+	if (const UBuffTotemUtilityData* BuffTotemData = Cast<UBuffTotemUtilityData>(InUtilityData))
+	{
+		BuffTotemMesh->SetStaticMesh(BuffTotemData->UtilityMesh);
+		ValidMaterial = BuffTotemData->ValidMaterial;
+		InvalidMaterial = BuffTotemData->InvalidMaterial;
+	}
 }
 
 void ABuffTotemPreview::UpdatePosition()
@@ -54,17 +71,17 @@ void ABuffTotemPreview::UpdatePosition()
 		if (bCanPlace)
 		{
 			NewLocation = Hit.ImpactPoint;
-			FindComponentByClass<UStaticMeshComponent>()->SetMaterial(0, ValidMaterial);
+			BuffTotemMesh->SetMaterial(0, ValidMaterial);
 		}
 		else
 		{
-			FindComponentByClass<UStaticMeshComponent>()->SetMaterial(0, InvalidMaterial);
+			BuffTotemMesh->SetMaterial(0, InvalidMaterial);
 		}
 	}
 	else
 	{
 		bCanPlace = false;
-		FindComponentByClass<UStaticMeshComponent>()->SetMaterial(0, InvalidMaterial);
+		BuffTotemMesh->SetMaterial(0, InvalidMaterial);
 	}
 	
 	SetActorLocation(NewLocation);

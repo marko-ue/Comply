@@ -17,17 +17,16 @@ void UPrimary_Disruptor::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 
 bool UPrimary_Disruptor::Fire()
 {
-	AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
+	const AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
 	if (!Character) return false;
 
-	URangedWeaponAbilityBase* Weapon = Character->GetEquippedPrimaryWeapon();
+	const URangedWeaponAbilityBase* Weapon = Character->GetEquippedPrimaryWeapon();
 	if (!Weapon) return false;
 
 	bool bFound = false;
-	float CurrentAmmo = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(
-		Weapon->GetCurrentAmmoAttribute(), bFound);
+	const float CurrentAmmo = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(Weapon->GetCurrentAmmoAttribute(), bFound);
 
-	bool bIsReloading = GetAbilitySystemComponentFromActorInfo()->HasMatchingGameplayTag(ComplyTags::States::State_Reloading);
+	const bool bIsReloading = GetAbilitySystemComponentFromActorInfo()->HasMatchingGameplayTag(ComplyTags::States::State_Reloading);
 
 	// If attempting to activate at 0 ammo while reloading, the player will not be able to
 	// This prevents players from continuously interrupting reload when they don't even have a bullet to fire

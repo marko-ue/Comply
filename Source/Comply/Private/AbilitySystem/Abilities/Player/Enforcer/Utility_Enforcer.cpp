@@ -9,16 +9,18 @@
 #include "Abilities/Tasks/AbilityTask_ApplyRootMotionMoveToForce.h"
 #include "AbilitySystem/ComplyAbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/ComplyTags.h"
+#include "AbilitySystem/Data/Player/Abilities/Utilities/GrapplingHookData.h"
 #include "Character/Player/EnforcerCharacter.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Kismet/GameplayStatics.h"
 
 
 void UUtility_Enforcer::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                         const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
                                         const FGameplayEventData* TriggerEventData)
 {
+	checkf(GrapplingHookData, TEXT("GrapplingHookData not set on %s"), *GetName());
+	
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
 	// Target data must be used so the client is pulled to the correct position
@@ -30,7 +32,7 @@ void UUtility_Enforcer::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	{
 		// Grapple trace is performed first to get the GrappleHit
 		FHitResult GrappleHit;
-		if (!PerformGrappleTrace(GrappleHit))
+		if (!PerformGrappleTrace(GrappleHit, GrapplingHookData->GrappleRange))
 		{
 			EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 			return;
@@ -136,8 +138,8 @@ void UUtility_Enforcer::OnTargetDataReceived(const FGameplayAbilityTargetDataHan
 
 	UAbilityTask_ApplyRootMotionMoveToForce* MoveTask =
 		UAbilityTask_ApplyRootMotionMoveToForce::ApplyRootMotionMoveToForce(
-			this, FName("GrapplePull"), HitResult->ImpactPoint, PullDuration,
-			false, MOVE_Flying, false, PathOffsetCurve,
+			this, FName("GrapplePull"), HitResult->ImpactPoint, GrapplingHookData->PullDuration,
+			false, MOVE_Flying, false, GrapplingHookData->PathOffsetCurve,
 			ERootMotionFinishVelocityMode::ClampVelocity, FVector::ZeroVector, 500.f
 		);
 
@@ -154,7 +156,8 @@ void UUtility_Enforcer::OnTargetDataReceived(const FGameplayAbilityTargetDataHan
 	FGameplayCueParameters HookingCueParams;
 	HookingCueParams.Location = GetAvatarActorFromActorInfo()->GetActorLocation();
 	GetAbilitySystemComponentFromActorInfo()->AddGameplayCue(
-		ComplyTags::GameplayCues::GrapplingHookHooking, HookingCueParams);
+		ComplyTags::GameplayCues::GrapplingHookHooking, HookingCueParams
+	);
 }
 
 void UUtility_Enforcer::OnPullReachedDestination()

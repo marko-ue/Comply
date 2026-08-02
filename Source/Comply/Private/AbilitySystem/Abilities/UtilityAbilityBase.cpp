@@ -5,6 +5,7 @@
 
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
+#include "AbilitySystem/Data/Player/Abilities/Utilities/ComplyUtilityData.h"
 #include "Actors/AbilityActors/BuffTotem/BuffTotemPreview.h"
 #include "GameFramework/Character.h"
 
@@ -13,9 +14,11 @@ void UUtilityAbilityBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	const FGameplayEventData* TriggerEventData)
 {
+	checkf(UtilityData, TEXT("UtilityData not set on %s"), *GetName());
+	
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
-	if (bDoesAbilitySpawnActor)
+	if (UtilityData != nullptr) // If not non actor-spawning utility (grappling hook)
 	{
 		// The preview for the utility will be shown only on the owning client
 		if (GetCurrentActorInfo()->IsLocallyControlled())
@@ -42,7 +45,7 @@ void UUtilityAbilityBase::SpawnPreview()
 	SpawnParams.Instigator = Cast<APawn>(Avatar);
 
 	SpawnedUtilityPreviewActor = GetWorld()->SpawnActor<AUtilityPreviewBase>(
-		UtilityPreviewActorClass, 
+		UtilityData->UtilityPreviewActorClass, 
 		GetAvatarActorFromActorInfo()->GetActorLocation(), 
 		FRotator::ZeroRotator, 
 		SpawnParams
@@ -50,7 +53,7 @@ void UUtilityAbilityBase::SpawnPreview()
 
 	if (SpawnedUtilityPreviewActor)
 	{
-		SpawnedUtilityPreviewActor->InitPreviewData(Cast<ACharacter>(GetCurrentActorInfo()->AvatarActor.Get()));
+		SpawnedUtilityPreviewActor->InitPreviewData(Cast<ACharacter>(GetCurrentActorInfo()->AvatarActor.Get()), UtilityData);
 	}
 }
 
@@ -65,7 +68,7 @@ void UUtilityAbilityBase::ConfirmPlacement()
 	}
 
 	UAbilityTask_PlayMontageAndWait* PlaceUtilityMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-		this, NAME_None, PlaceUtilityMontage, 1.f, NAME_None, true);
+		this, NAME_None, UtilityData->PlaceUtilityMontage, 1.f, NAME_None, true);
 	PlaceUtilityMontageTask->OnCompleted.AddDynamic(this, &ThisClass::TraceAndSpawn);
 	PlaceUtilityMontageTask->ReadyForActivation();
 }

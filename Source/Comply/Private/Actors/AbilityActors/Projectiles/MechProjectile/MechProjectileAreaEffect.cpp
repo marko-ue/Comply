@@ -9,6 +9,8 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/ComplyAbilityTypes.h"
+#include "AbilitySystem/Data/Enemy/Abilities/Mech/MechProjectileData.h"
+#include "AbilitySystem/Data/Enemy/Damage/ComplyEnemyDamageData.h"
 #include "Character/ComplyPlayerCharacter.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
@@ -36,8 +38,13 @@ void AMechProjectileAreaEffect::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	AreaEffectNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, AreaEffectParticles, GetActorLocation());
-	AreaEffectAudioComponent = UGameplayStatics::SpawnSoundAttached(AreaEffectSound, RootComponent);
+	checkf(ProjectileData, TEXT("ProjectileData not passed into %s"), *GetName());
+	
+	AreaEffectMesh->SetStaticMesh(ProjectileData->AreaEffectMesh);
+	AreaEffectMesh->SetMaterial(0, ProjectileData->AreaEffectMaterial);
+	
+	AreaEffectNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ProjectileData->AreaEffectParticles, GetActorLocation());
+	AreaEffectAudioComponent = UGameplayStatics::SpawnSoundAttached(ProjectileData->AreaEffectSound, RootComponent);
 	SetLifeSpan(4.5f);
 }
 
@@ -62,22 +69,24 @@ void AMechProjectileAreaEffect::ApplyDamageToTarget(UAbilitySystemComponent* Tar
 	FGameplayEffectContextHandle ContextHandle(Context);
 	ContextHandle.AddSourceObject(this);
 
-	const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, 1.f, ContextHandle);
+	const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(ProjectileData->EnemyDamageData->DamageEffectClass, 1.f, ContextHandle);
 	if (!SpecHandle.IsValid()) return;
 
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, DamageType, ExplicitDamage.GetValueAtLevel(1.f));
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+		SpecHandle, ProjectileData->EnemyDamageData->DamageType, ProjectileData->EnemyDamageData->Damage.GetValueAtLevel(1.f)
+	);
 
 	ActiveDamageEffectHandle = SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
 }
 
 void AMechProjectileAreaEffect::ApplySlowToTarget(UAbilitySystemComponent* TargetASC)
 {
-	if (!SourceASC || !TargetASC || !SlowEffectClass) return;
+	if (!SourceASC || !TargetASC || !ProjectileData->SlowEffectClass) return;
 
 	FGameplayEffectContextHandle ContextHandle = SourceASC->MakeEffectContext();
 	ContextHandle.AddSourceObject(SourceASC->GetAvatarActor());
 
-	FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(SlowEffectClass, 1.f, ContextHandle);
+	FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(ProjectileData->SlowEffectClass, 1.f, ContextHandle);
 	if (SpecHandle.IsValid())
 	{
 		ActiveSlowEffectHandle = SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
@@ -109,7 +118,7 @@ void AMechProjectileAreaEffect::OnComponentBeginOverlap(UPrimitiveComponent* Ove
 	{
 		if (UAbilitySystemComponent* TargetASC = ASCInterface->GetAbilitySystemComponent())
 		{
-			if (!SourceASC || !TargetASC || !DamageEffectClass) return;
+			if (!SourceASC || !TargetASC || !ProjectileData->EnemyDamageData->DamageEffectClass) return;
 			ApplyEffectToTarget(OtherActor, TargetASC);
 		}
 	}
@@ -129,7 +138,7 @@ void AMechProjectileAreaEffect::OnComponentEndOverlap(UPrimitiveComponent* Overl
 		}
 	}
 	
-	if (IAbilitySystemInterface* ASCInterface = Cast<IAbilitySystemInterface>(OtherActor))
+	if (const IAbilitySystemInterface* ASCInterface = Cast<IAbilitySystemInterface>(OtherActor))
 	{
 		if (UAbilitySystemComponent* TargetASC = ASCInterface->GetAbilitySystemComponent())
 		{

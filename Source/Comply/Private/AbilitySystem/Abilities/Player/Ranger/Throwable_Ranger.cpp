@@ -5,18 +5,21 @@
 #include "Abilities/Tasks/AbilityTask_WaitConfirm.h"
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
+#include "AbilitySystem/Data/Player/Grenades/PlasmaGrenadeData.h"
 #include "Actors/AbilityActors/PlasmaGrenade/PlasmaGrenade.h"
 #include "Kismet/GameplayStatics.h"
 
 
 void UThrowable_Ranger::ThrowOnServer(FVector LaunchVelocity, FVector SpawnPosition)
 {
+	checkf(GrenadeData, TEXT("GrenadeData not set on %s"), *GetName());
+	
 	Super::ThrowOnServer(LaunchVelocity, SpawnPosition);
 	
 	const FTransform SpawnTransform(GetAvatarActorFromActorInfo()->GetActorRotation(), SpawnPosition);
 	
 	APlasmaGrenade* Grenade = GetWorld()->SpawnActorDeferred<APlasmaGrenade>(
-		ThrowableActorClass,
+		GrenadeData->GrenadeActorClass,
 		SpawnTransform,
 		GetOwningActorFromActorInfo(),
 		GetAvatarActorFromActorInfo()->GetInstigator(),
@@ -25,15 +28,9 @@ void UThrowable_Ranger::ThrowOnServer(FVector LaunchVelocity, FVector SpawnPosit
 	
 	if (Grenade)
 	{
-		Grenade->ExplosionRadius = ExplosionRadius;
-		Grenade->MaxDamage = Damage.GetValueAtLevel(GetAbilityLevel());
+		Grenade->GrenadeData = Cast<UPlasmaGrenadeData>(GrenadeData);
 		Grenade->SourceASC = GetAbilitySystemComponentFromActorInfo();
-		Grenade->DamageEffectClass = DamageEffectClass;
-		Grenade->DamageTypeTag = DamageType;
-		
-		// Clamp to the throw speed to prevent cheating by the client passing in higher values
-		FVector SafeLaunchVelocity = LaunchVelocity.GetClampedToMaxSize(ThrowSpeed);
-		Grenade->LaunchVelocity = SafeLaunchVelocity;
+		Grenade->LaunchVelocity = LaunchVelocity.GetClampedToMaxSize(Grenade->GrenadeData->ThrowSpeed);
 
 		UGameplayStatics::FinishSpawningActor(Grenade, SpawnTransform);
 	}

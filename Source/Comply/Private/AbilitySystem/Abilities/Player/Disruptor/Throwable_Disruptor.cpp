@@ -7,18 +7,21 @@
 #include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
+#include "AbilitySystem/Data/Player/Grenades/DecoyGrenadeData.h"
 #include "Actors/AbilityActors/DecoyGrenade/DecoyGrenade.h"
 #include "Kismet/GameplayStatics.h"
 
 
 void UThrowable_Disruptor::ThrowOnServer(FVector LaunchVelocity, FVector SpawnPosition)
 {
+	checkf(GrenadeData, TEXT("GrenadeData not set on %s"), *GetName());
+	
 	Super::ThrowOnServer(LaunchVelocity, SpawnPosition);
 	
 	const FTransform SpawnTransform(GetAvatarActorFromActorInfo()->GetActorRotation(), SpawnPosition);
 	
 	ADecoyGrenade* DecoyGrenade = GetWorld()->SpawnActorDeferred<ADecoyGrenade>(
-		ThrowableActorClass, 
+		GrenadeData->GrenadeActorClass, 
 		SpawnTransform, 
 		GetOwningActorFromActorInfo(), 
 		GetAvatarActorFromActorInfo()->GetInstigator(), 
@@ -27,16 +30,10 @@ void UThrowable_Disruptor::ThrowOnServer(FVector LaunchVelocity, FVector SpawnPo
 	
 	if (DecoyGrenade)
 	{
-		DecoyGrenade->PullRadius = PullRadius;
-		DecoyGrenade->DecoyGrenadeLifetime = DecoyGrenadeLifetime;
+		DecoyGrenade->GrenadeData = Cast<UDecoyGrenadeData>(GrenadeData);
 		DecoyGrenade->SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
-		DecoyGrenade->DamageEffectClass = DamageEffectClass;
-		DecoyGrenade->DamageTypeTag = DamageType;
-		
-		// Clamp to the throw speed to prevent cheating by the client passing in higher values
-		FVector SafeLaunchVelocity = LaunchVelocity.GetClampedToMaxSize(ThrowSpeed);
-		DecoyGrenade->LaunchVelocity = SafeLaunchVelocity;
-
+		DecoyGrenade->LaunchVelocity = LaunchVelocity.GetClampedToMaxSize(DecoyGrenade->GrenadeData->ThrowSpeed);
+    
 		UGameplayStatics::FinishSpawningActor(DecoyGrenade, SpawnTransform);
 	}
 }

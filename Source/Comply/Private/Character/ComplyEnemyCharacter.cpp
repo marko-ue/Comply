@@ -2,8 +2,12 @@
 
 
 #include "Character/ComplyEnemyCharacter.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
+#include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
+#include "AbilitySystem/Data/Enemy/Stats/ComplyEnemyCharacterStatData.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 
@@ -36,11 +40,21 @@ void AComplyEnemyCharacter::BeginPlay()
 	GetAbilitySystemComponent()->InitAbilityActorInfo(this, this);
 	
 	if (!HasAuthority()) return;
+	
+	InitializeAttributes();
 
 	GiveStartupAbilities();
-	
-	GetAbilitySystemComponent()->SetNumericAttributeBase(UComplyAttributeSet::GetMaxHealthAttribute(), BaseMaxHealth);
-	GetAbilitySystemComponent()->SetNumericAttributeBase(UComplyAttributeSet::GetHealthAttribute(), BaseHealth);
-	GetAbilitySystemComponent()->SetNumericAttributeBase(UComplyAttributeSet::GetMaxArmorPenetrationAttribute(), BaseMaxArmorPenetration);
-	GetAbilitySystemComponent()->SetNumericAttributeBase(UComplyAttributeSet::GetArmorPenetrationAttribute(), BaseArmorPenetration);
+}
+
+void AComplyEnemyCharacter::InitializeAttributes() const
+{
+	if (!EnemyStatData) return;
+
+	checkf(EnemyStatData, TEXT("EnemyStatData not set on %s"), *GetName());
+
+	const FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(EnemyStatData->InitializeAttributesEffect, 1.f, ContextHandle);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, ComplyTags::SetByCaller::Stats::SBC_MaxHealth, EnemyStatData->MaxHealth);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, ComplyTags::SetByCaller::Stats::SBC_MaxArmorPenetration, EnemyStatData->ArmorPenetration);
+	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 }

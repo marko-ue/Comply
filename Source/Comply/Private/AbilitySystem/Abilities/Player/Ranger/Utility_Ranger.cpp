@@ -5,12 +5,16 @@
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
 #include "AbilitySystem/ComplyTags.h"
+#include "AbilitySystem/Data/Player/Abilities/Utilities/ComplyUtilityData.h"
+#include "AbilitySystem/Data/Player/Abilities/Utilities/ShieldUtilityData.h"
 #include "Actors/AbilityActors/ShieldDome/ShieldDome.h"
 #include "Kismet/GameplayStatics.h"
 
 
 void UUtility_Ranger::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
+	checkf(UtilityData, TEXT("UtilityData not set on %s"), *GetName());
+	
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
@@ -55,7 +59,7 @@ void UUtility_Ranger::TraceAndSpawn()
 	if (HasAuthority(&ActivationInfo))
 	{
 		AShieldDome* Shield = GetWorld()->SpawnActorDeferred<AShieldDome>(
-			UtilityActorClass, 
+			UtilityData->UtilityActorClass, 
 			FTransform(FRotator::ZeroRotator, SpawnLocation),
 			Avatar,
 			Cast<APawn>(Avatar),
@@ -65,8 +69,9 @@ void UUtility_Ranger::TraceAndSpawn()
 		if (Shield)
 		{
 			Shield->SourceASC = GetAbilitySystemComponentFromActorInfo();
+			Shield->ShieldData = Cast<UShieldUtilityData>(UtilityData);
 			UGameplayStatics::FinishSpawningActor(Shield, FTransform(FRotator::ZeroRotator, SpawnLocation));
-			Shield->SetLifeSpan(UtilityLifetime);
+			Shield->SetLifeSpan(UtilityData->UtilityLifetime);
 		}
 	}
 	

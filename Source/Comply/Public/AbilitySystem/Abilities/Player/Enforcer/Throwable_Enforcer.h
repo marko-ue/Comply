@@ -6,6 +6,7 @@
 #include "AbilitySystem/Abilities/ThrowableAbilityBase.h"
 #include "Throwable_Enforcer.generated.h"
 
+class UDeployableTurretAbilityData;
 class UAbilityTask_WaitConfirmCancel;
 class ADeployableTurret;
 class ADeployableTurretPreview;
@@ -18,6 +19,9 @@ class COMPLY_API UThrowable_Enforcer : public UThrowableAbilityBase
 	GENERATED_BODY()
 	
 public:
+	UPROPERTY(EditDefaultsOnly, Category = "Data")
+	TObjectPtr<UDeployableTurretAbilityData> TurretData;
+	
 	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
 	
 	UFUNCTION()
@@ -25,16 +29,6 @@ public:
 	
 	UPROPERTY()
 	TObjectPtr<ADeployableTurretPreview> SpawnedTurretPreviewActor = nullptr;
-	
-	// This will be a scalable float in the future for upgrades
-	UPROPERTY(EditAnywhere, Category = "Turret Settings")
-	float TurretLifetime = 10.f;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Actors")
-	TSubclassOf<ADeployableTurret> TurretActorClass;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Actors")
-	TSubclassOf<AActor> TurretPreviewActorClass;
 
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
@@ -58,9 +52,6 @@ private:
 	
 	UFUNCTION()
 	void PlaceTurretAnimationInterrupted();
-	
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UAnimMontage> PlaceTurretMontage;
 	
 	UPROPERTY()
 	UAbilityTask_WaitConfirmCancel* WaitConfirm;

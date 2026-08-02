@@ -9,12 +9,16 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "AbilitySystem/ComplyAbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/ComplyTags.h"
+#include "AbilitySystem/Data/Player/ComplyPlayerData.h"
 #include "Character/ComplyPlayerCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
 
 void URevivePlayer::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
                                     const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
+	Reviver = Cast<AComplyPlayerCharacter>(ActorInfo->AvatarActor.Get());
+	checkf(Reviver->PlayerData, TEXT("PlayerData not set on %s"), *GetName());
+	
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
 	AComplyPlayerCharacter* Avatar = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
@@ -33,7 +37,6 @@ void URevivePlayer::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	if (AComplyPlayerCharacter* HitPlayer = Cast<AComplyPlayerCharacter>(Hit.GetActor()))
 	{
 		TargetPlayer = HitPlayer;
-		Reviver = Cast<AComplyPlayerCharacter>(ActorInfo->AvatarActor.Get());
 
 		if (Reviver && TargetPlayer)
 		{
@@ -41,8 +44,7 @@ void URevivePlayer::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 			Reviver->Server_FaceTarget(TargetPlayer);
 			
 			// Locally rotates towards the player they are reviving
-			FRotator LookAt = UKismetMathLibrary::FindLookAtRotation(
-				Reviver->GetActorLocation(), TargetPlayer->GetActorLocation());
+			FRotator LookAt = UKismetMathLibrary::FindLookAtRotation(Reviver->GetActorLocation(), TargetPlayer->GetActorLocation());
 			Reviver->SetActorRotation(FRotator(0.f, LookAt.Yaw, 0.f));
 			
 			if (APlayerController* PC = Cast<APlayerController>(Avatar->GetController()))
@@ -66,7 +68,7 @@ void URevivePlayer::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	}
 	
 	MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-	this, NAME_None, Reviver->ReviveMontage);
+	this, NAME_None, Reviver->PlayerData->ReviveMontage);
 	MontageTask->OnCompleted.AddDynamic(this, &URevivePlayer::OnMontageCompleted);
 	MontageTask->OnInterrupted.AddDynamic(this, &URevivePlayer::OnMontageCancelled);
 	MontageTask->OnCancelled.AddDynamic(this, &URevivePlayer::OnMontageCancelled);

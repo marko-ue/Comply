@@ -15,6 +15,8 @@ void UShotgunReload::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                      const FGameplayAbilityActivationInfo ActivationInfo,
                                      const FGameplayEventData* TriggerEventData)
 {
+    checkf(ActiveWeapon->WeaponData, TEXT("WeaponData not set on %s"), *GetName());
+    
     Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
     
     if (AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo()))
@@ -76,7 +78,7 @@ void UShotgunReload::LoadNextShell()
     }
 
     ShellMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-        this, NAME_None, ActiveWeapon->InsertShellMontage, 1.f, NAME_None, true);
+        this, NAME_None, ActiveWeapon->WeaponData->InsertShellMontage, 1.f, NAME_None, true);
     
     // Always validate the task before attempting to bind
     if (!IsValid(ShellMontageTask))
@@ -104,13 +106,13 @@ void UShotgunReload::OnShellMontageCompleted()
     }
     
     // Add 1 shell to mag
-    FGameplayEffectContextHandle AmmoContext = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
-    FGameplayEffectSpecHandle AmmoSpec = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(AddAmmoEffectClass, 1.f, AmmoContext);
+    const FGameplayEffectContextHandle AmmoContext = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
+    const FGameplayEffectSpecHandle AmmoSpec = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(AddAmmoEffectClass, 1.f, AmmoContext);
     GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*AmmoSpec.Data.Get());
 
     // Deduct 1 from reserve
-    FGameplayEffectContextHandle ReserveContext = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
-    FGameplayEffectSpecHandle ReserveSpec = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(ActiveWeapon->ReduceReserveAmmoEffectClass, 1.f, ReserveContext);
+    const FGameplayEffectContextHandle ReserveContext = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
+    const FGameplayEffectSpecHandle ReserveSpec = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(ActiveWeapon->WeaponData->ReduceReserveAmmoEffectClass, 1.f, ReserveContext);
     UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(ReserveSpec, ActiveWeapon->GetReduceReserveAmmoTag(), -1.f);
     GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*ReserveSpec.Data.Get());
 

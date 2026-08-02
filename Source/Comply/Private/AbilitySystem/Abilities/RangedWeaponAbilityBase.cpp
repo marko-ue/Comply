@@ -12,6 +12,8 @@
 #include "AbilitySystem/AbilityTasks/HitscanTargetData.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/Abilities/Player/Disruptor/Primary_Disruptor.h"
+#include "AbilitySystem/Data/Player/Damage/ComplyDamageData.h"
+#include "AbilitySystem/Data/Player/Weapons/ShotgunWeaponData.h"
 #include "Character/ComplyCharacterBase.h"
 #include "Character/ComplyPlayerCharacter.h"
 #include "Framework/GameMode/ComplyGameModeBase.h"
@@ -92,7 +94,7 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 	// A multi trace is used because overlap events are required, as well as direct hits for applying damage
 	for (int32 i = 0; i < NumPellets; i++)
 	{
-		const FVector PelletDirection = FMath::VRandCone(TraceDirection, FMath::DegreesToRadians(Ability->SpreadAngle));
+		const FVector PelletDirection = FMath::VRandCone(TraceDirection, FMath::DegreesToRadians(Ability->ShotgunWeaponData->SpreadAngle));
 		const FVector PelletEnd = TraceStart + PelletDirection * TraceLength;
 
 		TArray<FHitResult> MultiHitResults;
@@ -137,7 +139,8 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 		FGameplayCueParameters CueParams;
 		CueParams.EffectContext = ContextHandle;
 		UGameplayCueManager::ExecuteGameplayCue_NonReplicated(
-			GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::ShieldShotgunImpact, CueParams);
+			GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::ShieldShotgunImpact, CueParams
+		);
 	}
 	
 	/*
@@ -162,7 +165,8 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 	if (GetAbilitySystemComponentFromActorInfo()->IsOwnerActorAuthoritative() && !CurrentActorInfo->IsLocallyControlled())
 	{
 		FScopedPredictionWindow ScopedPrediction(GetAbilitySystemComponentFromActorInfo(),
-			CurrentActivationInfo.GetActivationPredictionKey());
+			CurrentActivationInfo.GetActivationPredictionKey()
+		);
 		
 		FGameplayCueParameters CueParams;
 		CueParams.EffectContext = ContextHandle;
@@ -190,6 +194,9 @@ void URangedWeaponAbilityBase::BuildWeaponCollisionParams(const AActor* Avatar, 
 
 bool URangedWeaponAbilityBase::Fire()
 {
+	checkf(WeaponData, TEXT("WeaponData not set on %s"), *GetName());
+	checkf(WeaponData->DamageData, TEXT("DamageData not set on %s"), *GetName());
+	
 	// Ensure all reload abilities are canceled when firing, so cleanup code always runs
 	// Mostly helps with removing the Reloading tag when firing is interrupted while reloading the shotgun
 	FGameplayTagContainer ReloadTag;
@@ -203,7 +210,7 @@ bool URangedWeaponAbilityBase::Fire()
 		
 		// Automatic weapons directly use this variable for checking whether firing should continue
 		// so it's set to true when starting fire for them. For non-automatic weapons, this variable is only used to handle player rotation
-		if (RangedWeaponType == ERangedWeaponType::Automatic)
+		if (WeaponData->RangedWeaponType == ERangedWeaponType::Automatic)
 		{
 			Character->bIsFiring = true;
 		}
@@ -227,7 +234,7 @@ bool URangedWeaponAbilityBase::Fire()
 		FTimerHandle ReloadTimer;
 		GetWorld()->GetTimerManager().SetTimer(ReloadTimer, [this]()
 		{
-			GetAbilitySystemComponentFromActorInfo()->TryActivateAbilityByClass(ReloadAbilityClass);
+			GetAbilitySystemComponentFromActorInfo()->TryActivateAbilityByClass(WeaponData->ReloadAbilityClass);
 		}, 0.1f, false);
 		
 		return false;
@@ -235,7 +242,7 @@ bool URangedWeaponAbilityBase::Fire()
 	
 	// Reduce ammo in mag by 1
 	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
-	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(ReduceAmmoEffectClass, 1.f, ContextHandle);
+	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(WeaponData->ReduceAmmoEffectClass, 1.f, ContextHandle);
 	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	
 	// Any previous running hit scan target data tasks must be ended so it's not triggered for each accumulated task
@@ -248,14 +255,14 @@ bool URangedWeaponAbilityBase::Fire()
 	HitscanTargetDataTask->ValidData.AddDynamic(this, &ThisClass::OnTargetDataReceived);
 	HitscanTargetDataTask->ReadyForActivation();
 	
-	if (RangedWeaponType == ERangedWeaponType::Automatic)
+	if (WeaponData->RangedWeaponType == ERangedWeaponType::Automatic)
 	{
 		if (FireDelayTask)
 		{
 			FireDelayTask->EndTask();
 		}
 
-		FireDelayTask = UAbilityTask_WaitDelay::WaitDelay(this, FireInterval);
+		FireDelayTask = UAbilityTask_WaitDelay::WaitDelay(this, WeaponData->FireInterval);
 		FireDelayTask->OnFinish.AddDynamic(this, &ThisClass::OnFireDelayFinished);
 		FireDelayTask->ReadyForActivation();
 	}
@@ -301,7 +308,7 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
 			Character->SpawnImpactEffectsLocal(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->ImpactNormal, MuzzleLocation);
 		}
 
-		if (Character->GetEquippedPrimaryWeapon()->bUsesSingleCrosshairTrace &&
+		if (Character->GetEquippedPrimaryWeapon()->WeaponData->bUsesSingleCrosshairTrace &&
 			HasAuthority(&ActivationInfo))
 		{
 			FGameplayCueParameters CueParams;
@@ -330,14 +337,14 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
 				Context->bHitThroughShield = CustomData->bPassedThroughShield;
 			}
 
-			Context->ShieldDamageMultiplier = ShieldShotDamageMultiplier;
+			Context->ShieldDamageMultiplier = WeaponData->ShieldShotDamageMultiplier;
 
-			float FinalDamage = Damage.GetValueAtLevel(GetAbilityLevel());
+			float FinalDamage = WeaponData->DamageData->Damage.GetValueAtLevel(GetAbilityLevel());
 
 			if (UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo())
 			{
 				const int32 TotemStacks = ASC->GetTagCount(ComplyTags::States::State_TotemBuffed);
-				FinalDamage *= (1.f + TotemDamageBonusPerStack * TotemStacks);
+				FinalDamage *= (1.f + WeaponData->DamageData->TotemDamageBonusPerStack * TotemStacks);
 			}
 
 			CauseDamage(TargetActor, FinalDamage, Context);
@@ -352,7 +359,7 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
 		}
 	}
 
-	if (!Character->GetEquippedPrimaryWeapon()->bUsesSingleCrosshairTrace &&
+	if (!Character->GetEquippedPrimaryWeapon()->WeaponData->bUsesSingleCrosshairTrace &&
 		HasAuthority(&ActivationInfo))
 	{
 		FGameplayEffectContextHandle ContextHandle =
@@ -408,11 +415,11 @@ void URangedWeaponAbilityBase::PlayAnimationBasedOnState()
 			
 			if (Tags.HasTagExact(ComplyTags::States::State_Aiming))
 			{
-				PlayMontageAndBindDelegates(AbilityActivationMontageIronsights);
+				PlayMontageAndBindDelegates(WeaponData->AbilityActivationMontageIronsights);
 			}
 			else
 			{
-				PlayMontageAndBindDelegates(AbilityActivationMontageHip);
+				PlayMontageAndBindDelegates(WeaponData->AbilityActivationMontageHip);
 			}
 		}
 	}
@@ -438,7 +445,7 @@ void URangedWeaponAbilityBase::PlayMontageAndBindDelegates(const TObjectPtr<UAni
 	GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
 	{
 		// This state is not used for automatic weapons. Firing is never blocked for them since they use a WaitDelay task and hold input
-		if (RangedWeaponType != ERangedWeaponType::Automatic)
+		if (WeaponData->RangedWeaponType != ERangedWeaponType::Automatic)
 		{
 			// Firing should be blocked if another bullet can't be fired. Firing is only allowed again after the previous fire animation finishes
 			GetAbilitySystemComponentFromActorInfo()->SetLooseGameplayTagCount(ComplyTags::States::State_FiringBlocked, 1);

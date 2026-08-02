@@ -7,6 +7,7 @@
 #include "AbilitySystem/ComplyAbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "AbilitySystem/ComplyTags.h"
+#include "AbilitySystem/Data/Player/Abilities/Utilities/ComplyUtilityData.h"
 #include "Actors/AbilityActors/BuffTotem/BuffTotemPreview.h"
 
 
@@ -14,6 +15,8 @@ void UUtility_Disruptor::ActivateAbility(const FGameplayAbilitySpecHandle Handle
                                          const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
                                          const FGameplayEventData* TriggerEventData)
 {
+	checkf(UtilityData, TEXT("UtilityData not set on %s"), *GetName());
+	
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
@@ -37,14 +40,13 @@ void UUtility_Disruptor::TraceAndSpawn()
 	// A server RPC is used to handle spawning the buff totem
 	if (UComplyAbilitySystemComponent* ASC = Cast<UComplyAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo()))
 	{
-		ASC->Server_PlaceBuffTotem(GetCurrentAbilitySpecHandle(), CachedPlaceLocation, UtilityLifetime);
+		ASC->Server_PlaceBuffTotem(GetCurrentAbilitySpecHandle(), CachedPlaceLocation, UtilityData->UtilityLifetime);
 	}
 	
 	// Automatically equip the primary ability once the buff totem is thrown, as the player should not be able to equip the buff totem while it's on cooldown
 	GetAbilitySystemComponentFromActorInfo()->TryActivateAbilitiesByTag(
 		FGameplayTagContainer(ComplyTags::ComplyAbilities::AssetTags::Equip_Primary)
 	);
-
 	
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }

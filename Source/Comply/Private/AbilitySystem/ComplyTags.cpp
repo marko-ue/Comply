@@ -72,6 +72,26 @@ namespace ComplyTags
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(SBC_ReduceShotgunReserveAmmo, "ComplyTags.SetByCaller.Weapons.Shotgun", "Set by caller tag for reducing shotgun reserve ammo")
 		
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(SBC_TotemSpeedBuff, "ComplyTags.SetByCaller.Buffs.TotemSpeed", "Set by caller tag for buffing player speed")
+		
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(SBC_TurretRecharge, "ComplyTags.SetByCaller.Turret.Recharge", "Set by caller tag for recharging turret")
+		
+		namespace Stats
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(SBC_MaxHealth, "ComplyTags.SetByCaller.Stats.Character.MaxHealth", "Set by caller tag for max health")
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(SBC_MaxArmor, "ComplyTags.SetByCaller.Stats.Character.MaxArmor", "Set by caller tag for max armor")
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(SBC_MaxArmorPenetration, "ComplyTags.SetByCaller.Stats.Character.MaxArmorPenetration", "Set by caller tag for max armor penetration")
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(SBC_MovementSpeed, "ComplyTags.SetByCaller.Stats.Character.MovementSpeed", "Set by caller tag for movement speed")
+			
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(SBC_RifleMaxAmmo, "ComplyTags.SetByCaller.Stats.Abilities.RifleMaxAmmo", "Set by caller tag for rifle max ammo")
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(SBC_RifleMaxReserveAmmo, "ComplyTags.SetByCaller.Stats.Abilities.RifleMaxReserveAmmo","Set by caller tag for rifle max reserve ammo")
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(SBC_PlasmaGrenadeMaxCharges, "ComplyTags.SetByCaller.Stats.Abilities.PlasmaGrenadeMaxCharges", "Set by caller tag for plasma grenade max charges")
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(SBC_MagnumMaxAmmo, "ComplyTags.SetByCaller.Stats.Abilities.MagnumMaxAmmo", "Set by caller tag for magnum max ammo")
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(SBC_MagnumMaxReserveAmmo, "ComplyTags.SetByCaller.Stats.Abilities.MagnumMaxReserveAmmo", "Set by caller tag for magnum max reserve ammo")
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(SBC_TurretMaxCharges, "ComplyTags.SetByCaller.Stats.Abilities.TurretMaxCharges", "Set by caller tag for turret max charges")
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(SBC_ShotgunMaxAmmo, "ComplyTags.SetByCaller.Stats.Abilities.ShotgunMaxAmmo", "Set by caller tag for shotgun max ammo")
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(SBC_ShotgunMaxReserveAmmo, "ComplyTags.SetByCaller.Stats.Abilities.ShotgunMaxReserveAmmo", "Set by caller tag for shotgun max reserve ammo")
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(SBC_DecoyGrenadeMaxCharges, "ComplyTags.SetByCaller.Stats.Abilities.DecoyGrenadeMaxCharges", "Set by caller tag for decoy grenade max charges")
+		}
 	} 
 	
 	namespace GameplayCues

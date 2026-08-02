@@ -12,6 +12,8 @@
 #include "ComplyPlayerCharacter.generated.h"
 
 
+class UComplyInputData;
+class UComplyPlayerData;
 class UNiagaraSystem;
 class IInteractableInterface;
 class UInputMappingContext;
@@ -27,6 +29,12 @@ class COMPLY_API AComplyPlayerCharacter : public AComplyCharacterBase, public IP
 	GENERATED_BODY()
 	
 public:
+	UPROPERTY(EditDefaultsOnly, Category = "Data")
+	TObjectPtr<UComplyPlayerData> PlayerData;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Data")
+	TObjectPtr<UComplyInputData> InputData;
+	
 	AComplyPlayerCharacter();
 	
 	virtual void BeginPlay() override;
@@ -71,30 +79,7 @@ public:
 	void Multicast_SpawnImpactEffects(FVector ImpactPoint, FVector ImpactNormal, FVector MuzzleLocation);
 	
 	void SpawnImpactEffectsLocal(const FVector& ImpactPoint, const FVector& ImpactNormal, const FVector& MuzzleLocation);
-	
-	UPROPERTY(EditDefaultsOnly)
-	TArray<TObjectPtr<UMaterialInstance>> BulletImpactDecals;
-	
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<UNiagaraSystem> BulletTracerEffect;
 	// End Impact Effects
-	
-	// Zoom
-	UPROPERTY(EditAnywhere, Category = "Player Settings|Zoom")
-	float DefaultFOV = 90.f;
-
-	UPROPERTY(EditAnywhere, Category = "Player Settings|Zoom")
-	float AimFOV = 60.f;
-
-	UPROPERTY(EditAnywhere, Category = "Player Settings|Zoom")
-	float ZoomSpeed = 10.f;
-	// End Zoom
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Player Settings|Stats")
-	float BaseArmor = 5.f;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Player Settings|Stats")
-	float BaseMaxArmor = 5.f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilities|Effect Application")
 	TSubclassOf<UGameplayAbility> ApplyAimEffectAbilityClass;
@@ -137,39 +122,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Player Settings|Meshes")
 	TObjectPtr<UStaticMeshComponent> WeaponMesh;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Player Settings|Meshes", BlueprintreadOnly)
-	TObjectPtr<UStaticMesh> PrimaryMesh;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Player Settings|Meshes")
-	TObjectPtr<UStaticMesh> UtilityMesh;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Player Settings|Meshes")
-	TObjectPtr<UStaticMesh> ThrowableMesh;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Player Settings|Meshes")
-	FVector PrimaryMeshScale = FVector(1.0f);
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Player Settings|Meshes")
-	FVector UtilityMeshScale = FVector(1.0f);
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Player Settings|Meshes")
-	FVector ThrowableMeshScale = FVector(1.0f);
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Player Settings|Animations")
-	TObjectPtr<UAnimMontage> PrimaryEquipMontage;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Player Settings|Animations")
-	TObjectPtr<UAnimMontage> UtilityEquipMontage;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Player Settings|Animations")
-	TObjectPtr<UAnimMontage> ThrowableEquipMontage;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Player Settings|Animations")
-	TObjectPtr<UAnimMontage> PrepareReloadMontage;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Player Settings|Animations")
-	TObjectPtr<UAnimMontage> ReviveMontage;
-	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CurrentEquippedSlot)
 	EWeaponSlot CurrentEquippedSlot = EWeaponSlot::Primary;
 	
@@ -180,35 +132,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UCameraComponent> Camera;
 	
+	virtual void InitializeAttributes() const override;
+	
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-	
-	// Input
-	UPROPERTY(EditAnywhere, Category="Input|Actions")
-	UInputAction* PrimaryAction;
-	
-	UPROPERTY(EditAnywhere, Category="Input|Actions")
-	UInputAction* SecondaryAction;
-	
-	UPROPERTY(EditAnywhere, Category="Input|Actions")
-	UInputAction* InteractAction;
-	
-	UPROPERTY(EditAnywhere, Category="Input|Actions")
-	UInputAction* SprintAction;
-	
-	UPROPERTY(EditAnywhere, Category="Input|Actions")
-	UInputAction* ReloadAction;
-	
-	UPROPERTY(EditAnywhere, Category="Input|Actions")
-	UInputAction* CancelPreviewAction;
-	
-	UPROPERTY(EditAnywhere, Category="Input|Actions")
-	UInputAction* EquipPrimaryAction;
-	
-	UPROPERTY(EditAnywhere, Category="Input|Actions")
-	UInputAction* EquipUtilityAction;
-	
-	UPROPERTY(EditAnywhere, Category="Input|Actions")
-	UInputAction* EquipThrowableAction;
 
 	void PrimaryActionPressed();
 	void PrimaryActionReleased();
@@ -283,9 +209,6 @@ private:
 	void OnWeaponDrawn();
 	
 	FActiveGameplayEffectHandle ActiveTotemSpeedBuffEffectHandle;
-	
-	UPROPERTY(EditAnywhere, Category = "Player Settings|Buffs")
-	int32 TotemSpeedBonusPerStack = 48;
 	
 	void OnMovementSpeedAttributeChanged(const FOnAttributeChangeData& Data);
 	

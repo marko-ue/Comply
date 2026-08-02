@@ -6,6 +6,7 @@
 #include "DamageAbilityBase.h"
 #include "ThrowableAbilityBase.generated.h"
 
+class UComplyGrenadeData;
 class UComplyAbilitySystemComponent;
 class IWeaponInterface;
 class AThrowablePreviewBase;
@@ -18,23 +19,11 @@ class COMPLY_API UThrowableAbilityBase : public UDamageAbilityBase
 	GENERATED_BODY()
 	
 public:
+	UPROPERTY(EditDefaultsOnly, Category = "Data")
+	TObjectPtr<UComplyGrenadeData> GrenadeData;
+	
 	UFUNCTION()
 	virtual void ConfirmThrow();
-
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon Settings|Types")
-	bool bConfirmOnRelease = true;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon Settings|Types")
-	bool bSpawnPreviewOnActivate = true;
-	
-	UPROPERTY(EditAnywhere, Category = "Weapon Settings")
-	float ThrowSpeed = 1000.f;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
-	TSubclassOf<UGameplayEffect> CostEffectClass;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Actors")
-	TSubclassOf<AActor> ThrowableActorClass;
 
 	virtual void EquipWeaponBasedOnCharges(IWeaponInterface* WeaponOwner, UAbilitySystemComponent* ASC);
 	
@@ -57,19 +46,10 @@ protected:
 	
 	void SafeRemoveThrowingTag() const;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
-	TSubclassOf<UGameplayEffect> NoThrowablesEffectClass;
-	
 	UPROPERTY()
 	TObjectPtr<AThrowablePreviewBase> SpawnedThrowablePreviewActor;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Actors")
-	TSubclassOf<AActor> ThrowablePreviewActorClass;
-	
 private:
-	UPROPERTY(EditDefaultsOnly, Category = "Animations")
-	TObjectPtr<UAnimMontage> ThrowMontage;
-	
 	UPROPERTY()
 	UAbilityTask_PlayMontageAndWait* PrepareThrowMontageTask;
 };

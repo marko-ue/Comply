@@ -11,6 +11,7 @@
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
+#include "AbilitySystem/Data/Player/Grenades/ComplyGrenadeData.h"
 #include "Actors/AbilityActors/ThrowablePreviewBase.h"
 #include "Interface/Player/WeaponInterface.h"
 #include "Kismet/GameplayStatics.h"
@@ -19,9 +20,11 @@ void UThrowableAbilityBase::ActivateAbility(const FGameplayAbilitySpecHandle Han
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	const FGameplayEventData* TriggerEventData)
 {
+	checkf(GrenadeData, TEXT("GrenadeData not set on %s"), *GetName());
+	
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
-	if (bSpawnPreviewOnActivate)
+	if (GrenadeData != nullptr) // If not a grenade throwable
 	{
 		// Hard gate - don't even start if no charges
 		bool bFound = false;
@@ -49,13 +52,14 @@ void UThrowableAbilityBase::SpawnPreview()
 	
 	// Play the prepare section of the montage first
 	PrepareThrowMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-		this, NAME_None, ThrowMontage, 1.f, "Prepare", true);
+		this, NAME_None, GrenadeData->ThrowMontage, 1.f, "Prepare", true);
 	PrepareThrowMontageTask->ReadyForActivation();
 	
 	FGameplayCueParameters CueParams;
 	CueParams.Location = GetAvatarActorFromActorInfo()->GetActorLocation();
 	UGameplayCueManager::ExecuteGameplayCue_NonReplicated(
-		GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::PullGrenadePin, CueParams);
+		GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::PullGrenadePin, CueParams
+	);
 	
 	// Input is confirmed when the primary input is released
 	UAbilityTask_WaitConfirmCancel* WaitConfirm = UAbilityTask_WaitConfirmCancel::WaitConfirmCancel(this);
@@ -69,7 +73,7 @@ void UThrowableAbilityBase::SpawnPreview()
 	);
 	
 	SpawnedThrowablePreviewActor = GetWorld()->SpawnActorDeferred<AThrowablePreviewBase>(
-		ThrowablePreviewActorClass,
+		GrenadeData->PreviewGrenadeActor,
 		SpawnTransform,
 		GetOwningActorFromActorInfo(),
 		InstigatorPawn,
@@ -81,7 +85,7 @@ void UThrowableAbilityBase::SpawnPreview()
 		// Information needed to predict the path correctly
 		SpawnedThrowablePreviewActor->ActorsToIgnore.Add(InstigatorPawn);
 		SpawnedThrowablePreviewActor->OwningPawn = InstigatorPawn;
-		SpawnedThrowablePreviewActor->ThrowSpeed = ThrowSpeed;
+		SpawnedThrowablePreviewActor->ThrowSpeed = GrenadeData->ThrowSpeed;
 	}
 	
 	UGameplayStatics::FinishSpawningActor(SpawnedThrowablePreviewActor, SpawnTransform);
@@ -98,7 +102,7 @@ void UThrowableAbilityBase::ConfirmThrow()
 	
 	// Now play the throw section of the montage
 	UAbilityTask_PlayMontageAndWait* ThrowTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-		this, NAME_None, ThrowMontage, 1.f, "Throw", true);
+		this, NAME_None, GrenadeData->ThrowMontage, 1.f, "Throw", true);
 	ThrowTask->OnCompleted.AddDynamic(this, &UThrowableAbilityBase::OnThrowMontageCompleted);
 	ThrowTask->OnBlendOut.AddDynamic(this, &UThrowableAbilityBase::OnThrowMontageCompleted);
 	ThrowTask->ReadyForActivation();
@@ -106,7 +110,7 @@ void UThrowableAbilityBase::ConfirmThrow()
 
 void UThrowableAbilityBase::ThrowOnServer(FVector LaunchVelocity, FVector SpawnPosition)
 {
-	const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(CostEffectClass, 1.f);
+	const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(GrenadeData->CostEffectClass, 1.f);
 	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 
 	AActor* Avatar = GetAvatarActorFromActorInfo();
@@ -137,7 +141,7 @@ void UThrowableAbilityBase::OnThrowMontageCompleted()
 		FVector TraceStart, TraceEnd, TraceDirection;
 		if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, Avatar, 0.f, TraceStart, TraceEnd, TraceDirection)) return;
 	
-		const FVector LaunchVelocity = TraceDirection * ThrowSpeed;
+		const FVector LaunchVelocity = TraceDirection * GrenadeData->ThrowSpeed;
 		const FVector SpawnPosition = Avatar->GetActorLocation() + FVector(0.f, 0.f, 60.f) + TraceDirection * 40.f;
 
 		// Spawn the grenade through the RPC if not on server and execute the throw cue
@@ -185,7 +189,7 @@ void UThrowableAbilityBase::EquipWeaponBasedOnCharges(IWeaponInterface* WeaponOw
 		if (WeaponOwner)
 		{
 			// GE that applies the NoThrowables tag so grenades can't be equipped when there's no throwables
-			const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(NoThrowablesEffectClass, 1.f);
+			const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(GrenadeData->NoThrowablesEffectClass, 1.f);
 			GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 			
 			WeaponOwner->ClearEquippedWeapon();

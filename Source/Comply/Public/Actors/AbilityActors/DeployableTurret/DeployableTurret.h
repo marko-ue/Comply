@@ -10,14 +10,13 @@
 #include "Actors/TargetableActorsBase.h"
 #include "DeployableTurret.generated.h"
 
+class UDeployableTurretAbilityData;
 class UNiagaraComponent;
-class UNiagaraSystem;
 class UComplyAttributeSet;
 class UArrowComponent;
 class UGameplayEffect;
 class UAbilitySystemComponent;
 class USphereComponent;
-class USoundCue;
 
 UCLASS()
 class COMPLY_API ADeployableTurret : public ATargetableActorsBase
@@ -29,20 +28,11 @@ public:
 	
 	virtual void Tick(float DeltaTime) override;
 	
-	UPROPERTY(EditAnywhere, Category = "Gameplay Effects")
-	TSubclassOf<UGameplayEffect> RechargeTurretChargeClass;
-	
 	UPROPERTY()
-	float Damage = 100.f;
+	TObjectPtr<UDeployableTurretAbilityData> TurretData;
 	
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> SourceASC;
-
-	UPROPERTY()
-	TSubclassOf<UGameplayEffect> DamageEffectClass;
-	
-	UPROPERTY()
-	FGameplayTag DamageTypeTag;
 	
 	virtual void Destroyed() override;
 
@@ -82,14 +72,8 @@ private:
 	
 	FTimerHandle FireTimerHandle;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Effects")
-	TObjectPtr<UNiagaraSystem> PlaceTurretParticles;
-	
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> PlaceTurretNiagaraComponent;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Audio")
-	TObjectPtr<USoundCue> TurretFireSound;
 	
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_TurretFire();

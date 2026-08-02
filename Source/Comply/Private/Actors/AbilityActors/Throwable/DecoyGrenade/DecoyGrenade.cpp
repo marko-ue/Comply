@@ -7,6 +7,7 @@
 #include "AIController.h"
 #include "Comply.h"
 #include "AbilitySystem/ComplyTags.h"
+#include "AbilitySystem/Data/Player/Grenades/DecoyGrenadeData.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Engine/OverlapResult.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -45,12 +46,17 @@ void ADecoyGrenade::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	checkf(GrenadeData, TEXT("GrenadeData not passed into %s"), *GetName());
+	
 	// Movement shouldn't be replicated as clients now have a local projectile for smoothness
 	SetReplicateMovement(false);
 	
+	GrenadeMesh->SetStaticMesh(GrenadeData->GrenadeMesh);
+	GrenadeMesh->SetMaterial(0, GrenadeData->GrenadeMaterial);
+	
 	if (HasAuthority())
 	{
-		GetWorld()->GetTimerManager().SetTimer(ExplosionTimerHandle, this, &ThisClass::Explode, ExplosionDelay, false);
+		GetWorld()->GetTimerManager().SetTimer(ExplosionTimerHandle, this, &ThisClass::Explode, GrenadeData->FuseTime, false);
 	}
 	
 	// Sets the velocity of the grenade throw and triggers OnRep
@@ -72,7 +78,7 @@ void ADecoyGrenade::Explode()
 	if (!HasAuthority()) return;
 
 	TArray<FOverlapResult> Overlaps;
-	const FCollisionShape Sphere = FCollisionShape::MakeSphere(PullRadius);
+	const FCollisionShape Sphere = FCollisionShape::MakeSphere(GrenadeData->PullRadius);
 	GetWorld()->OverlapMultiByChannel(Overlaps, GetActorLocation(), FQuat::Identity, ECC_Pawn, Sphere);
 
 	for (const FOverlapResult& Overlap : Overlaps)
@@ -119,7 +125,7 @@ void ADecoyGrenade::Explode()
 	
 	// The grenade will get destroyed after its lifetime passes, and it will stop pulling enemies at this point
 	GetWorld()->GetTimerManager().SetTimer(ExplosionTimerHandle, FTimerDelegate::CreateLambda([this]()
-	{ Destroy(); }), DecoyGrenadeLifetime, false);
+	{ Destroy(); }), GrenadeData->GrenadeLifetime, false);
 }
 
 void ADecoyGrenade::OnGrenadeLanded(const FHitResult& ImpactResult)
@@ -135,7 +141,7 @@ void ADecoyGrenade::Destroyed()
 		if (AffectedASCs[i]) AffectedASCs[i]->RemoveActiveGameplayEffect(DistractedEffectHandles[i]);
 	}
 	
-	for (int32 i =0; i < AffectedBBs.Num(); i++)
+	for (int32 i = 0; i < AffectedBBs.Num(); i++)
 	{
 		// Clear the value of DistractionLocation so enemies can go back to chasing the player
 		if (AffectedBBs[i]) AffectedBBs[i]->ClearValue("DistractionLocation");

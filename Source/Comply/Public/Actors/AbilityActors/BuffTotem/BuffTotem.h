@@ -4,16 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "ActiveGameplayEffectHandle.h"
-#include "GameplayTagContainer.h"
 #include "GameFramework/Actor.h"
 #include "BuffTotem.generated.h"
 
+class UBuffTotemUtilityData;
 class UNiagaraComponent;
-class UNiagaraSystem;
 class UGameplayEffect;
 class UGameplayAbility;
 class USphereComponent;
-class USoundCue;
 
 UCLASS()
 class COMPLY_API ABuffTotem : public AActor
@@ -25,8 +23,9 @@ public:
 	
 	virtual void Tick(float DeltaTime) override;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
-	TSubclassOf<UGameplayEffect> ApplyTotemBuffEffectClass;
+	UPROPERTY()
+	TObjectPtr<UBuffTotemUtilityData> BuffTotemData;
+
 
 protected:
 	virtual void BeginPlay() override;
@@ -57,20 +56,8 @@ private:
 	// Will be upgradeable
 	int32 BuffCount = 0;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Effects")
-	TObjectPtr<UNiagaraSystem> PlaceTotemImpactParticles;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Effects")
-	TObjectPtr<UNiagaraSystem> TotemParticles;
-	
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> TotemNiagaraComponent;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Audio")
-	TObjectPtr<USoundCue> TotemPlaceSound;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Audio")
-	TObjectPtr<USoundCue> TotemHummingSound;
 	
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> HumAudioComponent;

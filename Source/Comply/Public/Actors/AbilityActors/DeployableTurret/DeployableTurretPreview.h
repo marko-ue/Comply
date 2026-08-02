@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "DeployableTurretPreview.generated.h"
 
+class UDeployableTurretAbilityData;
 class UArrowComponent;
 
 UCLASS()
@@ -16,7 +17,7 @@ class COMPLY_API ADeployableTurretPreview : public AActor
 public:
 	ADeployableTurretPreview();
 	
-	void InitPreviewData(ACharacter* OwnerChar);
+	void InitPreviewData(ACharacter* OwnerChar, const UDeployableTurretAbilityData* InTurretData);
 	
 	virtual void Tick(float DeltaTime) override;
 	
@@ -30,12 +31,14 @@ public:
 	FVector PlacementLocation;
 	FRotator PlacementRotation;
 	
+	// Constructs the static mesh component for the turret mesh. Actual mesh assigned through data asset
 	UPROPERTY(EditAnywhere, Category = "Components")
 	TObjectPtr<UStaticMeshComponent> TurretMesh;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Materials")
+	UPROPERTY()
 	TObjectPtr<UMaterialInterface> ValidMaterial;
-	UPROPERTY(EditDefaultsOnly, Category = "Materials")
+	
+	UPROPERTY()
 	TObjectPtr<UMaterialInterface> InvalidMaterial;
 
 protected:

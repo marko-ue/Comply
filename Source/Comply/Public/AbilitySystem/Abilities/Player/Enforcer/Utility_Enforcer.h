@@ -6,6 +6,7 @@
 #include "AbilitySystem/Abilities/UtilityAbilityBase.h"
 #include "Utility_Enforcer.generated.h"
 
+class UGrapplingHookData;
 class AEnforcerCharacter;
 class UCableComponent;
 class AComplyPlayerCharacter;
@@ -18,23 +19,16 @@ class COMPLY_API UUtility_Enforcer : public UUtilityAbilityBase
 {
 	GENERATED_BODY()
 	
+public:
+	UPROPERTY(EditdefaultsOnly, Category = "Data")
+	TObjectPtr<UGrapplingHookData> GrapplingHookData;
+	
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
-	
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Grappling Hook Settings")
-	float PullDuration = 0.8f;
-	
-	// Curve for the path (hook swing feel)
-	UPROPERTY(EditDefaultsOnly, Category = "Grappling Hook Settings")
-	UCurveVector* PathOffsetCurve = nullptr;
-	
 private:
-	UPROPERTY(EditAnywhere, Category = "Grappling Hook Settings")
-	float TraceLength = 100.f;
-	
-	bool PerformGrappleTrace(FHitResult& OutHitResult, const float GrappleRange = 3000.f) const;
+	bool PerformGrappleTrace(FHitResult& OutHitResult, const float GrappleRange) const;
 	
 	UFUNCTION()
 	void OnPullReachedDestination();

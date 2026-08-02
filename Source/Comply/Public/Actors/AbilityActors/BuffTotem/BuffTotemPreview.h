@@ -15,12 +15,17 @@ public:
 	ABuffTotemPreview();
 
 	virtual void Tick(float DeltaTime) override;
+	virtual void InitPreviewData(ACharacter* OwnerChar, const UComplyUtilityData* InUtilityData = nullptr) override;
 	
 	void UpdatePosition();
-
-	UPROPERTY(EditDefaultsOnly, Category = "Materials")
+	
+	UPROPERTY(EditAnywhere, Category = "Components")
+	TObjectPtr<UStaticMeshComponent> BuffTotemMesh;
+	
+	UPROPERTY()
 	TObjectPtr<UMaterialInterface> ValidMaterial;
-	UPROPERTY(EditDefaultsOnly, Category = "Materials")
+	
+	UPROPERTY()
 	TObjectPtr<UMaterialInterface> InvalidMaterial;
 
 protected:

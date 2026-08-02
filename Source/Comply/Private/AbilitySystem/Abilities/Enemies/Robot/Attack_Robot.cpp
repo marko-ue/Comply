@@ -19,6 +19,11 @@ void UAttack_Robot::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 										const FGameplayEventData* TriggerEventData)
 {
 	if (!CommitAbility(Handle, ActorInfo, ActivationInfo)) return; 
+	
+	const AComplyEnemyCharacter* Enemy = Cast<AComplyEnemyCharacter>(GetAvatarActorFromActorInfo());
+	if (!Enemy) return;
+	checkf(Enemy->EnemyAbilityData, TEXT("EnemyAbilityData not set on %s"), *Enemy->GetName());
+	checkf(Enemy->EnemyAbilityData->EnemyDamageData, TEXT("EnemyDamageData not set on %s"), *Enemy->GetName());
     
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
     
@@ -34,7 +39,9 @@ void UAttack_Robot::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 	if (TargetActor && CanHitTarget(TargetActor))
 	{
-		CauseDamage(TargetActor, Damage.GetValueAtLevel(GetAbilityLevel()));
+		if (!Enemy->EnemyAbilityData || !Enemy->EnemyAbilityData->EnemyDamageData) return;
+		
+		CauseDamage(TargetActor, Enemy->EnemyAbilityData->EnemyDamageData->Damage.GetValueAtLevel(GetAbilityLevel()));
 	}
 }
 

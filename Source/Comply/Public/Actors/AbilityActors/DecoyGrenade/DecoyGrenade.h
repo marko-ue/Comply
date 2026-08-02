@@ -8,6 +8,7 @@
 #include "GameFramework/Actor.h"
 #include "DecoyGrenade.generated.h"
 
+class UDecoyGrenadeData;
 class URotatingMovementComponent;
 class UNiagaraSystem;
 class UBlackboardComponent;
@@ -33,19 +34,10 @@ public:
 	
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> SourceASC;
-
-	UPROPERTY()
-	TSubclassOf<UGameplayEffect> DamageEffectClass;
-
-	UPROPERTY()
-	FGameplayTag DamageTypeTag;
 	
 	UPROPERTY()
-	float PullRadius = 1000.f;
+	TObjectPtr<UDecoyGrenadeData> GrenadeData;
 	
-	UPROPERTY()
-	float DecoyGrenadeLifetime = 20.f;
-		
 	UPROPERTY(ReplicatedUsing=OnRep_LaunchVelocity)
 	FVector LaunchVelocity;
 	
@@ -70,12 +62,6 @@ private:
 	UFUNCTION()
 	void Explode();
 	
-	UPROPERTY(EditAnywhere, Category = "Grenade Settings")
-	float MinDamage = 10.f;
-	
-	UPROPERTY(EditAnywhere, Category = "Grenade Settings")
-	float ExplosionDelay = 2.f;
-	
 	UPROPERTY()
 	TArray<UAbilitySystemComponent*> AffectedASCs;
 	
@@ -89,6 +75,7 @@ private:
 	
 	FTimerHandle DestroyDelayTimerHandle;
 	
+	// Sounds and particles stored as member variables are used in a gameplay cue
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(AllowPrivateAccess), Category = "Audio")
 	TObjectPtr<USoundCue> ExplodeSound;
 	

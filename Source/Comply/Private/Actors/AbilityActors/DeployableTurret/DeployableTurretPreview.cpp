@@ -4,8 +4,8 @@
 #include "Actors/AbilityActors/DeployableTurret/DeployableTurretPreview.h"
 
 #include "AbilitySystem/ComplyAbilitySystemBlueprintLibrary.h"
+#include "AbilitySystem/Data/Player/Abilities/Turret/DeployableTurretAbilityData.h"
 #include "GameFramework/Character.h"
-#include "Kismet/GameplayStatics.h"
 
 
 ADeployableTurretPreview::ADeployableTurretPreview()
@@ -24,9 +24,15 @@ void ADeployableTurretPreview::BeginPlay()
 	
 }
 
-void ADeployableTurretPreview::InitPreviewData(ACharacter* OwnerChar)
+void ADeployableTurretPreview::InitPreviewData(ACharacter* OwnerChar, const UDeployableTurretAbilityData* InTurretData)
 {
+	checkf(InTurretData, TEXT("TurretData not passed into InitPreviewData on %s"), *GetName());
+
 	OwnerCharacter = OwnerChar;
+	
+	TurretMesh->SetStaticMesh(InTurretData->TurretMesh);
+	ValidMaterial = InTurretData->ValidMaterial;
+	InvalidMaterial = InTurretData->InvalidMaterial;
 }
 
 void ADeployableTurretPreview::Tick(float DeltaTime)
@@ -69,17 +75,17 @@ void ADeployableTurretPreview::UpdatePosition()
 			// Stores the last placement hit which the ability spawning this actor will use for the target data callback
 			// which handles enabling replication and spawning the turret at the impact point, to show where a turret is about to be placed
 			LastPlacementHit = Hit;
-			FindComponentByClass<UStaticMeshComponent>()->SetMaterial(0, ValidMaterial);
+			TurretMesh->SetMaterial(0, ValidMaterial);
 		}
 		else
 		{
-			FindComponentByClass<UStaticMeshComponent>()->SetMaterial(0, InvalidMaterial);
+			TurretMesh->SetMaterial(0, InvalidMaterial);
 		}
 	}
 	else
 	{
 		bCanPlace = false;
-		FindComponentByClass<UStaticMeshComponent>()->SetMaterial(0, InvalidMaterial);
+		TurretMesh->SetMaterial(0, InvalidMaterial);
 	}
 	
 	SetActorLocation(NewLocation);

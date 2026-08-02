@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "UtilityPreviewBase.generated.h"
 
+class UComplyUtilityData;
+
 UCLASS()
 class COMPLY_API AUtilityPreviewBase : public AActor
 {
@@ -15,7 +17,7 @@ public:
 	UPROPERTY()
 	ACharacter* OwnerCharacter;
 	
-	void InitPreviewData(ACharacter* OwnerChar);
+	virtual void InitPreviewData(ACharacter* OwnerChar, const UComplyUtilityData* InUtilityData);
 	
 	bool bCanPlace = false;
 };

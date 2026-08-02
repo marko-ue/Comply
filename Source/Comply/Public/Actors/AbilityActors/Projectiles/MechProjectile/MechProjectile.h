@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "MechProjectile.generated.h"
 
+class UMechProjectileData;
 class UAbilitySystemComponent;
 class AMechProjectileAreaEffect;
 class UProjectileMovementComponent;
@@ -23,6 +24,9 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual void Tick(float DeltaTime) override;
+	
+	UPROPERTY()
+	TObjectPtr<UMechProjectileData> ProjectileData;
 	
 	UPROPERTY()
 	TObjectPtr<AActor> TargetActor;
@@ -45,9 +49,6 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = "Components")
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovementComp;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Components")
-	TSubclassOf<AMechProjectileAreaEffect> AreaEffectClass;
 	
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,

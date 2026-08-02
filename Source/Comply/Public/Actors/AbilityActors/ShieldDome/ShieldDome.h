@@ -6,13 +6,12 @@
 #include "GameFramework/Actor.h"
 #include "ShieldDome.generated.h"
 
+class UShieldUtilityData;
 class UNiagaraComponent;
-class UNiagaraSystem;
 class UAbilitySystemComponent;
 class UGameplayAbility;
 class USphereComponent;
 class UNavModifierComponent;
-class USoundCue;
 
 UCLASS()
 class COMPLY_API AShieldDome : public AActor
@@ -22,8 +21,8 @@ class COMPLY_API AShieldDome : public AActor
 public:
 	AShieldDome();
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
-	TSubclassOf<UGameplayAbility> ApplyShieldedEffectAbilityClass;
+	UPROPERTY()
+	TObjectPtr<UShieldUtilityData> ShieldData;
 	
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> SourceASC;
@@ -51,14 +50,8 @@ private:
 	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Effects")
-	TObjectPtr<UNiagaraSystem> ShieldParticles;
-	
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> ShieldHumNiagaraComponent;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Audio")
-	TObjectPtr<USoundCue> ShieldHummingSound;
 	
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> HumAudioComponent;

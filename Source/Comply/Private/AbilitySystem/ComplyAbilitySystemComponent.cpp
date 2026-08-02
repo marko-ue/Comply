@@ -9,6 +9,12 @@
 #include "AbilitySystem/Abilities/Player/Enforcer/Throwable_Enforcer.h"
 #include "AbilitySystem/Abilities/Player/Ranger/Throwable_Ranger.h"
 #include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
+#include "AbilitySystem/Data/Player/Abilities/Turret/DeployableTurretAbilityData.h"
+#include "AbilitySystem/Data/Player/Abilities/Utilities/BuffTotemUtilityData.h"
+#include "AbilitySystem/Data/Player/Abilities/Utilities/ComplyUtilityData.h"
+#include "AbilitySystem/Data/Player/Grenades/ComplyGrenadeData.h"
+#include "AbilitySystem/Data/Player/Grenades/DecoyGrenadeData.h"
+#include "AbilitySystem/Data/Player/Grenades/PlasmaGrenadeData.h"
 #include "Actors/AbilityActors/BuffTotem/BuffTotem.h"
 #include "Actors/AbilityActors/DecoyGrenade/DecoyGrenade.h"
 #include "Actors/AbilityActors/DeployableTurret/DeployableTurret.h"
@@ -39,15 +45,18 @@ void UComplyAbilitySystemComponent::Server_ThrowPlasmaGrenade_Implementation(FGa
 	
 	if (!Spec || !Ability) return;
 	
+	checkf(Ability->GrenadeData, TEXT("GrenadeData not set on %s"), *GetName());
+	
 	bool bFound = false;
-	float GrenadeCurrentCharges = GetGameplayAttributeValue(
-		UWeaponAttributeSet::GetPlasmaGrenadeCurrentChargesAttribute(), bFound);
+	const float GrenadeCurrentCharges = GetGameplayAttributeValue(
+		UWeaponAttributeSet::GetPlasmaGrenadeCurrentChargesAttribute(), bFound
+	);
     
 	// Don't spawn a grenade if there are no charges
 	if (GrenadeCurrentCharges <= 0.f) return;
 
 	// Cost is applied in the RPC, so the next RPC will see the updated data
-	FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(Ability->CostEffectClass, 1.f, MakeEffectContext());
+	FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(Ability->GrenadeData->CostEffectClass, 1.f, MakeEffectContext());
 	ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	
 	AActor* Avatar = GetAvatarActor();
@@ -63,7 +72,7 @@ void UComplyAbilitySystemComponent::Server_ThrowPlasmaGrenade_Implementation(FGa
 	const FTransform SpawnTransform(SpawnRotation, SpawnLocation);
 	
 	APlasmaGrenade* Grenade = GetWorld()->SpawnActorDeferred<APlasmaGrenade>(
-		Ability->ThrowableActorClass,
+		Ability->GrenadeData->GrenadeActorClass,
 		SpawnTransform, GetOwnerActor(),
 		InstigatorPawn,
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
@@ -71,14 +80,11 @@ void UComplyAbilitySystemComponent::Server_ThrowPlasmaGrenade_Implementation(FGa
 	
 	if (Grenade)
 	{
-		Grenade->ExplosionRadius = Ability->ExplosionRadius;
-		Grenade->MaxDamage = Ability->Damage.GetValueAtLevel(Ability->GetAbilityLevel());
+		Grenade->GrenadeData = Cast<UPlasmaGrenadeData>(Ability->GrenadeData);
 		Grenade->SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActor());
-		Grenade->DamageEffectClass = Ability->DamageEffectClass;
-		Grenade->DamageTypeTag = Ability->DamageType;
 		
 		// Clamp to the throw speed to prevent cheating by the client passing in higher values
-		FVector SafeLaunchVelocity = InLaunchVelocity.GetClampedToMaxSize(Ability->ThrowSpeed);
+		const FVector SafeLaunchVelocity = InLaunchVelocity.GetClampedToMaxSize(Ability->GrenadeData->ThrowSpeed);
 		Grenade->LaunchVelocity = SafeLaunchVelocity;
 
 		UGameplayStatics::FinishSpawningActor(Grenade, SpawnTransform);
@@ -93,15 +99,18 @@ void UComplyAbilitySystemComponent::Server_ThrowDecoyGrenade_Implementation(FGam
 	
 	if (!Spec || !Ability) return;
 	
+	checkf(Ability->GrenadeData, TEXT("GrenadeData not set on %s"), *GetName());
+	
 	bool bFound = false;
-	float GrenadeCurrentCharges = GetGameplayAttributeValue(
-		UWeaponAttributeSet::GetDecoyGrenadeCurrentChargesAttribute(), bFound);
+	const float GrenadeCurrentCharges = GetGameplayAttributeValue(
+		UWeaponAttributeSet::GetDecoyGrenadeCurrentChargesAttribute(), bFound
+	);
     
 	// Don't spawn a grenade if there are no charges
 	if (GrenadeCurrentCharges <= 0.f) return;
 
 	// Cost is applied in the RPC, so the next RPC will see the updated data
-	FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(Ability->CostEffectClass, 1.f, MakeEffectContext());
+	FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(Ability->GrenadeData->CostEffectClass, 1.f, MakeEffectContext());
 	ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	
 	AActor* Avatar = GetAvatarActor();
@@ -117,7 +126,7 @@ void UComplyAbilitySystemComponent::Server_ThrowDecoyGrenade_Implementation(FGam
 	const FTransform SpawnTransform(SpawnRotation, SpawnLocation);
 	
 	ADecoyGrenade* DecoyGrenade = GetWorld()->SpawnActorDeferred<ADecoyGrenade>(
-		Ability->ThrowableActorClass,
+		Ability->GrenadeData->GrenadeActorClass,
 		SpawnTransform, GetOwnerActor(),
 		InstigatorPawn,
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
@@ -125,14 +134,11 @@ void UComplyAbilitySystemComponent::Server_ThrowDecoyGrenade_Implementation(FGam
 	
 	if (DecoyGrenade)
 	{
-		DecoyGrenade->PullRadius = Ability->PullRadius;
-		DecoyGrenade->DecoyGrenadeLifetime = Ability->DecoyGrenadeLifetime;
+		DecoyGrenade->GrenadeData = Cast<UDecoyGrenadeData>(Ability->GrenadeData);
 		DecoyGrenade->SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActor());
-		DecoyGrenade->DamageEffectClass = Ability->DamageEffectClass;
-		DecoyGrenade->DamageTypeTag = Ability->DamageType;
 		
 		// Clamp to the throw speed to prevent cheating by the client passing in higher values
-		FVector SafeLaunchVelocity = InLaunchVelocity.GetClampedToMaxSize(Ability->ThrowSpeed);
+		const FVector SafeLaunchVelocity = InLaunchVelocity.GetClampedToMaxSize(Ability->GrenadeData->ThrowSpeed);
 		DecoyGrenade->LaunchVelocity = SafeLaunchVelocity;
 
 		UGameplayStatics::FinishSpawningActor(DecoyGrenade, SpawnTransform);
@@ -146,6 +152,8 @@ void UComplyAbilitySystemComponent::Server_PlaceTurret_Implementation(FGameplayA
 	
 	if (!Spec || !Ability) return;
 	
+	checkf(Ability->TurretData, TEXT("TurretData not set on %s"), *GetName());
+	
 	// Commit cost and cooldown server-side before doing anything else
 	// It must be committed here because the whole call stack leading up to placing the turret runs only locally
 	if (!Ability->CommitAbility(AbilityHandle, Ability->GetCurrentActorInfo(), Ability->GetCurrentActivationInfo()))
@@ -155,10 +163,10 @@ void UComplyAbilitySystemComponent::Server_PlaceTurret_Implementation(FGameplayA
 	
 	APawn* InstigatorPawn = Cast<APawn>(GetAvatarActor());
 
-	FTransform SpawnTransform(SpawnRotation, SpawnLocation);
+	const FTransform SpawnTransform(SpawnRotation, SpawnLocation);
 
 	ADeployableTurret* Turret = GetWorld()->SpawnActorDeferred<ADeployableTurret>(
-		Ability->TurretActorClass,
+		Ability->TurretData->TurretActorClass,
 		SpawnTransform, GetOwnerActor(),
 		InstigatorPawn,
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
@@ -166,11 +174,9 @@ void UComplyAbilitySystemComponent::Server_PlaceTurret_Implementation(FGameplayA
 	
 	if (Turret)
 	{
-		Turret->Damage = Ability->Damage.GetValueAtLevel(Ability->GetAbilityLevel());
-		Turret->SetLifeSpan(Ability->TurretLifetime);
+		Turret->TurretData = Ability->TurretData;
+		Turret->SetLifeSpan(Ability->TurretData->TurretLifetime);
 		Turret->SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActor());
-		Turret->DamageEffectClass = Ability->DamageEffectClass;
-		Turret->DamageTypeTag = Ability->DamageType;
 
 		UGameplayStatics::FinishSpawningActor(Turret, SpawnTransform);
 	}
@@ -184,6 +190,8 @@ void UComplyAbilitySystemComponent::Server_PlaceBuffTotem_Implementation(FGamepl
 	
 	if (!Spec || !Ability) return;
 	
+	checkf(Ability->UtilityData, TEXT("UtilityData not set on %s"), *GetName());
+	
 	// Commit cost and cooldown server-side before doing anything else
 	// It must be committed here because the whole call stack leading up to placing the turret runs only locally
 	if (!Ability->CommitAbility(AbilityHandle, Ability->GetCurrentActorInfo(), Ability->GetCurrentActivationInfo()))
@@ -195,15 +203,19 @@ void UComplyAbilitySystemComponent::Server_PlaceBuffTotem_Implementation(FGamepl
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Instigator = Cast<APawn>(InstigatorPawn);
 
-	ABuffTotem* BuffTotem = GetWorld()->SpawnActor<ABuffTotem>(
-		Ability->UtilityActorClass,
-		SpawnLocation,
-		FRotator::ZeroRotator,
-		SpawnParams
+	ABuffTotem* BuffTotem = GetWorld()->SpawnActorDeferred<ABuffTotem>(
+		Ability->UtilityData->UtilityActorClass,
+		FTransform(FRotator::ZeroRotator, SpawnLocation),
+		GetOwnerActor(),
+		InstigatorPawn,
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 	);
-	
+
 	if (BuffTotem)
 	{
-		BuffTotem->SetLifeSpan(Ability->UtilityLifetime);
+		BuffTotem->BuffTotemData = Cast<UBuffTotemUtilityData>(Ability->UtilityData);
+		BuffTotem->SetLifeSpan(Ability->UtilityData->UtilityLifetime);
+
+		UGameplayStatics::FinishSpawningActor(BuffTotem, FTransform(FRotator::ZeroRotator, SpawnLocation));
 	}
 }

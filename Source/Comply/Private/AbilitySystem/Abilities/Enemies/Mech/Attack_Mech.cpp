@@ -22,6 +22,7 @@ void UAttack_Mech::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	if (!CommitAbility(Handle, ActorInfo, ActivationInfo)) return; 
+	checkf(ProjectileData, TEXT("ProjectileData not set on %s"), *GetName());
 	
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
@@ -35,8 +36,8 @@ void UAttack_Mech::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	AttackMontageTask->OnCompleted.AddDynamic(this, &ThisClass::OnAttackAnimationFinished);
 	AttackMontageTask->ReadyForActivation();
 	
-	FVector SpawnLocation = GetAvatarActorFromActorInfo()->GetActorLocation();
-	FRotator SpawnRotation = GetAvatarActorFromActorInfo()->GetActorRotation();
+	const FVector SpawnLocation = GetAvatarActorFromActorInfo()->GetActorLocation();
+	const FRotator SpawnRotation = GetAvatarActorFromActorInfo()->GetActorRotation();
 	
 	const FTransform SpawnTransform(SpawnRotation, SpawnLocation);
 	
@@ -51,6 +52,7 @@ void UAttack_Mech::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 		MechProjectile->SourceASC = GetAbilitySystemComponentFromActorInfo();
 		MechProjectile->OwnerActor = GetOwningActorFromActorInfo();
 		MechProjectile->InstigatorPawn = InstigatorPawn;
+		MechProjectile->ProjectileData = ProjectileData;
 
 		UGameplayStatics::FinishSpawningActor(MechProjectile, SpawnTransform);
 	}

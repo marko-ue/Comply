@@ -6,6 +6,7 @@
 #include "AbilitySystem/Abilities/Enemies/EnemyAbilityBase.h"
 #include "Attack_Mech.generated.h"
 
+class UMechProjectileData;
 class AMechProjectile;
 /**
  * 
@@ -17,6 +18,9 @@ class COMPLY_API UAttack_Mech : public UEnemyAbilityBase
 	
 public:
 	UAttack_Mech();
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Data")
+	TObjectPtr<UMechProjectileData> ProjectileData;
 	
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;

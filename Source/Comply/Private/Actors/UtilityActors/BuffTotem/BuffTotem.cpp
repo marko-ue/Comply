@@ -8,6 +8,7 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/ComplyTags.h"
+#include "AbilitySystem/Data/Player/Abilities/Utilities/BuffTotemUtilityData.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
 #include "Interface/Player/PlayerInterface.h"
@@ -21,7 +22,7 @@ ABuffTotem::ABuffTotem()
 	
 	bReplicates = true;
 	
-	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(FName("BeaconMesh"));
+	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(FName("BuffTotemMesh"));
 	SetRootComponent(StaticMeshComp);
 	
 	SphereComp = CreateDefaultSubobject<USphereComponent>(FName("Sphere"));
@@ -35,11 +36,16 @@ void ABuffTotem::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), PlaceTotemImpactParticles, GetActorLocation());
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), TotemPlaceSound, GetActorLocation());
+	checkf(BuffTotemData, TEXT("BuffTotemData not passed into %s"), *GetName());
 	
-	TotemNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, TotemParticles, GetActorLocation());
-	HumAudioComponent = UGameplayStatics::SpawnSoundAttached(TotemHummingSound, GetRootComponent());
+	StaticMeshComp->SetStaticMesh(BuffTotemData->UtilityMesh);
+	StaticMeshComp->SetMaterial(0, BuffTotemData->UtilityMaterial);
+	
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), BuffTotemData->PlaceTotemImpactParticles, GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), BuffTotemData->TotemPlaceSound, GetActorLocation());
+	
+	TotemNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, BuffTotemData->TotemParticles, GetActorLocation());
+	HumAudioComponent = UGameplayStatics::SpawnSoundAttached(BuffTotemData->TotemHummingSound, GetRootComponent());
 }
 
 void ABuffTotem::Tick(float DeltaTime)
@@ -61,7 +67,7 @@ void ABuffTotem::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor
 			OverlappingActors.Add(OtherActor);
 			
 			const FGameplayEffectContextHandle ContextHandle = ASC->MakeEffectContext();
-			const FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(ApplyTotemBuffEffectClass, 1.f, ContextHandle);
+			const FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(BuffTotemData->ApplyTotemBuffEffectClass, 1.f, ContextHandle);
 			ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 			
 			FGameplayCueParameters CueParams;

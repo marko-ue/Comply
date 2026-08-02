@@ -114,20 +114,13 @@ void ADeployableTurret::Fire(AActor* TargetActor)
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, TurretData->DamageTypeTag, TurretData->Damage);
 	SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
 	
-	FGameplayCueParameters CueParams;
-	CueParams.Location = TargetActor->GetActorLocation();
-	SourceASC->ExecuteGameplayCue(ComplyTags::GameplayCues::TurretImpact, CueParams);
-
-	// Multicast for the turret fire sound
-	Multicast_TurretFire();
-}
-
-void ADeployableTurret::Multicast_TurretFire_Implementation()
-{
-	if (TurretData->TurretFireSound)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, TurretData->TurretFireSound, GetActorLocation());
-	}
+	FGameplayCueParameters FireCueParams;
+	FireCueParams.Location = TurretMesh->GetSocketLocation(FName("MuzzleFlash"));
+	SourceASC->ExecuteGameplayCue(ComplyTags::GameplayCues::TurretFire, FireCueParams);
+	
+	FGameplayCueParameters ImpactCueParams;
+	ImpactCueParams.Location = TargetActor->GetActorLocation();
+	SourceASC->ExecuteGameplayCue(ComplyTags::GameplayCues::TurretImpact, ImpactCueParams);
 }
 
 // When the actor is destroyed, the player will be able to spawn another turret after 30 seconds

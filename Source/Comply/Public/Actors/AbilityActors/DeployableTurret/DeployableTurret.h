@@ -76,7 +76,4 @@ private:
 	
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> PlaceTurretNiagaraComponent;
-	
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_TurretFire();
 };

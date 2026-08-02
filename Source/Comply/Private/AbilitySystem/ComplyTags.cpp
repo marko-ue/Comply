@@ -121,6 +121,7 @@ namespace ComplyTags
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(GrapplingHookHooking, "GameplayCue.GrapplingHook.Hooking", "Gameplay cue tag for hooking")
 		
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(TurretTyping, "GameplayCue.Turret.Typing", "Gameplay cue tag for the typing before placing a turret")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(TurretFire, "GameplayCue.Turret.Fire", "Gameplay cue tag for turret fire")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(TurretImpact, "GameplayCue.Turret.Impact", "Gameplay cue tag for turret shot impact")
 		
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(TargetableActorTakeDamage, "GameplayCue.TargetableActor.TakeDamage", "Gameplay cue tag for when targetable actors take damage")

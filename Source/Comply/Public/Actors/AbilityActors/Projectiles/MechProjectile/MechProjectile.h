@@ -25,7 +25,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 	
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TObjectPtr<UMechProjectileData> ProjectileData;
 	
 	UPROPERTY()

@@ -35,7 +35,7 @@ public:
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> SourceASC;
 	
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TObjectPtr<UDecoyGrenadeData> GrenadeData;
 	
 	UPROPERTY(ReplicatedUsing=OnRep_LaunchVelocity)

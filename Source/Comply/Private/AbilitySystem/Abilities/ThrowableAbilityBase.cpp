@@ -20,8 +20,6 @@ void UThrowableAbilityBase::ActivateAbility(const FGameplayAbilitySpecHandle Han
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	const FGameplayEventData* TriggerEventData)
 {
-	checkf(GrenadeData, TEXT("GrenadeData not set on %s"), *GetName());
-	
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
 	if (GrenadeData != nullptr) // If not a grenade throwable

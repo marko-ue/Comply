@@ -26,9 +26,11 @@ class COMPLY_API ADeployableTurret : public ATargetableActorsBase
 public:
 	ADeployableTurret();
 	
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	
 	virtual void Tick(float DeltaTime) override;
 	
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TObjectPtr<UDeployableTurretAbilityData> TurretData;
 	
 	UPROPERTY()

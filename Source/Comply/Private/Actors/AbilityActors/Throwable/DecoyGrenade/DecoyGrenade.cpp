@@ -40,6 +40,7 @@ void ADecoyGrenade::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
 	DOREPLIFETIME(ThisClass, LaunchVelocity);
+	DOREPLIFETIME(ThisClass, GrenadeData);
 }
 
 void ADecoyGrenade::BeginPlay()

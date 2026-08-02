@@ -23,9 +23,10 @@ public:
 	
 	virtual void Tick(float DeltaTime) override;
 	
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TObjectPtr<UBuffTotemUtilityData> BuffTotemData;
-
+	
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 protected:
 	virtual void BeginPlay() override;

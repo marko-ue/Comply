@@ -22,10 +22,12 @@ class COMPLY_API AMechProjectileAreaEffect : public AActor
 
 public:
 	AMechProjectileAreaEffect();
+	
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual void Tick(float DeltaTime) override;
 	
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TObjectPtr<UMechProjectileData> ProjectileData;
 	
 	UPROPERTY() 

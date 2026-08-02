@@ -17,6 +17,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Interface/Player/PlayerInterface.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 #include "Sound/SoundCue.h"
 
 
@@ -32,6 +33,13 @@ AMechProjectileAreaEffect::AMechProjectileAreaEffect()
 	
 	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnComponentBeginOverlap);
 	SphereComp->OnComponentEndOverlap.AddDynamic(this, &ThisClass::OnComponentEndOverlap);
+}
+
+void AMechProjectileAreaEffect::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(ThisClass, ProjectileData);
 }
 
 void AMechProjectileAreaEffect::BeginPlay()

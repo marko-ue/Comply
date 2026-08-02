@@ -14,8 +14,6 @@ void UUtilityAbilityBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	const FGameplayEventData* TriggerEventData)
 {
-	checkf(UtilityData, TEXT("UtilityData not set on %s"), *GetName());
-	
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
 	if (UtilityData != nullptr) // If not non actor-spawning utility (grappling hook)

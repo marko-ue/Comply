@@ -13,6 +13,7 @@
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Net/UnrealNetwork.h"
 #include "Sound/SoundCue.h"
 
 
@@ -31,6 +32,13 @@ ADeployableTurret::ADeployableTurret()
 
 	ArrowComp = CreateDefaultSubobject<UArrowComponent>("ArrowComponent");
 	ArrowComp->SetupAttachment(RootComponent);
+}
+
+void ADeployableTurret::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(ADeployableTurret, TurretData);
 }
 
 void ADeployableTurret::BeginPlay()
@@ -97,7 +105,7 @@ void ADeployableTurret::TryFire()
 
 void ADeployableTurret::Fire(AActor* TargetActor)
 {
-	if (!SourceASC) return;
+	if (!SourceASC || !TurretData->DamageEffectClass) return;
 
 	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
 	if (!TargetASC) return;

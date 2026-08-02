@@ -13,6 +13,7 @@
 #include "Components/SphereComponent.h"
 #include "Interface/Player/PlayerInterface.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 #include "Sound/SoundCue.h"
 
 
@@ -30,6 +31,13 @@ ABuffTotem::ABuffTotem()
 	
 	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnOverlapBegin);
 	SphereComp->OnComponentEndOverlap.AddDynamic(this, &ThisClass::OnOverlapEnd);
+}
+
+void ABuffTotem::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(ABuffTotem, BuffTotemData);
 }
 
 void ABuffTotem::BeginPlay()

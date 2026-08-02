@@ -64,4 +64,7 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
 	TSubclassOf<UGameplayEffect> RechargeTurretChargeClass;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	TObjectPtr<UNiagaraSystem> BulletTracerEffect;
 };

@@ -28,6 +28,7 @@ void AMechProjectile::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
 	DOREPLIFETIME(ThisClass, InitialVelocity);
+	DOREPLIFETIME(ThisClass, ProjectileData);
 }
 
 void AMechProjectile::BeginPlay()

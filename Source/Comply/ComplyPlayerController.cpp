@@ -12,6 +12,7 @@
 #include "Framework/GameMode/ComplyGameModeBase.h"
 #include "Framework/GameState/ComplyGameStateBase.h"
 #include "Framework/PlayerState/ComplyPlayerState.h"
+#include "UI/Widgets/ComplyHUDWidget.h"
 #include "Widgets/Input/SVirtualJoystick.h"
 
 void AComplyPlayerController::BeginPlay()
@@ -45,11 +46,23 @@ void AComplyPlayerController::BeginPlay()
 void AComplyPlayerController::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
-	
-	if (AComplyPlayerState* PS = GetPlayerState<AComplyPlayerState>())
+
+	if (const AComplyPlayerState* PS = GetPlayerState<AComplyPlayerState>())
 	{
 		SelectedCharacterClass = PS->LastSelectedCharacterClass ? PS->LastSelectedCharacterClass : DefaultCharacterClass;
 	}
+	
+	if (HUDWidget) return; // Already initialized, skip
+
+	const AComplyPlayerState* PS = GetPlayerState<AComplyPlayerState>();
+	if (!PS) return;
+
+	UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
+	if (!ASC) return;
+
+	HUDWidget = CreateWidget<UComplyHUDWidget>(this, HUDWidgetClass);
+	HUDWidget->AddToViewport();
+	HUDWidget->InitializeHUD(ASC);
 }
 
 void AComplyPlayerController::SetupInputComponent()
@@ -79,11 +92,8 @@ void AComplyPlayerController::SetupInputComponent()
 	}
 }
 
-// Ensures mapping contexts are added on the client whenever a pawn is possessed
-void AComplyPlayerController::AcknowledgePossession(class APawn* P)
+void AComplyPlayerController::AddMappingContexts()
 {
-	Super::AcknowledgePossession(P);
-
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
 		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
@@ -99,6 +109,33 @@ void AComplyPlayerController::AcknowledgePossession(class APawn* P)
 				Subsystem->AddMappingContext(CurrentContext, 0);
 			}
 		}
+	}
+}
+
+// Ensures mapping contexts are added on the client whenever a pawn is possessed
+void AComplyPlayerController::AcknowledgePossession(class APawn* P)
+{
+	Super::AcknowledgePossession(P);
+
+	AddMappingContexts();
+
+	const AComplyPlayerCharacter* PlayerCharacter = Cast<AComplyPlayerCharacter>(P);
+	if (!PlayerCharacter) return;
+
+	const AComplyPlayerState* PS = PlayerCharacter->GetPlayerState<AComplyPlayerState>();
+	if (!PS) return;
+
+	if (!HUDWidget)
+	{
+		HUDWidget = CreateWidget<UComplyHUDWidget>(
+			this, HUDWidgetClass
+		);
+		HUDWidget->AddToViewport();
+	}
+
+	if (PS->GetAbilitySystemComponent())
+	{
+		HUDWidget->InitializeHUD(PS->GetAbilitySystemComponent());
 	}
 }
 
@@ -176,7 +213,7 @@ void AComplyPlayerController::Server_SelectCharacter_Implementation(TSubclassOf<
 			Possess(NewCharacter);
 		}
 		
-		if (AComplyGameModeBase* GM = GetWorld()->GetAuthGameMode<AComplyGameModeBase>())
+		if (const AComplyGameModeBase* GM = GetWorld()->GetAuthGameMode<AComplyGameModeBase>())
 		{
 			if (AComplyGameStateBase* GS = GetWorld()->GetGameState<AComplyGameStateBase>())
 			{

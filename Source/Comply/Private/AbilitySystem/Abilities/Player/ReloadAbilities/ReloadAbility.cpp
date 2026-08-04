@@ -15,8 +15,6 @@ void UReloadAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                      const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
                                      const FGameplayEventData* TriggerEventData)
 {
-	checkf(ActiveWeapon->WeaponData, TEXT("WeaponData not set on %s"), *GetName());
-	
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
 	HandleReload();
@@ -101,7 +99,7 @@ void UReloadAbility::HandleReload()
 
 void UReloadAbility::OnReloadCompleted()
 {
-	if (ActiveWeapon)
+	if (ActiveWeapon && IsLocallyControlled())
 	{
 		bool bFound = false;
 		const float CurrentAmmo = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(ActiveWeapon->GetCurrentAmmoAttribute(), bFound);

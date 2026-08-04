@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "ComplyPlayerController.generated.h"
 
+class UComplyHUDWidget;
 class AComplyPlayerCharacter;
 class UInputMappingContext;
 class UUserWidget;
@@ -50,7 +51,6 @@ public:
 
 	
 protected:
-
 	/** Input Mapping Contexts */
 	UPROPERTY(EditAnywhere, Category ="Input|Input Mappings")
 	TArray<UInputMappingContext*> DefaultMappingContexts;
@@ -74,4 +74,12 @@ protected:
 	/** Input mapping context setup */
 	virtual void SetupInputComponent() override;
 
+private:
+	void AddMappingContexts();
+	
+	UPROPERTY()
+	TObjectPtr<UComplyHUDWidget> HUDWidget = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UComplyHUDWidget> HUDWidgetClass;
 };

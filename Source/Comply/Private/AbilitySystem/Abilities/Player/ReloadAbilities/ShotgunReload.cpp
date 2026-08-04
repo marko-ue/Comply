@@ -15,8 +15,6 @@ void UShotgunReload::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                      const FGameplayAbilityActivationInfo ActivationInfo,
                                      const FGameplayEventData* TriggerEventData)
 {
-    checkf(ActiveWeapon->WeaponData, TEXT("WeaponData not set on %s"), *GetName());
-    
     Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
     
     if (AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo()))

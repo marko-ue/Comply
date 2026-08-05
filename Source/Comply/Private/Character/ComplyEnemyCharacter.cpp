@@ -7,8 +7,11 @@
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
-#include "AbilitySystem/Data/Enemy/Stats/ComplyEnemyCharacterStatData.h"
+#include "AbilitySystem/Data/Enemy/Stats/ComplyEnemyData.h"
+#include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "UI/Widgets/ComplyEnemyHealthBarWidget.h"
 
 
 AComplyEnemyCharacter::AComplyEnemyCharacter()
@@ -23,11 +26,36 @@ AComplyEnemyCharacter::AComplyEnemyCharacter()
 	GetCharacterMovement()->bUseRVOAvoidance = true;
 	GetCharacterMovement()->AvoidanceWeight = 0.05f;
 	GetCharacterMovement()->AvoidanceConsiderationRadius = 500.f;
+	
+	HealthWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthWidgetComponent"));
+	HealthWidgetComponent->SetupAttachment(RootComponent);
+	HealthWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
+	HealthWidgetComponent->SetDrawAtDesiredSize(false);
+	HealthWidgetComponent->SetDrawSize(FVector2D(200.f, 20.f));
+}
+
+void AComplyEnemyCharacter::OnRep_IsDead()
+{
+	Super::OnRep_IsDead(); // Runs ragdoll code from base class
+    
+	if (HealthWidgetComponent)
+	{
+		HealthWidgetComponent->SetVisibility(false);
+	}
 }
 
 UAbilitySystemComponent* AComplyEnemyCharacter::GetAbilitySystemComponent() const
 {
 	return ASC;
+}
+
+void AComplyEnemyCharacter::InitializeHealthWidgetComponent() const
+{
+	if (EnemyData)
+	{
+		HealthWidgetComponent->SetWidgetClass(EnemyData->EnemyHealthBarWidgetClass);
+		HealthWidgetComponent->InitWidget();
+	}
 }
 
 // For enemies, ASC ability actor info values can just be initialized on BeginPlay
@@ -39,22 +67,52 @@ void AComplyEnemyCharacter::BeginPlay()
 	if (!IsValid(GetAbilitySystemComponent())) return;
 	GetAbilitySystemComponent()->InitAbilityActorInfo(this, this);
 	
-	if (!HasAuthority()) return;
+	if (HasAuthority())
+	{
+		InitializeAttributes();
+		GiveStartupAbilities();
+	}
 	
-	InitializeAttributes();
+	InitializeHealthWidgetComponent();
 
-	GiveStartupAbilities();
+	if (UComplyEnemyHealthBarWidget* Widget = Cast<UComplyEnemyHealthBarWidget>(HealthWidgetComponent->GetWidget()))
+	{
+		Widget->InitializeHealthBar(GetAbilitySystemComponent());
+	}
 }
+
 
 void AComplyEnemyCharacter::InitializeAttributes() const
 {
-	if (!EnemyStatData) return;
-
-	checkf(EnemyStatData, TEXT("EnemyStatData not set on %s"), *GetName());
+	if (!EnemyData) return;
 
 	const FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
-	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(EnemyStatData->InitializeAttributesEffect, 1.f, ContextHandle);
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, ComplyTags::SetByCaller::Stats::SBC_MaxHealth, EnemyStatData->MaxHealth);
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, ComplyTags::SetByCaller::Stats::SBC_MaxArmorPenetration, EnemyStatData->ArmorPenetration);
+	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(EnemyData->InitializeAttributesEffect, 1.f, ContextHandle);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, ComplyTags::SetByCaller::Stats::SBC_MaxHealth, EnemyData->MaxHealth);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, ComplyTags::SetByCaller::Stats::SBC_MaxArmorPenetration, EnemyData->ArmorPenetration);
 	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 }
+
+void AComplyEnemyCharacter::RotateHealthWidgetToPlayer()
+{
+	if (const APlayerController* PC = GEngine->GetFirstLocalPlayerController(GetWorld()))
+	{
+		FVector CameraLocation;
+		FRotator CameraRotation;
+		PC->GetPlayerViewPoint(CameraLocation, CameraRotation);
+
+		const FRotator LookAt = UKismetMathLibrary::FindLookAtRotation(
+			HealthWidgetComponent->GetComponentLocation(),
+			CameraLocation
+		);
+		HealthWidgetComponent->SetWorldRotation(LookAt);
+	}
+}
+
+void AComplyEnemyCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	
+	RotateHealthWidgetToPlayer();
+}
+

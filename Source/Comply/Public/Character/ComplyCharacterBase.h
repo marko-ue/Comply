@@ -67,7 +67,7 @@ protected:
 	bool bIsDead = false;
 	
 	UFUNCTION()
-	void OnRep_IsDead();
+	virtual void OnRep_IsDead();
 
 public:	
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")

@@ -203,7 +203,6 @@ bool URangedWeaponAbilityBase::Fire()
 	ReloadTag.AddTag(ComplyTags::ComplyAbilities::Reload);
 	GetAbilitySystemComponentFromActorInfo()->CancelAbilities(&ReloadTag);
 	
-	// Find the active ranged weapon to get its current ammo
 	if (AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo()))
 	{
 		ActiveWeapon = Character->GetEquippedPrimaryWeapon();
@@ -218,7 +217,14 @@ bool URangedWeaponAbilityBase::Fire()
 	
 	bool bFound = false;
 	const float CurrentAmmo = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(ActiveWeapon->GetCurrentAmmoAttribute(), bFound);
-	if (CurrentAmmo <= 0.f)
+	if (CurrentAmmo > 0.f)
+	{
+		if (AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo()))
+		{
+			Character->ApplyFiringFeedback(WeaponData);
+		}
+	}
+	else if (CurrentAmmo <= 0.f)
 	{
 		FGameplayCueParameters CueParams;
 		CueParams.Location = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo())->WeaponMesh->GetComponentLocation();
@@ -241,8 +247,8 @@ bool URangedWeaponAbilityBase::Fire()
 	}
 	
 	// Reduce ammo in mag by 1
-	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
-	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(WeaponData->ReduceAmmoEffectClass, 1.f, ContextHandle);
+	const FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
+	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(WeaponData->ReduceAmmoEffectClass, 1.f, ContextHandle);
 	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	
 	// Any previous running hit scan target data tasks must be ended so it's not triggered for each accumulated task

@@ -37,6 +37,9 @@ public:
 	float ZoomSpeed = 10.f;
 	// End Zoom
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Feedback")
+	float RecoilReturnSpeed = 12.f;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Buffs")
 	int32 TotemSpeedBonusPerStack = 48;
 	

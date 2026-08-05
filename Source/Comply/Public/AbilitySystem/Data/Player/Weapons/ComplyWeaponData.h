@@ -71,4 +71,13 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	TObjectPtr<UNiagaraSystem> BulletTracerEffect;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Feedback")
+	TSubclassOf<UCameraShakeBase> FiringCameraShake;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Feedback")
+	float RecoilKickDistance = 6.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Feedback")
+	float RecoilKickSpeed = 12.0f;
 };

@@ -62,6 +62,8 @@ AComplyPlayerCharacter::AComplyPlayerCharacter()
 void AComplyPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	BaseSocketOffsetX = CameraBoom->SocketOffset.X;
 }
 
 void AComplyPlayerCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -178,6 +180,13 @@ void AComplyPlayerCharacter::Tick(float DeltaTime)
 	UpdateRotationMode(DeltaTime);
 	
 	if (IsLocallyControlled()) { TraceForInteractable(); }
+	
+	if (PlayerData)
+	{
+		CameraBoom->SocketOffset.X = FMath::FInterpTo(
+			CameraBoom->SocketOffset.X, BaseSocketOffsetX, DeltaTime, PlayerData->RecoilReturnSpeed
+		);
+	}
 }
 
 UAbilitySystemComponent* AComplyPlayerCharacter::GetAbilitySystemComponent() const
@@ -355,6 +364,19 @@ void AComplyPlayerCharacter::SpawnImpactEffectsLocal(const FVector& ImpactPoint,
 		const FVector BeamEndLocal = ImpactPoint - MuzzleLocation;
 		Tracer->SetVariableVec3(FName("BeamEnd"), BeamEndLocal);
 	}
+}
+
+void AComplyPlayerCharacter::ApplyFiringFeedback(const UComplyWeaponData* WeaponData)
+{
+	if (!WeaponData) return;
+	
+	if (APlayerController* PC = Cast<AComplyPlayerController>(GetController()))
+	{
+		PC->ClientStartCameraShake(WeaponData->FiringCameraShake);
+	}
+	
+	// Kick on fire
+	CameraBoom->SocketOffset.X -= WeaponData->RecoilKickDistance;
 }
 
 // Multicast that handles broadcasting impact decals and bullet tracers from the muzzle to the impact point

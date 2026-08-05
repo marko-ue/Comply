@@ -12,6 +12,7 @@
 #include "ComplyPlayerCharacter.generated.h"
 
 
+class UComplyWeaponData;
 class UComplyInputData;
 class UComplyPlayerData;
 class UNiagaraSystem;
@@ -80,6 +81,10 @@ public:
 	
 	void SpawnImpactEffectsLocal(const FVector& ImpactPoint, const FVector& ImpactNormal, const FVector& MuzzleLocation);
 	// End Impact Effects
+	
+	void ApplyFiringFeedback(const UComplyWeaponData* WeaponData);
+	
+	float BaseSocketOffsetX;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilities|Effect Application")
 	TSubclassOf<UGameplayAbility> ApplyAimEffectAbilityClass;

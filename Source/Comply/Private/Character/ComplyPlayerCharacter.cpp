@@ -34,6 +34,9 @@
 
 AComplyPlayerCharacter::AComplyPlayerCharacter()
 {
+	GetCharacterMovement()->bOrientRotationToMovement = false;
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 0.0f, 0.0f);
+	
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->TargetArmLength = 400.0f;
@@ -176,10 +179,9 @@ void AComplyPlayerCharacter::Tick(float DeltaTime)
 	
 	bIsAiming ? ZoomIn(DeltaTime) : ZoomOut(DeltaTime);
 	
-	// Handles how the character should rotate depending on if the player is aiming and/or firing
-	UpdateRotationMode(DeltaTime);
-	
 	if (IsLocallyControlled()) { TraceForInteractable(); }
+	
+	RotatePlayerToLook(DeltaTime);
 	
 	if (PlayerData)
 	{
@@ -191,7 +193,7 @@ void AComplyPlayerCharacter::Tick(float DeltaTime)
 
 UAbilitySystemComponent* AComplyPlayerCharacter::GetAbilitySystemComponent() const
 {
-	AComplyPlayerState* ComplyPlayerState = Cast<AComplyPlayerState>(GetPlayerState());
+	const AComplyPlayerState* ComplyPlayerState = Cast<AComplyPlayerState>(GetPlayerState());
 	if (!IsValid(ComplyPlayerState)) return nullptr;
 	
 	return ComplyPlayerState->GetAbilitySystemComponent();
@@ -666,6 +668,21 @@ void AComplyPlayerCharacter::EquipThrowableActionPressed()
 	}
 }
 
+void AComplyPlayerCharacter::RotatePlayerToLook(float DeltaTime)
+{
+	
+	if (const APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		const FRotator ControlRot = PC->GetControlRotation();
+		const FRotator CurrentRot = GetActorRotation();
+	
+		const float YawDiff = FMath::UnwindDegrees(ControlRot.Yaw - CurrentRot.Yaw);
+		const float NewYaw = CurrentRot.Yaw + FMath::Clamp(YawDiff, -20.f * DeltaTime * 360.f, 20.f * DeltaTime * 360.f);
+
+		SetActorRotation(FRotator(0.f, NewYaw, 0.f));
+	}
+}
+
 void AComplyPlayerCharacter::ZoomIn(float DeltaTime) const
 {
 	if (!IsLocallyControlled()) return;
@@ -707,35 +724,6 @@ void AComplyPlayerCharacter::TraceForInteractable()
 void AComplyPlayerCharacter::OnAimingTagChanged(const FGameplayTag Tag, int32 NewCount)
 {
 	bIsAiming = NewCount > 0;
-}
-
-void AComplyPlayerCharacter::UpdateRotationMode(float DeltaTime)
-{
-	if (!GetAbilitySystemComponent()) return;
-	
-	// With this check, the server computes rotation and replicates it
-	// The owning client computes rotation locally for responsiveness
-	// Simulated proxies display the replicated rotation instead of fighting with local interpolation
-	if (!IsLocallyControlled() && !HasAuthority()) return;
-
-	const bool bDoesFiringTagExist = GetAbilitySystemComponent()->HasMatchingGameplayTag(ComplyTags::States::State_Firing);
-	const bool bShouldControlRotation = bIsAiming || bDoesFiringTagExist;
-
-	FRotator TargetRotation;
-
-	if (bShouldControlRotation)
-	{
-		TargetRotation = FRotator(0.f, GetControlRotation().Yaw, 0.f);
-	}
-	else
-	{
-		const FVector Velocity = GetCharacterMovement()->Velocity;
-		if (Velocity.IsNearlyZero()) return;
-		TargetRotation = FRotator(0.f, Velocity.Rotation().Yaw, 0.f);
-	}
-
-	const FRotator NewRotation = FMath::RInterpTo(GetActorRotation(), TargetRotation, DeltaTime, 25.f);
-	SetActorRotation(NewRotation);
 }
 
 // If friendly fire is on and the distracted tag was applied by the decoy grenade, apply flashbang effect to affected players

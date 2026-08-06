@@ -46,7 +46,7 @@ public:
 	
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
-	
+
 	FORCEINLINE virtual UAbilitySystemComponent* GetTargetASC() const override { return GetAbilitySystemComponent(); }
 	
 	virtual void Tick(float DeltaTime) override;
@@ -172,6 +172,8 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
 	
+	void RotatePlayerToLook(float DeltaTime);
+	
 	// Zoom
 	void ZoomIn(float DeltaTime) const;
 	void ZoomOut(float DeltaTime) const;
@@ -189,9 +191,7 @@ private:
 	void TraceForInteractable();
 	
 	IInteractableInterface* CurrentFocusedInteractable;
-	
-	void UpdateRotationMode(float DeltaTime);
-	
+
 	UFUNCTION()
 	void OnDistractedTagChanged(const FGameplayTag Tag, int32 NewCount);
 	

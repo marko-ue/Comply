@@ -27,6 +27,9 @@ AComplyEnemyCharacter::AComplyEnemyCharacter()
 	GetCharacterMovement()->AvoidanceWeight = 0.05f;
 	GetCharacterMovement()->AvoidanceConsiderationRadius = 500.f;
 	
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
+	
 	HealthWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthWidgetComponent"));
 	HealthWidgetComponent->SetupAttachment(RootComponent);
 	HealthWidgetComponent->SetWidgetSpace(EWidgetSpace::World);

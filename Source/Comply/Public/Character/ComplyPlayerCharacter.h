@@ -82,6 +82,9 @@ public:
 	void SpawnImpactEffectsLocal(const FVector& ImpactPoint, const FVector& ImpactNormal, const FVector& MuzzleLocation);
 	// End Impact Effects
 	
+	UFUNCTION(Client, Reliable)
+	void Client_ShowDamageNumber(float DamageAmount, FVector WorldPos);
+	
 	void ApplyFiringFeedback(const UComplyWeaponData* WeaponData);
 	
 	float BaseSocketOffsetX;

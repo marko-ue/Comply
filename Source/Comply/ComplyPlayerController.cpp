@@ -13,6 +13,7 @@
 #include "Framework/GameState/ComplyGameStateBase.h"
 #include "Framework/PlayerState/ComplyPlayerState.h"
 #include "UI/Widgets/ComplyHUDWidget.h"
+#include "UI/Widgets/DamageNumbers/DamageNumbersWidget.h"
 #include "Widgets/Input/SVirtualJoystick.h"
 
 void AComplyPlayerController::BeginPlay()
@@ -37,7 +38,7 @@ void AComplyPlayerController::BeginPlay()
 		}
 	}
 	
-	if (AComplyPlayerState* PS = GetPlayerState<AComplyPlayerState>())
+	if (const AComplyPlayerState* PS = GetPlayerState<AComplyPlayerState>())
 	{
 		SelectedCharacterClass = PS->LastSelectedCharacterClass ? PS->LastSelectedCharacterClass : DefaultCharacterClass;
 	}
@@ -63,6 +64,16 @@ void AComplyPlayerController::OnRep_PlayerState()
 	HUDWidget = CreateWidget<UComplyHUDWidget>(this, HUDWidgetClass);
 	HUDWidget->AddToViewport();
 	HUDWidget->InitializeHUD(ASC);
+	
+	if (DamageNumbersWidget) return; // Already initialized, skip
+	
+	DamageNumbersWidget = CreateWidget<UDamageNumbersWidget>(this, DamageNumbersWidgetClass);
+	DamageNumbersWidget->AddToViewport();
+	
+	FVector2D ViewportSize;
+	GetWorld()->GetGameViewport()->GetViewportSize(ViewportSize);
+	DamageNumbersWidget->SetPositionInViewport(FVector2D(0.f, 0.f));
+	DamageNumbersWidget->SetDesiredSizeInViewport(ViewportSize);
 }
 
 void AComplyPlayerController::SetupInputComponent()
@@ -127,15 +138,24 @@ void AComplyPlayerController::AcknowledgePossession(class APawn* P)
 
 	if (!HUDWidget)
 	{
-		HUDWidget = CreateWidget<UComplyHUDWidget>(
-			this, HUDWidgetClass
-		);
+		HUDWidget = CreateWidget<UComplyHUDWidget>(this, HUDWidgetClass);
 		HUDWidget->AddToViewport();
 	}
 
 	if (PS->GetAbilitySystemComponent())
 	{
 		HUDWidget->InitializeHUD(PS->GetAbilitySystemComponent());
+	}
+	
+	if (!DamageNumbersWidget)
+	{
+		DamageNumbersWidget = CreateWidget<UDamageNumbersWidget>(this, DamageNumbersWidgetClass);
+		DamageNumbersWidget->AddToViewport();
+		
+		FVector2D ViewportSize;
+		GetWorld()->GetGameViewport()->GetViewportSize(ViewportSize);
+		DamageNumbersWidget->SetPositionInViewport(FVector2D(0.f, 0.f));
+		DamageNumbersWidget->SetDesiredSizeInViewport(ViewportSize);
 	}
 }
 

@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "ComplyPlayerController.generated.h"
 
+class UDamageNumbersWidget;
 class UComplyHUDWidget;
 class AComplyPlayerCharacter;
 class UInputMappingContext;
@@ -21,6 +22,9 @@ class AComplyPlayerController : public APlayerController
 	GENERATED_BODY()
 	
 public:
+	UPROPERTY()
+	TObjectPtr<UComplyHUDWidget> HUDWidget = nullptr;
+	
 	virtual void AcknowledgePossession(class APawn* P) override;
 	
 	UPROPERTY(VisibleAnywhere)
@@ -46,6 +50,12 @@ public:
 	
 	UPROPERTY()
 	TObjectPtr<UUserWidget> FlashbangWidget;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UDamageNumbersWidget> DamageNumbersWidgetClass;
+	
+	UPROPERTY()
+	TObjectPtr<UDamageNumbersWidget> DamageNumbersWidget;
 	
 	void ShowFlashbangEffect();
 
@@ -76,9 +86,6 @@ protected:
 
 private:
 	void AddMappingContexts();
-	
-	UPROPERTY()
-	TObjectPtr<UComplyHUDWidget> HUDWidget = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UComplyHUDWidget> HUDWidgetClass;

@@ -30,6 +30,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
+#include "UI/Widgets/DamageNumbers/DamageNumbersWidget.h"
 
 
 AComplyPlayerCharacter::AComplyPlayerCharacter()
@@ -365,6 +366,14 @@ void AComplyPlayerCharacter::SpawnImpactEffectsLocal(const FVector& ImpactPoint,
 		// Local offset from the muzzle, Niagara was interpreting world space vector as local relative to the spawn location
 		const FVector BeamEndLocal = ImpactPoint - MuzzleLocation;
 		Tracer->SetVariableVec3(FName("BeamEnd"), BeamEndLocal);
+	}
+}
+
+void AComplyPlayerCharacter::Client_ShowDamageNumber_Implementation(float DamageAmount, FVector WorldPos)
+{
+	if (const AComplyPlayerController* PC = Cast<AComplyPlayerController>(GetController()))
+	{
+		PC->DamageNumbersWidget->ShowDamageNumber(DamageAmount, WorldPos);
 	}
 }
 

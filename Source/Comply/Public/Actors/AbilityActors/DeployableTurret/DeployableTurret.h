@@ -3,10 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameplayTagContainer.h"
 #include "GameFramework/Actor.h"
 #include "Interface/TargetableInterface.h"
-#include "AbilitySystemInterface.h"
 #include "Actors/TargetableActorsBase.h"
 #include "DeployableTurret.generated.h"
 

@@ -4,6 +4,7 @@
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "AbilitySystemComponent.h"
 #include "Comply.h"
+#include "ComplyPlayerController.h"
 #include "GameplayCueManager.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
@@ -17,6 +18,7 @@
 #include "Character/ComplyCharacterBase.h"
 #include "Character/ComplyPlayerCharacter.h"
 #include "Framework/GameMode/ComplyGameModeBase.h"
+#include "UI/Widgets/DamageNumbers/DamageNumbersWidget.h"
 
 
 // Traces to the middle of the screen
@@ -299,100 +301,140 @@ bool URangedWeaponAbilityBase::Fire()
 
 void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTargetDataHandle& DataHandle)
 {
-	const FGameplayAbilityActivationInfo ActivationInfo = GetCurrentActivationInfo();
+    const FGameplayAbilityActivationInfo ActivationInfo = GetCurrentActivationInfo();
 
-	AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
-	
-	const FVector MuzzleLocation = Character->WeaponMesh->GetSocketLocation(FName("MuzzleFlash"));
+    AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
+    
+    const FVector MuzzleLocation = Character->WeaponMesh->GetSocketLocation(FName("MuzzleFlash"));
 
-	for (const TSharedPtr<FGameplayAbilityTargetData>& Data : DataHandle.Data)
+    // Calculate damage once so both single and shotgun blocks can use it
+    float FinalDamage = WeaponData->DamageData->Damage.GetValueAtLevel(GetAbilityLevel());
+
+    if (const UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo())
+    {
+        const int32 TotemStacks = ASC->GetTagCount(ComplyTags::States::State_TotemBuffed);
+        FinalDamage *= (1.f + WeaponData->DamageData->TotemDamageBonusPerStack * TotemStacks);
+    }
+
+    for (const TSharedPtr<FGameplayAbilityTargetData>& Data : DataHandle.Data)
+    {
+        if (!Data.IsValid()) continue;
+        
+        if (IsLocallyControlled())
+        {
+            Character->SpawnImpactEffectsLocal(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->ImpactNormal, MuzzleLocation);
+        }
+
+        if (Character->GetEquippedPrimaryWeapon()->WeaponData->bUsesSingleCrosshairTrace &&
+            HasAuthority(&ActivationInfo))
+        {
+            FGameplayCueParameters CueParams;
+            CueParams.Location = Data->GetHitResult()->ImpactPoint;
+            CueParams.Normal = Data->GetHitResult()->ImpactNormal;
+
+            GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(
+                ComplyTags::GameplayCues::HitscanWeaponImpact,
+                CueParams
+            );
+            
+            Character->Multicast_SpawnImpactEffects(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->ImpactNormal, MuzzleLocation);
+        }
+
+        AActor* TargetActor = Data->GetHitResult()->GetActor();
+
+        if (TargetActor && HasAuthority(&ActivationInfo))
+        {
+            const FComplyGameplayAbilityTargetData_SingleHit* CustomData =
+                static_cast<const FComplyGameplayAbilityTargetData_SingleHit*>(Data.Get());
+
+            FComplyGameplayEffectContext* Context = new FComplyGameplayEffectContext();
+
+            if (CustomData)
+            {
+                Context->bHitThroughShield = CustomData->bPassedThroughShield;
+            }
+
+            Context->ShieldDamageMultiplier = WeaponData->ShieldShotDamageMultiplier;
+
+            CauseDamage(TargetActor, FinalDamage, Context);
+
+        	if (TargetActor && IsLocallyControlled())
+        	{
+        		ShowDamageNumber(FinalDamage, Data->GetHitResult()->ImpactPoint);
+        	}
+        }
+    }
+    
+    if (IsLocallyControlled())
+    {
+        for (const TSharedPtr<FGameplayAbilityTargetData>& Data : DataHandle.Data)
+        {
+            Character->SpawnImpactEffectsLocal(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->ImpactNormal, MuzzleLocation);
+        }
+    }
+
+    if (!Character->GetEquippedPrimaryWeapon()->WeaponData->bUsesSingleCrosshairTrace && HasAuthority(&ActivationInfo))
+    {
+        FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
+
+        FComplyGameplayEffectContext* Context = static_cast<FComplyGameplayEffectContext*>(ContextHandle.Get());
+
+        if (Context)
+        {
+            Context->ShotgunTracesTargetData = DataHandle;
+        }
+
+        FGameplayCueParameters CueParams;
+        CueParams.EffectContext = ContextHandle;
+
+        GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(
+            ComplyTags::GameplayCues::ShotgunImpact,
+            CueParams
+        );
+        
+        for (const TSharedPtr<FGameplayAbilityTargetData>& Data : DataHandle.Data)
+        {
+            const AActor* TargetActor = Data->GetHitResult()->GetActor();
+            
+            if (!Data.IsValid() || !Data->GetHitResult()->bBlockingHit) continue;
+        	
+        	Character->Multicast_SpawnImpactEffects(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->ImpactNormal, MuzzleLocation);
+            
+        	if (IsLocallyControlled())
+        	{
+        		ShowDamageNumberShotgun(TargetActor, FinalDamage);
+        	}
+        }
+    }
+}
+
+void URangedWeaponAbilityBase::ShowDamageNumber(const float FinalDamage, const FVector& ImpactPoint) const
+{
+	if (const AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo()))
 	{
-		if (!Data.IsValid()) continue;
-		
-		if (IsLocallyControlled())
+		if (const AComplyPlayerController* PC = Cast<AComplyPlayerController>(Character->GetController()))
 		{
-			Character->SpawnImpactEffectsLocal(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->ImpactNormal, MuzzleLocation);
-		}
-
-		if (Character->GetEquippedPrimaryWeapon()->WeaponData->bUsesSingleCrosshairTrace &&
-			HasAuthority(&ActivationInfo))
-		{
-			FGameplayCueParameters CueParams;
-			CueParams.Location = Data->GetHitResult()->ImpactPoint;
-			CueParams.Normal = Data->GetHitResult()->ImpactNormal;
-
-			GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(
-				ComplyTags::GameplayCues::HitscanWeaponImpact,
-				CueParams
-			);
-			
-			Character->Multicast_SpawnImpactEffects(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->ImpactNormal, MuzzleLocation);
-		}
-
-		AActor* TargetActor = Data->GetHitResult()->GetActor();
-
-		if (TargetActor && HasAuthority(&ActivationInfo))
-		{
-			const FComplyGameplayAbilityTargetData_SingleHit* CustomData =
-				static_cast<const FComplyGameplayAbilityTargetData_SingleHit*>(Data.Get());
-
-			FComplyGameplayEffectContext* Context = new FComplyGameplayEffectContext();
-
-			if (CustomData)
-			{
-				Context->bHitThroughShield = CustomData->bPassedThroughShield;
-			}
-
-			Context->ShieldDamageMultiplier = WeaponData->ShieldShotDamageMultiplier;
-
-			float FinalDamage = WeaponData->DamageData->Damage.GetValueAtLevel(GetAbilityLevel());
-
-			if (UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo())
-			{
-				const int32 TotemStacks = ASC->GetTagCount(ComplyTags::States::State_TotemBuffed);
-				FinalDamage *= (1.f + WeaponData->DamageData->TotemDamageBonusPerStack * TotemStacks);
-			}
-
-			CauseDamage(TargetActor, FinalDamage, Context);
+			PC->DamageNumbersWidget->ShowDamageNumber(FinalDamage, ImpactPoint);
 		}
 	}
+}
+
+void URangedWeaponAbilityBase::ShowDamageNumberShotgun(const AActor* TargetActor, const float DamageAmount) const
+{
+	if (!TargetActor) return;
+	if (!Cast<AComplyCharacterBase>(TargetActor)) return; // Only show damage numbers for pellets that hit an enemy
 	
-	if (IsLocallyControlled())
+	const FVector Offset = FVector(
+		FMath::RandRange(-20.f, 20.f),
+		FMath::RandRange(-20.f, 20.f),
+		FMath::RandRange(0.f, 40.f)
+	);
+
+	if (const AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo()))
 	{
-		for (const TSharedPtr<FGameplayAbilityTargetData>& Data : DataHandle.Data)
+		if (const AComplyPlayerController* PC = Cast<AComplyPlayerController>(Character->GetController()))
 		{
-			Character->SpawnImpactEffectsLocal(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->ImpactNormal, MuzzleLocation);
-		}
-	}
-
-	if (!Character->GetEquippedPrimaryWeapon()->WeaponData->bUsesSingleCrosshairTrace &&
-		HasAuthority(&ActivationInfo))
-	{
-		FGameplayEffectContextHandle ContextHandle =
-			GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
-
-		FComplyGameplayEffectContext* Context =
-			static_cast<FComplyGameplayEffectContext*>(ContextHandle.Get());
-
-		if (Context)
-		{
-			Context->ShotgunTracesTargetData = DataHandle;
-		}
-
-		FGameplayCueParameters CueParams;
-		CueParams.EffectContext = ContextHandle;
-
-		GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(
-			ComplyTags::GameplayCues::ShotgunImpact,
-			CueParams
-		);
-		
-		// Spawn decals and effects for each pellet hit
-		for (const TSharedPtr<FGameplayAbilityTargetData>& Data : DataHandle.Data)
-		{
-			if (!Data.IsValid() || !Data->GetHitResult()->bBlockingHit) continue;
-
-			Character->Multicast_SpawnImpactEffects(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->ImpactNormal, MuzzleLocation);
+			PC->DamageNumbersWidget->ShowDamageNumber(DamageAmount, TargetActor->GetActorLocation() + Offset);
 		}
 	}
 }

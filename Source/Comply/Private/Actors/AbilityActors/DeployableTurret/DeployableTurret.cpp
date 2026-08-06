@@ -9,12 +9,12 @@
 #include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/Data/Player/Abilities/Turret/DeployableTurretAbilityData.h"
+#include "Character/ComplyPlayerCharacter.h"
 #include "Components/ArrowComponent.h"
 #include "Components/SphereComponent.h"
-#include "Kismet/GameplayStatics.h"
+#include "Framework/GameMode/ComplyGameModeBase.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
-#include "Sound/SoundCue.h"
 
 
 ADeployableTurret::ADeployableTurret()
@@ -121,6 +121,20 @@ void ADeployableTurret::Fire(AActor* TargetActor)
 	FGameplayCueParameters ImpactCueParams;
 	ImpactCueParams.Location = TargetActor->GetActorLocation();
 	SourceASC->ExecuteGameplayCue(ComplyTags::GameplayCues::TurretImpact, ImpactCueParams);
+	
+	// Don't show damage number if friendly fire is off or the character hit by the overlap is the player when friendly fire is on
+	if (const AComplyGameModeBase* GameMode = Cast<AComplyGameModeBase>(GetWorld()->GetAuthGameMode()))
+	{
+		if (!GameMode->bFriendlyFire && Cast<AComplyPlayerCharacter>(TargetActor)) return;
+	}
+
+	if (const AComplyCharacterBase* HitCharacter = Cast<AComplyCharacterBase>(TargetActor))
+	{
+		if (AComplyPlayerCharacter* SourceCharacter = Cast<AComplyPlayerCharacter>(SourceASC->GetAvatarActor()))
+		{
+			SourceCharacter->Client_ShowDamageNumber(TurretData->Damage, HitCharacter->GetActorLocation() + FVector(0.f, 0.f, 100.f));
+		}
+	}
 }
 
 // When the actor is destroyed, the player will be able to spawn another turret after 30 seconds

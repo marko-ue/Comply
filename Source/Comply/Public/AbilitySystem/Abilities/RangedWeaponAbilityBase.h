@@ -7,6 +7,7 @@
 #include "AbilitySystem/Data/Player/Weapons/ComplyWeaponData.h"
 #include "RangedWeaponAbilityBase.generated.h"
 
+class AComplyCharacterBase;
 class UNiagaraSystem;
 class UWeaponAttributeSet;
 class UReloadAbility;
@@ -45,7 +46,7 @@ protected:
 	void BuildWeaponCollisionParams(const AActor* Avatar, FCollisionQueryParams& OutQueryParams, FCollisionObjectQueryParams& OutObjectParams);
 	
 	virtual bool Fire();
-	
+
 	UFUNCTION()
 	virtual void OnTargetDataReceived(const FGameplayAbilityTargetDataHandle& DataHandle);
 
@@ -68,4 +69,7 @@ protected:
 private:
 	UPROPERTY()
 	TObjectPtr<UHitscanTargetData> HitscanTargetDataTask;
+	
+	void ShowDamageNumber(const float FinalDamage, const FVector& ImpactPoint) const;
+	void ShowDamageNumberShotgun(const AActor* TargetActor, float DamageAmount) const;
 };

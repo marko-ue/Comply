@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "ComplyHUDWidget.generated.h"
 
+class UDamageNumbersWidget;
 class UComplyCrosshairWidget;
 class UAbilitySystemComponent;
 class UComplyHealthBarWidget;

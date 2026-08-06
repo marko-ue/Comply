@@ -357,11 +357,8 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
             Context->ShieldDamageMultiplier = WeaponData->ShieldShotDamageMultiplier;
 
             CauseDamage(TargetActor, FinalDamage, Context);
-
-        	if (TargetActor && IsLocallyControlled())
-        	{
-        		ShowDamageNumber(FinalDamage, Data->GetHitResult()->ImpactPoint);
-        	}
+        	
+        	Character->Client_ShowDamageNumber(FinalDamage, Data->GetHitResult()->ImpactPoint);
         }
     }
     
@@ -394,49 +391,23 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
         
         for (const TSharedPtr<FGameplayAbilityTargetData>& Data : DataHandle.Data)
         {
-            const AActor* TargetActor = Data->GetHitResult()->GetActor();
+            AActor* TargetActor = Data->GetHitResult()->GetActor();
             
             if (!Data.IsValid() || !Data->GetHitResult()->bBlockingHit) continue;
         	
         	Character->Multicast_SpawnImpactEffects(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->ImpactNormal, MuzzleLocation);
             
-        	if (IsLocallyControlled())
+        	if (const AComplyCharacterBase* HitCharacter = Cast<AComplyCharacterBase>(TargetActor))
         	{
-        		ShowDamageNumberShotgun(TargetActor, FinalDamage);
+        		const FVector Offset = FVector(
+					FMath::RandRange(-5.f, 5.f),
+					FMath::RandRange(-5.f, 5.f),
+					FMath::RandRange(60.f, 80.f)
+				);
+        		Character->Client_ShowDamageNumber(FinalDamage, HitCharacter->GetActorLocation() + Offset);
         	}
         }
     }
-}
-
-void URangedWeaponAbilityBase::ShowDamageNumber(const float FinalDamage, const FVector& ImpactPoint) const
-{
-	if (const AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo()))
-	{
-		if (const AComplyPlayerController* PC = Cast<AComplyPlayerController>(Character->GetController()))
-		{
-			PC->DamageNumbersWidget->ShowDamageNumber(FinalDamage, ImpactPoint);
-		}
-	}
-}
-
-void URangedWeaponAbilityBase::ShowDamageNumberShotgun(const AActor* TargetActor, const float DamageAmount) const
-{
-	if (!TargetActor) return;
-	if (!Cast<AComplyCharacterBase>(TargetActor)) return; // Only show damage numbers for pellets that hit an enemy
-	
-	const FVector Offset = FVector(
-		FMath::RandRange(-20.f, 20.f),
-		FMath::RandRange(-20.f, 20.f),
-		FMath::RandRange(0.f, 40.f)
-	);
-
-	if (const AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo()))
-	{
-		if (const AComplyPlayerController* PC = Cast<AComplyPlayerController>(Character->GetController()))
-		{
-			PC->DamageNumbersWidget->ShowDamageNumber(DamageAmount, TargetActor->GetActorLocation() + Offset);
-		}
-	}
 }
 
 void URangedWeaponAbilityBase::OnFireDelayFinished()

@@ -69,7 +69,4 @@ protected:
 private:
 	UPROPERTY()
 	TObjectPtr<UHitscanTargetData> HitscanTargetDataTask;
-	
-	void ShowDamageNumber(const float FinalDamage, const FVector& ImpactPoint) const;
-	void ShowDamageNumberShotgun(const AActor* TargetActor, float DamageAmount) const;
 };

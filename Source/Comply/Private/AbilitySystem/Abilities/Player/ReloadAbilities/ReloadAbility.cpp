@@ -99,7 +99,7 @@ void UReloadAbility::HandleReload()
 
 void UReloadAbility::OnReloadCompleted()
 {
-	if (ActiveWeapon && IsLocallyControlled())
+	if (ActiveWeapon)
 	{
 		bool bFound = false;
 		const float CurrentAmmo = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(ActiveWeapon->GetCurrentAmmoAttribute(), bFound);

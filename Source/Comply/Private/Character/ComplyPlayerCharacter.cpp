@@ -380,13 +380,15 @@ void AComplyPlayerCharacter::Client_ShowDamageNumber_Implementation(float Damage
 void AComplyPlayerCharacter::ApplyFiringFeedback(const UComplyWeaponData* WeaponData)
 {
 	if (!WeaponData) return;
-	
-	if (APlayerController* PC = Cast<AComplyPlayerController>(GetController()))
+    
+	if (const APlayerController* PC = Cast<APlayerController>(GetController()))
 	{
-		PC->ClientStartCameraShake(WeaponData->FiringCameraShake);
+		if (PC->PlayerCameraManager)
+		{
+			PC->PlayerCameraManager->StartCameraShake(WeaponData->FiringCameraShake);
+		}
 	}
-	
-	// Kick on fire
+    
 	CameraBoom->SocketOffset.X -= WeaponData->RecoilKickDistance;
 }
 

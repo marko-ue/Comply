@@ -37,6 +37,7 @@ public:
 	FORCEINLINE virtual FGameplayAttribute GetMaxAmmoAttribute() const { return FGameplayAttribute(); }
 	FORCEINLINE virtual FGameplayTag GetReduceReserveAmmoTag() const { return FGameplayTag(); }
 	FORCEINLINE virtual FGameplayAttribute GetCurrentReserveAmmoAttribute() const { return FGameplayAttribute(); }
+	FORCEINLINE virtual FGameplayAttribute GetMaxReserveAmmoAttribute() const { return FGameplayAttribute(); }
 	FORCEINLINE virtual bool DoesWeaponUseCrosshairTrace() const { return WeaponData->bUsesSingleCrosshairTrace; }
 	
 	UPROPERTY()

@@ -358,7 +358,10 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
 
             CauseDamage(TargetActor, FinalDamage, Context);
         	
-        	Character->Client_ShowDamageNumber(FinalDamage, Data->GetHitResult()->ImpactPoint);
+        	if (Cast<AComplyCharacterBase>(TargetActor))
+        	{
+        		Character->Client_ShowDamageNumber(FinalDamage, Data->GetHitResult()->ImpactPoint);
+        	}
         }
     }
     

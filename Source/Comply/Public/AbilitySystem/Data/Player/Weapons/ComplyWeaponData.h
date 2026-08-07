@@ -80,4 +80,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Feedback")
 	float RecoilKickSpeed = 12.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TObjectPtr<UTexture2D> BulletIcon;
 };

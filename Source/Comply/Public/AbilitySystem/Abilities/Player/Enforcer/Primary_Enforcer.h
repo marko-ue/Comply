@@ -21,6 +21,7 @@ public:
 	FORCEINLINE virtual FGameplayAttribute GetMaxAmmoAttribute() const override { return UWeaponAttributeSet::GetMagnumMaxAmmoAttribute(); }
 	FORCEINLINE virtual FGameplayTag GetReduceReserveAmmoTag() const override { return ComplyTags::SetByCaller::SBC_ReduceMagnumReserveAmmo; }
 	FORCEINLINE virtual FGameplayAttribute GetCurrentReserveAmmoAttribute() const override { return UWeaponAttributeSet::GetMagnumCurrentReserveAmmoAttribute(); }
+	FORCEINLINE virtual FGameplayAttribute GetMaxReserveAmmoAttribute() const override { return UWeaponAttributeSet::GetMagnumMaxReserveAmmoAttribute(); }
 
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;

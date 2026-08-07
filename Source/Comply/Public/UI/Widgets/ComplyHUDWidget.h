@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "ComplyHUDWidget.generated.h"
 
+class UComplyAmmoWidget;
 class UDamageNumbersWidget;
 class UComplyCrosshairWidget;
 class UAbilitySystemComponent;
@@ -27,4 +28,7 @@ protected:
 	
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UComplyCrosshairWidget> ComplyCrosshairWidget;
+	
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UComplyAmmoWidget> ComplyAmmoWidget;
 };

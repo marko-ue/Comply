@@ -35,10 +35,10 @@ public:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_RifleMaxAmmo)
 	FGameplayAttributeData RifleMaxAmmo;
 	
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_RifleMaxAmmo)
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_RifleCurrentReserveAmmo)
 	FGameplayAttributeData RifleCurrentReserveAmmo;
 	
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_RifleMaxAmmo)
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_RifleMaxReserveAmmo)
 	FGameplayAttributeData RifleMaxReserveAmmo;
 	
 	UFUNCTION()
@@ -83,10 +83,10 @@ public:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MagnumMaxAmmo)
 	FGameplayAttributeData MagnumMaxAmmo;
 	
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MagnumMaxAmmo)
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MagnumCurrentReserveAmmo)
 	FGameplayAttributeData MagnumCurrentReserveAmmo;
 	
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MagnumMaxAmmo)
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MagnumMaxReserveAmmo)
 	FGameplayAttributeData MagnumMaxReserveAmmo;
 	
 	UFUNCTION()
@@ -108,10 +108,10 @@ public:
 	/* End Magnum */
 	
 	/* Turret */
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MagnumCurrentAmmo)
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_TurretCurrentCharges)
 	FGameplayAttributeData TurretCurrentCharges;
 	
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MagnumMaxAmmo)
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_TurretMaxCharges)
 	FGameplayAttributeData TurretMaxCharges;
 	
 	UFUNCTION()
@@ -131,10 +131,10 @@ public:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ShotgunMaxAmmo)
 	FGameplayAttributeData ShotgunMaxAmmo;
 	
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ShotgunMaxAmmo)
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ShotgunCurrentReserveAmmo)
 	FGameplayAttributeData ShotgunCurrentReserveAmmo;
 	
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ShotgunMaxAmmo)
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ShotgunMaxReserveAmmo)
 	FGameplayAttributeData ShotgunMaxReserveAmmo;
 	
 	UFUNCTION()

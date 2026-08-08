@@ -37,4 +37,7 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Materials")
 	TObjectPtr<UMaterialInterface> UtilityMaterial;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TObjectPtr<UTexture2D> UtilityIcon;
 };

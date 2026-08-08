@@ -14,6 +14,7 @@
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "AbilitySystem/Abilities/ThrowableAbilityBase.h"
+#include "AbilitySystem/Abilities/UtilityAbilityBase.h"
 #include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
 #include "AbilitySystem/Data/Player/ComplyPlayerData.h"
 #include "AbilitySystem/Data/Player/Input/ComplyInputData.h"
@@ -273,6 +274,21 @@ UThrowableAbilityBase* AComplyPlayerCharacter::GetEquippedThrowable() const
 	return nullptr;
 }
 
+UUtilityAbilityBase* AComplyPlayerCharacter::GetEquippedUtility() const
+{
+	if (!GetAbilitySystemComponent()) return nullptr;
+
+	for (const FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
+	{
+		if (Spec.Ability->GetClass()->IsChildOf(EquippedUtilityClass))
+		{
+			return Cast<UUtilityAbilityBase>(Spec.GetPrimaryInstance() ? Spec.GetPrimaryInstance() : Spec.Ability.Get());
+		}
+	}
+	
+	return nullptr;
+}
+
 void AComplyPlayerCharacter::DownPlayer()
 {
 	if (!GetAbilitySystemComponent()) return;
@@ -442,6 +458,11 @@ void AComplyPlayerCharacter::SetEquippedPrimaryWeapon(TSubclassOf<URangedWeaponA
 void AComplyPlayerCharacter::SetEquippedThrowable(TSubclassOf<UThrowableAbilityBase> NewWeaponClass)
 {
 	EquippedThrowableClass = NewWeaponClass;
+}
+
+void AComplyPlayerCharacter::SetEquippedUtility(TSubclassOf<UThrowableAbilityBase> NewWeaponClass)
+{
+	EquippedUtilityClass = NewWeaponClass;
 }
 
 void AComplyPlayerCharacter::PrimaryActionPressed()

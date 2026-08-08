@@ -7,6 +7,7 @@
 #include "GameplayEffect.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
+#include "AbilitySystem/Abilities/UtilityAbilityBase.h"
 #include "Character/ComplyPlayerCharacter.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -72,7 +73,8 @@ void AComplyCharacterBase::GiveStartupAbilities()
 		AbilitySpec.GetDynamicSpecSourceTags().AddTag(Set.InputTag);
 		AbilitySpec.GetDynamicSpecSourceTags().AddTag(Set.AbilityTypeTag);
 		GetAbilitySystemComponent()->GiveAbility(AbilitySpec);
-		// Store equipped primary weapon class
+		
+		// Store equipped weapon classes
 		if (Set.AbilityClass->IsChildOf(URangedWeaponAbilityBase::StaticClass()))
 		{
 			if (AComplyPlayerCharacter* PlayerCharacter = Cast<AComplyPlayerCharacter>(this))
@@ -87,6 +89,13 @@ void AComplyCharacterBase::GiveStartupAbilities()
 				PlayerCharacter->EquippedThrowableClass = Set.AbilityClass;
 			}
 		}
+		if (Set.AbilityClass->IsChildOf(UUtilityAbilityBase::StaticClass()))
+        {
+        	if (AComplyPlayerCharacter* PlayerCharacter = Cast<AComplyPlayerCharacter>(this))
+        	{
+        		PlayerCharacter->EquippedUtilityClass = Set.AbilityClass;
+        	}
+        }
 	}
 }
 

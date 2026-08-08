@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Engine/DataAsset.h"
+#include "ComplyUtilityData.h"
 #include "GrapplingHookData.generated.h"
 
 class UCurveVector;
@@ -11,7 +11,7 @@ class UCurveVector;
  * 
  */
 UCLASS()
-class COMPLY_API UGrapplingHookData : public UPrimaryDataAsset
+class COMPLY_API UGrapplingHookData : public UComplyUtilityData
 {
 	GENERATED_BODY()
 	

@@ -7,6 +7,7 @@
 #include "UI/Widgets/ComplyAmmoWidget.h"
 #include "UI/Widgets/ComplyChargesWidget.h"
 #include "UI/Widgets/ComplyHealthBarWidget.h"
+#include "UI/Widgets/ComplyUtilityCooldownsWidget.h"
 
 
 void UComplyHUDWidget::InitializeHUD(UAbilitySystemComponent* ASC)
@@ -32,7 +33,12 @@ void UComplyHUDWidget::TryInitializeWidgets()
 		ComplyChargeWidget->InitializeCharge();
 	}
 	
-	if (!bWidgetsInitialized) bWidgetsInitialized = bHealthInitialized && bAmmoInitialized && bChargeInitialized;
+	if (ComplyUtilityCooldownsWidget)
+	{
+		ComplyUtilityCooldownsWidget->InitializeUtilityCooldown();
+	}
+	
+	if (!bWidgetsInitialized) bWidgetsInitialized = bHealthInitialized && bAmmoInitialized && bChargeInitialized && bUtilityCooldownsInitialized;
 	
 	// If widgets are not initialized yet, try again every 100ms until they are
 	if (!bWidgetsInitialized)

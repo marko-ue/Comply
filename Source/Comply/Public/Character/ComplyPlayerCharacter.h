@@ -13,6 +13,7 @@
 #include "ComplyPlayerCharacter.generated.h"
 
 
+class UUtilityAbilityBase;
 class UComplyWeaponData;
 class UComplyInputData;
 class UComplyPlayerData;
@@ -58,10 +59,15 @@ public:
 	UPROPERTY(Replicated)
 	TSubclassOf<UThrowableAbilityBase> EquippedThrowableClass;
 	
+	UPROPERTY(Replicated)
+	TSubclassOf<UUtilityAbilityBase> EquippedUtilityClass;
+	
 	void SetEquippedPrimaryWeapon(TSubclassOf<URangedWeaponAbilityBase> NewWeaponClass);
 	void SetEquippedThrowable(TSubclassOf<UThrowableAbilityBase> NewWeaponClass);
+	void SetEquippedUtility(TSubclassOf<UThrowableAbilityBase> NewWeaponClass);
 	URangedWeaponAbilityBase* GetEquippedPrimaryWeapon() const;
 	UThrowableAbilityBase* GetEquippedThrowable() const;
+	UUtilityAbilityBase* GetEquippedUtility() const;
 
 	// Death and reviving
 	UFUNCTION(BlueprintCallable)

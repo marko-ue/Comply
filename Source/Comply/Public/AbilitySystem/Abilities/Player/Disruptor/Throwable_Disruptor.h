@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystem/Abilities/ThrowableAbilityBase.h"
+#include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
 #include "Throwable_Disruptor.generated.h"
 
 class UDecoyGrenadeData;
@@ -15,6 +16,10 @@ class COMPLY_API UThrowable_Disruptor : public UThrowableAbilityBase
 {
 	GENERATED_BODY()
 
+public:
+	FORCEINLINE virtual FGameplayAttribute GetCurrentChargesAttribute() const override { return UWeaponAttributeSet::GetDecoyGrenadeCurrentChargesAttribute(); }
+	FORCEINLINE virtual FGameplayAttribute GetMaxChargesAttribute() const override { return UWeaponAttributeSet::GetDecoyGrenadeMaxChargesAttribute(); }
+	
 protected:
 	virtual void ThrowOnServer(FVector LaunchVelocity, FVector SpawnPosition) override;
 	

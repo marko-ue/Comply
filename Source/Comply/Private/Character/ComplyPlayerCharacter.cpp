@@ -75,8 +75,8 @@ void AComplyPlayerCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimePr
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
 	DOREPLIFETIME(AComplyPlayerCharacter, EquippedPrimaryWeaponClass);
-	DOREPLIFETIME(AComplyPlayerCharacter, bIsDowned);
-}
+	DOREPLIFETIME(AComplyPlayerCharacter, EquippedThrowableClass);
+	DOREPLIFETIME(AComplyPlayerCharacter, bIsDowned);}
 
 void AComplyPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -248,13 +248,28 @@ URangedWeaponAbilityBase* AComplyPlayerCharacter::GetEquippedPrimaryWeapon() con
 {
 	if (!GetAbilitySystemComponent()) return nullptr;
 	
-	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
+	for (const FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
 		if (Spec.Ability->GetClass() == EquippedPrimaryWeaponClass)
 		{
 			return Cast<URangedWeaponAbilityBase>(Spec.GetPrimaryInstance() ? Spec.GetPrimaryInstance() : Spec.Ability.Get());
 		}
 	}
+	return nullptr;
+}
+
+UThrowableAbilityBase* AComplyPlayerCharacter::GetEquippedThrowable() const
+{
+	if (!GetAbilitySystemComponent()) return nullptr;
+
+	for (const FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
+	{
+		if (Spec.Ability->GetClass()->IsChildOf(EquippedThrowableClass))
+		{
+			return Cast<UThrowableAbilityBase>(Spec.GetPrimaryInstance() ? Spec.GetPrimaryInstance() : Spec.Ability.Get());
+		}
+	}
+	
 	return nullptr;
 }
 
@@ -422,6 +437,11 @@ void AComplyPlayerCharacter::Server_FaceTarget_Implementation(ACharacter* Target
 void AComplyPlayerCharacter::SetEquippedPrimaryWeapon(TSubclassOf<URangedWeaponAbilityBase> NewWeaponClass)
 {
 	EquippedPrimaryWeaponClass = NewWeaponClass;
+}
+
+void AComplyPlayerCharacter::SetEquippedThrowable(TSubclassOf<UThrowableAbilityBase> NewWeaponClass)
+{
+	EquippedThrowableClass = NewWeaponClass;
 }
 
 void AComplyPlayerCharacter::PrimaryActionPressed()

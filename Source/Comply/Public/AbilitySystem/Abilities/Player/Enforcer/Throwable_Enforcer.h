@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystem/Abilities/ThrowableAbilityBase.h"
+#include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
 #include "Throwable_Enforcer.generated.h"
 
 class UDeployableTurretAbilityData;
@@ -21,6 +22,9 @@ class COMPLY_API UThrowable_Enforcer : public UThrowableAbilityBase
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Data")
 	TObjectPtr<UDeployableTurretAbilityData> TurretData;
+	
+	FORCEINLINE virtual FGameplayAttribute GetCurrentChargesAttribute() const override { return UWeaponAttributeSet::GetTurretCurrentChargesAttribute(); }
+	FORCEINLINE virtual FGameplayAttribute GetMaxChargesAttribute() const override { return UWeaponAttributeSet::GetTurretMaxChargesAttribute(); }
 	
 	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
 	

@@ -48,8 +48,6 @@ protected:
 	// CheckCost on the client for automatic weapons since cost isn't predicted
 	int32 PendingShotCount = 0;
 	FDelegateHandle AmmoReplicatedHandle;
-
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	
 	void BuildWeaponCollisionParams(const AActor* Avatar, FCollisionQueryParams& OutQueryParams, FCollisionObjectQueryParams& OutObjectParams);
 	

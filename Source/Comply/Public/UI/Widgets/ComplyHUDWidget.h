@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "ComplyHUDWidget.generated.h"
 
+class UComplyChargeWidget;
 class UComplyAmmoWidget;
 class UDamageNumbersWidget;
 class UComplyCrosshairWidget;
@@ -21,6 +22,9 @@ class COMPLY_API UComplyHUDWidget : public UUserWidget
 	
 public:
 	void InitializeHUD(UAbilitySystemComponent* ASC);
+	
+	UFUNCTION()
+	void TryInitializeWidgets();
 
 protected:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
@@ -31,4 +35,18 @@ protected:
 	
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UComplyAmmoWidget> ComplyAmmoWidget;
+	
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UComplyChargeWidget> ComplyChargeWidget;
+
+private:
+	UPROPERTY()
+	TObjectPtr<UAbilitySystemComponent> CachedASC;
+	
+	bool bHealthInitialized;
+	bool bAmmoInitialized;
+	bool bChargeInitialized;
+	bool bWidgetsInitialized;
+	
+	FTimerHandle RetryTimerHandle;
 };

@@ -42,4 +42,7 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Materials")
 	TObjectPtr<UMaterialInterface> GrenadeMaterial;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TObjectPtr<UTexture2D> ChargesIcon;
 };

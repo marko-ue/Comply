@@ -80,6 +80,13 @@ void AComplyCharacterBase::GiveStartupAbilities()
 				PlayerCharacter->EquippedPrimaryWeaponClass = Set.AbilityClass;
 			}
 		}
+		if (Set.AbilityClass->IsChildOf(UThrowableAbilityBase::StaticClass()))
+		{
+			if (AComplyPlayerCharacter* PlayerCharacter = Cast<AComplyPlayerCharacter>(this))
+			{
+				PlayerCharacter->EquippedThrowableClass = Set.AbilityClass;
+			}
+		}
 	}
 }
 

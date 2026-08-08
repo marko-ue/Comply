@@ -22,6 +22,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Data")
 	TObjectPtr<UComplyGrenadeData> GrenadeData;
 	
+	FORCEINLINE virtual FGameplayAttribute GetCurrentChargesAttribute() const { return FGameplayAttribute(); }
+	FORCEINLINE virtual FGameplayAttribute GetMaxChargesAttribute() const { return FGameplayAttribute(); }
+	
 	UFUNCTION()
 	virtual void ConfirmThrow();
 

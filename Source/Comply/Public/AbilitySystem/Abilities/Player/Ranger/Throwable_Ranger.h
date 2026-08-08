@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystem/Abilities/ThrowableAbilityBase.h"
+#include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
 #include "Throwable_Ranger.generated.h"
 
 class UPlasmaGrenadeData;
@@ -15,6 +16,10 @@ class COMPLY_API UThrowable_Ranger : public UThrowableAbilityBase
 {
 	GENERATED_BODY()
 
+public:
+	FORCEINLINE virtual FGameplayAttribute GetCurrentChargesAttribute() const override { return UWeaponAttributeSet::GetPlasmaGrenadeCurrentChargesAttribute(); }
+	FORCEINLINE virtual FGameplayAttribute GetMaxChargesAttribute() const override { return UWeaponAttributeSet::GetPlasmaGrenadeMaxChargesAttribute(); }
+	
 protected:
 	virtual void ThrowOnServer(FVector LaunchVelocity, FVector SpawnPosition) override;
 	

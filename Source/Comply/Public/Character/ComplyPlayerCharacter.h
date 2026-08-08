@@ -7,6 +7,7 @@
 #include "Character/ComplyCharacterBase.h"
 #include "Interface/Player/PlayerInterface.h"
 #include "GameplayEffectTypes.h"
+#include "AbilitySystem/Abilities/ThrowableAbilityBase.h"
 #include "Interface/TargetableInterface.h"
 #include "Interface/Player/WeaponInterface.h"
 #include "ComplyPlayerCharacter.generated.h"
@@ -54,9 +55,14 @@ public:
 	UPROPERTY(Replicated)
 	TSubclassOf<URangedWeaponAbilityBase> EquippedPrimaryWeaponClass;
 	
-	void SetEquippedPrimaryWeapon(TSubclassOf<URangedWeaponAbilityBase> NewWeaponClass);
-	URangedWeaponAbilityBase* GetEquippedPrimaryWeapon() const;
+	UPROPERTY(Replicated)
+	TSubclassOf<UThrowableAbilityBase> EquippedThrowableClass;
 	
+	void SetEquippedPrimaryWeapon(TSubclassOf<URangedWeaponAbilityBase> NewWeaponClass);
+	void SetEquippedThrowable(TSubclassOf<UThrowableAbilityBase> NewWeaponClass);
+	URangedWeaponAbilityBase* GetEquippedPrimaryWeapon() const;
+	UThrowableAbilityBase* GetEquippedThrowable() const;
+
 	// Death and reviving
 	UFUNCTION(BlueprintCallable)
 	void DownPlayer();

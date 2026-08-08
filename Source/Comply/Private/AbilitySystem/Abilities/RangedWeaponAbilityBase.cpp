@@ -4,7 +4,6 @@
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "AbilitySystemComponent.h"
 #include "Comply.h"
-#include "ComplyPlayerController.h"
 #include "GameplayCueManager.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
@@ -18,7 +17,6 @@
 #include "Character/ComplyCharacterBase.h"
 #include "Character/ComplyPlayerCharacter.h"
 #include "Framework/GameMode/ComplyGameModeBase.h"
-#include "UI/Widgets/DamageNumbers/DamageNumbersWidget.h"
 
 
 // Traces to the middle of the screen
@@ -196,6 +194,8 @@ void URangedWeaponAbilityBase::BuildWeaponCollisionParams(const AActor* Avatar, 
 
 bool URangedWeaponAbilityBase::Fire()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Fire called"));
+	
 	checkf(WeaponData, TEXT("WeaponData not set on %s"), *GetName());
 	checkf(WeaponData->DamageData, TEXT("DamageData not set on %s"), *GetName());
 	
@@ -216,17 +216,15 @@ bool URangedWeaponAbilityBase::Fire()
 			Character->bIsFiring = true;
 		}
 	}
-	
-	bool bFound = false;
-	const float CurrentAmmo = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(ActiveWeapon->GetCurrentAmmoAttribute(), bFound);
-	if (CurrentAmmo > 0.f)
+
+	if (CommitAbilityCost(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo()))
 	{
 		if (AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo()))
 		{
 			Character->ApplyFiringFeedback(WeaponData);
 		}
 	}
-	else if (CurrentAmmo <= 0.f)
+	else
 	{
 		FGameplayCueParameters CueParams;
 		CueParams.Location = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo())->WeaponMesh->GetComponentLocation();
@@ -247,11 +245,6 @@ bool URangedWeaponAbilityBase::Fire()
 		
 		return false;
 	}
-	
-	// Reduce ammo in mag by 1
-	const FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
-	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(WeaponData->ReduceAmmoEffectClass, 1.f, ContextHandle);
-	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	
 	// Any previous running hit scan target data tasks must be ended so it's not triggered for each accumulated task
 	if (HitscanTargetDataTask)
@@ -415,6 +408,11 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
 
 void URangedWeaponAbilityBase::OnFireDelayFinished()
 {
+	if (!FireDelayTask) return; // Already handled
+    
+	FireDelayTask = nullptr; // Clear before calling Fire to prevent re-entry
+	
+	UE_LOG(LogTemp, Warning, TEXT("OnFireDelayFinished called"));
 	const AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
 	if (!Character || !Character->bIsFiring)
 	{

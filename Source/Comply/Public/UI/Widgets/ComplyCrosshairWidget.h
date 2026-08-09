@@ -6,9 +6,11 @@
 #include "Blueprint/UserWidget.h"
 #include "ComplyCrosshairWidget.generated.h"
 
+class UImage;
 /**
  * 
  */
+
 UCLASS()
 class COMPLY_API UComplyCrosshairWidget : public UUserWidget
 {
@@ -16,4 +18,9 @@ class COMPLY_API UComplyCrosshairWidget : public UUserWidget
 	
 public:
 	void InitializeCrosshair();
+	void SetCrosshairTexture(UTexture2D* CrosshairTexture);
+	
+private:
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> CrosshairImage;
 };

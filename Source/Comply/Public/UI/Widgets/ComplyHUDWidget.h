@@ -26,6 +26,8 @@ public:
 	
 	UFUNCTION()
 	void TryInitializeWidgets();
+	
+	FORCEINLINE UComplyCrosshairWidget* GetCrosshairWidget() const { return ComplyCrosshairWidget; }
 
 protected:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))

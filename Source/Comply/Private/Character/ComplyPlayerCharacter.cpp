@@ -17,6 +17,8 @@
 #include "AbilitySystem/Abilities/UtilityAbilityBase.h"
 #include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
 #include "AbilitySystem/Data/Player/ComplyPlayerData.h"
+#include "AbilitySystem/Data/Player/Abilities/Utilities/ComplyUtilityData.h"
+#include "AbilitySystem/Data/Player/Grenades/ComplyGrenadeData.h"
 #include "AbilitySystem/Data/Player/Input/ComplyInputData.h"
 #include "AbilitySystem/Data/Player/Stats/DisruptorData.h"
 #include "AbilitySystem/Data/Player/Stats/EnforcerData.h"
@@ -31,6 +33,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
+#include "UI/Widgets/ComplyCrosshairWidget.h"
+#include "UI/Widgets/ComplyHUDWidget.h"
 #include "UI/Widgets/DamageNumbers/DamageNumbersWidget.h"
 
 
@@ -843,24 +847,43 @@ UStaticMesh* AComplyPlayerCharacter::GetMeshForSlot(EWeaponSlot Slot)
 
 void AComplyPlayerCharacter::OnWeaponEquipped(EWeaponSlot Slot)
 {
-	if (Slot == CurrentEquippedSlot) return; // Already holding this weapon, return so the equip animation is not played again
+	if (Slot == CurrentEquippedSlot) return;
 
 	CurrentEquippedSlot = Slot;
-	
-	// Set tag to exactly 1 stack regardless of how many were added previously
-	// This is to prevent multiple equipping state tags from stacking when spamming equips
+    
 	GetAbilitySystemComponent()->SetLooseGameplayTagCount(ComplyTags::States::State_Equipping, 1);
 
 	UAnimMontage* Montage = nullptr;
+	UTexture2D* CrosshairTexture = nullptr;
 	switch (Slot)
 	{
-		case EWeaponSlot::Primary:   Montage = PlayerData->PrimaryEquipMontage;   break;
-		case EWeaponSlot::Utility:   Montage = PlayerData->UtilityEquipMontage;   break;
-		case EWeaponSlot::Throwable: Montage = PlayerData->ThrowableEquipMontage; break;
+		case EWeaponSlot::Primary:
+			Montage = PlayerData->PrimaryEquipMontage;
+			CrosshairTexture = GetEquippedPrimaryWeapon()->WeaponData->CrosshairTexture;
+			break;
+		case EWeaponSlot::Utility:
+			Montage = PlayerData->UtilityEquipMontage;
+			CrosshairTexture = GetEquippedUtility()->UtilityData->CrosshairTexture;
+			break;
+		case EWeaponSlot::Throwable:
+			Montage = PlayerData->ThrowableEquipMontage;
+			CrosshairTexture = GetEquippedThrowable()->GrenadeData->CrosshairTexture;
+			break;
 		default: break;
 	}
 
 	if (Montage) PlayAnimMontage(Montage);
+
+	if (!ensureMsgf(CrosshairTexture, TEXT("CrosshairTexture is null for slot %d. Check data asset."), static_cast<int32>(Slot))) return;
+
+	if (const AComplyPlayerController* PC = GetController<AComplyPlayerController>())
+	{
+		if (!PC->HUDWidget) return;
+		if (UComplyCrosshairWidget* Crosshair = PC->HUDWidget->GetCrosshairWidget())
+		{
+			Crosshair->SetCrosshairTexture(CrosshairTexture);
+		}
+	}
 }
 
 // OnRep handles playing the equip animation for clients

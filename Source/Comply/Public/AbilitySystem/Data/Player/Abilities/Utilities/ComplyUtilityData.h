@@ -40,4 +40,7 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TObjectPtr<UTexture2D> UtilityIcon;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Crosshair")
+	TObjectPtr<UTexture2D> CrosshairTexture;
 };

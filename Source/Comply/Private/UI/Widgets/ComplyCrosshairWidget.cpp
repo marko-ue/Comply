@@ -3,7 +3,14 @@
 
 #include "UI/Widgets/ComplyCrosshairWidget.h"
 
+#include "Components/Image.h"
+
 void UComplyCrosshairWidget::InitializeCrosshair()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Crosshair initialized"));
+	
+}
+
+void UComplyCrosshairWidget::SetCrosshairTexture(UTexture2D* CrosshairTexture)
+{
+	CrosshairImage->SetBrushFromTexture(CrosshairTexture);
 }

@@ -83,4 +83,7 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TObjectPtr<UTexture2D> BulletIcon;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Crosshair")
+	TObjectPtr<UTexture2D> CrosshairTexture;
 };

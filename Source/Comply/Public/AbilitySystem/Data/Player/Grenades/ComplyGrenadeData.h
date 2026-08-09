@@ -45,4 +45,7 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TObjectPtr<UTexture2D> ChargesIcon;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Crosshair")
+	TObjectPtr<UTexture2D> CrosshairTexture;
 };

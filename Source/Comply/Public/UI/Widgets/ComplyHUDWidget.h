@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "ComplyHUDWidget.generated.h"
 
+class UComplyStatusEffectsWidget;
 class UComplyUtilityCooldownsWidget;
 class UComplyChargeWidget;
 class UComplyAmmoWidget;
@@ -44,6 +45,9 @@ protected:
 	
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UComplyUtilityCooldownsWidget> ComplyUtilityCooldownsWidget;
+	
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UComplyStatusEffectsWidget> ComplyStatusEffectsWidget;
 
 private:
 	UPROPERTY()
@@ -53,6 +57,7 @@ private:
 	bool bAmmoInitialized;
 	bool bChargeInitialized;
 	bool bUtilityCooldownsInitialized;
+	bool bStatusEffectsInitialized;
 	bool bWidgetsInitialized;
 	
 	FTimerHandle RetryTimerHandle;

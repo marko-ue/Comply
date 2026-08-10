@@ -11,6 +11,7 @@
 #include "Interface/Player/PlayerInterface.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 #include "Sound/SoundCue.h"
 
 
@@ -31,6 +32,13 @@ AShieldDome::AShieldDome()
 	
 	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnOverlapBegin);
 	SphereComp->OnComponentEndOverlap.AddDynamic(this, &ThisClass::OnOverlapEnd);
+}
+
+void AShieldDome::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(ThisClass, ShieldData);
 }
 
 void AShieldDome::BeginPlay()

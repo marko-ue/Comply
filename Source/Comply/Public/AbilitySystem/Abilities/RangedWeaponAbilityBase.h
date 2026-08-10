@@ -44,11 +44,6 @@ public:
 	TObjectPtr<URangedWeaponAbilityBase> ActiveWeapon;
 
 protected:
-	// Tracks shots fired but not yet confirmed by the server, used to offset
-	// CheckCost on the client for automatic weapons since cost isn't predicted
-	int32 PendingShotCount = 0;
-	FDelegateHandle AmmoReplicatedHandle;
-	
 	void BuildWeaponCollisionParams(const AActor* Avatar, FCollisionQueryParams& OutQueryParams, FCollisionObjectQueryParams& OutObjectParams);
 	
 	virtual bool Fire();

@@ -21,7 +21,9 @@ class COMPLY_API AShieldDome : public AActor
 public:
 	AShieldDome();
 	
-	UPROPERTY()
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	
+	UPROPERTY(Replicated)
 	TObjectPtr<UShieldUtilityData> ShieldData;
 	
 	UPROPERTY()

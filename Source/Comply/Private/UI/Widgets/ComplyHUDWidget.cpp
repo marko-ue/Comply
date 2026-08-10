@@ -7,6 +7,7 @@
 #include "UI/Widgets/ComplyAmmoWidget.h"
 #include "UI/Widgets/ComplyChargesWidget.h"
 #include "UI/Widgets/ComplyHealthBarWidget.h"
+#include "UI/Widgets/ComplyReviveProgressWidget.h"
 #include "UI/Widgets/ComplyStatusEffectsWidget.h"
 #include "UI/Widgets/ComplyUtilityCooldownsWidget.h"
 
@@ -44,13 +45,9 @@ void UComplyHUDWidget::TryInitializeWidgets()
 		ComplyStatusEffectsWidget->InitializeStatusEffects(CachedASC);
 	}
 	
-	if (!bWidgetsInitialized) bWidgetsInitialized = bHealthInitialized && bAmmoInitialized && bChargeInitialized && 
-		bUtilityCooldownsInitialized && bStatusEffectsInitialized;
-	
-	// If widgets are not initialized yet, try again every 100ms until they are
-	if (!bWidgetsInitialized)
+	if (ComplyReviveProgressWidget)
 	{
-		GetWorld()->GetTimerManager().SetTimer(RetryTimerHandle, this, &UComplyHUDWidget::TryInitializeWidgets, 0.1f, false);
+		ComplyReviveProgressWidget->InitializeReviveProgress(CachedASC);
 	}
 }
 

@@ -57,6 +57,7 @@ namespace ComplyTags
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Sprinting, "ComplyTags.States.Sprinting", "Is player sprinting")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Slowed, "ComplyTags.States.Slowed", "Is player slowed")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Stunned, "ComplyTags.States.Stunned", "Is player stunned")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Reviving, "ComplyTags.States.Reviving", "Is player reviving another player")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Downed, "ComplyTags.States.Downed", "Is player downed")
 		
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_ThrowablePreparing, "ComplyTags.States.Throwable.Preparing", "Is player preparing throwable")

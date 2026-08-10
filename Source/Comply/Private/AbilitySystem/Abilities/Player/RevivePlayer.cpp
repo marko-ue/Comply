@@ -25,8 +25,12 @@ void URevivePlayer::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	if (!Avatar) { EndAbility(Handle, ActorInfo, ActivationInfo, true, false); return; }
 	
 	FVector TraceStart, TraceEnd, TraceDirection;
-	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, Avatar, TraceLength, TraceStart, TraceEnd, TraceDirection)) return;
-
+	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, Avatar, TraceLength, TraceStart, TraceEnd, TraceDirection))
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+		return;
+	}
+	
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(GetAvatarActorFromActorInfo());
 	
@@ -53,13 +57,6 @@ void URevivePlayer::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 			}
 		}
 	}
-	else if (IsLocallyControlled())
-	{
-		// Trace didn't hit a downed player for the client, return early
-		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
-		return;
-	}
-	
 	
 	if (!Reviver || !TargetPlayer)
 	{
@@ -73,6 +70,8 @@ void URevivePlayer::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	MontageTask->OnInterrupted.AddDynamic(this, &URevivePlayer::OnMontageCancelled);
 	MontageTask->OnCancelled.AddDynamic(this, &URevivePlayer::OnMontageCancelled);
 	MontageTask->ReadyForActivation();
+	
+	GetAbilitySystemComponentFromActorInfo()->AddLooseGameplayTag(ComplyTags::States::State_Reviving);
 	
 	FGameplayCueParameters CueParams;
 	CueParams.Location = TargetPlayer->GetActorLocation();
@@ -113,6 +112,8 @@ void URevivePlayer::EndAbility(const FGameplayAbilitySpecHandle Handle, const FG
 			}
 		}
 	}
+	
+	GetAbilitySystemComponentFromActorInfo()->SetTagMapCount(ComplyTags::States::State_Reviving, 0);
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "ComplyHUDWidget.generated.h"
 
+class UComplyReviveProgressWidget;
 class UComplyStatusEffectsWidget;
 class UComplyUtilityCooldownsWidget;
 class UComplyChargeWidget;
@@ -48,17 +49,11 @@ protected:
 	
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UComplyStatusEffectsWidget> ComplyStatusEffectsWidget;
+	
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UComplyReviveProgressWidget> ComplyReviveProgressWidget;
 
 private:
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> CachedASC;
-	
-	bool bHealthInitialized;
-	bool bAmmoInitialized;
-	bool bChargeInitialized;
-	bool bUtilityCooldownsInitialized;
-	bool bStatusEffectsInitialized;
-	bool bWidgetsInitialized;
-	
-	FTimerHandle RetryTimerHandle;
 };

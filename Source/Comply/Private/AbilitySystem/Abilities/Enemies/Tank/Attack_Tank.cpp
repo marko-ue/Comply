@@ -86,6 +86,10 @@ void UAttack_Tank::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 		}
 	}
 	
+	FGameplayCueParameters CueParams;
+	CueParams.Location = GetAvatarActorFromActorInfo()->GetActorLocation();
+	GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::EnemyAttackTank, CueParams);
+	
 	// Also charge if the target actor gets hit
 	if (bHitAnything)
 	{

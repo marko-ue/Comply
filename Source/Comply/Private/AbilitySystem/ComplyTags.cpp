@@ -131,7 +131,8 @@ namespace ComplyTags
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(BuffTotemApplyBuff, "GameplayCue.BuffTotem.ApplyBuff", "Gameplay cue tag for when a buff totem buff is applied")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(BuffTotemBuffAura, "GameplayCue.BuffTotem.BuffAura", "Gameplay cue tag for the buff aura when a buff exists")
 		
-		UE_DEFINE_GAMEPLAY_TAG_COMMENT(EnemyAttack, "GameplayCue.Enemy.Attack", "Gameplay cue for when enemies attack")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(EnemyAttack, "GameplayCue.Enemy.Attack", "Gameplay cue tag for when enemies attack")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(EnemyAttackTank, "GameplayCue.Enemy.Attack.Tank", "Gameplay cue tag for specific tank attack effects")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(EnemyDeath, "GameplayCue.Enemy.Death", "Gameplay cue tag for when enemies die")
 		
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(PlayerReviveStart, "GameplayCue.Player.ReviveStart", "Gameplay cue tag for when reviving a player starts")

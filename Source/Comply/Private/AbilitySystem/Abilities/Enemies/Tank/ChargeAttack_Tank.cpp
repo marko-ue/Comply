@@ -2,6 +2,7 @@
 
 #include "AbilitySystem/Abilities/Enemies/Tank/ChargeAttack_Tank.h"
 
+#include "AbilitySystemComponent.h"
 #include "AIController.h"
 #include "BrainComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
@@ -24,6 +25,10 @@ void UChargeAttack_Tank::ActivateAbility(const FGameplayAbilitySpecHandle Handle
     Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
     
     if (!CommitAbility(Handle, ActorInfo, ActivationInfo)) return;
+    
+    FGameplayCueParameters CueParams;
+    CueParams.Location = GetAvatarActorFromActorInfo()->GetActorLocation();
+    GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::EnemyAttackTank, CueParams);
 
     if (TriggerEventData && TriggerEventData->Target)
     {
@@ -51,18 +56,18 @@ void UChargeAttack_Tank::ActivateAbility(const FGameplayAbilitySpecHandle Handle
     AttackMontageTask->ReadyForActivation();
 
     // The launch velocity of the enemy will be towards the player scaled by charge speed
-    FVector EnemyLocation = Enemy->GetActorLocation();
-    FVector TargetLocation = TargetActor->GetActorLocation();
+    const FVector EnemyLocation = Enemy->GetActorLocation();
+    const FVector TargetLocation = TargetActor->GetActorLocation();
     FVector DirectionToTarget = (TargetLocation - EnemyLocation);
     DirectionToTarget.Z = 0.f;
     DirectionToTarget = DirectionToTarget.GetSafeNormal();
-    FVector LaunchVelocity = DirectionToTarget * ChargeSpeed;
+    const FVector LaunchVelocity = DirectionToTarget * ChargeSpeed;
 
     // Ensure the enemy faces the target before charging
     Enemy->SetActorRotation(DirectionToTarget.Rotation());
 
     // Pause AI so the navmesh doesn't override the CMC velocity that's about to be set
-    APawn* AIPawn = Cast<APawn>(ActorInfo->AvatarActor.Get());
+    const APawn* AIPawn = Cast<APawn>(ActorInfo->AvatarActor.Get());
     
     if (AAIController* AIC = AIPawn ? Cast<AAIController>(AIPawn->GetController()) : nullptr)
     {
@@ -92,7 +97,7 @@ void UChargeAttack_Tank::OnAttackAnimationFinished()
 {
     RestoreMovement(GetCurrentActorInfo());
 
-    if (AAIController* AIC = Cast<AAIController>(GetCurrentActorInfo()->AvatarActor->GetInstigatorController()))
+    if (const AAIController* AIC = Cast<AAIController>(GetCurrentActorInfo()->AvatarActor->GetInstigatorController()))
     {
         AIC->GetBrainComponent()->ResumeLogic("Charging");
     }
@@ -105,7 +110,7 @@ void UChargeAttack_Tank::RestoreMovement(const FGameplayAbilityActorInfo* ActorI
 {
     if (!ActorInfo) return;
 
-    AComplyEnemyCharacter* Enemy = Cast<AComplyEnemyCharacter>(ActorInfo->AvatarActor.Get());
+    const AComplyEnemyCharacter* Enemy = Cast<AComplyEnemyCharacter>(ActorInfo->AvatarActor.Get());
     if (!Enemy) return;
 
     UCharacterMovementComponent* CMC = Enemy->GetCharacterMovement();

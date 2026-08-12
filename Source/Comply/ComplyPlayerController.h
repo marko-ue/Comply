@@ -59,7 +59,6 @@ public:
 	
 	void ShowFlashbangEffect();
 
-	
 protected:
 	/** Input Mapping Contexts */
 	UPROPERTY(EditAnywhere, Category ="Input|Input Mappings")

@@ -9,6 +9,8 @@
 #include "Framework/GameInstance/ComplyGameInstance.h"
 #include "Framework/GameState/ComplyGameStateBase.h"
 #include "Framework/PlayerState/ComplyPlayerState.h"
+#include "UI/Widgets/ComplyHUDWidget.h"
+#include "UI/Widgets/TeammatePanels/ComplyTeamStatusPanelsWidget.h"
 
 
 void AComplyGameModeBase::BeginPlay()
@@ -17,6 +19,36 @@ void AComplyGameModeBase::BeginPlay()
 	
 	AComplyGameStateBase* GS = GetWorld()->GetGameState<AComplyGameStateBase>();
 	if (GS) GS->bFriendlyFire = bFriendlyFire;
+}
+
+void AComplyGameModeBase::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
+
+	// Notify all local controllers to refresh their teammate panels whenever a player joins
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		const AComplyPlayerController* PC = Cast<AComplyPlayerController>(It->Get());
+		if (PC && PC->IsLocalController() && PC->HUDWidget)
+		{
+			PC->HUDWidget->GetTeamStatusPanelsWidget()->InitializeTeamStatusPanels();
+		}
+	}
+}
+
+void AComplyGameModeBase::HandleSeamlessTravelPlayer(AController*& C)
+{
+	Super::HandleSeamlessTravelPlayer(C);
+	
+	// Notify all local controllers to refresh their teammate panels whenever server seamless travel happens
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		const AComplyPlayerController* PC = Cast<AComplyPlayerController>(It->Get());
+		if (PC && PC->IsLocalController() && PC->HUDWidget)
+		{
+			PC->HUDWidget->GetTeamStatusPanelsWidget()->InitializeTeamStatusPanels();
+		}
+	}
 }
 
 // Checks if all players have unique characters selected to determine whether a mission can be started and other checks

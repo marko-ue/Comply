@@ -18,12 +18,19 @@ public class Comply : ModuleRules
 			"StateTreeModule",
 			"GameplayStateTreeModule",
 			"UMG",
-			"Slate"
+			"Slate",
+			"OnlineSubsystem",
+			"OnlineSubsystemUtils"
 		});
 		
 		PublicDependencyModuleNames.AddRange(new string[] { "GameplayAbilities" });
 		
-		PrivateDependencyModuleNames.AddRange(new string[] { "CableComponent", "FractureEditor", "FractureEditor" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "CableComponent" });
+
+		if (Target.bBuildEditor)
+		{
+			PrivateDependencyModuleNames.Add("FractureEditor");
+		}
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "GameplayTags", "GameplayTasks", "NavigationSystem", "Niagara" });
 

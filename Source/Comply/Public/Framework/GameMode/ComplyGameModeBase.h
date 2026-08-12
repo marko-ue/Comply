@@ -18,6 +18,9 @@ class COMPLY_API AComplyGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 	
 public:
+	virtual void PostLogin(APlayerController* NewPlayer) override;
+	virtual void HandleSeamlessTravelPlayer(AController*& C) override;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Game Settings")
 	bool bFriendlyFire = false;
 	

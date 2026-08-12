@@ -10,6 +10,7 @@
 #include "UI/Widgets/ComplyReviveProgressWidget.h"
 #include "UI/Widgets/ComplyStatusEffectsWidget.h"
 #include "UI/Widgets/ComplyUtilityCooldownsWidget.h"
+#include "UI/Widgets/TeammatePanels/ComplyTeamStatusPanelsWidget.h"
 
 
 void UComplyHUDWidget::InitializeHUD(UAbilitySystemComponent* ASC)
@@ -48,6 +49,11 @@ void UComplyHUDWidget::TryInitializeWidgets()
 	if (ComplyReviveProgressWidget)
 	{
 		ComplyReviveProgressWidget->InitializeReviveProgress(CachedASC);
+	}
+	
+	if (ComplyTeamStatusPanelsWidget)
+	{
+		ComplyTeamStatusPanelsWidget->InitializeTeamStatusPanels();
 	}
 }
 

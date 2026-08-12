@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "ComplyHUDWidget.generated.h"
 
+class UComplyTeamStatusPanelsWidget;
 class UComplyReviveProgressWidget;
 class UComplyStatusEffectsWidget;
 class UComplyUtilityCooldownsWidget;
@@ -30,6 +31,7 @@ public:
 	void TryInitializeWidgets();
 	
 	FORCEINLINE UComplyCrosshairWidget* GetCrosshairWidget() const { return ComplyCrosshairWidget; }
+	FORCEINLINE UComplyTeamStatusPanelsWidget* GetTeamStatusPanelsWidget() const { return ComplyTeamStatusPanelsWidget; }
 
 protected:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
@@ -52,6 +54,9 @@ protected:
 	
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UComplyReviveProgressWidget> ComplyReviveProgressWidget;
+	
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UComplyTeamStatusPanelsWidget> ComplyTeamStatusPanelsWidget;
 
 private:
 	UPROPERTY()

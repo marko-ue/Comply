@@ -11,6 +11,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Comply.h"
+#include "Framework/GameInstance/ComplyGameInstance.h"
 
 AComplyCharacter::AComplyCharacter()
 {
@@ -97,12 +98,19 @@ void AComplyCharacter::DoMove(float Right, float Forward)
 
 void AComplyCharacter::DoLook(float Yaw, float Pitch)
 {
-	if (GetController() != nullptr)
+	if (GetController() == nullptr) return;
+	
+	// Checks if Y look should be inverted if the player chose that setting
+	UComplyGameInstance* GI = GetGameInstance<UComplyGameInstance>();
+	if (!GI)
 	{
-		// add yaw and pitch input to controller
 		AddControllerYawInput(Yaw);
 		AddControllerPitchInput(Pitch);
+		return;
 	}
+
+	AddControllerYawInput(Yaw * GI->LookSensitivity);
+	AddControllerPitchInput(Pitch * GI->LookSensitivity * (GI->bInvertY ? -1.f : 1.f));
 }
 
 void AComplyCharacter::DoJumpStart()

@@ -19,6 +19,9 @@ class COMPLY_API UComplyCrosshairWidget : public UUserWidget
 public:
 	void InitializeCrosshair();
 	void SetCrosshairTexture(UTexture2D* CrosshairTexture);
+	void SetCrosshairSize(float Size);
+	void SetCrosshairColor(FLinearColor Color);
+	void SetCrosshairOpacity(float Opacity);
 	
 private:
 	UPROPERTY(meta = (BindWidget))

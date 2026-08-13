@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "UI/Widgets/ComplyAmmoWidget.h"
 #include "UI/Widgets/ComplyChargesWidget.h"
+#include "UI/Widgets/ComplyCrosshairWidget.h"
 #include "UI/Widgets/ComplyHealthBarWidget.h"
 #include "UI/Widgets/ComplyReviveProgressWidget.h"
 #include "UI/Widgets/ComplyStatusEffectsWidget.h"
@@ -24,6 +25,11 @@ void UComplyHUDWidget::TryInitializeWidgets()
 	if (ComplyHealthBarWidget)
 	{
 		ComplyHealthBarWidget->InitializeHealthBar(CachedASC);
+	}
+	
+	if (ComplyCrosshairWidget)
+	{
+		ComplyCrosshairWidget->InitializeCrosshair();
 	}
 	
 	if (ComplyAmmoWidget)

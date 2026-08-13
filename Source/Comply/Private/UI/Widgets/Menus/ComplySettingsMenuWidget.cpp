@@ -41,7 +41,7 @@ void UComplySettingsMenuWidget::NativeConstruct()
 }
 
 // Loads any settings already set into the widgets to update them
-void UComplySettingsMenuWidget::LoadCurrentSettings()
+void UComplySettingsMenuWidget::LoadCurrentSettings() const
 {
     const UComplyGameInstance* GI = GetGameInstance<UComplyGameInstance>();
     if (!GI) return;
@@ -75,7 +75,7 @@ void UComplySettingsMenuWidget::OnAmbienceVolumeChanged(float Value)
     ApplyVolume(AmbienceSoundClass, Value);
 }
 
-void UComplySettingsMenuWidget::ApplyVolume(USoundClass* SoundClass, float Volume)
+void UComplySettingsMenuWidget::ApplyVolume(USoundClass* SoundClass, const float Volume) const
 {
     if (!MasterSoundMix || !SoundClass) return;
     
@@ -118,7 +118,7 @@ void UComplySettingsMenuWidget::OnApplyClicked()
     ApplyHUDVisibility(GI->bShowHUD);
 }
 
-void UComplySettingsMenuWidget::ApplyCrosshairSettings()
+void UComplySettingsMenuWidget::ApplyCrosshairSettings() const
 {
     const UComplyGameInstance* GI = GetGameInstance<UComplyGameInstance>();
     const AComplyPlayerController* PC = GetOwningPlayer<AComplyPlayerController>();
@@ -132,7 +132,7 @@ void UComplySettingsMenuWidget::ApplyCrosshairSettings()
     CrosshairWidget->SetCrosshairColor(GI->CrosshairColor);
 }
 
-void UComplySettingsMenuWidget::ApplyHUDVisibility(bool bVisible)
+void UComplySettingsMenuWidget::ApplyHUDVisibility(bool bVisible) const
 {
     const AComplyPlayerController* PC = GetOwningPlayer<AComplyPlayerController>();
     if (!PC) return;
@@ -141,11 +141,6 @@ void UComplySettingsMenuWidget::ApplyHUDVisibility(bool bVisible)
     if (!HUD) return;
 
     HUD->SetVisibility(bVisible ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
-}
-
-void UComplySettingsMenuWidget::OnCloseClicked()
-{
-    RemoveFromParent();
 }
 
 void UComplySettingsMenuWidget::OnTabAudioClicked()

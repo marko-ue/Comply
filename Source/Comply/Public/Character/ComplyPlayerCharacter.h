@@ -154,6 +154,7 @@ protected:
 	
 	virtual void InitializeAttributes() const override;
 	
+	// Input
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	void PrimaryActionPressed();
@@ -173,11 +174,12 @@ protected:
 	// Called for cancelling previews of certain abilities (cancels abilities)
 	void CancelPreviewActionPressed();
 
+	// Equip actions
 	void EquipPrimaryActionPressed();
-
 	void EquipUtilityActionPressed();
-
 	void EquipThrowableActionPressed();
+	
+	void OpenPauseMenuActionPressed();
 	// End Input
 	
 private:
@@ -243,4 +245,7 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Audio", meta = (AllowPrivateAccess = true))
 	TObjectPtr<USoundCue> GunReloadFinishedSound;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "UI", meta = (AllowPrivateAccess = true))
+	TSubclassOf<class UUserWidget> PauseMenuWidgetClass;
 };

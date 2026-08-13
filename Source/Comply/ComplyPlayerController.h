@@ -13,8 +13,7 @@ class UInputMappingContext;
 class UUserWidget;
 
 /**
- *  Basic PlayerController class for a third person game
- *  Manages input mappings
+ *
  */
 UCLASS(abstract)
 class AComplyPlayerController : public APlayerController
@@ -30,7 +29,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UUserWidget> ActiveMenuWidget;
 	
-	// Functions called from objects that have menus (main menu, interactables, upgrade screen, mission debrief etc.)
+	// Functions called from objects that have menus (main menu, upgrade screen, mission debrief etc.)
 	UFUNCTION(BlueprintCallable)
 	void OpenMenuWidget(TSubclassOf<UUserWidget> WidgetClass);
 	UFUNCTION(BlueprintCallable)

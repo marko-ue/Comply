@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ComplyMenuWidgetBase.h"
 #include "Blueprint/UserWidget.h"
 #include "ComplySettingsMenuWidget.generated.h"
 
@@ -18,7 +19,7 @@ class USoundClass;
  * 
  */
 UCLASS()
-class COMPLY_API UComplySettingsMenuWidget : public UUserWidget
+class COMPLY_API UComplySettingsMenuWidget : public UComplyMenuWidgetBase
 {
 	GENERATED_BODY()
 	
@@ -128,13 +129,9 @@ private:
     UFUNCTION()
     void OnApplyClicked();
 
-    UFUNCTION()
-    void OnCloseClicked();
-
     // Helpers for applying modified settings
-
-    void LoadCurrentSettings();
-    void ApplyVolume(USoundClass* SoundClass, float Volume);
-    void ApplyCrosshairSettings();
-    void ApplyHUDVisibility(bool bVisible);
+    void LoadCurrentSettings() const;
+    void ApplyVolume(USoundClass* SoundClass, const float Volume) const;
+    void ApplyCrosshairSettings() const;
+    void ApplyHUDVisibility(bool bVisible) const;
 };

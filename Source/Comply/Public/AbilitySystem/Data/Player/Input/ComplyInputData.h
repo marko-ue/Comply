@@ -43,4 +43,7 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category="Input|Actions")
 	TObjectPtr<UInputAction> EquipThrowableAction;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Input|Actions")
+	TObjectPtr<UInputAction> OpenPauseMenuAction;
 };

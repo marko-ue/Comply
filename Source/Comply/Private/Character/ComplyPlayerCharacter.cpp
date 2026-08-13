@@ -108,6 +108,7 @@ void AComplyPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		EnhancedInputComponent->BindAction(InputData->EquipPrimaryAction, ETriggerEvent::Started, this, &ThisClass::EquipPrimaryActionPressed);
 		EnhancedInputComponent->BindAction(InputData->EquipUtilityAction, ETriggerEvent::Started, this, &ThisClass::EquipUtilityActionPressed);
 		EnhancedInputComponent->BindAction(InputData->EquipThrowableAction, ETriggerEvent::Started, this, &ThisClass::EquipThrowableActionPressed);
+		EnhancedInputComponent->BindAction(InputData->OpenPauseMenuAction, ETriggerEvent::Started, this, &ThisClass::OpenPauseMenuActionPressed);
 	}
 }
 
@@ -721,6 +722,14 @@ void AComplyPlayerCharacter::EquipThrowableActionPressed()
 	if (GetAbilitySystemComponent())
 	{
 		GetAbilitySystemComponent()->TryActivateAbilityByClass(EquipThrowableAbilityClass);
+	}
+}
+
+void AComplyPlayerCharacter::OpenPauseMenuActionPressed()
+{
+	if (AComplyPlayerController* PC = Cast<AComplyPlayerController>(GetController()))
+	{
+		PC->OpenMenuWidget(PauseMenuWidgetClass);
 	}
 }
 

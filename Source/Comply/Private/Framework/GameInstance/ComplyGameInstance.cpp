@@ -4,6 +4,7 @@
 #include "Framework/GameInstance/ComplyGameInstance.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 #include "SaveGame/ComplySettingsSaveGame.h"
 
 void UComplyGameInstance::Init()
@@ -11,6 +12,13 @@ void UComplyGameInstance::Init()
 	Super::Init();
 	
 	LoadSettings();
+}
+
+void UComplyGameInstance::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(UComplyGameInstance, bFriendlyFire);
 }
 
 // Saves the new settings to the save game

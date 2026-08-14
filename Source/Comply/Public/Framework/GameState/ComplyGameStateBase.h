@@ -15,9 +15,11 @@ class COMPLY_API AComplyGameStateBase : public AGameStateBase
 	GENERATED_BODY()
 	
 public:
+	virtual void BeginPlay() override;
+	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
-	// This replicated variable is used for clients to check if friendly fire is enabled. It's set internally by the GameMode
+	// This replicated variable is used for clients to check if friendly fire is enabled.
 	UPROPERTY(Replicated)
 	bool bFriendlyFire;
 	

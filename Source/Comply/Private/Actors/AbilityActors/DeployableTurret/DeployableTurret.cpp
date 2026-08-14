@@ -13,6 +13,7 @@
 #include "Components/ArrowComponent.h"
 #include "Components/SphereComponent.h"
 #include "Framework/GameMode/ComplyGameModeBase.h"
+#include "Framework/GameState/ComplyGameStateBase.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 
@@ -123,9 +124,9 @@ void ADeployableTurret::Fire(AActor* TargetActor)
 	SourceASC->ExecuteGameplayCue(ComplyTags::GameplayCues::TurretImpact, ImpactCueParams);
 	
 	// Don't show damage number if friendly fire is off or the character hit by the overlap is the player when friendly fire is on
-	if (const AComplyGameModeBase* GameMode = Cast<AComplyGameModeBase>(GetWorld()->GetAuthGameMode()))
+	if (const AComplyGameStateBase* GS = Cast<AComplyGameStateBase>(GetWorld()->GetGameState()))
 	{
-		if (!GameMode->bFriendlyFire && Cast<AComplyPlayerCharacter>(TargetActor)) return;
+		if (!GS->bFriendlyFire && Cast<AComplyPlayerCharacter>(TargetActor)) return;
 	}
 
 	if (const AComplyCharacterBase* HitCharacter = Cast<AComplyCharacterBase>(TargetActor))

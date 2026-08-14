@@ -17,6 +17,7 @@
 #include "Character/ComplyCharacterBase.h"
 #include "Character/ComplyPlayerCharacter.h"
 #include "Framework/GameMode/ComplyGameModeBase.h"
+#include "Framework/GameState/ComplyGameStateBase.h"
 
 
 // Traces to the middle of the screen
@@ -184,8 +185,8 @@ void URangedWeaponAbilityBase::BuildWeaponCollisionParams(const AActor* Avatar, 
 	OutObjectParams.AddObjectTypesToQuery(ECC_WorldStatic);
 
 	// Trace against the player too if friendly fire is enabled
-	const AComplyGameModeBase* GameMode = GetWorld()->GetAuthGameMode<AComplyGameModeBase>();
-	if (GameMode && GameMode->bFriendlyFire)
+	const AComplyGameStateBase* GS = GetWorld()->GetGameState<AComplyGameStateBase>();
+	if (GS && GS->bFriendlyFire)
 	{
 		OutObjectParams.AddObjectTypesToQuery(ECC_Player);
 		OutObjectParams.AddObjectTypesToQuery(ECC_PlayerFriend);

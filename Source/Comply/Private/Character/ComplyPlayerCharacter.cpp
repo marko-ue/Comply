@@ -27,6 +27,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/DecalComponent.h"
+#include "Framework/GameInstance/ComplyGameInstance.h"
 #include "Framework/GameState/ComplyGameStateBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Interface/Player/InteractableInterface.h"
@@ -797,10 +798,9 @@ void AComplyPlayerCharacter::OnDistractedTagChanged(const FGameplayTag Tag, int3
 	if (NewCount <= 0) return;
 	if (!IsLocallyControlled()) return;
 	
-	AComplyGameStateBase* GS = GetWorld()->GetGameState<AComplyGameStateBase>();
-	if (GS && GS->bFriendlyFire)
+	UComplyGameInstance* GI = GetWorld()->GetGameState<UComplyGameInstance>();
+	if (GI && GI->bFriendlyFire)
 	{
-		
 		if (AComplyPlayerController* PC = Cast<AComplyPlayerController>(GetController())) PC->ShowFlashbangEffect();
 	}
 }

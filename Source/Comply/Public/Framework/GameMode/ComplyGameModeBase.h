@@ -21,18 +21,13 @@ public:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 	virtual void HandleSeamlessTravelPlayer(AController*& C) override;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Game Settings")
-	bool bFriendlyFire = false;
-	
 	UFUNCTION(BlueprintCallable)
 	bool AllPlayersHaveUniqueCharacters() const;
 
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
-
-	UFUNCTION(BlueprintCallable)
+	
 	void TravelToMap(const FString& MapPath);
 	
-	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnPlayerSelectionChanged OnPlayerSelectionChanged;
 	
 protected:

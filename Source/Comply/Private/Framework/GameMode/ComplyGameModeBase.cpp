@@ -16,9 +16,6 @@
 void AComplyGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	AComplyGameStateBase* GS = GetWorld()->GetGameState<AComplyGameStateBase>();
-	if (GS) GS->bFriendlyFire = bFriendlyFire;
 }
 
 void AComplyGameModeBase::PostLogin(APlayerController* NewPlayer)
@@ -76,7 +73,6 @@ bool AComplyGameModeBase::AllPlayersHaveUniqueCharacters() const
 
 void AComplyGameModeBase::TravelToMap(const FString& MapPath)
 {
-	UE_LOG(LogTemp, Warning, TEXT("TravelToMap called, bUseSeamlessTravel: %d"), bUseSeamlessTravel);
 	GetWorld()->ServerTravel(MapPath);
 }
 

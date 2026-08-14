@@ -18,12 +18,19 @@ class COMPLY_API UComplyGameInstance : public UGameInstance
 public:
 	virtual void Init() override;
 	
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	
 	// Character selections are stored in the GameInstance rather than PlayerState
 	// because seamless travel player migration is unreliable for the listen server host,
 	// whose controller is recreated via PostLogin rather than migrated via InitSeamlessTravelPlayer.
 	// GameInstance persists across all travels and is accessible to all server-side systems
 	UPROPERTY()
 	TMap<FString, TSubclassOf<AComplyPlayerCharacter>> PlayerCharacterSelections;
+	
+	// This replicated variable is used for clients to check if friendly fire is enabled which persists through travel
+	// The game mode uses this variable to set its friendly fire value after traveling to new maps and at the start of the game
+	UPROPERTY(Replicated)
+	bool bFriendlyFire = false;
 	
 	// --- Player Settings ---
 	UPROPERTY()

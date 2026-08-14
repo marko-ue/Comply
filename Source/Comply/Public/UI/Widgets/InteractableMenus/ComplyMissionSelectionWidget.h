@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Framework/GameInstance/ComplyGameInstance.h"
 #include "ComplyMissionSelectionWidget.generated.h"
 
+class UCheckBox;
 class AComplyPlayerController;
 class AComplyGameStateBase;
 class AComplyGameModeBase;
@@ -28,6 +30,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> CloseButton;
+	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCheckBox> FriendlyFireCheckBox;
 
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
@@ -41,10 +46,14 @@ private:
 
 	UFUNCTION()
 	void OnClosePressed();
+	
+	UFUNCTION()
+	void OnFriendlyFireChanged(bool bIsChecked);
 
 	void UpdateStartButtonText() const;
 
 	AComplyGameModeBase* GetComplyGameMode() const;
 	AComplyGameStateBase* GetComplyGameState() const;
 	AComplyPlayerController* GetComplyPlayerController() const;
+	UComplyGameInstance* GetComplyGameInstance() const;
 };

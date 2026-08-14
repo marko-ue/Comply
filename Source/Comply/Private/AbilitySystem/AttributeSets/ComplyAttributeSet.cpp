@@ -4,6 +4,7 @@
 #include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
 #include "Framework/GameMode/ComplyGameModeBase.h"
 #include "GameplayEffectExtension.h"
+#include "Framework/GameState/ComplyGameStateBase.h"
 #include "Interface/CombatantInterface.h"
 #include "Interface/TargetableInterface.h"
 #include "Interface/Enemy/EnemyInterface.h"
@@ -84,7 +85,7 @@ void UComplyAttributeSet::HandleIncomingDamage(const struct FGameplayEffectModCa
     SetIncomingDamage(0);
     if (LocalIncomingDamage <= 0) return;
 
-    const AComplyGameModeBase* GameMode = GetWorld()->GetAuthGameMode<AComplyGameModeBase>();
+    const AComplyGameStateBase* GS = GetWorld()->GetGameState<AComplyGameStateBase>();
 
     const AActor* SourceAvatarActor = nullptr;
     const AActor* TargetAvatarActor = nullptr;
@@ -99,7 +100,7 @@ void UComplyAttributeSet::HandleIncomingDamage(const struct FGameplayEffectModCa
         TargetAvatarActor = Data.Target.AbilityActorInfo->AvatarActor.Get();
     }
 
-	if (GameMode && !GameMode->bFriendlyFire && SourceAvatarActor)
+	if (GS && !GS->bFriendlyFire && SourceAvatarActor)
 	{
 		// When friendly fire is off, players can't damage anything except enemies
 		if (SourceAvatarActor->Implements<UPlayerInterface>() && 

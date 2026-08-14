@@ -8,6 +8,8 @@
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Components/CheckBox.h"
+#include "Framework/GameInstance/ComplyGameInstance.h"
 #include "GameFramework/Pawn.h"
 #include "Framework/GameMode/ComplyGameModeBase.h"
 #include "Framework/GameState/ComplyGameStateBase.h"
@@ -19,7 +21,9 @@ void UComplyMissionSelectionWidget::NativeConstruct()
 
     SelectDataExtractionButton->OnPressed.AddDynamic(this, &UComplyMissionSelectionWidget::OnSelectDataExtractionPressed);
     CloseButton->OnPressed.AddDynamic(this, &UComplyMissionSelectionWidget::OnClosePressed);
-
+    
+    FriendlyFireCheckBox->OnCheckStateChanged.AddDynamic(this, &UComplyMissionSelectionWidget::OnFriendlyFireChanged);
+    
     const AComplyPlayerController* PC = GetComplyPlayerController();
     const bool bIsServer = PC && PC->HasAuthority();
 
@@ -29,8 +33,12 @@ void UComplyMissionSelectionWidget::NativeConstruct()
     {
         UpdateStartButtonText();
 
-        if (AComplyGameModeBase* GM = GetComplyGameMode())
+        AComplyGameStateBase* GS = GetComplyGameState();
+        AComplyGameModeBase* GM = GetComplyGameMode();
+        
+        if (GS && GM)
         {
+            FriendlyFireCheckBox->SetIsChecked(GS->bFriendlyFire); // Initialize the widget status with the variable
             GM->OnPlayerSelectionChanged.AddDynamic(this, &UComplyMissionSelectionWidget::OnPlayerSelectionChanged);
         }
     }
@@ -80,6 +88,14 @@ void UComplyMissionSelectionWidget::OnClosePressed()
     }
 }
 
+void UComplyMissionSelectionWidget::OnFriendlyFireChanged(bool bIsChecked)
+{
+    if (UComplyGameInstance* GI = GetComplyGameInstance())
+    {
+        GI->bFriendlyFire = bIsChecked;
+    }
+}
+
 // Updates the status text based on if all players have unique classes or not
 void UComplyMissionSelectionWidget::UpdateStartButtonText() const
 {
@@ -106,4 +122,9 @@ AComplyGameStateBase* UComplyMissionSelectionWidget::GetComplyGameState() const
 AComplyPlayerController* UComplyMissionSelectionWidget::GetComplyPlayerController() const
 {
     return Cast<AComplyPlayerController>(GetOwningPlayer());
+}
+
+UComplyGameInstance* UComplyMissionSelectionWidget::GetComplyGameInstance() const
+{
+    return GetGameInstance<UComplyGameInstance>();
 }

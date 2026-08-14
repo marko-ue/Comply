@@ -1,7 +1,7 @@
 // Copyright © 2026 Marko. All rights reserved.
 
 
-#include "UI/Widgets/InteractableMenus/ComplyCharacterSelection.h"
+#include "UI/Widgets/InteractableMenus/ComplyCharacterSelectionWidget.h"
 
 #include "ComplyPlayerController.h"
 #include "Character/ComplyPlayerCharacter.h"
@@ -17,14 +17,14 @@ namespace ComplyCharacterClasses
 	static TSubclassOf<AComplyPlayerCharacter> Disruptor = nullptr;
 }
 
-void UComplyCharacterSelection::NativeConstruct()
+void UComplyCharacterSelectionWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	
-	SelectRangerButton->OnClicked.AddDynamic(this, &UComplyCharacterSelection::HandleRangerPressed);
-	SelectEnforcerButton->OnClicked.AddDynamic(this, &UComplyCharacterSelection::HandleEnforcerPressed);
-	SelectDisruptorButton->OnClicked.AddDynamic(this, &UComplyCharacterSelection::HandleDisruptorPressed);
-	CloseButton->OnClicked.AddDynamic(this, &UComplyCharacterSelection::HandleCloseClicked);
+	SelectRangerButton->OnClicked.AddDynamic(this, &UComplyCharacterSelectionWidget::HandleRangerPressed);
+	SelectEnforcerButton->OnClicked.AddDynamic(this, &UComplyCharacterSelectionWidget::HandleEnforcerPressed);
+	SelectDisruptorButton->OnClicked.AddDynamic(this, &UComplyCharacterSelectionWidget::HandleDisruptorPressed);
+	CloseButton->OnClicked.AddDynamic(this, &UComplyCharacterSelectionWidget::HandleCloseClicked);
 	
 	if (const APawn* OwningPawn = GetOwningPlayerPawn())
 	{
@@ -59,22 +59,22 @@ void UComplyCharacterSelection::NativeConstruct()
 	}
 }
 	
-void UComplyCharacterSelection::HandleRangerPressed()
+void UComplyCharacterSelectionWidget::HandleRangerPressed()
 {
 	ConfirmSelection(ComplyCharacterClasses::Ranger);
 }
 
-void UComplyCharacterSelection::HandleEnforcerPressed()
+void UComplyCharacterSelectionWidget::HandleEnforcerPressed()
 {
 	ConfirmSelection(ComplyCharacterClasses::Enforcer);
 }
 
-void UComplyCharacterSelection::HandleDisruptorPressed()
+void UComplyCharacterSelectionWidget::HandleDisruptorPressed()
 {
 	ConfirmSelection(ComplyCharacterClasses::Disruptor);
 }
  
-void UComplyCharacterSelection::HandleCloseClicked()
+void UComplyCharacterSelectionWidget::HandleCloseClicked()
 {
 	if (ComplyPlayerController)
 	{
@@ -82,7 +82,7 @@ void UComplyCharacterSelection::HandleCloseClicked()
 	}
 }
 
-void UComplyCharacterSelection::ConfirmSelection(TSubclassOf<AComplyPlayerCharacter> SelectedClass)
+void UComplyCharacterSelectionWidget::ConfirmSelection(TSubclassOf<AComplyPlayerCharacter> SelectedClass)
 {
 	if (!ComplyPlayerController || !SelectedClass) return; 
 	
@@ -91,13 +91,13 @@ void UComplyCharacterSelection::ConfirmSelection(TSubclassOf<AComplyPlayerCharac
 
 	if (const UWorld* World = GetWorld())
 	{
-		World->GetTimerManager().SetTimer(CloseDelayHandle, this, &UComplyCharacterSelection::OnCloseDelayFinished,
+		World->GetTimerManager().SetTimer(CloseDelayHandle, this, &UComplyCharacterSelectionWidget::OnCloseDelayFinished,
 			SelectionCloseDelay, false
 		);
 	}
 }
 
-void UComplyCharacterSelection::OnCloseDelayFinished()
+void UComplyCharacterSelectionWidget::OnCloseDelayFinished()
 {
 	if (ComplyPlayerController)
 	{

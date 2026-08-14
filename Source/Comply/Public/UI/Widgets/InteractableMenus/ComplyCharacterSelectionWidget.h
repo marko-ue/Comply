@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "ComplyCharacterSelection.generated.h"
+#include "ComplyCharacterSelectionWidget.generated.h"
 
 class AComplyPlayerCharacter;
 class AComplyGameModeBase;
@@ -15,7 +15,7 @@ class UButton;
  * 
  */
 UCLASS()
-class COMPLY_API UComplyCharacterSelection : public UUserWidget
+class COMPLY_API UComplyCharacterSelectionWidget : public UUserWidget
 {
 	GENERATED_BODY()
  

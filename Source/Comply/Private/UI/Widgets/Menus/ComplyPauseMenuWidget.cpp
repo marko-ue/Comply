@@ -33,7 +33,9 @@ void UComplyPauseMenuWidget::OnSettingsClicked()
 
 void UComplyPauseMenuWidget::OnCreditsClicked()
 {
+	if (CreditsMenuClass) return;
 	
+	OpenSubMenu(CreditsMenuClass);
 }
 
 // Handles adding the specific sub menu to the viewport and hiding the pause menu as long as it's opened

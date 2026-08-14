@@ -40,7 +40,7 @@ private:
 	TSubclassOf<UComplySettingsMenuWidget> SettingsMenuClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UUserWidget> CreditsMenuClass;
+	TSubclassOf<UComplySettingsMenuWidget> CreditsMenuClass;
 
 	UFUNCTION()
 	void OnResumeClicked();

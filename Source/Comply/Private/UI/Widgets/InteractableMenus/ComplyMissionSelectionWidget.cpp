@@ -45,6 +45,7 @@ void UComplyMissionSelectionWidget::NativeConstruct()
     else
     {
         StatusText->SetText(FText::FromString(TEXT("Only the session owner may start")));
+        SelectDataExtractionButton->bIsEnabled = false;
     }
 }
 
@@ -101,10 +102,14 @@ void UComplyMissionSelectionWidget::UpdateStartButtonText() const
 {
     const AComplyGameStateBase* GS = GetComplyGameState();
     if (!GS) return;
+    
+    const bool bCanStart = GS->bAllPlayersHaveUniqueClasses;
+
+    SelectDataExtractionButton->SetIsEnabled(bCanStart);
 
     const FText NewText = GS->bAllPlayersHaveUniqueClasses
-        ? FText::FromString(TEXT("Start"))
-        : FText::FromString(TEXT("All players must have unique classes"));
+        ? FText::FromString(TEXT(""))
+        : FText::FromString(TEXT("All players must select unique classes")); 
 
     StatusText->SetText(NewText);
 }

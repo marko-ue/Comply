@@ -116,3 +116,10 @@ This file contains attribution for third party assets used in Comply.
 * "FREE! Realistic Niagara Explosions Pack" by MassiveFx - [Asset Link](https://www.fab.com/listings/a48b3fa2-2ebf-42c2-8892-fa20a1eff289)
 * "Alien Priest" by JamyzGenius - [Asset Link](https://www.fab.com/listings/0fe70766-020b-4a6d-b618-8759b9495447)
 * "Sci-Fi Warrior 02" by RAISOR4096 - [Asset Link](https://www.fab.com/listings/673120d5-a601-4ebd-a26f-e97795ca7ea3)
+
+---
+
+### Free To Use License
+* Music track: Metal Is Trash by Pufino
+Source: https://freetouse.com/music
+Vlog Music for Video (Free Download)

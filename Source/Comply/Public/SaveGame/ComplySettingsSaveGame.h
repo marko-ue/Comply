@@ -21,6 +21,8 @@ public:
 	UPROPERTY(SaveGame)
 	float MusicVolume      = 1.f;
 	UPROPERTY(SaveGame)
+	float AmbienceVolume   = 1.f;
+	UPROPERTY(SaveGame)
 	float LookSensitivity  = 1.f;
 	UPROPERTY(SaveGame)
 	bool bInvertY          = false;

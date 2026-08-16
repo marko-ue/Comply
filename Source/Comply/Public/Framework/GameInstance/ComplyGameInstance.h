@@ -18,6 +18,8 @@ class COMPLY_API UComplyGameInstance : public UGameInstance
 public:
 	virtual void Init() override;
 	
+	virtual void OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld) override;
+	
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	// Character selections are stored in the GameInstance rather than PlayerState
@@ -38,6 +40,8 @@ public:
 	UPROPERTY()
 	float MusicVolume      = 1.f;
 	UPROPERTY()
+	float AmbienceVolume   = 1.f;
+	UPROPERTY()
 	float LookSensitivity  = 1.f;
 	UPROPERTY()
 	bool bInvertY          = false;
@@ -53,4 +57,19 @@ public:
 	// Functions for saving and loading game settings that players set
 	void SaveSettings();
 	void LoadSettings();
+	
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Audio")
+	TObjectPtr<USoundMix> MasterSoundMix;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Audio")
+	TObjectPtr<USoundClass> SFXSoundClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Audio")
+	TObjectPtr<USoundClass> MusicSoundClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Audio")
+	TObjectPtr<USoundClass> AmbienceSoundClass;
+	
+	void ApplyAudioSettings() const;
 };

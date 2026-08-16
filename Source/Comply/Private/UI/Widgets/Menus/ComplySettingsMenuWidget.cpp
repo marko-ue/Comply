@@ -48,6 +48,7 @@ void UComplySettingsMenuWidget::LoadCurrentSettings() const
 
     Slider_SFXVolume->SetValue(GI->SFXVolume);
     Slider_MusicVolume->SetValue(GI->MusicVolume);
+    Slider_AmbienceVolume->SetValue(GI->AmbienceVolume);
     Slider_Sensitivity->SetValue(GI->LookSensitivity);
     CheckBox_InvertY->SetIsChecked(GI->bInvertY);
     CheckBox_ShowHUD->SetIsChecked(GI->bShowHUD);
@@ -99,6 +100,7 @@ void UComplySettingsMenuWidget::OnApplyClicked()
     // Persist values
     GI->SFXVolume       = Slider_SFXVolume->GetValue();
     GI->MusicVolume     = Slider_MusicVolume->GetValue();
+    GI->AmbienceVolume  = Slider_AmbienceVolume->GetValue();
     GI->LookSensitivity = Slider_Sensitivity->GetValue();
     GI->bInvertY        = CheckBox_InvertY->IsChecked();
     GI->bShowHUD        = CheckBox_ShowHUD->IsChecked();

@@ -316,7 +316,7 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
         
         if (IsLocallyControlled())
         {
-            Character->SpawnImpactEffectsLocal(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->ImpactNormal, MuzzleLocation);
+            Character->SpawnImpactEffectsLocal(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->ImpactNormal, MuzzleLocation, WeaponData);
         }
 
         if (Character->GetEquippedPrimaryWeapon()->WeaponData->bUsesSingleCrosshairTrace &&
@@ -331,7 +331,7 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
                 CueParams
             );
             
-            Character->Multicast_SpawnImpactEffects(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->ImpactNormal, MuzzleLocation);
+            Character->Multicast_SpawnImpactEffects(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->ImpactNormal, MuzzleLocation, WeaponData);
         }
 
         AActor* TargetActor = Data->GetHitResult()->GetActor();
@@ -363,7 +363,7 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
     {
         for (const TSharedPtr<FGameplayAbilityTargetData>& Data : DataHandle.Data)
         {
-            Character->SpawnImpactEffectsLocal(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->ImpactNormal, MuzzleLocation);
+            Character->SpawnImpactEffectsLocal(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->ImpactNormal, MuzzleLocation, WeaponData);
         }
     }
 
@@ -392,7 +392,7 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
             
             if (!Data.IsValid() || !Data->GetHitResult()->bBlockingHit) continue;
         	
-        	Character->Multicast_SpawnImpactEffects(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->ImpactNormal, MuzzleLocation);
+        	Character->Multicast_SpawnImpactEffects(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->ImpactNormal, MuzzleLocation, WeaponData);
             
         	if (const AComplyCharacterBase* HitCharacter = Cast<AComplyCharacterBase>(TargetActor))
         	{

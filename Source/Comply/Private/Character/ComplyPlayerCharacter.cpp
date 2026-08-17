@@ -372,13 +372,12 @@ void AComplyPlayerCharacter::RevivePlayer()
 	}
 }
 
-void AComplyPlayerCharacter::SpawnImpactEffectsLocal(const FVector& ImpactPoint, const FVector& ImpactNormal, const FVector& MuzzleLocation)
+void AComplyPlayerCharacter::SpawnImpactEffectsLocal(const FVector& ImpactPoint, const FVector& ImpactNormal, const FVector& MuzzleLocation, UComplyWeaponData* WeaponData)
 {
-	const URangedWeaponAbilityBase* Weapon = GetEquippedPrimaryWeapon();
-	if (!Weapon || !Weapon->WeaponData) return;
+	if (!WeaponData) return;
 
 	// Spawns a random decal from an array
-	const TArray<TObjectPtr<UMaterialInstance>>& Decals = GetEquippedPrimaryWeapon()->WeaponData->BulletImpactDecals;
+	const TArray<TObjectPtr<UMaterialInstance>>& Decals = WeaponData->BulletImpactDecals;
 	if (Decals.IsEmpty()) return;
 
 	const int32 DecalIndex = FMath::RandRange(0, Decals.Num() - 1);
@@ -395,7 +394,7 @@ void AComplyPlayerCharacter::SpawnImpactEffectsLocal(const FVector& ImpactPoint,
 
 	// Spawns a tracer niagara effect and sets its beam end to the impact point
 	UNiagaraComponent* Tracer = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-		GetWorld(), GetEquippedPrimaryWeapon()->WeaponData->BulletTracerEffect, MuzzleLocation, FRotator::ZeroRotator, FVector(1.f)
+		GetWorld(), WeaponData->BulletTracerEffect, MuzzleLocation, FRotator::ZeroRotator, FVector(1.f)
 	);
 			
 	if (Tracer)
@@ -431,12 +430,12 @@ void AComplyPlayerCharacter::ApplyFiringFeedback(const UComplyWeaponData* Weapon
 
 // Multicast that handles broadcasting impact decals and bullet tracers from the muzzle to the impact point
 void AComplyPlayerCharacter::Multicast_SpawnImpactEffects_Implementation(FVector ImpactPoint, FVector ImpactNormal,
-	FVector MuzzleLocation)
+	FVector MuzzleLocation, UComplyWeaponData* WeaponData)
 {
 	// Decal and effects are spawned locally for clients, don't multicast to them again
 	if (IsLocallyControlled()) return;
 	
-	SpawnImpactEffectsLocal(ImpactPoint, ImpactNormal, MuzzleLocation);
+	SpawnImpactEffectsLocal(ImpactPoint, ImpactNormal, MuzzleLocation, WeaponData);
 }
 
 // Server RPC called from the revive ability

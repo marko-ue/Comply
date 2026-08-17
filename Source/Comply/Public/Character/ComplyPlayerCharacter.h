@@ -89,9 +89,9 @@ public:
 	
 	// Impact Effects
 	UFUNCTION(NetMulticast, Unreliable)
-	void Multicast_SpawnImpactEffects(FVector ImpactPoint, FVector ImpactNormal, FVector MuzzleLocation);
+	void Multicast_SpawnImpactEffects(FVector ImpactPoint, FVector ImpactNormal, FVector MuzzleLocation, UComplyWeaponData* WeaponData);
 	
-	void SpawnImpactEffectsLocal(const FVector& ImpactPoint, const FVector& ImpactNormal, const FVector& MuzzleLocation);
+	void SpawnImpactEffectsLocal(const FVector& ImpactPoint, const FVector& ImpactNormal, const FVector& MuzzleLocation, UComplyWeaponData* WeaponData);
 	// End Impact Effects
 	
 	UFUNCTION(Client, Reliable)

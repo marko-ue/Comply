@@ -35,6 +35,7 @@ AComplyEnemyCharacter::AComplyEnemyCharacter()
 	HealthWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
 	HealthWidgetComponent->SetDrawAtDesiredSize(false);
 	HealthWidgetComponent->SetDrawSize(FVector2D(200.f, 20.f));
+	HealthWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AComplyEnemyCharacter::OnRep_IsDead()

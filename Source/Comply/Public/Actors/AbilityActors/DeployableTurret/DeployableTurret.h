@@ -34,6 +34,8 @@ public:
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> SourceASC;
 	
+	float TurretLifetime = 0.f;
+	
 	virtual void Destroyed() override;
 
 protected:
@@ -64,6 +66,8 @@ private:
 	
 	void Fire(AActor* TargetActor);
 	
+	void ExpireTurret();
+	
 	UPROPERTY()
 	TArray<AActor*> TargetsInRange;
 	
@@ -71,6 +75,8 @@ private:
 	AActor* CurrentTarget = nullptr;
 	
 	FTimerHandle FireTimerHandle;
+	
+	FTimerHandle TurretLifetimeTimerHandle;
 	
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> PlaceTurretNiagaraComponent;

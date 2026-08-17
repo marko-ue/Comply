@@ -175,7 +175,7 @@ void UComplyAbilitySystemComponent::Server_PlaceTurret_Implementation(FGameplayA
 	if (Turret)
 	{
 		Turret->TurretData = Ability->TurretData;
-		Turret->SetLifeSpan(Ability->TurretData->TurretLifetime);
+		Turret->TurretLifetime = Ability->TurretData->TurretLifetime;
 		Turret->SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActor());
 
 		UGameplayStatics::FinishSpawningActor(Turret, SpawnTransform);

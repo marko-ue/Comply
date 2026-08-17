@@ -39,9 +39,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Components")
 	TObjectPtr<UAbilitySystemComponent> ASC;
 	
-	UPROPERTY(VisibleAnywhere, Category = "Actor Properties")
-	bool bWasKilledByEnemies = false;
-	
 private:
 	UPROPERTY()
 	TObjectPtr<UComplyAttributeSet> AttributeSet;

@@ -56,6 +56,7 @@ void ADeployableTurret::BeginPlay()
 	GetOverlappingActors(TargetsInRange);
 	
 	GetWorld()->GetTimerManager().SetTimer(FireTimerHandle, this, &ThisClass::TryFire, .2f, true);
+	GetWorld()->GetTimerManager().SetTimer(TurretLifetimeTimerHandle, this, &ThisClass::ExpireTurret, TurretLifetime, false);
 }
 
 void ADeployableTurret::Tick(float DeltaTime)
@@ -138,6 +139,16 @@ void ADeployableTurret::Fire(AActor* TargetActor)
 	}
 }
 
+// When the turret lifetime is up, execute the turret death cue and set a short lifespan so the cue has time to broadcast its RPC
+void ADeployableTurret::ExpireTurret()
+{
+	FGameplayCueParameters CueParams;
+	CueParams.Location = GetActorLocation();
+	GetAbilitySystemComponent()->ExecuteGameplayCue(ComplyTags::GameplayCues::TargetableActorDeath, CueParams);
+	
+	SetLifeSpan(0.1f);
+}
+
 // When the actor is destroyed, the player will be able to spawn another turret after 30 seconds
 void ADeployableTurret::Destroyed()
 {
@@ -164,14 +175,6 @@ void ADeployableTurret::Destroyed()
 
 void ADeployableTurret::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	// If the turret was not killed by enemies, play its death cue here. The reason for death would be turret lifetime
-	if (!bWasKilledByEnemies)
-	{
-		FGameplayCueParameters CueParams;
-		CueParams.Location = GetActorLocation();
-		GetAbilitySystemComponent()->ExecuteGameplayCue(ComplyTags::GameplayCues::TargetableActorDeath, CueParams);
-	}
-	
 	if (PlaceTurretNiagaraComponent)
 	{
 		PlaceTurretNiagaraComponent->Deactivate();

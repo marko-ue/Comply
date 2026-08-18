@@ -428,6 +428,21 @@ void AComplyPlayerCharacter::ApplyFiringFeedback(const UComplyWeaponData* Weapon
 	CameraBoom->SocketOffset.X -= WeaponData->RecoilKickDistance;
 }
 
+void AComplyPlayerCharacter::Server_SetIsFiring_Implementation(bool bFiring, float HeldDuration)
+{
+	bIsFiring = bFiring;
+    
+	if (bFiring)
+	{
+		// Large number so the server doesn't stop early before the release RPC arrives
+		FireInputHeldDuration = TNumericLimits<float>::Max();
+	}
+	else
+	{
+		FireInputHeldDuration = HeldDuration;
+	}
+}
+
 // Multicast that handles broadcasting impact decals and bullet tracers from the muzzle to the impact point
 void AComplyPlayerCharacter::Multicast_SpawnImpactEffects_Implementation(FVector ImpactPoint, FVector ImpactNormal,
 	FVector MuzzleLocation, UComplyWeaponData* WeaponData)
@@ -514,13 +529,18 @@ void AComplyPlayerCharacter::PrimaryActionPressed()
 		}
 	}
 	
-	if (ApplyFireEffectAbilityClass)
-	{
-		if (!GetAbilitySystemComponent()->HasMatchingGameplayTag(ComplyTags::States::State_FiringBlocked))
-		{
-			GetAbilitySystemComponent()->TryActivateAbilityByClass(ApplyFireEffectAbilityClass);
-		}
-	}
+	// if (ApplyFireEffectAbilityClass)
+	// {
+	// 	if (!GetAbilitySystemComponent()->HasMatchingGameplayTag(ComplyTags::States::State_FiringBlocked))
+	// 	{
+	// 		GetAbilitySystemComponent()->TryActivateAbilityByClass(ApplyFireEffectAbilityClass);
+	// 	}
+	// }
+	
+	FireInputStartTime = GetWorld()->GetTimeSeconds();
+	
+	bIsFiring = true;
+	Server_SetIsFiring(true, 0.f);
 
 	bFireInputHeld = true;
 }
@@ -540,18 +560,10 @@ void AComplyPlayerCharacter::PrimaryActionReleased()
 			break;
 		}
 	}
-
-	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
-	{
-		if (Spec.Ability->GetClass() == ApplyFireEffectAbilityClass)
-		{
-			GetAbilitySystemComponent()->CancelAbility(Spec.Ability);
-			
-			bIsFiring = false;
-			bFiredThisFrame = false;
-			break;
-		}
-	}
+	
+	bIsFiring = false;
+	const float HeldDuration = GetWorld()->GetTimeSeconds() - FireInputStartTime;
+	Server_SetIsFiring(false, HeldDuration);
 
 	bFireInputHeld = false;
 }

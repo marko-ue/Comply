@@ -101,6 +101,12 @@ public:
 	
 	float BaseSocketOffsetX;
 	
+	UFUNCTION(Server, Reliable)
+	void Server_SetIsFiring(bool bFiring, float HeldDuration);
+	
+	float FireInputStartTime = 0.f;
+	float FireInputHeldDuration = 0.f;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilities|Effect Application")
 	TSubclassOf<UGameplayAbility> ApplyAimEffectAbilityClass;
 	

@@ -195,11 +195,9 @@ void URangedWeaponAbilityBase::BuildWeaponCollisionParams(const AActor* Avatar, 
 
 bool URangedWeaponAbilityBase::Fire()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Fire called"));
-	
 	checkf(WeaponData, TEXT("WeaponData not set on %s"), *GetName());
 	checkf(WeaponData->DamageData, TEXT("DamageData not set on %s"), *GetName());
-	
+
 	// Ensure all reload abilities are canceled when firing, so cleanup code always runs
 	// Mostly helps with removing the Reloading tag when firing is interrupted while reloading the shotgun
 	FGameplayTagContainer ReloadTag;
@@ -277,17 +275,20 @@ bool URangedWeaponAbilityBase::Fire()
 	if (CurrentActorInfo->IsLocallyControlled())
 	{
 		UGameplayCueManager::ExecuteGameplayCue_NonReplicated( 
-			GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::HitscanWeaponFire, CueParams);
+			GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::HitscanWeaponFire, CueParams
+		);
 	}
 
 	// Execute replicated cue; prediction key lets owning client skip re-execution
 	if (GetAbilitySystemComponentFromActorInfo()->IsOwnerActorAuthoritative() && !IsLocallyControlled())
 	{
 		FScopedPredictionWindow ScopedPrediction(
-			GetAbilitySystemComponentFromActorInfo(), CurrentActivationInfo.GetActivationPredictionKey());
+			GetAbilitySystemComponentFromActorInfo(), CurrentActivationInfo.GetActivationPredictionKey()
+		);
 		
 		GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(
-			ComplyTags::GameplayCues::HitscanWeaponFire, CueParams);
+			ComplyTags::GameplayCues::HitscanWeaponFire, CueParams
+		);
 	}
 	
 	return true;
@@ -412,17 +413,30 @@ void URangedWeaponAbilityBase::OnFireDelayFinished()
 	if (!FireDelayTask) return; // Already handled
     
 	FireDelayTask = nullptr; // Clear before calling Fire to prevent re-entry
-	
-	UE_LOG(LogTemp, Warning, TEXT("OnFireDelayFinished called"));
+
 	const AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
-	if (!Character || !Character->bIsFiring)
+	if (!Character) return;
+
+	if (GetAbilitySystemComponentFromActorInfo()->IsOwnerActorAuthoritative())
 	{
-		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+		// Server checks elapsed time against how long client actually held input
+		const float ElapsedFireTime = GetWorld()->GetTimeSeconds() - FireStartTime;
+		if (ElapsedFireTime >= Character->FireInputHeldDuration)
+		{
+			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+			return;
+		}
 	}
 	else
 	{
-		Fire();
+		if (!Character->bIsFiring)
+		{
+			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+			return;
+		}
 	}
+
+	Fire();
 }
 
 void URangedWeaponAbilityBase::PlayAnimationBasedOnState()
@@ -463,15 +477,12 @@ void URangedWeaponAbilityBase::PlayMontageAndBindDelegates(const TObjectPtr<UAni
 
 	PlayActivationMontageTask->ReadyForActivation();
 	
-	GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
-	{
-		// This state is not used for automatic weapons. Firing is never blocked for them since they use a WaitDelay task and hold input
-		if (WeaponData->RangedWeaponType != ERangedWeaponType::Automatic)
-		{
-			// Firing should be blocked if another bullet can't be fired. Firing is only allowed again after the previous fire animation finishes
-			GetAbilitySystemComponentFromActorInfo()->SetLooseGameplayTagCount(ComplyTags::States::State_FiringBlocked, 1);
-		}
-	});
+	if (WeaponData->RangedWeaponType != ERangedWeaponType::Automatic)
+    {
+        GetAbilitySystemComponentFromActorInfo()->SetLooseGameplayTagCount(
+            ComplyTags::States::State_FiringBlocked, 1
+        );
+    }
 }
 
 void URangedWeaponAbilityBase::OnMontageCompleted()

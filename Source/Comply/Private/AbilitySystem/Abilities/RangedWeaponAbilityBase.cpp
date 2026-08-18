@@ -221,28 +221,20 @@ bool URangedWeaponAbilityBase::Fire()
 		if (AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo()))
 		{
 			Character->ApplyFiringFeedback(WeaponData);
+
+			UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
+			float CurrentAmmo = ASC->GetNumericAttribute(ActiveWeapon->GetCurrentAmmoAttribute());
+			if (CurrentAmmo <= 0.f)
+			{
+				ASC->AddLooseGameplayTag(ComplyTags::States::State_FiringBlocked);
+            
+				FTimerHandle ReloadTimer;
+				GetWorld()->GetTimerManager().SetTimer(ReloadTimer, [this]()
+				{
+					GetAbilitySystemComponentFromActorInfo()->TryActivateAbilityByClass(WeaponData->ReloadAbilityClass);
+				}, 0.1f, false);
+			}
 		}
-	}
-	else
-	{
-		FGameplayCueParameters CueParams;
-		CueParams.Location = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo())->WeaponMesh->GetComponentLocation();
-		CueParams.Instigator = GetAvatarActorFromActorInfo();
-		UGameplayCueManager::ExecuteGameplayCue_NonReplicated(GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::WeaponDryFire, CueParams);
-		
-		// This tag blocks the firing tag from being applied even before the reload ability is activated
-		GetAbilitySystemComponentFromActorInfo()->AddLooseGameplayTag(ComplyTags::States::State_FiringBlocked);
-		
-		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-		
-		// Band-Aid fix for shotgun reload being rejected due to Reloading tag being present too early
-		FTimerHandle ReloadTimer;
-		GetWorld()->GetTimerManager().SetTimer(ReloadTimer, [this]()
-		{
-			GetAbilitySystemComponentFromActorInfo()->TryActivateAbilityByClass(WeaponData->ReloadAbilityClass);
-		}, 0.1f, false);
-		
-		return false;
 	}
 	
 	// Any previous running hit scan target data tasks must be ended so it's not triggered for each accumulated task

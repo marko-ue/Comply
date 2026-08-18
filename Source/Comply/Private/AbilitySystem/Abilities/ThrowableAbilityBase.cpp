@@ -37,7 +37,10 @@ void UThrowableAbilityBase::ActivateAbility(const FGameplayAbilitySpecHandle Han
 
 		GetAbilitySystemComponentFromActorInfo()->AddLooseGameplayTag(ComplyTags::States::State_ThrowableThrowing);
 	
-		SpawnPreview();
+		if (!bUsesCustomPreviewLogic)
+		{
+			SpawnPreview();
+		}
 	}
 }
 

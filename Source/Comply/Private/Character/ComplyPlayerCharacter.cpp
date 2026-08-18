@@ -548,19 +548,19 @@ void AComplyPlayerCharacter::PrimaryActionPressed()
 void AComplyPlayerCharacter::PrimaryActionReleased()
 {
 	if (!GetAbilitySystemComponent()) return;
-	
+    
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
-		// Confirm the throw of the throwable once the primary input is released, removing the preview path
-		// Only for throwable abilities that use confirm input on release
+		// Confirm the throw on release only for throwables that don't manage their own placement flow
 		if (Spec.Ability->GetAssetTags().HasTagExact(ComplyTags::ComplyAbilities::Throwable)
-			&& Spec.IsActive() && Cast<UThrowableAbilityBase>(Spec.GetPrimaryInstance())->GrenadeData != true) 
+			&& Spec.IsActive()
+			&& !Cast<UThrowableAbilityBase>(Spec.GetPrimaryInstance())->bUsesCustomPreviewLogic)
 		{
 			GetAbilitySystemComponent()->LocalInputConfirm();
 			break;
 		}
 	}
-	
+    
 	bIsFiring = false;
 	const float HeldDuration = GetWorld()->GetTimeSeconds() - FireInputStartTime;
 	Server_SetIsFiring(false, HeldDuration);

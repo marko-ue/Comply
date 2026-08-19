@@ -8,6 +8,7 @@
 #include "ComplySettingsMenuWidget.generated.h"
 
 
+class UComboBoxString;
 class UWidgetSwitcher;
 class USlider;
 class UCheckBox;
@@ -86,6 +87,17 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> VoteKickWidgetClass;
 	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UComboBoxString> ComboBox_VoteKickTarget;
+	
+	UPROPERTY()
+	TArray<TObjectPtr<APlayerState>> KickablePlayerStates;
+	
+	void PopulateVoteKickDropdown();
+	
+	UFUNCTION()
+	void OnVoteKickResolved(bool bKicked, APlayerState* Target);
+
 	UFUNCTION()
 	void OnTabAudioClicked();
 

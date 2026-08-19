@@ -21,6 +21,10 @@ class COMPLY_API UComplyTeamStatusPanelsWidget : public UUserWidget
 public:
 	void InitializeTeamStatusPanels();
 	
+protected:
+	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
+	
 private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVerticalBox> PanelsVerticalBox;
@@ -30,4 +34,7 @@ private:
 	
 	UPROPERTY()
 	TArray<TObjectPtr<UComplyTeammatePanelWidget>> TeammateWidgets;
+	
+	UFUNCTION()
+	void OnVoteKickResolved(bool bKicked, APlayerState* Target);
 };

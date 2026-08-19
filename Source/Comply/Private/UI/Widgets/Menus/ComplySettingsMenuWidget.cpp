@@ -11,7 +11,10 @@
 #include "UI/Widgets/ComplyCrosshairWidget.h"
 #include "UI/Widgets/ComplyHUDWidget.h"
 #include "ComplyPlayerController.h"
+#include "Components/ComboBoxString.h"
 #include "Components/WidgetSwitcher.h"
+#include "Framework/GameState/ComplyGameStateBase.h"
+#include "GameFramework/PlayerState.h"
 
 void UComplySettingsMenuWidget::NativeConstruct()
 {
@@ -38,6 +41,14 @@ void UComplySettingsMenuWidget::NativeConstruct()
     Button_Close->OnClicked.AddDynamic(this, &UComplySettingsMenuWidget::OnCloseClicked);
 
     LoadCurrentSettings();
+    
+    PopulateVoteKickDropdown();
+    
+    AComplyGameStateBase* GS = GetWorld()->GetGameState<AComplyGameStateBase>();
+    if (GS)
+    {
+        GS->OnVoteKickResolved.AddDynamic(this, &UComplySettingsMenuWidget::OnVoteKickResolved);
+    }
 }
 
 // Loads any settings already set into the widgets to update them
@@ -145,6 +156,36 @@ void UComplySettingsMenuWidget::ApplyHUDVisibility(bool bVisible) const
     HUD->SetVisibility(bVisible ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
 }
 
+void UComplySettingsMenuWidget::PopulateVoteKickDropdown()
+{
+    AComplyGameStateBase* GS = GetWorld()->GetGameState<AComplyGameStateBase>();
+    const APlayerController* LocalPC = GetOwningPlayer();
+    if (!GS || !LocalPC) return;
+
+    ComboBox_VoteKickTarget->ClearOptions();
+    KickablePlayerStates.Empty();
+
+    for (APlayerState* PS : GS->PlayerArray)
+    {
+        if (PS == LocalPC->PlayerState) continue;
+
+        ComboBox_VoteKickTarget->AddOption(PS->GetPlayerName());
+        KickablePlayerStates.Add(PS);
+    }
+}
+
+// Re-evaluate what should be in the combo box when a vote kick resolves if the target was kicked
+void UComplySettingsMenuWidget::OnVoteKickResolved(bool bKicked, APlayerState* Target)
+{
+    if (!bKicked) return;
+    
+    FTimerHandle RepopulateHandle;
+    GetWorld()->GetTimerManager().SetTimer(RepopulateHandle, this,
+        &UComplySettingsMenuWidget::PopulateVoteKickDropdown, 0.5f, false);
+    
+    PopulateVoteKickDropdown();
+}
+
 void UComplySettingsMenuWidget::OnTabAudioClicked()
 {
     WidgetSwitcher_Settings->SetActiveWidgetIndex(0);
@@ -163,15 +204,21 @@ void UComplySettingsMenuWidget::OnTabHUDClicked()
 void UComplySettingsMenuWidget::OnTabSessionClicked()
 {
     WidgetSwitcher_Settings->SetActiveWidgetIndex(3);
+    PopulateVoteKickDropdown();
 }
 
 void UComplySettingsMenuWidget::OnVoteKickClicked()
 {
     if (!VoteKickWidgetClass) return;
 
-    UUserWidget* VoteKickWidget = CreateWidget<UUserWidget>(GetOwningPlayer(), VoteKickWidgetClass);
-    if (VoteKickWidget)
-    {
-        VoteKickWidget->AddToViewport(11);
-    }
+    AComplyPlayerController* PC = Cast<AComplyPlayerController>(GetOwningPlayer());
+    if (!PC) return;
+
+    const int32 SelectedIndex = ComboBox_VoteKickTarget->GetSelectedIndex();
+    if (!KickablePlayerStates.IsValidIndex(SelectedIndex)) return;
+
+    APlayerState* Target = KickablePlayerStates[SelectedIndex];
+    PC->Server_InitiateVoteKick(Target);
+    
+    PopulateVoteKickDropdown();
 }

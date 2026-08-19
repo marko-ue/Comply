@@ -34,6 +34,8 @@ public:
 
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> LowAmmoFlashAnimation;
+	
+	FORCEINLINE AComplyPlayerState* GetPlayerState() const { return PlayerState; }
 
 private:
 	TWeakObjectPtr<UAbilitySystemComponent> ASC;
@@ -57,4 +59,7 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly)
 	TMap<TSubclassOf<AComplyPlayerCharacter>, TObjectPtr<UTexture2D>> ClassPanelMap;
+
+	UPROPERTY()
+	TObjectPtr<AComplyPlayerState> PlayerState;
 };

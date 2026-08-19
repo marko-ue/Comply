@@ -13,6 +13,7 @@
 #include "Framework/GameState/ComplyGameStateBase.h"
 #include "Framework/PlayerState/ComplyPlayerState.h"
 #include "UI/Widgets/ComplyHUDWidget.h"
+#include "UI/Widgets/ComplyVoteKickWidget.h"
 #include "UI/Widgets/DamageNumbers/DamageNumbersWidget.h"
 #include "Widgets/Input/SVirtualJoystick.h"
 
@@ -41,6 +42,29 @@ void AComplyPlayerController::BeginPlay()
 	if (const AComplyPlayerState* PS = GetPlayerState<AComplyPlayerState>())
 	{
 		SelectedCharacterClass = PS->LastSelectedCharacterClass ? PS->LastSelectedCharacterClass : DefaultCharacterClass;
+	}
+	
+	if (!IsLocalController()) return;
+
+	AComplyGameStateBase* GS = GetWorld()->GetGameState<AComplyGameStateBase>();
+	if (GS)
+	{
+		GS->OnVoteKickInitiated.AddDynamic(this, &AComplyPlayerController::OnVoteKickInitiated);
+	}
+	else
+	{
+		// GameState not ready yet, wait for it
+		GetWorldTimerManager().SetTimer(GameStateWaitTimerHandle, this, &AComplyPlayerController::TryBindGameStateEvents, 0.1f, true);
+	}
+}
+
+void AComplyPlayerController::TryBindGameStateEvents()
+{
+	AComplyGameStateBase* GS = GetWorld()->GetGameState<AComplyGameStateBase>();
+	if (GS)
+	{
+		GS->OnVoteKickInitiated.AddDynamic(this, &AComplyPlayerController::OnVoteKickInitiated);
+		GetWorldTimerManager().ClearTimer(GameStateWaitTimerHandle);
 	}
 }
 
@@ -120,6 +144,51 @@ void AComplyPlayerController::AddMappingContexts()
 				Subsystem->AddMappingContext(CurrentContext, 0);
 			}
 		}
+	}
+}
+
+// Adds the widget and initializes it, and binds input for approving or denying the vote
+void AComplyPlayerController::OnVoteKickInitiated(APlayerState* Target)
+{
+	if (!IsLocalController()) return;
+	if (!VoteKickWidgetClass) return;
+
+	VoteKickWidget = CreateWidget<UComplyVoteKickWidget>(this, VoteKickWidgetClass);
+	if (VoteKickWidget)
+	{
+		VoteKickWidget->InitVote(Target);
+		VoteKickWidget->AddToViewport(11);
+	}
+	
+	InputComponent->BindKey(EKeys::F5, IE_Pressed, this, &AComplyPlayerController::OnVoteApprove);
+	InputComponent->BindKey(EKeys::F10, IE_Pressed, this, &AComplyPlayerController::OnVoteDeny);
+}
+
+void AComplyPlayerController::Server_InitiateVoteKick_Implementation(APlayerState* Target)
+{
+	AComplyGameStateBase* GS = GetWorld()->GetGameState<AComplyGameStateBase>();
+	if (GS)
+	{
+		GS->InitiateVoteKick(PlayerState, Target);
+	}
+}
+
+void AComplyPlayerController::OnVoteApprove()
+{
+	Server_SubmitVote(PlayerState, true);
+}
+
+void AComplyPlayerController::OnVoteDeny()
+{
+	Server_SubmitVote(PlayerState, false);
+}
+
+void AComplyPlayerController::Server_SubmitVote_Implementation(APlayerState* Voter, bool bApprove)
+{
+	AComplyGameStateBase* GS = GetWorld()->GetGameState<AComplyGameStateBase>();
+	if (GS)
+	{
+		GS->HandleVote(Voter, bApprove);
 	}
 }
 

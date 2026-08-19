@@ -15,6 +15,7 @@
 void UComplyTeammatePanelWidget::InitializePanel(UAbilitySystemComponent* InASC, AComplyPlayerCharacter* InCharacter, AComplyPlayerState* InPlayerState)
 {
     ASC = InASC;
+    PlayerState = InPlayerState;
 
     HealthChangedHandle = ASC->GetGameplayAttributeValueChangeDelegate(
         UComplyAttributeSet::GetHealthAttribute()

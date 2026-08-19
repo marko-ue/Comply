@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "ComplyPlayerController.generated.h"
 
+class UComplyVoteKickWidget;
 class UDamageNumbersWidget;
 class UComplyHUDWidget;
 class AComplyPlayerCharacter;
@@ -57,6 +58,15 @@ public:
 	TObjectPtr<UDamageNumbersWidget> DamageNumbersWidget;
 	
 	void ShowFlashbangEffect();
+	
+	// These RPCs are used as wrappers for functions stored on the game state
+	// They are required since widgets need to call the game state functions, but they can't call them directly
+	// so instead they call these RPCs
+	UFUNCTION(Server, Reliable)
+	void Server_SubmitVote(APlayerState* Voter, bool bApprove);
+	
+	UFUNCTION(Server, Reliable)
+	void Server_InitiateVoteKick(APlayerState* Target);
 
 protected:
 	/** Input Mapping Contexts */
@@ -87,4 +97,20 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UComplyHUDWidget> HUDWidgetClass;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UComplyVoteKickWidget> VoteKickWidgetClass;
+	
+	UPROPERTY()
+	TObjectPtr<UComplyVoteKickWidget> VoteKickWidget;
+	
+	UFUNCTION()
+	void OnVoteKickInitiated(APlayerState* Target);
+	void OnVoteApprove();
+	void OnVoteDeny();
+
+	UFUNCTION()
+	void TryBindGameStateEvents();
+	
+	FTimerHandle GameStateWaitTimerHandle;
 };

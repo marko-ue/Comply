@@ -10,6 +10,18 @@
 #include "Framework/PlayerState/ComplyPlayerState.h"
 #include "UI/Widgets/TeammatePanels/ComplyTeammatePanelWidget.h"
 
+
+void UComplyTeamStatusPanelsWidget::NativeConstruct()
+{
+    Super::NativeConstruct();
+    
+    AComplyGameStateBase* GS = GetWorld()->GetGameState<AComplyGameStateBase>();
+    if (GS)
+    {
+        GS->OnVoteKickResolved.AddDynamic(this, &UComplyTeamStatusPanelsWidget::OnVoteKickResolved);
+    }
+}
+
 void UComplyTeamStatusPanelsWidget::InitializeTeamStatusPanels()
 {
     if (!GetWorld()) return;
@@ -55,4 +67,31 @@ void UComplyTeamStatusPanelsWidget::InitializeTeamStatusPanels()
 
         TeammateWidgets.Add(Panel);
     }
+}
+
+// When the vote kick resolves, if the target was kicked, remove its panel
+void UComplyTeamStatusPanelsWidget::OnVoteKickResolved(bool bKicked, APlayerState* Target)
+{
+    if (!bKicked || !Target) return;
+
+    for (UComplyTeammatePanelWidget* Panel : TeammateWidgets)
+    {
+        if (Panel && Panel->GetPlayerState() == Cast<AComplyPlayerState>(Target))
+        {
+            Panel->RemoveFromParent();
+            TeammateWidgets.Remove(Panel);
+            break;
+        }
+    }
+}
+
+void UComplyTeamStatusPanelsWidget::NativeDestruct()
+{
+    AComplyGameStateBase* GS = GetWorld()->GetGameState<AComplyGameStateBase>();
+    if (GS)
+    {
+        GS->OnVoteKickResolved.RemoveDynamic(this, &UComplyTeamStatusPanelsWidget::OnVoteKickResolved);
+    }
+
+    Super::NativeDestruct();
 }

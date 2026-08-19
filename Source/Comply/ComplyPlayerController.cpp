@@ -85,9 +85,13 @@ void AComplyPlayerController::OnRep_PlayerState()
 	UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
 	if (!ASC) return;
 
-	HUDWidget = CreateWidget<UComplyHUDWidget>(this, HUDWidgetClass);
-	HUDWidget->AddToViewport();
-	HUDWidget->InitializeHUD(ASC);
+	const FString MapName = GetWorld()->GetMapName();
+	if (!MapName.Contains("Lobby"))
+	{
+		HUDWidget = CreateWidget<UComplyHUDWidget>(this, HUDWidgetClass);
+		HUDWidget->AddToViewport();
+		HUDWidget->InitializeHUD(ASC);
+	}
 	
 	if (DamageNumbersWidget) return; // Already initialized, skip
 	
@@ -98,6 +102,42 @@ void AComplyPlayerController::OnRep_PlayerState()
 	GetWorld()->GetGameViewport()->GetViewportSize(ViewportSize);
 	DamageNumbersWidget->SetPositionInViewport(FVector2D(0.f, 0.f));
 	DamageNumbersWidget->SetDesiredSizeInViewport(ViewportSize);
+}
+
+// Ensures mapping contexts are added on the client whenever a pawn is possessed
+void AComplyPlayerController::AcknowledgePossession(class APawn* P)
+{
+	Super::AcknowledgePossession(P);
+
+	AddMappingContexts();
+
+	const AComplyPlayerCharacter* PlayerCharacter = Cast<AComplyPlayerCharacter>(P);
+	if (!PlayerCharacter) return;
+
+	const AComplyPlayerState* PS = PlayerCharacter->GetPlayerState<AComplyPlayerState>();
+	if (!PS) return;
+	
+	UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
+	if (!ASC) return;
+
+	const FString MapName = GetWorld()->GetMapName();
+	if (!MapName.Contains("Lobby"))
+	{
+		HUDWidget = CreateWidget<UComplyHUDWidget>(this, HUDWidgetClass);
+		HUDWidget->AddToViewport();
+		HUDWidget->InitializeHUD(ASC);
+	}
+	
+	if (!DamageNumbersWidget)
+	{
+		DamageNumbersWidget = CreateWidget<UDamageNumbersWidget>(this, DamageNumbersWidgetClass);
+		DamageNumbersWidget->AddToViewport();
+		
+		FVector2D ViewportSize;
+		GetWorld()->GetGameViewport()->GetViewportSize(ViewportSize);
+		DamageNumbersWidget->SetPositionInViewport(FVector2D(0.f, 0.f));
+		DamageNumbersWidget->SetDesiredSizeInViewport(ViewportSize);
+	}
 }
 
 void AComplyPlayerController::SetupInputComponent()
@@ -189,42 +229,6 @@ void AComplyPlayerController::Server_SubmitVote_Implementation(APlayerState* Vot
 	if (GS)
 	{
 		GS->HandleVote(Voter, bApprove);
-	}
-}
-
-// Ensures mapping contexts are added on the client whenever a pawn is possessed
-void AComplyPlayerController::AcknowledgePossession(class APawn* P)
-{
-	Super::AcknowledgePossession(P);
-
-	AddMappingContexts();
-
-	const AComplyPlayerCharacter* PlayerCharacter = Cast<AComplyPlayerCharacter>(P);
-	if (!PlayerCharacter) return;
-
-	const AComplyPlayerState* PS = PlayerCharacter->GetPlayerState<AComplyPlayerState>();
-	if (!PS) return;
-
-	if (!HUDWidget)
-	{
-		HUDWidget = CreateWidget<UComplyHUDWidget>(this, HUDWidgetClass);
-		HUDWidget->AddToViewport();
-	}
-
-	if (PS->GetAbilitySystemComponent())
-	{
-		HUDWidget->InitializeHUD(PS->GetAbilitySystemComponent());
-	}
-	
-	if (!DamageNumbersWidget)
-	{
-		DamageNumbersWidget = CreateWidget<UDamageNumbersWidget>(this, DamageNumbersWidgetClass);
-		DamageNumbersWidget->AddToViewport();
-		
-		FVector2D ViewportSize;
-		GetWorld()->GetGameViewport()->GetViewportSize(ViewportSize);
-		DamageNumbersWidget->SetPositionInViewport(FVector2D(0.f, 0.f));
-		DamageNumbersWidget->SetDesiredSizeInViewport(ViewportSize);
 	}
 }
 

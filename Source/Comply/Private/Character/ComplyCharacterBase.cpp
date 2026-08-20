@@ -114,6 +114,8 @@ void AComplyCharacterBase::ClearStartupAbilities()
 
 void AComplyCharacterBase::HandleHit(const AActor* HitActor)
 {
+	if (bIsDead) return;
+	
 	if (HitActor && HitActor->Implements<UPlayerInterface>())
 	{
 		if (GetAbilitySystemComponent())
@@ -138,6 +140,9 @@ void AComplyCharacterBase::Die(AActor* DeadActor)
 	{
 		if (GetAbilitySystemComponent())
 		{
+			if (bIsDead) return;
+			bIsDead = true;
+			
 			FGameplayCueParameters CueParams;
 			CueParams.Location = GetActorLocation();
 			GetAbilitySystemComponent()->ExecuteGameplayCue(ComplyTags::GameplayCues::PlayerDeath, CueParams);

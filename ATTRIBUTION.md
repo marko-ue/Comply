@@ -123,3 +123,14 @@ This file contains attribution for third party assets used in Comply.
 * Music track: Metal Is Trash by Pufino
 Source: https://freetouse.com/music
 Vlog Music for Video (Free Download)
+
+---
+
+### Third-Party Attributions
+
+#### Unreal Engine
+Comply uses Unreal® Engine. Unreal® is a trademark or registered
+trademark of Epic Games, Inc. in the United States of America and elsewhere.
+
+Unreal® Engine, Copyright 1998–2026, Epic Games, Inc.
+All rights reserved.

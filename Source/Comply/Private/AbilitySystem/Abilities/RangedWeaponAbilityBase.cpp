@@ -223,16 +223,31 @@ bool URangedWeaponAbilityBase::Fire()
 			Character->ApplyFiringFeedback(WeaponData);
 
 			UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
-			float CurrentAmmo = ASC->GetNumericAttribute(ActiveWeapon->GetCurrentAmmoAttribute());
+			const float CurrentAmmo = ASC->GetNumericAttribute(ActiveWeapon->GetCurrentAmmoAttribute());
+			const float ReserveAmmo = ASC->GetNumericAttribute(ActiveWeapon->GetCurrentReserveAmmoAttribute());
 			if (CurrentAmmo <= 0.f)
 			{
 				ASC->AddLooseGameplayTag(ComplyTags::States::State_FiringBlocked);
-            
-				FTimerHandle ReloadTimer;
-				GetWorld()->GetTimerManager().SetTimer(ReloadTimer, [this]()
+				
+				// Only attempt reload if there's reserve ammo available
+				if (ReserveAmmo > 0.f)
 				{
-					GetAbilitySystemComponentFromActorInfo()->TryActivateAbilityByClass(WeaponData->ReloadAbilityClass);
-				}, 0.1f, false);
+					FTimerHandle ReloadTimer;
+					GetWorld()->GetTimerManager().SetTimer(ReloadTimer, [this]()
+					{
+						GetAbilitySystemComponentFromActorInfo()->TryActivateAbilityByClass(WeaponData->ReloadAbilityClass);
+					}, 0.1f, false);
+				}
+				else
+				{
+					// No reserve ammo, play dry fire and end the ability to prevent firing when auto reload is not possible
+					FGameplayCueParameters CueParams;
+					CueParams.Location = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo())->WeaponMesh->GetComponentLocation();
+					CueParams.Instigator = GetAvatarActorFromActorInfo();
+					UGameplayCueManager::ExecuteGameplayCue_NonReplicated(GetAvatarActorFromActorInfo(), ComplyTags::GameplayCues::WeaponDryFire, CueParams);
+        
+					EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+				}
 			}
 		}
 	}

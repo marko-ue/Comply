@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "ComplyHUDWidget.generated.h"
 
+class UComplyChatBoxWidget;
 class UComplyTeamStatusPanelsWidget;
 class UComplyReviveProgressWidget;
 class UComplyStatusEffectsWidget;
@@ -32,6 +33,7 @@ public:
 	
 	FORCEINLINE UComplyCrosshairWidget* GetCrosshairWidget() const { return ComplyCrosshairWidget; }
 	FORCEINLINE UComplyTeamStatusPanelsWidget* GetTeamStatusPanelsWidget() const { return ComplyTeamStatusPanelsWidget; }
+	FORCEINLINE UComplyChatBoxWidget* GetChatBoxWidget() const { return ComplyChatBoxWidget; }
 
 protected:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
@@ -57,6 +59,9 @@ protected:
 	
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UComplyTeamStatusPanelsWidget> ComplyTeamStatusPanelsWidget;
+	
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UComplyChatBoxWidget> ComplyChatBoxWidget;
 
 private:
 	UPROPERTY()

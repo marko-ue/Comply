@@ -36,6 +36,7 @@
 #include "Net/UnrealNetwork.h"
 #include "UI/Widgets/ComplyCrosshairWidget.h"
 #include "UI/Widgets/ComplyHUDWidget.h"
+#include "UI/Widgets/Chat/ComplyChatBoxWidget.h"
 #include "UI/Widgets/DamageNumbers/DamageNumbersWidget.h"
 
 
@@ -110,6 +111,7 @@ void AComplyPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		EnhancedInputComponent->BindAction(InputData->EquipUtilityAction, ETriggerEvent::Started, this, &ThisClass::EquipUtilityActionPressed);
 		EnhancedInputComponent->BindAction(InputData->EquipThrowableAction, ETriggerEvent::Started, this, &ThisClass::EquipThrowableActionPressed);
 		EnhancedInputComponent->BindAction(InputData->OpenPauseMenuAction, ETriggerEvent::Started, this, &ThisClass::OpenPauseMenuActionPressed);
+		EnhancedInputComponent->BindAction(InputData->OpenChatAction, ETriggerEvent::Started, this, &ThisClass::OpenChatActionPressed);
 	}
 }
 
@@ -742,6 +744,14 @@ void AComplyPlayerCharacter::OpenPauseMenuActionPressed()
 	if (AComplyPlayerController* PC = Cast<AComplyPlayerController>(GetController()))
 	{
 		PC->OpenMenuWidget(PauseMenuWidgetClass);
+	}
+}
+
+void AComplyPlayerCharacter::OpenChatActionPressed()
+{
+	if (AComplyPlayerController* PC = Cast<AComplyPlayerController>(GetController()))
+	{
+		PC->HUDWidget->GetChatBoxWidget()->OpenInput();
 	}
 }
 

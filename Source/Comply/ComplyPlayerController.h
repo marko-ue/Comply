@@ -67,6 +67,9 @@ public:
 	
 	UFUNCTION(Server, Reliable)
 	void Server_InitiateVoteKick(APlayerState* Target);
+	
+	UFUNCTION(Server, Reliable)
+	void Server_SendChatMessage(const FString& Message);
 
 protected:
 	/** Input Mapping Contexts */
@@ -113,4 +116,7 @@ private:
 	void TryBindGameStateEvents();
 	
 	FTimerHandle GameStateWaitTimerHandle;
+	
+	UFUNCTION(Client, Reliable)
+	void Client_ReceiveChatMessage(const FString& PlayerName, const FString& Message);
 };

@@ -14,6 +14,7 @@
 #include "Framework/PlayerState/ComplyPlayerState.h"
 #include "UI/Widgets/ComplyHUDWidget.h"
 #include "UI/Widgets/ComplyVoteKickWidget.h"
+#include "UI/Widgets/Chat/ComplyChatBoxWidget.h"
 #include "UI/Widgets/DamageNumbers/DamageNumbersWidget.h"
 #include "Widgets/Input/SVirtualJoystick.h"
 
@@ -184,6 +185,35 @@ void AComplyPlayerController::AddMappingContexts()
 				Subsystem->AddMappingContext(CurrentContext, 0);
 			}
 		}
+	}
+}
+
+// The server RPC is called by the widget that calls a client RPC which handles showing the message to every client
+void AComplyPlayerController::Server_SendChatMessage_Implementation(const FString& Message)
+{
+	const FString TrimmedMessage = Message.TrimStartAndEnd();
+	if (TrimmedMessage.IsEmpty()) return;
+
+	const FString SenderName = PlayerState ? PlayerState->GetPlayerName() : TEXT("Unknown");
+
+	AGameStateBase* GS = GetWorld()->GetGameState();
+	if (!GS) return;
+
+	for (const APlayerState* PS : GS->PlayerArray)
+	{
+		if (AComplyPlayerController* PC = Cast<AComplyPlayerController>(PS->GetPlayerController()))
+		{
+			PC->Client_ReceiveChatMessage(SenderName, TrimmedMessage);
+		}
+	}
+}
+
+// Adds the message to the chat box widget
+void AComplyPlayerController::Client_ReceiveChatMessage_Implementation(const FString& PlayerName, const FString& Message)
+{
+	if (HUDWidget)
+	{
+		HUDWidget->GetChatBoxWidget()->AddMessage(PlayerName, Message);
 	}
 }
 

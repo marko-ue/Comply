@@ -186,6 +186,8 @@ protected:
 	void EquipThrowableActionPressed();
 	
 	void OpenPauseMenuActionPressed();
+	
+	void OpenChatActionPressed();
 	// End Input
 	
 private:

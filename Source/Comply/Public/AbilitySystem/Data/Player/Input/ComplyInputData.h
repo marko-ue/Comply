@@ -46,4 +46,7 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category="Input|Actions")
 	TObjectPtr<UInputAction> OpenPauseMenuAction;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Input|Actions")
+	TObjectPtr<UInputAction> OpenChatAction;
 };

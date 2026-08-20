@@ -13,6 +13,7 @@
 #include "UI/Widgets/ComplyStatusEffectsWidget.h"
 #include "UI/Widgets/ComplyUtilityCooldownsWidget.h"
 #include "UI/Widgets/TeammatePanels/ComplyTeamStatusPanelsWidget.h"
+#include "UI/Widgets/Chat/ComplyChatBoxWidget.h"
 
 
 void UComplyHUDWidget::InitializeHUD(UAbilitySystemComponent* ASC)

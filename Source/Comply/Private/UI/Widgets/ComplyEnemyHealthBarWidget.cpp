@@ -4,6 +4,7 @@
 #include "UI/Widgets/ComplyEnemyHealthBarWidget.h"
 
 #include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
+#include "Components/CanvasPanel.h"
 #include "Components/ProgressBar.h"
 
 void UComplyEnemyHealthBarWidget::InitializeHealthBar(UAbilitySystemComponent* InASC)
@@ -34,13 +35,16 @@ void UComplyEnemyHealthBarWidget::InitializeHealthBar(UAbilitySystemComponent* I
 
 void UComplyEnemyHealthBarWidget::OnHealthChanged(const FOnAttributeChangeData& Data)
 {
-	// The widget becomes visible once enemies take damage
-	if (GetVisibility() == ESlateVisibility::Hidden)
+	CurrentHealth = Data.NewValue;
+
+	// Only become visible if health actually dropped below max (real damage was applied)
+	// It prevents the RTT for when enemies apply their health gameplay effects triggering this function,
+	// causing the widget to become visible on clients from the start
+	if (CurrentHealth < CurrentMaxHealth)
 	{
 		SetVisibility(ESlateVisibility::Visible);
 	}
-	
-	CurrentHealth = Data.NewValue;
+
 	UpdateBar();
 }
 

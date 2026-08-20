@@ -55,7 +55,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	
 	if (Context && Context->bHitThroughShield)
 	{
-		Multiplier += Context->ShieldDamageMultiplier;
+		Multiplier *= Context->ShieldDamageMultiplier;
 	}
 	
 	if (!DamageConfig)

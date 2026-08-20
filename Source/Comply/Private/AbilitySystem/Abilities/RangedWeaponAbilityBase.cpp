@@ -362,7 +362,10 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
         	
         	if (Cast<AComplyCharacterBase>(TargetActor))
         	{
-        		Character->Client_ShowDamageNumber(FinalDamage, Data->GetHitResult()->ImpactPoint);
+        		// Checks if the hit passed through a shield, and if so, include that in the damage calculation to show as the damage number
+        		const float DisplayDamage = (CustomData && CustomData->bPassedThroughShield)
+        			? FinalDamage * WeaponData->ShieldShotDamageMultiplier : FinalDamage;
+        		Character->Client_ShowDamageNumber(DisplayDamage, Data->GetHitResult()->ImpactPoint);
         	}
         }
     }
@@ -401,15 +404,22 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
             if (!Data.IsValid() || !Data->GetHitResult()->bBlockingHit) continue;
         	
         	Character->Multicast_SpawnImpactEffects(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->ImpactNormal, MuzzleLocation, WeaponData);
-            
+        	
         	if (const AComplyCharacterBase* HitCharacter = Cast<AComplyCharacterBase>(TargetActor))
         	{
+        		const FComplyGameplayAbilityTargetData_SingleHit* CustomData =
+					static_cast<const FComplyGameplayAbilityTargetData_SingleHit*>(Data.Get());
+
+        		// Checks if the hit passed through a shield, and if so, include that in the damage calculation to show as the damage number
+        		const float DisplayDamage = (CustomData && CustomData->bPassedThroughShield)
+					? FinalDamage * WeaponData->ShieldShotDamageMultiplier : FinalDamage;
+
         		const FVector Offset = FVector(
 					FMath::RandRange(-5.f, 5.f),
 					FMath::RandRange(-5.f, 5.f),
 					FMath::RandRange(60.f, 80.f)
 				);
-        		Character->Client_ShowDamageNumber(FinalDamage, HitCharacter->GetActorLocation() + Offset);
+        		Character->Client_ShowDamageNumber(DisplayDamage, HitCharacter->GetActorLocation() + Offset);
         	}
         }
     }

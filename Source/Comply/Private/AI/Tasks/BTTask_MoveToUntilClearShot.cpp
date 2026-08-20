@@ -3,9 +3,12 @@
 
 #include "AI/Tasks/BTTask_MoveToUntilClearShot.h"
 
+#include "AbilitySystemComponent.h"
 #include "AIController.h"
 #include "Comply.h"
+#include "AbilitySystem/ComplyTags.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Interface/TargetableInterface.h"
 
 UBTTask_MoveToUntilClearShot::UBTTask_MoveToUntilClearShot()
 {
@@ -33,6 +36,15 @@ void UBTTask_MoveToUntilClearShot::TickTask(UBehaviorTreeComponent& OwnerComp, u
 	AActor* Target = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(TargetActorKey.SelectedKeyName));
 
 	if (!Pawn || !Target)
+	{
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+		return;
+	}
+	
+	// If the target is shielded, fail the task and let the task find the next target that's not shielded if available
+	const ITargetableInterface* Targetable = Cast<ITargetableInterface>(Target);
+	const UAbilitySystemComponent* TargetASC = Targetable ? Targetable->GetTargetASC() : nullptr;
+	if (TargetASC && TargetASC->HasMatchingGameplayTag(ComplyTags::States::State_Shielded))
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 		return;

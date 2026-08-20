@@ -137,7 +137,11 @@ void UComplySettingsMenuWidget::ApplyCrosshairSettings() const
     const AComplyPlayerController* PC = GetOwningPlayer<AComplyPlayerController>();
     if (!PC || !GI) return;
     
-    UComplyCrosshairWidget* CrosshairWidget = PC->HUDWidget->GetCrosshairWidget();
+    // HUD is not valid in the lobby
+    UComplyHUDWidget* HUD = PC->HUDWidget;
+    if (!HUD) return;
+    
+    UComplyCrosshairWidget* CrosshairWidget = HUD->GetCrosshairWidget();
     if (!CrosshairWidget) return;
 
     CrosshairWidget->SetCrosshairSize(GI->CrosshairSize);

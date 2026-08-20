@@ -48,7 +48,7 @@ public:
 	UPROPERTY()
 	bool bShowHUD          = true;
 	UPROPERTY()
-	float CrosshairSize    = 1.f;
+	float CrosshairSize    = 32.f;
 	UPROPERTY()
 	float CrosshairOpacity = 1.f;
 	UPROPERTY()

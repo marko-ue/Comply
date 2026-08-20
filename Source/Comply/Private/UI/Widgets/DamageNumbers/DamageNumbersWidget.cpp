@@ -5,6 +5,7 @@
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
+#include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/Widgets/DamageNumbers/DamageNumberEntryWidget.h"
 
@@ -33,7 +34,7 @@ UDamageNumberEntryWidget* UDamageNumbersWidget::GetPooledEntry()
 	return nullptr;
 }
 
-void UDamageNumbersWidget::ShowDamageNumber(const float DamageAmount, const FVector& WorldPos)
+void UDamageNumbersWidget::ShowDamageNumber(const float DamageAmount, const FVector& WorldPos, const FLinearColor Color)
 {
 	UDamageNumberEntryWidget* Entry = GetPooledEntry();
 	if (!Entry) return;
@@ -49,6 +50,8 @@ void UDamageNumbersWidget::ShowDamageNumber(const float DamageAmount, const FVec
 	if (!CanvasSlot) return;
 	CanvasSlot->SetPosition(ScreenPos);
 
+	Entry->DamageText->SetColorAndOpacity(Color);
+	
 	// Shows the damage number widget
 	Entry->Activate(FMath::CeilToInt(DamageAmount), WorldPos);
 }

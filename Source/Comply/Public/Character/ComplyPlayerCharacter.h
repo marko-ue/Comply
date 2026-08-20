@@ -95,7 +95,7 @@ public:
 	// End Impact Effects
 	
 	UFUNCTION(Client, Reliable)
-	void Client_ShowDamageNumber(float DamageAmount, FVector WorldPos);
+	void Client_ShowDamageNumber(const float DamageAmount, const FVector& WorldPos, const FLinearColor Color);
 	
 	void ApplyFiringFeedback(const UComplyWeaponData* WeaponData);
 	

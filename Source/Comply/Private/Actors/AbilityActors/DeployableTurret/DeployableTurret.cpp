@@ -134,7 +134,9 @@ void ADeployableTurret::Fire(AActor* TargetActor)
 	{
 		if (AComplyPlayerCharacter* SourceCharacter = Cast<AComplyPlayerCharacter>(SourceASC->GetAvatarActor()))
 		{
-			SourceCharacter->Client_ShowDamageNumber(TurretData->Damage, HitCharacter->GetActorLocation() + FVector(0.f, 0.f, 100.f));
+			SourceCharacter->Client_ShowDamageNumber(
+				TurretData->Damage, HitCharacter->GetActorLocation() + FVector(0.f, 0.f, 100.f), FLinearColor(1.f, 0.35f, 0.f, 1.f)
+			);
 		}
 	}
 }

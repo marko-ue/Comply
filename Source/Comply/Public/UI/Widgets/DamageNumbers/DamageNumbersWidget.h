@@ -21,7 +21,7 @@ class COMPLY_API UDamageNumbersWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	void ShowDamageNumber(const float DamageAmount, const FVector& WorldPos);
+	void ShowDamageNumber(const float DamageAmount, const FVector& WorldPos, const FLinearColor Color);
 
 protected:
 	virtual void NativeConstruct() override;

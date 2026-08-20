@@ -27,15 +27,15 @@ public:
 	
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> DamageText;
+	
 protected:
 	virtual void NativeConstruct();
 	
 private:
 	UFUNCTION()
 	void ReturnToPool();  // Called at end of animation
-	
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> DamageText;
 	
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> FloatUpAnim;

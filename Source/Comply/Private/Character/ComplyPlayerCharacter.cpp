@@ -407,11 +407,11 @@ void AComplyPlayerCharacter::SpawnImpactEffectsLocal(const FVector& ImpactPoint,
 	}
 }
 
-void AComplyPlayerCharacter::Client_ShowDamageNumber_Implementation(float DamageAmount, FVector WorldPos)
+void AComplyPlayerCharacter::Client_ShowDamageNumber_Implementation(const float DamageAmount, const FVector& WorldPos, const FLinearColor Color)
 {
 	if (const AComplyPlayerController* PC = Cast<AComplyPlayerController>(GetController()))
 	{
-		PC->DamageNumbersWidget->ShowDamageNumber(DamageAmount, WorldPos);
+		PC->DamageNumbersWidget->ShowDamageNumber(DamageAmount, WorldPos, Color);
 	}
 }
 

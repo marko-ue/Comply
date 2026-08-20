@@ -362,10 +362,11 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
         	
         	if (Cast<AComplyCharacterBase>(TargetActor))
         	{
-        		// Checks if the hit passed through a shield, and if so, include that in the damage calculation to show as the damage number
-        		const float DisplayDamage = (CustomData && CustomData->bPassedThroughShield)
-        			? FinalDamage * WeaponData->ShieldShotDamageMultiplier : FinalDamage;
-        		Character->Client_ShowDamageNumber(DisplayDamage, Data->GetHitResult()->ImpactPoint);
+        		// Checks if the hit passed through a shield, and if so, include that in the damage calculation to show as the damage number and pass in the appropriate color
+        		const bool bShieldHit = CustomData && CustomData->bPassedThroughShield;
+        		const float DisplayDamage = bShieldHit ? FinalDamage * WeaponData->ShieldShotDamageMultiplier : FinalDamage;
+        		const FLinearColor DisplayColor = bShieldHit ? FLinearColor(0.f, 0.8f, 0.f, 1.f) : FLinearColor(1.f, 0.35f, 0.f, 1.f);
+        		Character->Client_ShowDamageNumber(DisplayDamage, Data->GetHitResult()->ImpactPoint, DisplayColor);
         	}
         }
     }
@@ -410,16 +411,17 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
         		const FComplyGameplayAbilityTargetData_SingleHit* CustomData =
 					static_cast<const FComplyGameplayAbilityTargetData_SingleHit*>(Data.Get());
 
-        		// Checks if the hit passed through a shield, and if so, include that in the damage calculation to show as the damage number
-        		const float DisplayDamage = (CustomData && CustomData->bPassedThroughShield)
-					? FinalDamage * WeaponData->ShieldShotDamageMultiplier : FinalDamage;
+        		// Checks if the hit passed through a shield, and if so, include that in the damage calculation to show as the damage number and pass in the appropriate color
+        		const bool bShieldHit = CustomData && CustomData->bPassedThroughShield;
+        		const float DisplayDamage = bShieldHit ? FinalDamage * WeaponData->ShieldShotDamageMultiplier : FinalDamage;
+        		const FLinearColor DisplayColor = bShieldHit ? FLinearColor(0.f, 0.8f, 0.f, 1.f) : FLinearColor(1.f, 0.35f, 0.f, 1.f);
 
         		const FVector Offset = FVector(
 					FMath::RandRange(-5.f, 5.f),
 					FMath::RandRange(-5.f, 5.f),
 					FMath::RandRange(60.f, 80.f)
 				);
-        		Character->Client_ShowDamageNumber(DisplayDamage, HitCharacter->GetActorLocation() + Offset);
+        		Character->Client_ShowDamageNumber(DisplayDamage, HitCharacter->GetActorLocation() + Offset, DisplayColor);
         	}
         }
     }

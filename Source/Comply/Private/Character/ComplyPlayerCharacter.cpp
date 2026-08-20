@@ -531,13 +531,13 @@ void AComplyPlayerCharacter::PrimaryActionPressed()
 		}
 	}
 	
-	// if (ApplyFireEffectAbilityClass)
-	// {
-	// 	if (!GetAbilitySystemComponent()->HasMatchingGameplayTag(ComplyTags::States::State_FiringBlocked))
-	// 	{
-	// 		GetAbilitySystemComponent()->TryActivateAbilityByClass(ApplyFireEffectAbilityClass);
-	// 	}
-	// }
+	if (ApplyFireEffectAbilityClass)
+	{
+		if (!GetAbilitySystemComponent()->HasMatchingGameplayTag(ComplyTags::States::State_FiringBlocked))
+		{
+			GetAbilitySystemComponent()->TryActivateAbilityByClass(ApplyFireEffectAbilityClass);
+		}
+	}
 	
 	FireInputStartTime = GetWorld()->GetTimeSeconds();
 	
@@ -559,6 +559,18 @@ void AComplyPlayerCharacter::PrimaryActionReleased()
 			&& !Cast<UThrowableAbilityBase>(Spec.GetPrimaryInstance())->bUsesCustomPreviewLogic)
 		{
 			GetAbilitySystemComponent()->LocalInputConfirm();
+			break;
+		}
+	}
+	
+	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
+	{
+		if (Spec.Ability->GetClass() == ApplyFireEffectAbilityClass)
+		{
+			GetAbilitySystemComponent()->CancelAbility(Spec.Ability);
+			
+			bIsFiring = false;
+			bFiredThisFrame = false;
 			break;
 		}
 	}

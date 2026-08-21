@@ -21,6 +21,10 @@ class COMPLY_API UComplyChargeWidget : public UUserWidget
  
 public:
 	void InitializeCharge();
+	
+protected:
+	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
  
 private:
 	void OnChargeChanged(const FOnAttributeChangeData& Data);
@@ -42,4 +46,7 @@ private:
  
 	float CachedCharge    = 0.f;
 	float CachedMaxCharge = 0.f;
+	
+	FTimerHandle ChargeInitRetryHandle;
+	void TryInitializeCharge();
 };

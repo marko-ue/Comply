@@ -1,3 +1,5 @@
+// Copyright © 2026 Marko. All rights reserved.
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -17,6 +19,10 @@ class COMPLY_API UComplyAmmoWidget : public UUserWidget
     
 public:
 	void InitializeAmmo();
+	
+protected:
+	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
     
 private:
 	void OnAmmoChanged(const FOnAttributeChangeData& Data);
@@ -46,4 +52,7 @@ private:
 	float CachedMaxAmmo = 0.f;
 	float CachedReserveAmmo = 0.f;
 	float CachedMaxReserveAmmo = 0.f;
+	
+	FTimerHandle AmmoInitRetryHandle;
+	void TryInitializeAmmo();
 };

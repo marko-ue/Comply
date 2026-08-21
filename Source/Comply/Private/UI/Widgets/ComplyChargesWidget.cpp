@@ -9,6 +9,37 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 
+
+void UComplyChargeWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+	TryInitializeCharge();
+}
+
+void UComplyChargeWidget::TryInitializeCharge()
+{
+	const AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetOwningPlayerPawn());
+	if (!Character)
+	{
+		GetWorld()->GetTimerManager().SetTimer(
+			ChargeInitRetryHandle, this, &UComplyChargeWidget::TryInitializeCharge, 0.25f, false
+		);
+		return;
+	}
+
+	ActiveThrowable = Character->GetEquippedThrowable();
+	if (!ActiveThrowable || !ActiveThrowable->GrenadeData)
+	{
+		GetWorld()->GetTimerManager().SetTimer(
+			ChargeInitRetryHandle, this, &UComplyChargeWidget::TryInitializeCharge, 0.25f, false
+		);
+		return;
+	}
+
+	// Past this point everything is available, run original init logic
+	InitializeCharge();
+}
+
 void UComplyChargeWidget::InitializeCharge()
 {
 	const AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetOwningPlayerPawn());
@@ -52,4 +83,10 @@ void UComplyChargeWidget::RefreshChargeText() const
 			static_cast<int32>(CachedMaxCharge));
 		ChargeText->SetText(FText::FromString(ChargeString));
 	}
+}
+
+void UComplyChargeWidget::NativeDestruct()
+{
+	Super::NativeDestruct();
+	GetWorld()->GetTimerManager().ClearTimer(ChargeInitRetryHandle);
 }

@@ -1,13 +1,44 @@
+// Copyright © 2026 Marko. All rights reserved.
+
+
 #include "UI/Widgets/ComplyAmmoWidget.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
-#include "ComplyPlayerController.h"
 #include "Components/TextBlock.h"
 #include "Character/ComplyPlayerCharacter.h"
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "Components/Image.h"
-#include "Framework/PlayerState/ComplyPlayerState.h"
 
+
+void UComplyAmmoWidget::NativeConstruct()
+{
+    Super::NativeConstruct();
+    TryInitializeAmmo();
+}
+
+void UComplyAmmoWidget::TryInitializeAmmo()
+{
+    const AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetOwningPlayerPawn());
+    if (!Character)
+    {
+        GetWorld()->GetTimerManager().SetTimer(
+            AmmoInitRetryHandle, this, &UComplyAmmoWidget::TryInitializeAmmo, 0.25f, false
+        );
+        return;
+    }
+
+    ActiveWeapon = Character->GetEquippedPrimaryWeapon();
+    if (!ActiveWeapon || !ActiveWeapon->WeaponData)
+    {
+        GetWorld()->GetTimerManager().SetTimer(
+            AmmoInitRetryHandle, this, &UComplyAmmoWidget::TryInitializeAmmo, 0.25f, false
+        );
+        return;
+    }
+
+    // Past this point everything is available, run original init logic
+    InitializeAmmo();
+}
 
 void UComplyAmmoWidget::InitializeAmmo()
 {
@@ -76,4 +107,10 @@ void UComplyAmmoWidget::RefreshReserveAmmoText() const
         const FString ReserveString = FString::Printf(TEXT("%d / %d"), static_cast<int32>(CachedReserveAmmo), static_cast<int32>(CachedMaxReserveAmmo));
         ReserveAmmoText->SetText(FText::FromString(ReserveString));
     }
+}
+
+void UComplyAmmoWidget::NativeDestruct()
+{
+    Super::NativeDestruct();
+    GetWorld()->GetTimerManager().ClearTimer(AmmoInitRetryHandle);
 }

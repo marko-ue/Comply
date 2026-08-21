@@ -25,6 +25,22 @@ void UComplyUtilityCooldownsWidget::InitializeUtilityCooldown()
 void UComplyUtilityCooldownsWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	if (!ActiveUtility)
+	{
+		const AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetOwningPlayerPawn());
+		if (Character)
+		{
+			ActiveUtility = Character->GetEquippedUtility();
+			if (ActiveUtility && ActiveUtility->UtilityData)
+			{
+				UtilityImage->SetBrushFromTexture(ActiveUtility->UtilityData->UtilityIcon, true);
+				CooldownText->SetVisibility(ESlateVisibility::Hidden);
+			}
+		}
+		return;
+	}
+
 	RefreshCooldown();
 }
 

@@ -24,3 +24,20 @@ UAbilitySystemComponent* AComplyPlayerState::GetAbilitySystemComponent() const
 {
 	return ASC;
 }
+
+// Every player name gets the Radmin suffix removed
+void AComplyPlayerState::SetPlayerName(const FString& S)
+{
+	Super::SetPlayerName(TrimRadminSuffix(S));
+}
+
+// Trims the suffix added to Radmin usernames
+FString AComplyPlayerState::TrimRadminSuffix(const FString& RawName)
+{
+	int32 LastDashIndex;
+	if (RawName.FindLastChar(TEXT('-'), LastDashIndex))
+	{
+		return RawName.Left(LastDashIndex);
+	}
+	return RawName;
+}

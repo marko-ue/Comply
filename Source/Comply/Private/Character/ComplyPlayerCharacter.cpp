@@ -335,6 +335,8 @@ void AComplyPlayerCharacter::OnRep_IsDowned()
 
 void AComplyPlayerCharacter::RevivePlayer()
 {
+	bIsDead = false;
+	
 	// Trace down from capsule to find ground to spawn the actor there
 	FHitResult GroundHit;
 	const FVector Start = GetCapsuleComponent()->GetComponentLocation();

@@ -1,6 +1,5 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "Actors/AbilityActors/Projectiles/MechProjectile/MechProjectileAreaEffect.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
@@ -63,15 +62,14 @@ void AMechProjectileAreaEffect::Tick(float DeltaTime)
 
 void AMechProjectileAreaEffect::ApplyEffectToTarget(AActor* OverlappingActor, UAbilitySystemComponent* TargetASC)
 {
-	// Adds the already overlapping actor so the same effect is not applied multiple times on the same actor
 	if (AffectedActors.Contains(OverlappingActor)) return;
 	AffectedActors.Add(OverlappingActor);
 
-	ApplyDamageToTarget(TargetASC);
-	ApplySlowToTarget(TargetASC);
+	ApplyDamageToTarget(OverlappingActor, TargetASC);
+	ApplySlowToTarget(OverlappingActor, TargetASC);
 }
 
-void AMechProjectileAreaEffect::ApplyDamageToTarget(UAbilitySystemComponent* TargetASC)
+void AMechProjectileAreaEffect::ApplyDamageToTarget(AActor* OverlappingActor, UAbilitySystemComponent* TargetASC)
 {
 	FComplyGameplayEffectContext* Context = new FComplyGameplayEffectContext();
 	FGameplayEffectContextHandle ContextHandle(Context);
@@ -84,21 +82,22 @@ void AMechProjectileAreaEffect::ApplyDamageToTarget(UAbilitySystemComponent* Tar
 		SpecHandle, ProjectileData->EnemyDamageData->DamageType, ProjectileData->EnemyDamageData->Damage.GetValueAtLevel(1.f)
 	);
 
-	ActiveDamageEffectHandle = SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
+	const FActiveGameplayEffectHandle Handle = SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
+	ActiveDamageEffectHandles.Add(OverlappingActor, Handle);
 }
 
-void AMechProjectileAreaEffect::ApplySlowToTarget(UAbilitySystemComponent* TargetASC)
+void AMechProjectileAreaEffect::ApplySlowToTarget(AActor* OverlappingActor, UAbilitySystemComponent* TargetASC)
 {
 	if (!SourceASC || !TargetASC || !ProjectileData->SlowEffectClass) return;
 
 	FGameplayEffectContextHandle ContextHandle = SourceASC->MakeEffectContext();
 	ContextHandle.AddSourceObject(SourceASC->GetAvatarActor());
 
-	FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(ProjectileData->SlowEffectClass, 1.f, ContextHandle);
-	if (SpecHandle.IsValid())
-	{
-		ActiveSlowEffectHandle = SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
-	}
+	const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(ProjectileData->SlowEffectClass, 1.f, ContextHandle);
+	if (!SpecHandle.IsValid()) return;
+
+	const FActiveGameplayEffectHandle Handle = SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
+	ActiveSlowEffectHandles.Add(OverlappingActor, Handle);
 }
 
 void AMechProjectileAreaEffect::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -111,7 +110,6 @@ void AMechProjectileAreaEffect::OnComponentBeginOverlap(UPrimitiveComponent* Ove
 
 	if (bIsPlayer)
 	{
-		// Immediately apply speed reduction on the local client
 		if (AComplyPlayerCharacter* PlayerCharacter = Cast<AComplyPlayerCharacter>(OtherActor))
 		{
 			if (PlayerCharacter->IsLocallyControlled() && !PlayerCharacter->HasAuthority() && PlayerCharacter->GetCharacterMovement())
@@ -137,7 +135,6 @@ void AMechProjectileAreaEffect::OnComponentEndOverlap(UPrimitiveComponent* Overl
 {
 	AffectedActors.Remove(OtherActor);
 	
-	// Immediately add back speed on the local client
 	if (const AComplyPlayerCharacter* PlayerCharacter = Cast<AComplyPlayerCharacter>(OtherActor))
 	{
 		if (PlayerCharacter->IsLocallyControlled() && !PlayerCharacter->HasAuthority() && PlayerCharacter->GetCharacterMovement())
@@ -150,13 +147,16 @@ void AMechProjectileAreaEffect::OnComponentEndOverlap(UPrimitiveComponent* Overl
 	{
 		if (UAbilitySystemComponent* TargetASC = ASCInterface->GetAbilitySystemComponent())
 		{
-			if (TargetASC)
+			if (const FActiveGameplayEffectHandle* DamageHandle = ActiveDamageEffectHandles.Find(OtherActor))
 			{
-				if (ActiveDamageEffectHandle.IsValid() && ActiveSlowEffectHandle.IsValid())
-				{
-					TargetASC->RemoveActiveGameplayEffect(ActiveDamageEffectHandle);
-					TargetASC->RemoveActiveGameplayEffect(ActiveSlowEffectHandle);
-				}
+				TargetASC->RemoveActiveGameplayEffect(*DamageHandle);
+				ActiveDamageEffectHandles.Remove(OtherActor);
+			}
+
+			if (const FActiveGameplayEffectHandle* SlowHandle = ActiveSlowEffectHandles.Find(OtherActor))
+			{
+				TargetASC->RemoveActiveGameplayEffect(*SlowHandle);
+				ActiveSlowEffectHandles.Remove(OtherActor);
 			}
 		}
 	}
@@ -173,7 +173,35 @@ void AMechProjectileAreaEffect::EndPlay(const EEndPlayReason::Type EndPlayReason
 	{
 		AreaEffectNiagaraComponent->Deactivate();
 	}
+
+	// Clean up any GEs still active on players inside the zone when the actor expires
+	for (TTuple<TWeakObjectPtr<AActor>, FActiveGameplayEffectHandle>& Entry : ActiveDamageEffectHandles)
+	{
+		if (Entry.Key.IsValid())
+		{
+			if (const IAbilitySystemInterface* ASCInterface = Cast<IAbilitySystemInterface>(Entry.Key.Get()))
+			{
+				if (UAbilitySystemComponent* TargetASC = ASCInterface->GetAbilitySystemComponent())
+				{
+					TargetASC->RemoveActiveGameplayEffect(Entry.Value);
+				}
+			}
+		}
+	}
+
+	for (TTuple<TWeakObjectPtr<AActor>, FActiveGameplayEffectHandle>& Entry : ActiveSlowEffectHandles)
+	{
+		if (Entry.Key.IsValid())
+		{
+			if (const IAbilitySystemInterface* ASCInterface = Cast<IAbilitySystemInterface>(Entry.Key.Get()))
+			{
+				if (UAbilitySystemComponent* TargetASC = ASCInterface->GetAbilitySystemComponent())
+				{
+					TargetASC->RemoveActiveGameplayEffect(Entry.Value);
+				}
+			}
+		}
+	}
 	
 	Super::EndPlay(EndPlayReason);
 }
-

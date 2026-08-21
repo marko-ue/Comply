@@ -1,6 +1,5 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "Actors/Environment/ElectricHazardZone.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
@@ -71,18 +70,20 @@ void AElectricHazardZone::OnComponentBeginOverlap(UPrimitiveComponent* Overlappe
 		}
 	}
 
-	if (IAbilitySystemInterface* ASCInterface = Cast<IAbilitySystemInterface>(OtherActor))
+	if (const IAbilitySystemInterface* ASCInterface = Cast<IAbilitySystemInterface>(OtherActor))
 	{
 		if (UAbilitySystemComponent* TargetASC = ASCInterface->GetAbilitySystemComponent())
 		{
 			if (!GetAbilitySystemComponent() || !TargetASC || !ElectricHazardZoneData->DamageEffectClass) return;
 
-			ApplyEffectToTarget(TargetASC);
+			ApplyEffectToTarget(OtherActor, TargetASC);
 			
-			// The stun lasts 1 second. It will be reapplied every 2 seconds if still in the zone to allow a 0.5 second room without being in a stunned state
+			// The stun lasts 1 second. It will be reapplied every 1.5 seconds if still in the zone to allow a 0.5 second room without being in a stunned state
+			FTimerHandle NewTimerHandle;
 			GetWorld()->GetTimerManager().SetTimer(
-				ApplyStunEffectTimerHandle,[this, TargetASC]() { ApplyStunToTarget(TargetASC); }, 1.5f, true
+				NewTimerHandle, [this, OtherActor, TargetASC]() { ApplyStunToTarget(OtherActor, TargetASC); }, 1.5f, true
 			);
+			StunTimerHandles.Add(OtherActor, NewTimerHandle);
 		}
 	}
 }
@@ -101,64 +102,69 @@ void AElectricHazardZone::OnComponentEndOverlap(UPrimitiveComponent* OverlappedC
 		}
 	}
 	
-	// Clear the timer so the stun effect doesn't keep reapplying
-	if (ApplyStunEffectTimerHandle.IsValid())
+	// Clear this actor's stun timer
+	if (FTimerHandle* TimerHandle = StunTimerHandles.Find(OtherActor))
 	{
-		GetWorld()->GetTimerManager().ClearTimer(ApplyStunEffectTimerHandle);
+		GetWorld()->GetTimerManager().ClearTimer(*TimerHandle);
+		StunTimerHandles.Remove(OtherActor);
 	}
 	
-	if (IAbilitySystemInterface* ASCInterface = Cast<IAbilitySystemInterface>(OtherActor))
+	if (const IAbilitySystemInterface* ASCInterface = Cast<IAbilitySystemInterface>(OtherActor))
 	{
 		if (UAbilitySystemComponent* TargetASC = ASCInterface->GetAbilitySystemComponent())
 		{
-			if (TargetASC)
+			if (const FActiveGameplayEffectHandle* DamageHandle = ActiveDamageEffectHandles.Find(OtherActor))
 			{
-				if (ActiveDamageEffectHandle.IsValid() && ActiveStunEffectHandle.IsValid())
-				{
-					TargetASC->RemoveActiveGameplayEffect(ActiveDamageEffectHandle);
-					TargetASC->RemoveActiveGameplayEffect(ActiveStunEffectHandle);
-				}
+				TargetASC->RemoveActiveGameplayEffect(*DamageHandle);
+				ActiveDamageEffectHandles.Remove(OtherActor);
+			}
+
+			if (const FActiveGameplayEffectHandle* StunHandle = ActiveStunEffectHandles.Find(OtherActor))
+			{
+				TargetASC->RemoveActiveGameplayEffect(*StunHandle);
+				ActiveStunEffectHandles.Remove(OtherActor);
 			}
 		}
 	}
 }
 
-void AElectricHazardZone::ApplyEffectToTarget(UAbilitySystemComponent* TargetASC)
+void AElectricHazardZone::ApplyEffectToTarget(AActor* OverlappingActor, UAbilitySystemComponent* TargetASC)
 {
 	if (!TargetASC || !ElectricHazardZoneData->DamageEffectClass) return;
 	
-	if (AffectedActors.Contains(TargetASC->GetAvatarActor())) return;
-	AffectedActors.Add(TargetASC->GetAvatarActor());
+	if (AffectedActors.Contains(OverlappingActor)) return;
+	AffectedActors.Add(OverlappingActor);
 	
-	ApplyDamageToTarget(TargetASC);
-	ApplyStunToTarget(TargetASC);
+	ApplyDamageToTarget(OverlappingActor, TargetASC);
+	ApplyStunToTarget(OverlappingActor, TargetASC);
 }
 
-void AElectricHazardZone::ApplyStunToTarget(UAbilitySystemComponent* TargetASC)
+void AElectricHazardZone::ApplyStunToTarget(AActor* OverlappingActor, UAbilitySystemComponent* TargetASC)
 {
 	if (!GetAbilitySystemComponent() || !TargetASC || !ElectricHazardZoneData->StunEffectClass) return;
 	
 	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
 	ContextHandle.AddSourceObject(GetAbilitySystemComponent()->GetAvatarActor());
 
-	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(ElectricHazardZoneData->StunEffectClass, 1.f, ContextHandle);
+	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(ElectricHazardZoneData->StunEffectClass, 1.f, ContextHandle);
 	if (SpecHandle.IsValid())
 	{
-		ActiveStunEffectHandle = GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
+		const FActiveGameplayEffectHandle Handle = GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
+		ActiveStunEffectHandles.Add(OverlappingActor, Handle);
 	}
 }
 
-void AElectricHazardZone::ApplyDamageToTarget(UAbilitySystemComponent* TargetASC)
+void AElectricHazardZone::ApplyDamageToTarget(AActor* OverlappingActor, UAbilitySystemComponent* TargetASC)
 {
 	FComplyGameplayEffectContext* Context = new FComplyGameplayEffectContext();
 	FGameplayEffectContextHandle ContextHandle(Context);
 	ContextHandle.AddSourceObject(this);
 
-	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(ElectricHazardZoneData->DamageEffectClass, 1.f, ContextHandle);
+	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(ElectricHazardZoneData->DamageEffectClass, 1.f, ContextHandle);
 	if (!SpecHandle.IsValid()) return;
 
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, ElectricHazardZoneData->DamageType, ElectricHazardZoneData->Damage.GetValueAtLevel(1.f));
 
-	ActiveDamageEffectHandle = GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
+	const FActiveGameplayEffectHandle Handle = GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
+	ActiveDamageEffectHandles.Add(OverlappingActor, Handle);
 }
-

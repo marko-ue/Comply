@@ -78,8 +78,6 @@ void AComplyPlayerController::OnRep_PlayerState()
 	{
 		SelectedCharacterClass = PS->LastSelectedCharacterClass ? PS->LastSelectedCharacterClass : DefaultCharacterClass;
 	}
-	
-	if (HUDWidget) return; // Already initialized, skip
 
 	const AComplyPlayerState* PS = GetPlayerState<AComplyPlayerState>();
 	if (!PS) return;
@@ -87,23 +85,17 @@ void AComplyPlayerController::OnRep_PlayerState()
 	UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
 	if (!ASC) return;
 
-	const FString MapName = GetWorld()->GetMapName();
-	if (!MapName.Contains("Lobby"))
+	const FComplyHUDLayout* Layout = nullptr;
+	if (SelectedCharacterClass)
 	{
-		HUDWidget = CreateWidget<UComplyHUDWidget>(this, HUDWidgetClass);
-		HUDWidget->AddToViewport();
-		HUDWidget->InitializeHUD(ASC);
+		if (const AComplyPlayerCharacter* CDO = SelectedCharacterClass->GetDefaultObject<AComplyPlayerCharacter>())
+		{
+			if (CDO->PlayerData) Layout = &CDO->PlayerData->HUDLayout;
+		}
 	}
-	
-	if (DamageNumbersWidget) return; // Already initialized, skip
-	
-	DamageNumbersWidget = CreateWidget<UDamageNumbersWidget>(this, DamageNumbersWidgetClass);
-	DamageNumbersWidget->AddToViewport();
-	
-	FVector2D ViewportSize;
-	GetWorld()->GetGameViewport()->GetViewportSize(ViewportSize);
-	DamageNumbersWidget->SetPositionInViewport(FVector2D(0.f, 0.f));
-	DamageNumbersWidget->SetDesiredSizeInViewport(ViewportSize);
+
+	TryInitializeHUD(ASC, Layout);
+	TryInitializeDamageNumbers();
 }
 
 // Ensures mapping contexts are added on the client whenever a pawn is possessed
@@ -113,37 +105,52 @@ void AComplyPlayerController::AcknowledgePossession(class APawn* P)
 
 	AddMappingContexts();
 
-	const AComplyPlayerCharacter* PlayerCharacter = Cast<AComplyPlayerCharacter>(P);
-	if (!PlayerCharacter) return;
+	AComplyPlayerCharacter* ComplyCharacter = Cast<AComplyPlayerCharacter>(P);
+	if (!ComplyCharacter) return;
 
-	const AComplyPlayerState* PS = PlayerCharacter->GetPlayerState<AComplyPlayerState>();
+	const AComplyPlayerState* PS = ComplyCharacter->GetPlayerState<AComplyPlayerState>();
 	if (!PS) return;
-	
+
 	UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
 	if (!ASC) return;
-	
-	AComplyPlayerCharacter* ComplyCharacter = Cast<AComplyPlayerCharacter>(P);
-	if (!ComplyCharacter || !ComplyCharacter->PlayerData) return;
-	
+
+	const FComplyHUDLayout* Layout = ComplyCharacter->PlayerData ? &ComplyCharacter->PlayerData->HUDLayout : nullptr;
+
+	TryInitializeHUD(ASC, Layout);
+	TryInitializeDamageNumbers();
+}
+
+void AComplyPlayerController::TryInitializeHUD(UAbilitySystemComponent* ASC, const FComplyHUDLayout* Layout)
+{
+	if (HUDWidget) return;
+
 	const FString MapName = GetWorld()->GetMapName();
-	if (!MapName.Contains("Lobby"))
+	if (MapName.Contains("Lobby")) return;
+
+	HUDWidget = CreateWidget<UComplyHUDWidget>(this, HUDWidgetClass);
+	HUDWidget->AddToViewport();
+	HUDWidget->InitializeHUD(ASC);
+
+	if (Layout)
 	{
-		HUDWidget = CreateWidget<UComplyHUDWidget>(this, HUDWidgetClass);
-		HUDWidget->AddToViewport();
-		HUDWidget->InitializeHUD(ASC);
-		HUDWidget->InitializeLayout(ComplyCharacter->PlayerData->HUDLayout);
+		HUDWidget->InitializeLayout(*Layout);
 	}
-	
-	if (!DamageNumbersWidget)
-	{
-		DamageNumbersWidget = CreateWidget<UDamageNumbersWidget>(this, DamageNumbersWidgetClass);
-		DamageNumbersWidget->AddToViewport();
-		
-		FVector2D ViewportSize;
-		GetWorld()->GetGameViewport()->GetViewportSize(ViewportSize);
-		DamageNumbersWidget->SetPositionInViewport(FVector2D(0.f, 0.f));
-		DamageNumbersWidget->SetDesiredSizeInViewport(ViewportSize);
-	}
+}
+
+void AComplyPlayerController::TryInitializeDamageNumbers()
+{
+	if (DamageNumbersWidget) return;
+
+	const FString MapName = GetWorld()->GetMapName();
+	if (MapName.Contains("Lobby")) return;
+
+	DamageNumbersWidget = CreateWidget<UDamageNumbersWidget>(this, DamageNumbersWidgetClass);
+	DamageNumbersWidget->AddToViewport();
+
+	FVector2D ViewportSize;
+	GetWorld()->GetGameViewport()->GetViewportSize(ViewportSize);
+	DamageNumbersWidget->SetPositionInViewport(FVector2D(0.f, 0.f));
+	DamageNumbersWidget->SetDesiredSizeInViewport(ViewportSize);
 }
 
 void AComplyPlayerController::SetupInputComponent()

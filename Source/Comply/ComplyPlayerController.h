@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "ComplyPlayerController.generated.h"
 
+struct FComplyHUDLayout;
+class UAbilitySystemComponent;
 class UComplyVoteKickWidget;
 class UDamageNumbersWidget;
 class UComplyHUDWidget;
@@ -103,6 +105,9 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UComplyVoteKickWidget> VoteKickWidgetClass;
+	
+	void TryInitializeHUD(UAbilitySystemComponent* ASC, const FComplyHUDLayout* Layout);
+	void TryInitializeDamageNumbers();
 	
 	UPROPERTY()
 	TObjectPtr<UComplyVoteKickWidget> VoteKickWidget;

@@ -45,7 +45,7 @@ void UComplyMissionSelectionWidget::NativeConstruct()
     else
     {
         StatusText->SetText(FText::FromString(TEXT("Only the session owner may start")));
-        SelectDataExtractionButton->bIsEnabled = false;
+        SelectDataExtractionButton->SetIsEnabled(false);
     }
 }
 

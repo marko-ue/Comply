@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "ComplyPlayerController.generated.h"
 
+class UComplyRevivePromptWidget;
 struct FComplyHUDLayout;
 class UAbilitySystemComponent;
 class UComplyVoteKickWidget;
@@ -24,11 +25,15 @@ class AComplyPlayerController : public APlayerController
 	GENERATED_BODY()
 	
 public:
+	AComplyPlayerController();
+	
 	UPROPERTY()
 	TObjectPtr<UComplyHUDWidget> HUDWidget = nullptr;
+
+	virtual void Tick(float DeltaSeconds) override;
 	
 	virtual void AcknowledgePossession(class APawn* P) override;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UUserWidget> ActiveMenuWidget;
 	
@@ -109,6 +114,7 @@ private:
 	void TryInitializeHUD(UAbilitySystemComponent* ASC, const FComplyHUDLayout* Layout);
 	void TryInitializeDamageNumbers();
 	FTimerHandle DamageNumbersSizeRetryHandle;
+	void InitializeRevivePrompt();
 	
 	UPROPERTY()
 	TObjectPtr<UComplyVoteKickWidget> VoteKickWidget;
@@ -125,4 +131,15 @@ private:
 	
 	UFUNCTION(Client, Reliable)
 	void Client_ReceiveChatMessage(const FString& PlayerName, const FString& Message);
+	
+	UPROPERTY()
+	TObjectPtr<AComplyPlayerCharacter> HoveredDownedPlayer = nullptr;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UComplyRevivePromptWidget> RevivePromptWidgetClass;
+	
+	UPROPERTY()
+	TObjectPtr<UComplyRevivePromptWidget> RevivePromptWidget;
+
+	void TickRevivePromptCheck();
 };

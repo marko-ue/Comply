@@ -7,6 +7,7 @@
 #include "InputMappingContext.h"
 #include "Blueprint/UserWidget.h"
 #include "Comply.h"
+#include "AbilitySystem/ComplyAbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/Data/Player/ComplyPlayerData.h"
 #include "Character/ComplyPlayerCharacter.h"
 #include "Framework/GameInstance/ComplyGameInstance.h"
@@ -14,10 +15,17 @@
 #include "Framework/GameState/ComplyGameStateBase.h"
 #include "Framework/PlayerState/ComplyPlayerState.h"
 #include "UI/Widgets/ComplyHUDWidget.h"
+#include "UI/Widgets/ComplyRevivePromptWidget.h"
 #include "UI/Widgets/ComplyVoteKickWidget.h"
 #include "UI/Widgets/Chat/ComplyChatBoxWidget.h"
 #include "UI/Widgets/DamageNumbers/DamageNumbersWidget.h"
 #include "Widgets/Input/SVirtualJoystick.h"
+
+
+AComplyPlayerController::AComplyPlayerController()
+{
+	PrimaryActorTick.bCanEverTick = true;
+}
 
 void AComplyPlayerController::BeginPlay()
 {
@@ -98,6 +106,44 @@ void AComplyPlayerController::OnRep_PlayerState()
 	TryInitializeDamageNumbers();
 }
 
+void AComplyPlayerController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	TickRevivePromptCheck();
+}
+
+void AComplyPlayerController::TickRevivePromptCheck()
+{
+	if (!IsLocalController()) return;
+	if (!RevivePromptWidget) return;
+    
+	const AComplyPlayerCharacter* LocalPlayer = Cast<AComplyPlayerCharacter>(GetPawn());
+	if (!LocalPlayer) return;
+
+	FVector TraceStart, TraceEnd, TraceDirection;
+	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(
+	   this, LocalPlayer, 250, TraceStart, TraceEnd, TraceDirection))
+	{
+		return;
+	}
+
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(LocalPlayer);
+
+	FHitResult Hit;
+	const FCollisionShape Sphere = FCollisionShape::MakeSphere(100.f);
+	GetWorld()->SweepSingleByChannel(Hit, TraceStart, TraceEnd, FQuat::Identity, ECC_Interact, Sphere, QueryParams);
+
+	AComplyPlayerCharacter* HitPlayer = Cast<AComplyPlayerCharacter>(Hit.GetActor());
+	AComplyPlayerCharacter* NewHovered = (HitPlayer && HitPlayer->bIsDowned) ? HitPlayer : nullptr;
+
+	if (NewHovered != HoveredDownedPlayer)
+	{
+		HoveredDownedPlayer = NewHovered;
+		RevivePromptWidget->SetVisibility(NewHovered ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Hidden);
+	}
+}
+
 // Ensures mapping contexts are added on the client whenever a pawn is possessed
 void AComplyPlayerController::AcknowledgePossession(class APawn* P)
 {
@@ -135,6 +181,8 @@ void AComplyPlayerController::TryInitializeHUD(UAbilitySystemComponent* ASC, con
 	{
 		HUDWidget->InitializeLayout(*Layout);
 	}
+
+	InitializeRevivePrompt();
 }
 
 void AComplyPlayerController::TryInitializeDamageNumbers()
@@ -169,6 +217,14 @@ void AComplyPlayerController::TryInitializeDamageNumbers()
 
 	DamageNumbersWidget->SetPositionInViewport(FVector2D(0.f, 0.f));
 	DamageNumbersWidget->SetDesiredSizeInViewport(ViewportSize);
+}
+
+void AComplyPlayerController::InitializeRevivePrompt()
+{
+	// Create revive prompt directly on the PC
+	RevivePromptWidget = CreateWidget<UComplyRevivePromptWidget>(this, RevivePromptWidgetClass);
+	RevivePromptWidget->AddToViewport(5);
+	RevivePromptWidget->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void AComplyPlayerController::SetupInputComponent()

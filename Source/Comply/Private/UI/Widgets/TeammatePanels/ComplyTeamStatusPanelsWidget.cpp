@@ -20,6 +20,9 @@ void UComplyTeamStatusPanelsWidget::NativeConstruct()
     {
         GS->OnVoteKickResolved.AddDynamic(this, &UComplyTeamStatusPanelsWidget::OnVoteKickResolved);
     }
+    
+    // Start polling until all players have panels
+    StartPanelRetryTimer();
 }
 
 void UComplyTeamStatusPanelsWidget::InitializeTeamStatusPanels()
@@ -67,6 +70,67 @@ void UComplyTeamStatusPanelsWidget::InitializeTeamStatusPanels()
 
         TeammateWidgets.Add(Panel);
     }
+}
+
+void UComplyTeamStatusPanelsWidget::StartPanelRetryTimer()
+{
+    APlayerController* PC = GetOwningPlayer();
+    if (!PC) return;
+    if (PC->GetWorldTimerManager().IsTimerActive(PanelRetryTimerHandle)) return;
+
+    PC->GetWorldTimerManager().SetTimer(
+        PanelRetryTimerHandle, this, &UComplyTeamStatusPanelsWidget::RetryPendingPanels, 0.5f, true
+    );
+}
+
+void UComplyTeamStatusPanelsWidget::RetryPendingPanels()
+{
+    const APlayerController* LocalPC = GetOwningPlayer();
+    if (!LocalPC || !LocalPC->IsLocalController()) return;
+
+    AComplyGameStateBase* GS = GetWorld()->GetGameState<AComplyGameStateBase>();
+    if (!GS) return;
+
+    for (APlayerState* PS : GS->PlayerArray)
+    {
+        if (PS == LocalPC->PlayerState) continue;
+
+        AComplyPlayerState* ComplyPS = Cast<AComplyPlayerState>(PS);
+        if (!ComplyPS) continue;
+
+        // Skip if there's already a panel for this player
+        bool bAlreadyAdded = false;
+        for (UComplyTeammatePanelWidget* Panel : TeammateWidgets)
+        {
+            if (Panel && Panel->GetPlayerState() == ComplyPS)
+            {
+                bAlreadyAdded = true;
+                break;
+            }
+        }
+        if (bAlreadyAdded) continue;
+
+        AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(PS->GetPawn());
+        UAbilitySystemComponent* ASC = ComplyPS->GetAbilitySystemComponent();
+        if (!Character || !ASC) continue;
+
+        AddPanelForPlayer(ComplyPS, Character, ASC);
+    }
+}
+
+void UComplyTeamStatusPanelsWidget::AddPanelForPlayer(AComplyPlayerState* ComplyPS, AComplyPlayerCharacter* Character, UAbilitySystemComponent* ASC)
+{
+    UComplyTeammatePanelWidget* Panel = CreateWidget<UComplyTeammatePanelWidget>(GetOwningPlayer(), TeammatePanelWidgetClass);
+    if (!Panel) return;
+
+    Panel->InitializePanel(ASC, Character, ComplyPS);
+
+    if (UVerticalBoxSlot* BoxSlot = PanelsVerticalBox->AddChildToVerticalBox(Panel))
+    {
+        BoxSlot->SetPadding(FMargin(0.f));
+    }
+
+    TeammateWidgets.Add(Panel);
 }
 
 // When the vote kick resolves, if the target was kicked, remove its panel

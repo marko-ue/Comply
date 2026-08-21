@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "ComplyTeamStatusPanelsWidget.generated.h"
 
@@ -23,6 +24,10 @@ public:
 	
 protected:
 	virtual void NativeConstruct() override;
+	void StartPanelRetryTimer();
+	void RetryPendingPanels();
+	void AddPanelForPlayer(AComplyPlayerState* ComplyPS, AComplyPlayerCharacter* Character,
+	                       UAbilitySystemComponent* ASC);
 	virtual void NativeDestruct() override;
 	
 private:
@@ -37,4 +42,6 @@ private:
 	
 	UFUNCTION()
 	void OnVoteKickResolved(bool bKicked, APlayerState* Target);
+	
+	FTimerHandle PanelRetryTimerHandle;
 };

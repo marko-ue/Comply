@@ -35,6 +35,12 @@ void UComplyTeammatePanelWidget::InitializePanel(UAbilitySystemComponent* InASC,
 
     const URangedWeaponAbilityBase* ActiveWeapon = Character->GetEquippedPrimaryWeapon();
     if (!ActiveWeapon || !ActiveWeapon->WeaponData) return;
+    
+    if (LowAmmoImage)
+    {
+        LowAmmoImage->SetBrushFromTexture(ActiveWeapon->WeaponData->BulletIcon);
+        LowAmmoImage->SetRenderOpacity(0.f);
+    }
 
     if (ActiveWeapon && ActiveWeapon->WeaponData)
     {
@@ -53,12 +59,6 @@ void UComplyTeammatePanelWidget::InitializePanel(UAbilitySystemComponent* InASC,
             ActiveWeapon->GetCurrentReserveAmmoAttribute(), bReserveFound
         );
         UpdateLowAmmoIndicator(InitialReserve);
-    }
-    
-    if (LowAmmoImage)
-    {
-        LowAmmoImage->SetBrushFromTexture(ActiveWeapon->WeaponData->BulletIcon);
-        LowAmmoImage->SetRenderOpacity(0.f);
     }
 
     UpdateHealthBar();

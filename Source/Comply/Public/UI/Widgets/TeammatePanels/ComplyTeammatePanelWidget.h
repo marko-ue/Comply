@@ -62,4 +62,11 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<AComplyPlayerState> PlayerState;
+	
+	FTimerHandle WeaponInitRetryHandle;
+	void RetryWeaponInit();
+	bool TryInitializeWeapon();
+	
+	UPROPERTY()
+	TObjectPtr<AComplyPlayerCharacter> CachedCharacter;
 };

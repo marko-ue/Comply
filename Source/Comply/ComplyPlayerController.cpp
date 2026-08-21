@@ -149,6 +149,24 @@ void AComplyPlayerController::TryInitializeDamageNumbers()
 
 	FVector2D ViewportSize;
 	GetWorld()->GetGameViewport()->GetViewportSize(ViewportSize);
+
+	if (ViewportSize.IsZero())
+	{
+		GetWorld()->GetTimerManager().SetTimer(DamageNumbersSizeRetryHandle, [this]()
+		{
+			if (!DamageNumbersWidget) return;
+
+			FVector2D Size;
+			GetWorld()->GetGameViewport()->GetViewportSize(Size);
+			if (Size.IsZero()) return;
+
+			DamageNumbersWidget->SetPositionInViewport(FVector2D(0.f, 0.f));
+			DamageNumbersWidget->SetDesiredSizeInViewport(Size);
+			GetWorld()->GetTimerManager().ClearTimer(DamageNumbersSizeRetryHandle);
+		}, 0.1f, true);
+		return;
+	}
+
 	DamageNumbersWidget->SetPositionInViewport(FVector2D(0.f, 0.f));
 	DamageNumbersWidget->SetDesiredSizeInViewport(ViewportSize);
 }

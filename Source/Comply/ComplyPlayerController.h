@@ -108,6 +108,7 @@ private:
 	
 	void TryInitializeHUD(UAbilitySystemComponent* ASC, const FComplyHUDLayout* Layout);
 	void TryInitializeDamageNumbers();
+	FTimerHandle DamageNumbersSizeRetryHandle;
 	
 	UPROPERTY()
 	TObjectPtr<UComplyVoteKickWidget> VoteKickWidget;

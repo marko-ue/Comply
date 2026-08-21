@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "ComplyHUDWidget.generated.h"
 
+struct FComplyHUDLayout;
+class USizeBox;
 class UComplyChatBoxWidget;
 class UComplyTeamStatusPanelsWidget;
 class UComplyReviveProgressWidget;
@@ -27,6 +29,7 @@ class COMPLY_API UComplyHUDWidget : public UUserWidget
 	
 public:
 	void InitializeHUD(UAbilitySystemComponent* ASC);
+	void InitializeLayout(const FComplyHUDLayout& Layout);
 	
 	UFUNCTION()
 	void TryInitializeWidgets();
@@ -66,4 +69,13 @@ protected:
 private:
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> CachedASC;
+	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<USizeBox> AmmoSizeBox;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<USizeBox> CooldownSizeBox;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<USizeBox> ChargeSizeBox;
 };

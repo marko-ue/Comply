@@ -7,6 +7,7 @@
 #include "InputMappingContext.h"
 #include "Blueprint/UserWidget.h"
 #include "Comply.h"
+#include "AbilitySystem/Data/Player/ComplyPlayerData.h"
 #include "Character/ComplyPlayerCharacter.h"
 #include "Framework/GameInstance/ComplyGameInstance.h"
 #include "Framework/GameMode/ComplyGameModeBase.h"
@@ -120,13 +121,17 @@ void AComplyPlayerController::AcknowledgePossession(class APawn* P)
 	
 	UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
 	if (!ASC) return;
-
+	
+	AComplyPlayerCharacter* ComplyCharacter = Cast<AComplyPlayerCharacter>(P);
+	if (!ComplyCharacter || !ComplyCharacter->PlayerData) return;
+	
 	const FString MapName = GetWorld()->GetMapName();
 	if (!MapName.Contains("Lobby"))
 	{
 		HUDWidget = CreateWidget<UComplyHUDWidget>(this, HUDWidgetClass);
 		HUDWidget->AddToViewport();
 		HUDWidget->InitializeHUD(ASC);
+		HUDWidget->InitializeLayout(ComplyCharacter->PlayerData->HUDLayout);
 	}
 	
 	if (!DamageNumbersWidget)

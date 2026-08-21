@@ -4,6 +4,8 @@
 #include "UI/Widgets/ComplyHUDWidget.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/Data/Player/ComplyPlayerData.h"
+#include "Components/SizeBox.h"
 #include "Framework/GameInstance/ComplyGameInstance.h"
 #include "UI/Widgets/ComplyAmmoWidget.h"
 #include "UI/Widgets/ComplyChargesWidget.h"
@@ -26,6 +28,23 @@ void UComplyHUDWidget::InitializeHUD(UAbilitySystemComponent* ASC)
 	
 	CachedASC = ASC;
 	TryInitializeWidgets();
+}
+
+void UComplyHUDWidget::InitializeLayout(const FComplyHUDLayout& Layout)
+{
+	// Lambda helper that clears the width override if it's disabled in the data asset
+	auto ApplySizeOverride = [](USizeBox* Box, const FComplyWidgetSizeOverride& Override)
+	{
+		if (!Box) return;
+    
+		if (Override.bOverrideWidth) Box->SetWidthOverride(Override.Width);
+		else Box->ClearWidthOverride();
+	};
+
+	// Applies width overrides after
+	ApplySizeOverride(AmmoSizeBox, Layout.AmmoWidget);
+	ApplySizeOverride(CooldownSizeBox, Layout.CooldownWidget);
+	ApplySizeOverride(ChargeSizeBox, Layout.ChargeWidget);
 }
 
 void UComplyHUDWidget::TryInitializeWidgets()

@@ -765,7 +765,7 @@ void AComplyPlayerCharacter::OpenChatActionPressed()
 {
 	if (AComplyPlayerController* PC = Cast<AComplyPlayerController>(GetController()))
 	{
-		PC->HUDWidget->GetChatBoxWidget()->OpenInput();
+		PC->GetChatBoxWidget()->OpenInput();
 	}
 }
 

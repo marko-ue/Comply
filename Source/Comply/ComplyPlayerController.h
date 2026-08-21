@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "ComplyPlayerController.generated.h"
 
+class UComplyChatBoxWidget;
 class UComplyRevivePromptWidget;
 struct FComplyHUDLayout;
 class UAbilitySystemComponent;
@@ -51,6 +52,8 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AComplyPlayerCharacter> DefaultCharacterClass;
+
+	FORCEINLINE UComplyChatBoxWidget* GetChatBoxWidget() const { return ChatBoxWidget; }
 	
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> FlashbangWidgetClass;
@@ -140,6 +143,12 @@ private:
 	
 	UPROPERTY()
 	TObjectPtr<UComplyRevivePromptWidget> RevivePromptWidget;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UComplyChatBoxWidget> ChatBoxWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<UComplyChatBoxWidget> ChatBoxWidget;
 
 	void TickRevivePromptCheck();
 };

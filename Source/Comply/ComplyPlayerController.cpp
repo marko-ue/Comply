@@ -66,6 +66,12 @@ void AComplyPlayerController::BeginPlay()
 		// GameState not ready yet, wait for it
 		GetWorldTimerManager().SetTimer(GameStateWaitTimerHandle, this, &AComplyPlayerController::TryBindGameStateEvents, 0.1f, true);
 	}
+	
+	if (ChatBoxWidgetClass)
+	{
+		ChatBoxWidget = CreateWidget<UComplyChatBoxWidget>(this, ChatBoxWidgetClass);
+		ChatBoxWidget->AddToViewport(10);
+	}
 }
 
 void AComplyPlayerController::TryBindGameStateEvents()
@@ -297,9 +303,9 @@ void AComplyPlayerController::Server_SendChatMessage_Implementation(const FStrin
 // Adds the message to the chat box widget
 void AComplyPlayerController::Client_ReceiveChatMessage_Implementation(const FString& PlayerName, const FString& Message)
 {
-	if (HUDWidget)
+	if (ChatBoxWidget)
 	{
-		HUDWidget->GetChatBoxWidget()->AddMessage(PlayerName, Message);
+		ChatBoxWidget->AddMessage(PlayerName, Message);
 	}
 }
 

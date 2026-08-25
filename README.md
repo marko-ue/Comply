@@ -5,6 +5,28 @@
 The game is inspired by Deep Rock Galactic and Helldivers 2. One to three players drop into missions to either destroy state propaganda or extract sensitive data, all while a news anchor character provides increasingly strained broadcast commentary as the regime starts losing its grip.
 
 ---
+## Showcases
+
+### Combat Showcase
+
+<div align="center">
+
+<img width="640" height="360" alt="combat-showcase" src="https://github.com/user-attachments/assets/250ad54a-a7a1-4c98-bdb5-74019488423c" />
+
+🎥 [Watch the full showcase](https://youtu.be/NVckKJ_jmh0)
+
+</div>
+
+This showcase covers:
+- Networked multiplayer tested across varied latency
+- Three player classes and nine unique abilities
+- Co-op systems: revives, vote kicking, chat
+- Character and mission selection
+- Seamless lobby-to-mission travel
+
+All built on the Gameplay Ability System (GAS) with server-authoritative validation.
+
+---
 
 ## Status
 
@@ -48,10 +70,10 @@ This project is built to demonstrate competency in the systems that matter most 
 
 ## Writing & Devlog
 
-I write technical breakdowns of GAS and multiplayer in Unreal Engine C++.
+I write technical breakdowns of GAS and multiplayer in Unreal Engine C++
 → https://hashnode.com/@marko-ue
 
-Check out my website where I keep everything in one place, plus additional content:
+Check out my website where I keep everything in one place, plus additional content
 → https://markopetric.dev
 
 The codebase is thoroughly documented throughout.

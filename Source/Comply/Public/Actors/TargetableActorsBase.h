@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Actor.h"
 #include "Interface/TargetableInterface.h"

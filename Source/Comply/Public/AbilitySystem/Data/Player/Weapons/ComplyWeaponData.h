@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include "AbilitySystem/Data/Player/Weapons/ComplyWeaponTypes.h"
 #include "ComplyWeaponData.generated.h"

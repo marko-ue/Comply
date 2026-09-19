@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "ComplyGrenadeData.h"
 #include "DecoyGrenadeData.generated.h"
 

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 #include "ComplyAbilitySystemComponent.generated.h"
 

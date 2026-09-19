@@ -1,3 +1,5 @@
+// Copyright © 2026 Marko. All rights reserved.
+
 #include "AbilitySystem/AbilityTasks/HitscanTargetData.h"
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "AbilitySystemComponent.h"

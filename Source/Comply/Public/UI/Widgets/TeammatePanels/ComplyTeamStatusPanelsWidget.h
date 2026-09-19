@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "ComplyTeamStatusPanelsWidget.generated.h"

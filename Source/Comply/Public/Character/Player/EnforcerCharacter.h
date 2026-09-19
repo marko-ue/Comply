@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Character/ComplyPlayerCharacter.h"
 #include "EnforcerCharacter.generated.h"
 

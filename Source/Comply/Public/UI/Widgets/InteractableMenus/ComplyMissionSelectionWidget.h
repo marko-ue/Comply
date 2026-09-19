@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Framework/GameInstance/ComplyGameInstance.h"
 #include "ComplyMissionSelectionWidget.generated.h"

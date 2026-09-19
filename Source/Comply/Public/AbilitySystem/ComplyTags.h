@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "NativeGameplayTags.h"
 
 namespace ComplyTags

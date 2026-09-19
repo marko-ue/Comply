@@ -1,6 +1,7 @@
+// Copyright © 2026 Marko. All rights reserved.
+
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Abilities/Tasks/AbilityTask.h"
 #include "HitscanTargetData.generated.h"
 

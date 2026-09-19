@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "ActiveGameplayEffectHandle.h"
 #include "Character/ComplyCharacterBase.h"
 #include "Interface/Player/PlayerInterface.h"

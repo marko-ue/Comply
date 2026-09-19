@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "ComplyUtilityData.h"
 #include "ShieldUtilityData.generated.h"
 

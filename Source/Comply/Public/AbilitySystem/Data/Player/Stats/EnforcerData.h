@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "AbilitySystem/Data/Player/ComplyPlayerData.h"
 #include "EnforcerData.generated.h"
 

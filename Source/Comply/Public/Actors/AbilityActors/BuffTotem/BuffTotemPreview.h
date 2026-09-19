@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Actors/UtilityActors/UtilityPreviewBase.h"
 #include "BuffTotemPreview.generated.h"
 

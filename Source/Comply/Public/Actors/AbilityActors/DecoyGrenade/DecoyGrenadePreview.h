@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Actors/AbilityActors/ThrowablePreviewBase.h"
 #include "DecoyGrenadePreview.generated.h"
 

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "AttributeSet.h"
 #include "Blueprint/UserWidget.h"
 #include "ComplyChargesWidget.generated.h"

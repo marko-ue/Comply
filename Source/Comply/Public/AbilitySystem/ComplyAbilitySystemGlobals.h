@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "AbilitySystemGlobals.h"
 #include "ComplyAbilitySystemGlobals.generated.h"
 

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "ActiveGameplayEffectHandle.h"
 #include "GameFramework/Actor.h"
 #include "BuffTotem.generated.h"

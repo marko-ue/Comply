@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "AbilitySystem/Abilities/Enemies/EnemyAbilityBase.h"
 #include "Attack_Mech.generated.h"
 

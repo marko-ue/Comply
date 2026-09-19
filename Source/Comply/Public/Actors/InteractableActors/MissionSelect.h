@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "InteractableActorBase.h"
 #include "MissionSelect.generated.h"
 

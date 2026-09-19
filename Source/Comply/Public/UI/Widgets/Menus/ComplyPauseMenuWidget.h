@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "ComplyMenuWidgetBase.h"
 #include "Blueprint/UserWidget.h"
 #include "ComplyPauseMenuWidget.generated.h"

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "AbilitySystem/Data/ComplyCharacterStatData.h"
 #include "ComplyEnemyData.generated.h"
 

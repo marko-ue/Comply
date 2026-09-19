@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "ComplyAbilityBase.h"
 #include "DamageAbilityBase.generated.h"
 

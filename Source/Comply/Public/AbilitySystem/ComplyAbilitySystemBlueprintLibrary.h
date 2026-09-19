@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "ComplyAbilitySystemBlueprintLibrary.generated.h"
 

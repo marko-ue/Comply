@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "ComplyMenuWidgetBase.h"
 #include "ComplyCreditsMenuWidget.generated.h"
 

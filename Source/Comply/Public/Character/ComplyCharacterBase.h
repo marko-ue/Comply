@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "ComplyCharacter.h"
 #include "GameplayTagContainer.h"

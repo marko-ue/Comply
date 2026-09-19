@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "AbilitySystem/Data/Player/ComplyPlayerData.h"
 #include "RangerData.generated.h"
 

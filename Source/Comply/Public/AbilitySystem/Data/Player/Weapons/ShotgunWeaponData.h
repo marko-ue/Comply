@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "ComplyWeaponData.h"
 #include "ShotgunWeaponData.generated.h"
 

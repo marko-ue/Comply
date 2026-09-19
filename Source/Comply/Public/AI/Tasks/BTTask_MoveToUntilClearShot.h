@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
 #include "BTTask_MoveToUntilClearShot.generated.h"
 

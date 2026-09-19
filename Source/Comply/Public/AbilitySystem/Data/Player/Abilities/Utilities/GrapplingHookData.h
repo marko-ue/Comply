@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "ComplyUtilityData.h"
 #include "GrapplingHookData.generated.h"
 

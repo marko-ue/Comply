@@ -10,6 +10,8 @@
 #include "Character/ComplyEnemyCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ChargeAttack_Tank)
+
 UChargeAttack_Tank::UChargeAttack_Tank()
 {
     FAbilityTriggerData TriggerData;

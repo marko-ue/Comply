@@ -13,6 +13,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "UI/Widgets/ComplyEnemyHealthBarWidget.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyEnemyCharacter)
 
 AComplyEnemyCharacter::AComplyEnemyCharacter()
 {

@@ -10,6 +10,8 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Interface/TargetableInterface.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(BTTask_MoveToUntilClearShot)
+
 UBTTask_MoveToUntilClearShot::UBTTask_MoveToUntilClearShot()
 {
 	NodeName = "Move To Until Clear Shot";

@@ -14,6 +14,8 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(Utility_Enforcer)
+
 
 void UUtility_Enforcer::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                         const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,

@@ -3,6 +3,7 @@
 
 #include "Actors/UtilityActors/UtilityPreviewBase.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(UtilityPreviewBase)
 
 void AUtilityPreviewBase::InitPreviewData(ACharacter* OwnerChar, const UComplyUtilityData* InUtilityData)
 {

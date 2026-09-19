@@ -16,6 +16,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Sound/SoundCue.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(BuffTotem)
 
 ABuffTotem::ABuffTotem()
 {

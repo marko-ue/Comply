@@ -7,6 +7,7 @@
 #include "AbilitySystem/Data/Player/Abilities/Turret/DeployableTurretAbilityData.h"
 #include "GameFramework/Character.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(DeployableTurretPreview)
 
 ADeployableTurretPreview::ADeployableTurretPreview()
 {

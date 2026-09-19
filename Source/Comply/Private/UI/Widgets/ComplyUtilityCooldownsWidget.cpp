@@ -9,6 +9,7 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyUtilityCooldownsWidget)
 
 void UComplyUtilityCooldownsWidget::InitializeUtilityCooldown()
 {

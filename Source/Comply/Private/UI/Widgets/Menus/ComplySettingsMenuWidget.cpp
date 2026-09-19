@@ -16,6 +16,8 @@
 #include "Framework/GameState/ComplyGameStateBase.h"
 #include "GameFramework/PlayerState.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ComplySettingsMenuWidget)
+
 void UComplySettingsMenuWidget::NativeConstruct()
 {
     Super::NativeConstruct();

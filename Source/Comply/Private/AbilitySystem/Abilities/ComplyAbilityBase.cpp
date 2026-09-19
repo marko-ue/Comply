@@ -5,6 +5,7 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "AbilitySystem/Data/Player/Abilities/ComplyAbilityData.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyAbilityBase)
 
 void UComplyAbilityBase::OnMontageCompleted()
 {

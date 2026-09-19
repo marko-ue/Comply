@@ -5,6 +5,8 @@
 #include "GameplayEffectExtension.h"
 #include "Net/UnrealNetwork.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(WeaponAttributeSet)
+
 void UWeaponAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

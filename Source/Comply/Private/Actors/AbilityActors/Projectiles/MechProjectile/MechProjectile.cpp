@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(MechProjectile)
 
 AMechProjectile::AMechProjectile()
 {

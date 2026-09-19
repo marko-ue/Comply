@@ -4,6 +4,7 @@
 #include "AbilitySystem/ComplyAbilitySystemGlobals.h"
 #include "AbilitySystem/ComplyAbilityTypes.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyAbilitySystemGlobals)
 
 FGameplayEffectContext* UComplyAbilitySystemGlobals::AllocGameplayEffectContext() const
 {

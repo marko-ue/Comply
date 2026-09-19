@@ -10,6 +10,7 @@
 #include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
 #include "Character/ComplyPlayerCharacter.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ReloadAbility)
 
 void UReloadAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                      const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,

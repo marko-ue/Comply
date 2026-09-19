@@ -7,6 +7,8 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "AbilitySystem/ComplyTags.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(Attack_Tank)
+
 UAttack_Tank::UAttack_Tank()
 {
 	FAbilityTriggerData TriggerData;

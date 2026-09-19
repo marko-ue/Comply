@@ -6,6 +6,8 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/ComplyTags.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(EnemyAbilityBase)
+
 void UEnemyAbilityBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                         const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
                                         const FGameplayEventData* TriggerEventData)

@@ -12,6 +12,7 @@
 #include "UI/Widgets/ComplyHUDWidget.h"
 #include "UI/Widgets/TeammatePanels/ComplyTeamStatusPanelsWidget.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyGameModeBase)
 
 void AComplyGameModeBase::BeginPlay()
 {

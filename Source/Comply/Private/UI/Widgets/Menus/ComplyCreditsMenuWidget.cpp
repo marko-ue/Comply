@@ -5,6 +5,8 @@
 
 #include "Components/Button.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyCreditsMenuWidget)
+
 void UComplyCreditsMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();

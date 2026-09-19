@@ -8,6 +8,7 @@
 #include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyGameStateBase)
 
 void AComplyGameStateBase::BeginPlay()
 {

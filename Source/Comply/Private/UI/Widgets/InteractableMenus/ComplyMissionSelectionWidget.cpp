@@ -14,6 +14,7 @@
 #include "Framework/GameMode/ComplyGameModeBase.h"
 #include "Framework/GameState/ComplyGameStateBase.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyMissionSelectionWidget)
 
 void UComplyMissionSelectionWidget::NativeConstruct()
 {

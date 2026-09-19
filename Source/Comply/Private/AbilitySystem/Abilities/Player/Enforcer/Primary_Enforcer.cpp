@@ -4,6 +4,7 @@
 #include "AbilitySystem/Abilities/Player/Enforcer/Primary_Enforcer.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(Primary_Enforcer)
 
 void UPrimary_Enforcer::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                         const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,

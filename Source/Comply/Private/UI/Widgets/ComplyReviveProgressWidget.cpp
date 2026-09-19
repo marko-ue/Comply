@@ -8,6 +8,8 @@
 #include "Character/ComplyPlayerCharacter.h"
 #include "Components/ProgressBar.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyReviveProgressWidget)
+
 void UComplyReviveProgressWidget::InitializeReviveProgress(UAbilitySystemComponent* InASC)
 {
     ASC = InASC;

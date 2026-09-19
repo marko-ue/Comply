@@ -7,6 +7,8 @@
 #include "Components/CanvasPanel.h"
 #include "Components/ProgressBar.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyEnemyHealthBarWidget)
+
 void UComplyEnemyHealthBarWidget::InitializeHealthBar(UAbilitySystemComponent* InASC)
 {
 	// Widget starts off hidden

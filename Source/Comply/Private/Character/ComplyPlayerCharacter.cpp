@@ -39,6 +39,7 @@
 #include "UI/Widgets/Chat/ComplyChatBoxWidget.h"
 #include "UI/Widgets/DamageNumbers/DamageNumbersWidget.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyPlayerCharacter)
 
 AComplyPlayerCharacter::AComplyPlayerCharacter()
 {

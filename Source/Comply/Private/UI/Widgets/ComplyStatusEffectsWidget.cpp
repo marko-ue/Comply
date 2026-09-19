@@ -9,6 +9,8 @@
 #include "Components/Image.h"
 #include "Engine/Texture2D.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyStatusEffectsWidget)
+
 void UComplyStatusEffectsWidget::InitializeStatusEffects(UAbilitySystemComponent* InASC)
 {
 	if (!InASC) return;

@@ -11,6 +11,7 @@
 #include "Interface/Player/PlayerInterface.h"
 #include "Net/UnrealNetwork.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyAttributeSet)
 
 void UComplyAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {

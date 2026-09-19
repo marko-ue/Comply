@@ -7,6 +7,8 @@
 #include "Net/UnrealNetwork.h"
 #include "SaveGame/ComplySettingsSaveGame.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyGameInstance)
+
 void UComplyGameInstance::Init()
 {
 	Super::Init();

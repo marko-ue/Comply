@@ -11,6 +11,7 @@
 #include "Actors/AbilityActors/DecoyGrenade/DecoyGrenade.h"
 #include "Kismet/GameplayStatics.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(Throwable_Disruptor)
 
 void UThrowable_Disruptor::ThrowOnServer(FVector LaunchVelocity, FVector SpawnPosition)
 {

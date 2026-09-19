@@ -6,7 +6,7 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
-
+#include UE_INLINE_GENERATED_CPP_BY_NAME(BTService_FaceTarget)
 
 UBTService_FaceTarget::UBTService_FaceTarget()
 {

@@ -10,6 +10,7 @@
 #include "Framework/PlayerState/ComplyPlayerState.h"
 #include "UI/Widgets/TeammatePanels/ComplyTeammatePanelWidget.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyTeamStatusPanelsWidget)
 
 void UComplyTeamStatusPanelsWidget::NativeConstruct()
 {

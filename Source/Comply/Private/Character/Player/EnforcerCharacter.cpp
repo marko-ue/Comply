@@ -4,6 +4,7 @@
 #include "Character/Player/EnforcerCharacter.h"
 #include "CableComponent.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(EnforcerCharacter)
 
 AEnforcerCharacter::AEnforcerCharacter()
 {

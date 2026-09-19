@@ -8,6 +8,8 @@
 #include "ComplyPlayerController.h"
 #include "UI/Widgets/Menus/ComplySettingsMenuWidget.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyPauseMenuWidget)
+
 void UComplyPauseMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();

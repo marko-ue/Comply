@@ -15,6 +15,8 @@
 #include "Actors/AbilityActors/DeployableTurret/DeployableTurretPreview.h"
 #include "GameFramework/Character.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(Throwable_Enforcer)
+
 
 void UThrowable_Enforcer::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                           const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,

@@ -15,6 +15,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Interface/Player/PlayerInterface.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ElectricHazardZone)
+
 
 AElectricHazardZone::AElectricHazardZone()
 {

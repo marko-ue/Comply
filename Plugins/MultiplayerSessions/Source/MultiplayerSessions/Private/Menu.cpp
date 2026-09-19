@@ -193,6 +193,9 @@ void UMenu::OnStartSession(bool bWasSuccessful)
 
 void UMenu::HostButtonClicked()
 {
+	APlayerController* PC = GetWorld()->GetFirstPlayerController();
+	PC->ConsoleCommand(TEXT("open Lobby?listen"));
+	
 	HostButton->SetIsEnabled(false);
 	if (MultiplayerSessionsSubsystem)
 	{
@@ -202,6 +205,9 @@ void UMenu::HostButtonClicked()
 
 void UMenu::JoinButtonClicked()
 {
+	APlayerController* PC = GetWorld()->GetFirstPlayerController();
+	PC->ConsoleCommand(TEXT("open 26.70.75.148"));
+	
 	JoinButton->SetIsEnabled(false);
 	if (MultiplayerSessionsSubsystem)
 	{

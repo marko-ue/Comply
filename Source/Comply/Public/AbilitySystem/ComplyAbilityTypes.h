@@ -1,3 +1,5 @@
+// Copyright © 2026 Marko. All rights reserved.
+
 #pragma once
 
 #include "GameplayEffectTypes.h"

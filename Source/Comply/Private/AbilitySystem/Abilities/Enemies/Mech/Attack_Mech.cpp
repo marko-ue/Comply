@@ -9,6 +9,8 @@
 #include "Actors/AbilityActors/Projectiles/MechProjectile/MechProjectile.h"
 #include "Kismet/GameplayStatics.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(Attack_Mech)
+
 
 UAttack_Mech::UAttack_Mech()
 {

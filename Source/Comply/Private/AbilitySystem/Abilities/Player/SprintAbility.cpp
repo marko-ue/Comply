@@ -4,6 +4,7 @@
 #include "AbilitySystem/Abilities/Player/SprintAbility.h"
 #include "AbilitySystemComponent.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(SprintAbility)
 
 void USprintAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                      const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,

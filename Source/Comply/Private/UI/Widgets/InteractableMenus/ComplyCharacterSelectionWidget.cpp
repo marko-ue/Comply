@@ -8,6 +8,7 @@
 #include "Components/Button.h"
 #include "Framework/GameMode/ComplyGameModeBase.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyCharacterSelectionWidget)
 
 namespace ComplyCharacterClasses
 {

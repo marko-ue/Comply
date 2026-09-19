@@ -8,6 +8,7 @@
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(TargetableActorsBase)
 
 ATargetableActorsBase::ATargetableActorsBase()
 {

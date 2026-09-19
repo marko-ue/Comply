@@ -13,6 +13,8 @@
 #include "Character/ComplyEnemyCharacter.h"
 #include "Character/ComplyPlayerCharacter.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(DamageAbilityBase)
+
 /*
  * This function makes an outgoing gameplay effect spec that will be used in an execution calculation class
  * It will be called wherever damage is meant to be dealt, passing in the target actor and the custom context

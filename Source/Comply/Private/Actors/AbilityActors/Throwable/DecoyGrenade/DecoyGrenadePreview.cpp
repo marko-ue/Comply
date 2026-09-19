@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/GameplayStaticsTypes.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(DecoyGrenadePreview)
 
 ADecoyGrenadePreview::ADecoyGrenadePreview()
 {

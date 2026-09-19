@@ -10,6 +10,8 @@
 #include "Actors/AbilityActors/ShieldDome/ShieldDome.h"
 #include "Kismet/GameplayStatics.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(Utility_Ranger)
+
 
 void UUtility_Ranger::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {

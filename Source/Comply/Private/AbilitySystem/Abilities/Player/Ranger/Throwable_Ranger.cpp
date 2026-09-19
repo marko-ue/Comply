@@ -9,6 +9,8 @@
 #include "Actors/AbilityActors/PlasmaGrenade/PlasmaGrenade.h"
 #include "Kismet/GameplayStatics.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(Throwable_Ranger)
+
 
 void UThrowable_Ranger::ThrowOnServer(FVector LaunchVelocity, FVector SpawnPosition)
 {

@@ -17,6 +17,7 @@
 #include "UI/Widgets/TeammatePanels/ComplyTeamStatusPanelsWidget.h"
 #include "UI/Widgets/Chat/ComplyChatBoxWidget.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyHUDWidget)
 
 void UComplyHUDWidget::InitializeHUD(UAbilitySystemComponent* ASC)
 {

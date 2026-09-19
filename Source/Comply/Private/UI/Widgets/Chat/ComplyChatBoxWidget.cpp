@@ -8,6 +8,7 @@
 #include "Components/EditableTextBox.h"
 #include "ComplyPlayerController.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyChatBoxWidget)
 
 void UComplyChatBoxWidget::NativeConstruct()
 {

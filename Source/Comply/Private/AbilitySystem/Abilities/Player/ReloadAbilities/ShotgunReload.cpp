@@ -9,6 +9,7 @@
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "Character/ComplyPlayerCharacter.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ShotgunReload)
 
 void UShotgunReload::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                      const FGameplayAbilityActorInfo* ActorInfo,

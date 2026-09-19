@@ -8,6 +8,7 @@
 #include "Framework/GameState/ComplyGameStateBase.h"
 #include "GameFramework/PlayerState.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyVoteKickWidget)
 
 // When the vote initiates, the widget appears and the delegate is bound
 void UComplyVoteKickWidget::NativeConstruct()

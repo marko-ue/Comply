@@ -7,6 +7,8 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyHealthBarWidget)
+
 void UComplyHealthBarWidget::InitializeHealthBar(UAbilitySystemComponent* InASC)
 {
 	if (!InASC) return;

@@ -9,6 +9,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "UI/Widgets/DamageNumbers/DamageNumberEntryWidget.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(DamageNumbersWidget)
+
 void UDamageNumbersWidget::NativeConstruct()
 {
 	Super::NativeConstruct();

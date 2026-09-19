@@ -11,6 +11,7 @@
 #include "Engine/Texture2D.h"
 #include "Framework/GameInstance/ComplyGameInstance.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyTeammatePanelWidget)
 
 void UComplyTeammatePanelWidget::InitializePanel(UAbilitySystemComponent* InASC, AComplyPlayerCharacter* InCharacter, AComplyPlayerState* InPlayerState)
 {

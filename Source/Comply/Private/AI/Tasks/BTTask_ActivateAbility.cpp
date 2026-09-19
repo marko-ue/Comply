@@ -7,6 +7,8 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(BTTask_ActivateAbility)
+
 UBTTask_ActivateAbility::UBTTask_ActivateAbility()
 {
     NodeName = "Activate Ability";

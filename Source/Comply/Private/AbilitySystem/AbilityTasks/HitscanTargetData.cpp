@@ -5,6 +5,8 @@
 #include "AbilitySystem/Abilities/Player/Disruptor/Primary_Disruptor.h"
 #include "AbilitySystem/Data/Player/Weapons/ShotgunWeaponData.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(HitscanTargetData)
+
 UHitscanTargetData* UHitscanTargetData::CreateHitScanData(UGameplayAbility* OwningAbility)
 {
 	return NewAbilityTask<UHitscanTargetData>(OwningAbility);

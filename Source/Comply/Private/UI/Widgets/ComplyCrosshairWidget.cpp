@@ -6,6 +6,7 @@
 #include "Components/Image.h"
 #include "Framework/GameInstance/ComplyGameInstance.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyCrosshairWidget)
 
 void UComplyCrosshairWidget::InitializeCrosshair()
 {

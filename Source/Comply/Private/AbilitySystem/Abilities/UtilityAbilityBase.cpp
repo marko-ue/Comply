@@ -9,6 +9,8 @@
 #include "Actors/AbilityActors/BuffTotem/BuffTotemPreview.h"
 #include "GameFramework/Character.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(UtilityAbilityBase)
+
 
 void UUtilityAbilityBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,

@@ -13,6 +13,8 @@
 #include "Character/ComplyPlayerCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(RevivePlayer)
+
 void URevivePlayer::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
                                     const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {

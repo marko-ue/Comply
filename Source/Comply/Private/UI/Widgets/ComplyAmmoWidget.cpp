@@ -9,6 +9,7 @@
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "Components/Image.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyAmmoWidget)
 
 void UComplyAmmoWidget::NativeConstruct()
 {

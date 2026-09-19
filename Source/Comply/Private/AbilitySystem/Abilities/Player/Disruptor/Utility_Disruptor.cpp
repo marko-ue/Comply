@@ -10,6 +10,7 @@
 #include "AbilitySystem/Data/Player/Abilities/Utilities/ComplyUtilityData.h"
 #include "Actors/AbilityActors/BuffTotem/BuffTotemPreview.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(Utility_Disruptor)
 
 void UUtility_Disruptor::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                          const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,

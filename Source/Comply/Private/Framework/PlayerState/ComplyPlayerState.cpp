@@ -7,6 +7,7 @@
 #include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
 #include "Character/ComplyPlayerCharacter.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyPlayerState)
 
 AComplyPlayerState::AComplyPlayerState()
 {

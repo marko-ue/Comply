@@ -5,6 +5,8 @@
 
 #include "Character/ComplyPlayerCharacter.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(Primary_Disruptor)
+
 
 void UPrimary_Disruptor::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                          const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,

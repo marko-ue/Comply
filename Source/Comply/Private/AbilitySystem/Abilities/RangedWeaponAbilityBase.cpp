@@ -19,6 +19,8 @@
 #include "Framework/GameMode/ComplyGameModeBase.h"
 #include "Framework/GameState/ComplyGameStateBase.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(RangedWeaponAbilityBase)
+
 
 // Traces to the middle of the screen
 // This function is called in HitscanTargetData for transferring hitscan data from client to server

@@ -5,6 +5,7 @@
 
 #include "Components/WidgetComponent.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(InteractableActorBase)
 
 AInteractableActorBase::AInteractableActorBase()
 {

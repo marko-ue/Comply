@@ -9,9 +9,7 @@
 class UGameplayAbility;
 class UNiagaraSystem;
 class USoundCue;
-/**
- * 
- */
+
 UCLASS()
 class COMPLY_API UShieldUtilityData : public UComplyUtilityData
 {

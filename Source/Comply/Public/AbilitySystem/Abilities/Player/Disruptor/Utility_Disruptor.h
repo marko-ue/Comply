@@ -8,8 +8,9 @@
 
 class ABuffTotem;
 class ABuffTotemPreview;
+
 /**
- * 
+ * Buff totem that buffs teammates' speed and damage if they pick up the buff by walking in its radius.
  */
 UCLASS()
 class COMPLY_API UUtility_Disruptor : public UUtilityAbilityBase

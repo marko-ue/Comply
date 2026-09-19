@@ -10,8 +10,9 @@ class UComplyChatMessageWidget;
 class UEditableTextBox;
 class UVerticalBox;
 class UScrollBox;
+
 /**
- * 
+ * Widget for the chat box. Displays itself, and handles logic such as adding messages, closing input, etc.
  */
 UCLASS()
 class COMPLY_API UComplyChatBoxWidget : public UUserWidget

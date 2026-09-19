@@ -7,8 +7,9 @@
 #include "ReloadAbility.generated.h"
 
 class URangedWeaponAbilityBase;
+
 /**
- * This ability is called on some ranged weapons whenever reloading
+ * Used by the rifle and magnum to reload.
  */
 UCLASS()
 class COMPLY_API UReloadAbility : public UComplyAbilityBase

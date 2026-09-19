@@ -36,7 +36,7 @@ struct FComplyHUDLayout
 
 class UGameplayEffect;
 /**
- * 
+ * Data asset containing all player related variables.
  */
 UCLASS()
 class COMPLY_API UComplyPlayerData : public UComplyCharacterStatData

@@ -7,8 +7,9 @@
 #include "ComplyCreditsMenuWidget.generated.h"
 
 class UButton;
+
 /**
- * 
+ * Credits menu widget containing text and a button to close it.
  */
 UCLASS()
 class COMPLY_API UComplyCreditsMenuWidget : public UComplyMenuWidgetBase

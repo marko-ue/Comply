@@ -14,6 +14,9 @@ class UImage;
 class UWidgetAnimation;
 class AComplyPlayerCharacter;
 
+/**
+ * Widget that contains a specific player's panel, displaying health and low ammo.
+ */
 UCLASS()
 class COMPLY_API UComplyTeammatePanelWidget : public UUserWidget
 {

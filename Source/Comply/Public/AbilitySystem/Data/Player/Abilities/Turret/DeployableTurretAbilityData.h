@@ -12,8 +12,9 @@
 class UNiagaraSystem;
 class UGameplayEffect;
 class USoundCue;
+
 /**
- * 
+ * Data asset for the deployable turret. Contains information such as lifetime, materials, meshes, damage, etc.
  */
 UCLASS()
 class COMPLY_API UDeployableTurretAbilityData : public UPrimaryDataAsset

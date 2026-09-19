@@ -7,7 +7,7 @@
 #include "ComplyAbilitySystemGlobals.generated.h"
 
 /**
- * 
+ * Holds global data for the ability system. 
  */
 UCLASS()
 class COMPLY_API UComplyAbilitySystemGlobals : public UAbilitySystemGlobals

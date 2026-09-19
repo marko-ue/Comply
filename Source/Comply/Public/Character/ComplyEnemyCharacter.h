@@ -12,8 +12,10 @@ class UComplyEnemyData;
 class UComplyEnemyAbilityData;
 class UComplyAttributeSet;
 class USoundCue;
+
 /**
- * 
+ * Base class for all enemy characters.
+ * Contains common functions and variables, such as for initializing attributes, enemy health bars, etc.
  */
 UCLASS()
 class COMPLY_API AComplyEnemyCharacter : public AComplyCharacterBase, public IEnemyInterface

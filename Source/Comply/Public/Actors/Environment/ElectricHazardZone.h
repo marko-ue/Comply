@@ -17,6 +17,9 @@ class UBoxComponent;
 class UNiagaraComponent;
 class UAudioComponent;
 
+/**
+ * Electric hazard zone that's placed at some points around the map that deals damage over time in an area to players inside it
+ */
 UCLASS()
 class COMPLY_API AElectricHazardZone : public AActor, public IAbilitySystemInterface
 {

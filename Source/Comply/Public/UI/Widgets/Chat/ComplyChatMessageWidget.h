@@ -7,8 +7,9 @@
 #include "ComplyChatMessageWidget.generated.h"
 
 class UTextBlock;
+
 /**
- * 
+ * Widget that contains the text inputted by the player to be displayed in the chat box.
  */
 UCLASS()
 class COMPLY_API UComplyChatMessageWidget : public UUserWidget

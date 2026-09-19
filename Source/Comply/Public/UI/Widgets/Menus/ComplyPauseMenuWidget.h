@@ -8,8 +8,9 @@
 
 class UComplySettingsMenuWidget;
 class UButton;
+
 /**
- * 
+ * Widget for the pause menu. Allows the player to quit the game, leave the session, open the settings, or view the credits.
  */
 UCLASS()
 class COMPLY_API UComplyPauseMenuWidget : public UComplyMenuWidgetBase

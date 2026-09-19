@@ -6,9 +6,6 @@
 
 #include "ShotgunWeaponData.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class COMPLY_API UShotgunWeaponData : public UComplyWeaponData
 {

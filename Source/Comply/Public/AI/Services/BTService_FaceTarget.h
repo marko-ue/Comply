@@ -7,7 +7,7 @@
 #include "BTService_FaceTarget.generated.h"
 
 /**
- * 
+ * BTService used by certain enemies to make them always face their target.
  */
 UCLASS()
 class COMPLY_API UBTService_FaceTarget : public UBTService

@@ -1,11 +1,12 @@
 // Copyright © 2026 Marko. All rights reserved.
 
+#include "ComplyPlayerController.h"
+
 // Comply
 #include "AbilitySystem/ComplyAbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/Data/Player/ComplyPlayerData.h"
 #include "Character/ComplyPlayerCharacter.h"
 #include "Comply.h"
-#include "ComplyPlayerController.h"
 #include "Framework/GameInstance/ComplyGameInstance.h"
 #include "Framework/GameMode/ComplyGameModeBase.h"
 #include "Framework/GameState/ComplyGameStateBase.h"

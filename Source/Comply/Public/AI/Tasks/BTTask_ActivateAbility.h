@@ -12,9 +12,6 @@
 class UAbilitySystemComponent;
 struct FAbilityEndedData;
 class UGameplayAbility;
-/**
- * 
- */
 
 // Per-robot state stored in NodeMemory, one block allocated per AI instance running this task
 // This is needed when there are multiple enemies at once, since member variables are shared across all AI running the same BT asset
@@ -27,6 +24,10 @@ struct FBTTask_ActivateAbilityMemory
 	FDelegateHandle AbilityEndedDelegateHandle;
 };
 
+/**
+ * BTTask used to activate enemy abilities, taking their cooldowns into account.
+ * Contains common variables that are set per ability.
+ */
 UCLASS()
 class COMPLY_API UBTTask_ActivateAbility : public UBTTaskNode
 {

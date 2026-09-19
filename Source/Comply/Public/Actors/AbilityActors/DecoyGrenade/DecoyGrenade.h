@@ -18,6 +18,9 @@ class UAbilitySystemComponent;
 class UGameplayEffect;
 class USoundCue;
 
+/**
+ * Grenade that pulls enemies' attention away from players by applying a tag on enemies in explosion radius.
+ */
 UCLASS()
 class COMPLY_API ADecoyGrenade : public AActor
 {

@@ -6,9 +6,11 @@
 
 #include "ComplyAbilitySystemComponent.generated.h"
 
-
 class ADeployableTurret;
 
+/**
+ * Custom ASC.
+ */
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class COMPLY_API UComplyAbilitySystemComponent : public UAbilitySystemComponent
 {

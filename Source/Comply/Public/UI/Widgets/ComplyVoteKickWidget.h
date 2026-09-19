@@ -8,8 +8,9 @@
 
 class UTextBlock;
 class APlayerState;
+
 /**
- * 
+ * Widget that shows up when a vote kick is initiated showing who's being kicked and vote status.
  */
 UCLASS()
 class COMPLY_API UComplyVoteKickWidget : public UUserWidget

@@ -2,6 +2,9 @@
 
 #pragma once
 
+/**
+ * Enum for different weapon slots (the different slots that can be equipped)
+ */
 UENUM(BlueprintType)
 enum class EWeaponSlot : uint8
 {

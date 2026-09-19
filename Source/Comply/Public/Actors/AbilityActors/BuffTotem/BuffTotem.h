@@ -15,6 +15,9 @@ class UGameplayEffect;
 class UGameplayAbility;
 class USphereComponent;
 
+/**
+ * Gives buffs via GE to actors that overlap with its sphere comp.
+ */
 UCLASS()
 class COMPLY_API ABuffTotem : public AActor
 {

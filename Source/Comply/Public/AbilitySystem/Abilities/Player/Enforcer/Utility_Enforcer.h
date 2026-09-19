@@ -11,8 +11,9 @@ class AEnforcerCharacter;
 class UCableComponent;
 class AComplyPlayerCharacter;
 class UCurveVector;
+
 /**
- * 
+ * Grappling hook that pulls to the hit location.
  */
 UCLASS()
 class COMPLY_API UUtility_Enforcer : public UUtilityAbilityBase

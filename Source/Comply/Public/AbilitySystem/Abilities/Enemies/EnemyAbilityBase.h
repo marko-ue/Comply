@@ -7,7 +7,8 @@
 #include "EnemyAbilityBase.generated.h"
 
 /**
- * 
+ * Base class used for enemy abilities. 
+ * Executes that enemy's attack gameplay cue and ends the ability when attack animation ends.
  */
 UCLASS(Abstract)
 class COMPLY_API UEnemyAbilityBase : public UDamageAbilityBase

@@ -7,8 +7,9 @@
 #include "ComplyInputData.generated.h"
 
 class UInputAction;
+
 /**
- * 
+ * Data asset containing all input actions.
  */
 UCLASS()
 class COMPLY_API UComplyInputData : public UPrimaryDataAsset

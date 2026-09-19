@@ -19,8 +19,9 @@ class UDamageNumbersWidget;
 class UComplyCrosshairWidget;
 class UAbilitySystemComponent;
 class UComplyHealthBarWidget;
+
 /**
- * 
+ * HUD containing all player widgets.
  */
 UCLASS()
 class COMPLY_API UComplyHUDWidget : public UUserWidget

@@ -11,7 +11,7 @@
 #include "Primary_Enforcer.generated.h"
 
 /**
- * 
+ * Revolver (magnum) type weapon (semi-automatic, high damage, single target).
  */
 UCLASS()
 class COMPLY_API UPrimary_Enforcer : public URangedWeaponAbilityBase

@@ -9,8 +9,9 @@
 struct FOnAttributeChangeData;
 class UProgressBar;
 class UAbilitySystemComponent;
+
 /**
- * 
+ * Widget that displays the enemy's health bar.
  */
 UCLASS()
 class COMPLY_API UComplyEnemyHealthBarWidget : public UUserWidget

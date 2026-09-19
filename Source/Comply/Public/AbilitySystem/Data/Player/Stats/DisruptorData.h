@@ -6,9 +6,6 @@
 
 #include "DisruptorData.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class COMPLY_API UDisruptorData : public UComplyPlayerData
 {

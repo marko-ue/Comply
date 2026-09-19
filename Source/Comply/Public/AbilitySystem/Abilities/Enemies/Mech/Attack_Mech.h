@@ -8,8 +8,9 @@
 
 class UMechProjectileData;
 class AMechProjectile;
+
 /**
- * 
+ * Handles spawning the Mech's projectile actor.
  */
 UCLASS()
 class COMPLY_API UAttack_Mech : public UEnemyAbilityBase

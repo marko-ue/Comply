@@ -8,8 +8,9 @@
 
 class URangedWeaponAbilityBase;
 class UAbilityTask_WaitGameplayTagAdded;
+
 /**
- * 
+ * Reload ability used by the shotgun. Reloads 1 shell at a time.
  */
 UCLASS()
 class COMPLY_API UShotgunReload : public UComplyAbilityBase

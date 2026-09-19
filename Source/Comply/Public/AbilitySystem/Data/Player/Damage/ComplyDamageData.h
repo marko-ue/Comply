@@ -11,8 +11,9 @@
 #include "ComplyDamageData.generated.h"
 
 class UGameplayEffect;
+
 /**
- * 
+ * Data asset containing variables for player weapon damage.
  */
 UCLASS()
 class COMPLY_API UComplyDamageData : public UPrimaryDataAsset

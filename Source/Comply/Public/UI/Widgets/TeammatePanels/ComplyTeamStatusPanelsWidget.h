@@ -11,8 +11,9 @@ class AComplyPlayerState;
 class AComplyPlayerCharacter;
 class UComplyTeammatePanelWidget;
 class UVerticalBox;
+
 /**
- * 
+ * Widget that contains all teammate panels.
  */
 UCLASS()
 class COMPLY_API UComplyTeamStatusPanelsWidget : public UUserWidget

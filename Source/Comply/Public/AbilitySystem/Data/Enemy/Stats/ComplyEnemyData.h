@@ -7,7 +7,7 @@
 #include "ComplyEnemyData.generated.h"
 
 /**
- * 
+ * Data asset used to set enemy-specific variables.
  */
 UCLASS()
 class COMPLY_API UComplyEnemyData : public UComplyCharacterStatData

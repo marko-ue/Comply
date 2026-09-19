@@ -17,10 +17,11 @@ class UAbilityTask_PlayMontageAndWait;
 class UAbilityTask_WaitDelay;
 class UHitscanTargetData;
 class UCameraComponent;
-/**
- * 
- */
 
+/**
+ * Base class for all ranged weapons
+ * Handles hitscans, applying damage, animations, and target data
+ */
 UCLASS(Abstract)
 class COMPLY_API URangedWeaponAbilityBase : public UDamageAbilityBase
 {

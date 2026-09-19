@@ -13,8 +13,9 @@ class UDeployableTurretAbilityData;
 class UAbilityTask_WaitConfirmCancel;
 class ADeployableTurret;
 class ADeployableTurretPreview;
+
 /**
- *
+ * Deployable turret that shoots at nearby enemies inside its radius when placed.
  */
 UCLASS()
 class COMPLY_API UThrowable_Enforcer : public UThrowableAbilityBase

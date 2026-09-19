@@ -8,6 +8,9 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHitscanTargetDataSignature, const FGameplayAbilityTargetDataHandle&, DataHandle);
 
+/**
+ * Custom target data used by hitscan weapons, in order to pass in trace length and custom variables to the context.
+ */
 UCLASS()
 class COMPLY_API UHitscanTargetData : public UAbilityTask
 {
@@ -27,9 +30,7 @@ protected:
 	virtual void Activate() override;
 
 private:
-	void OnTargetDataReplicatedCallback(
-		const FGameplayAbilityTargetDataHandle& InDataHandle,
-		FGameplayTag ActivationTag) const;
+	void OnTargetDataReplicatedCallback(const FGameplayAbilityTargetDataHandle& InDataHandle, FGameplayTag ActivationTag) const;
 
 	FGameplayAbilityTargetDataHandle DataHandle;
 };

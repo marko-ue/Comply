@@ -7,7 +7,8 @@
 #include "BTTask_MoveToUntilClearShot.generated.h"
 
 /**
- * 
+ * BTTask used by the Mech to move to its nearest player up until they have a clear shot. 
+ * Prevents the Mech from trying to shoot through walls.
  */
 UCLASS()
 class COMPLY_API UBTTask_MoveToUntilClearShot : public UBTTaskNode

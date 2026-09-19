@@ -7,7 +7,7 @@
 #include "EquipUtilityAbility.generated.h"
 
 /**
- * 
+ * Blocks activation of all abilities except the utility ability.
  */
 UCLASS()
 class COMPLY_API UEquipUtilityAbility : public UComplyAbilityBase

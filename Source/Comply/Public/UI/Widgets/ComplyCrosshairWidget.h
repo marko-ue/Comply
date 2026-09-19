@@ -7,10 +7,10 @@
 #include "ComplyCrosshairWidget.generated.h"
 
 class UImage;
-/**
- * 
- */
 
+/**
+ * Widget that displays the player's crosshair. 
+ */
 UCLASS()
 class COMPLY_API UComplyCrosshairWidget : public UUserWidget
 {

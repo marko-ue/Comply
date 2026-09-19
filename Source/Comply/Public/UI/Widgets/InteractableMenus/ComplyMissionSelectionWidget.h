@@ -13,8 +13,9 @@ class AComplyGameStateBase;
 class AComplyGameModeBase;
 class UButton;
 class UTextBlock;
+
 /**
- * 
+ * Widget that displays missions to select. Handles choosing if a client or server is attempting to select a mission, and updating accordingly.
  */
 UCLASS()
 class COMPLY_API UComplyMissionSelectionWidget : public UUserWidget

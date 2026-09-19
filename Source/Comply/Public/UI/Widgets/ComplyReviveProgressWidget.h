@@ -11,8 +11,9 @@
 
 class UProgressBar;
 class UAbilitySystemComponent;
+
 /**
- * 
+ * Widget that displays the revive progress (how long until revive finishes).
  */
 UCLASS()
 class COMPLY_API UComplyReviveProgressWidget : public UUserWidget

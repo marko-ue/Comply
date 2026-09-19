@@ -8,8 +8,9 @@
 
 class UAbilityTask_PlayMontageAndWait;
 class AComplyPlayerCharacter;
+
 /**
- * 
+ * Revives a downed teammate after holding down input for a few seconds.
  */
 UCLASS()
 class COMPLY_API URevivePlayer : public UGameplayAbility

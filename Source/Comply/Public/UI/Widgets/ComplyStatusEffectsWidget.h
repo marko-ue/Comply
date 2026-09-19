@@ -12,8 +12,9 @@
 class UImage;
 class UAbilitySystemComponent;
 class UHorizontalBox;
+
 /**
- * 
+ * Widget that displays current status effects on a player.
  */
 UCLASS()
 class COMPLY_API UComplyStatusEffectsWidget : public UUserWidget

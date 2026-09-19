@@ -11,6 +11,9 @@ class UAbilitySystemComponent;
 class AMechProjectileAreaEffect;
 class UProjectileMovementComponent;
 
+/**
+ * Mech projectile that spawns an area effect when it touches the ground that deals damage over time to players inside it.
+ */
 UCLASS()
 class COMPLY_API AMechProjectile : public AActor
 {

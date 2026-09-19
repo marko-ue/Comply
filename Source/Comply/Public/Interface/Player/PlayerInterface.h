@@ -13,7 +13,7 @@ class UPlayerInterface : public UInterface
 };
 
 /**
- * 
+ * Interface used to differentiate players from other characters.
  */
 class COMPLY_API IPlayerInterface
 {

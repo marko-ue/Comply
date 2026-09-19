@@ -7,8 +7,9 @@
 #include "ComplyCharacterStatData.generated.h"
 
 class UGameplayEffect;
+
 /**
- * 
+ * Data asset containing all variables shared by every character class.
  */
 UCLASS()
 class COMPLY_API UComplyCharacterStatData : public UPrimaryDataAsset

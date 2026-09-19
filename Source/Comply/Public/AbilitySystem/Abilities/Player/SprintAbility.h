@@ -7,7 +7,8 @@
 #include "SprintAbility.generated.h"
 
 /**
- * 
+ * Adds the sprint effect GE, and removes it when the ability ends. 
+ * The GE increases movement speed while input is held.
  */
 UCLASS()
 class COMPLY_API USprintAbility : public UGameplayAbility

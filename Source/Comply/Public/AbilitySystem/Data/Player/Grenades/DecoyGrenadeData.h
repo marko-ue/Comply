@@ -8,9 +8,7 @@
 
 class UNiagaraSystem;
 class USoundCue;
-/**
- * 
- */
+
 UCLASS()
 class COMPLY_API UDecoyGrenadeData : public UComplyGrenadeData
 {

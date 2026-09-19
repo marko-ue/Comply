@@ -7,7 +7,7 @@
 #include "ComplyAbilitySystemBlueprintLibrary.generated.h"
 
 /**
- * 
+ * Class of static helper functions, or wrappers for exposing certain data to blueprint.
  */
 UCLASS()
 class COMPLY_API UComplyAbilitySystemBlueprintLibrary : public UAbilitySystemBlueprintLibrary

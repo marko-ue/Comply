@@ -30,6 +30,10 @@ struct FAbilitySet
 	FGameplayTag AbilityTypeTag;
 };
 
+/**
+ * Base class for all characters.
+ * Contains common functions and variables, such as taking damage and dying, startup abilities, etc.
+ */
 UCLASS(Abstract)
 class COMPLY_API AComplyCharacterBase : public AComplyCharacter, public IAbilitySystemInterface, public ICombatantInterface
 {

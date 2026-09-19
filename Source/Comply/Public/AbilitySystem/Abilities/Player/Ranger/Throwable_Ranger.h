@@ -11,8 +11,9 @@
 #include "Throwable_Ranger.generated.h"
 
 class UPlasmaGrenadeData;
+
 /**
- * 
+ * Plasma grenade that explodes after a delay and deals falloff damage to enemies in a radius.
  */
 UCLASS()
 class COMPLY_API UThrowable_Ranger : public UThrowableAbilityBase

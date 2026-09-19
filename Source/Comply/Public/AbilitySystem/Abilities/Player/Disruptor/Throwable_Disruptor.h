@@ -10,8 +10,9 @@
 #include "Throwable_Disruptor.generated.h"
 
 class UDecoyGrenadeData;
+
 /**
- * 
+ * Decoy grenade that distracts enemies.
  */
 UCLASS()
 class COMPLY_API UThrowable_Disruptor : public UThrowableAbilityBase

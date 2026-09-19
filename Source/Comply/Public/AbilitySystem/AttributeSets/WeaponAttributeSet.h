@@ -16,7 +16,7 @@ GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
 /**
- * 
+ * Attribute set containing weapon-related attributes (ammo and charges).
  */
 UCLASS()
 class COMPLY_API UWeaponAttributeSet : public UAttributeSet

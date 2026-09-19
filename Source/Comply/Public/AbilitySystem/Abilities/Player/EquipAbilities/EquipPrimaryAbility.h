@@ -7,7 +7,7 @@
 #include "EquipPrimaryAbility.generated.h"
 
 /**
- * 
+ * Blocks activation of all abilities except the primary ability.
  */
 UCLASS()
 class COMPLY_API UEquipPrimaryAbility : public UComplyAbilityBase

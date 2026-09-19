@@ -14,6 +14,9 @@ class UGameplayEffect;
 class UAbilitySystemComponent;
 class USphereComponent;
 
+/**
+ * Fires at the nearest enemy within range.
+ */
 UCLASS()
 class COMPLY_API ADeployableTurret : public ATargetableActorsBase
 {

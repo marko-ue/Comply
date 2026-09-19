@@ -6,6 +6,9 @@
 
 #include "CharacterSelection.generated.h"
 
+/**
+ * Actor that players can interact with to select the character they want to play.
+ */
 UCLASS()
 class COMPLY_API ACharacterSelection : public AInteractableActorBase
 {

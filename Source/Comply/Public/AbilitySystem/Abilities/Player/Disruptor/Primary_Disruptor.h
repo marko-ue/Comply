@@ -11,8 +11,9 @@
 #include "Primary_Disruptor.generated.h"
 
 class UShotgunWeaponData;
+
 /**
- * 
+ * Shotgun
  */
 UCLASS()
 class COMPLY_API UPrimary_Disruptor : public URangedWeaponAbilityBase

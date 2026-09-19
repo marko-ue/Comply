@@ -7,9 +7,7 @@
 #include "ComplyGameInstance.generated.h"
 
 class AComplyPlayerCharacter;
-/**
- * 
- */
+
 UCLASS()
 class COMPLY_API UComplyGameInstance : public UGameInstance
 {

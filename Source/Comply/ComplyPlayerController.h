@@ -16,10 +16,8 @@ class UComplyHUDWidget;
 class AComplyPlayerCharacter;
 class UInputMappingContext;
 class UUserWidget;
-/**
- *
- */
-UCLASS(abstract)
+
+UCLASS(Abstract)
 class AComplyPlayerController : public APlayerController
 {
 	GENERATED_BODY()

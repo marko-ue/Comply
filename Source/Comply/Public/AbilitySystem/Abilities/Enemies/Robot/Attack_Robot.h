@@ -7,7 +7,7 @@
 #include "Attack_Robot.generated.h"
 
 /**
- * 
+ * Handles the Robot's attack (sweep in front).
  */
 UCLASS()
 class COMPLY_API UAttack_Robot : public UEnemyAbilityBase

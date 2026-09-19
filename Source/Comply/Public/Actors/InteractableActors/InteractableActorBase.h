@@ -9,6 +9,10 @@
 
 class UWidgetComponent;
 
+/**
+ * Base class for interactable actors.
+ * Contains some common functions and variables.
+ */
 UCLASS(Abstract)
 class COMPLY_API AInteractableActorBase : public AActor, public IInteractableInterface
 {

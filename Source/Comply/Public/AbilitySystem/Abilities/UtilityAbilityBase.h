@@ -8,8 +8,10 @@
 
 class UComplyUtilityData;
 class AUtilityPreviewBase;
+
 /**
- * 
+ * Base class for utility abilities.
+ * Handles spawning a preview and input confirmation.
  */
 UCLASS(Abstract)
 class COMPLY_API UUtilityAbilityBase : public UComplyAbilityBase

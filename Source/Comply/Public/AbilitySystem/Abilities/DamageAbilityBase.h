@@ -7,8 +7,10 @@
 #include "DamageAbilityBase.generated.h"
 
 struct FComplyGameplayEffectContext;
+
 /**
- * 
+ * Base class for all abilities that do damage.
+ * Has a method that damage abilities can call to do damage with parameters.
  */
 UCLASS(Abstract)
 class COMPLY_API UDamageAbilityBase : public UComplyAbilityBase

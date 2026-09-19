@@ -6,9 +6,6 @@
 
 #include "EnforcerData.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class COMPLY_API UEnforcerData : public UComplyPlayerData
 {

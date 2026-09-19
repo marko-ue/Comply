@@ -7,7 +7,7 @@
 #include "ComplySettingsSaveGame.generated.h"
 
 /**
- * 
+ * Save game for settings the player chooses.
  */
 UCLASS()
 class COMPLY_API UComplySettingsSaveGame : public USaveGame

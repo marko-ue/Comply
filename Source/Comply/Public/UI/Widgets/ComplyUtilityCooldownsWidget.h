@@ -9,8 +9,9 @@
 class UTextBlock;
 class UUtilityAbilityBase;
 class UImage;
+
 /**
- * 
+ * Widget that displays the remaining cooldown for that player's utility.
  */
 UCLASS()
 class COMPLY_API UComplyUtilityCooldownsWidget : public UUserWidget

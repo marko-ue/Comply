@@ -10,9 +10,7 @@
 class AComplyPlayerCharacter;
 class UWeaponAttributeSet;
 class UComplyAttributeSet;
-/**
- * 
- */
+
 UCLASS()
 class COMPLY_API AComplyPlayerState : public APlayerState, public IAbilitySystemInterface
 {

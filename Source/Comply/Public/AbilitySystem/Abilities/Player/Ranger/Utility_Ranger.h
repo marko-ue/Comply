@@ -9,7 +9,7 @@
 class AShieldDomePreview;
 
 /**
- * 
+ * Shield dome that when placed prevents enemies from going inside, and shots and projectiles that pass through it deal extra damage.
  */
 UCLASS()
 class COMPLY_API UUtility_Ranger : public UUtilityAbilityBase

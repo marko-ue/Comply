@@ -6,6 +6,9 @@
 
 #include "MissionSelect.generated.h"
 
+/**
+ * Actor that players can interact with to select the mission they want to play.
+ */
 UCLASS()
 class COMPLY_API AMissionSelect : public AInteractableActorBase
 {

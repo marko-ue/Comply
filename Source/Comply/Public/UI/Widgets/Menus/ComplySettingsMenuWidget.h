@@ -15,7 +15,7 @@ class USoundMix;
 class USoundClass;
 
 /**
- * 
+ * Widgets for the settings menu. Allows the player to tweak various values or vote kick a player.
  */
 UCLASS()
 class COMPLY_API UComplySettingsMenuWidget : public UComplyMenuWidgetBase

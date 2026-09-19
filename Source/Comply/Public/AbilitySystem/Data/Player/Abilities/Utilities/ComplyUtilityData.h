@@ -7,8 +7,9 @@
 #include "ComplyUtilityData.generated.h"
 
 class AUtilityPreviewBase;
+
 /**
- * 
+ * Data asset shared by utilities. Contains shared variables such lifetime, mesh, material, etc.
  */
 UCLASS()
 class COMPLY_API UComplyUtilityData : public UPrimaryDataAsset

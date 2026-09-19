@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+
 #include "ShieldDome.generated.h"
 
 class UShieldUtilityData;
@@ -13,6 +13,9 @@ class UGameplayAbility;
 class USphereComponent;
 class UNavModifierComponent;
 
+/**
+ * Shield dome that prevents enemies from going inside, and shots and projectiles that pass through it deal extra damage.
+ */
 UCLASS()
 class COMPLY_API AShieldDome : public AActor
 {

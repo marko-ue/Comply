@@ -14,6 +14,9 @@ class UTextBlock;
 class UImage;
 class URangedWeaponAbilityBase;
 
+/**
+ * Widget that displays the current ammo in mag and reserve ammo of that player's weapon.
+ */
 UCLASS()
 class COMPLY_API UComplyAmmoWidget : public UUserWidget
 {

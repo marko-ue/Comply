@@ -12,8 +12,9 @@ class UCanvasPanel;
 class UDamageNumberEntryWidget;
 struct FOnAttributeChangeData;
 class UAbilitySystemComponent;
+
 /**
- * 
+ * Widget that displays damage numbers.
  */
 UCLASS()
 class COMPLY_API UDamageNumbersWidget : public UUserWidget

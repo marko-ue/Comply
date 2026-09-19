@@ -7,6 +7,9 @@
 
 #include "ComplyAbilityTypes.generated.h"
 
+/**
+ * Holds all custom types. 
+ */
 USTRUCT(BlueprintType)
 struct FComplyGameplayEffectContext : public FGameplayEffectContext
 {

@@ -7,8 +7,9 @@
 #include "ComplyRevivePromptWidget.generated.h"
 
 class UTextBlock;
+
 /**
- * 
+ * Widget that shows a prompt for a revive when a player is hovering over a downed player.
  */
 UCLASS()
 class COMPLY_API UComplyRevivePromptWidget : public UUserWidget

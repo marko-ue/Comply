@@ -7,8 +7,9 @@
 #include "ComplyAbilityData.generated.h"
 
 class UGameplayEffect;
+
 /**
- * 
+ * Data asset containing general ability information.
  */
 UCLASS()
 class COMPLY_API UComplyAbilityData : public UPrimaryDataAsset

@@ -15,8 +15,9 @@ class UGameplayEffect;
 class UNiagaraComponent;
 class UAudioComponent;
 class USoundBase;
+
 /**
- * 
+ * Data asset used by the electric hazard zone containing variables for the damage and stun.
  */
 UCLASS()
 class COMPLY_API UElectricHazardZoneData : public UPrimaryDataAsset

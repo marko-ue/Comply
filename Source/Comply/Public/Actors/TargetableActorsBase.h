@@ -13,6 +13,10 @@ class UGameplayEffect;
 class UComplyAttributeSet;
 class USoundCue;
 
+/**
+ * Base class that all targetable actors (non-player actors targetable by enemies) share.
+ * Overrides functions from interfaces for taking damage and dying, and contains common variables.
+ */
 UCLASS()
 class COMPLY_API ATargetableActorsBase : public AActor, public ITargetableInterface, public IAbilitySystemInterface
 {

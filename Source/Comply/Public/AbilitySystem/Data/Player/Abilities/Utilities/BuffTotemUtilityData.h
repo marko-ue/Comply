@@ -9,9 +9,7 @@
 class UNiagaraSystem;
 class UGameplayEffect;
 class USoundCue;
-/**
- * 
- */
+
 UCLASS()
 class COMPLY_API UBuffTotemUtilityData : public UComplyUtilityData
 {

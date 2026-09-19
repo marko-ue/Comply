@@ -13,8 +13,9 @@ class UNiagaraSystem;
 class UGameplayAbility;
 class UGameplayEffect;
 class UComplyDamageData;
+
 /**
- * 
+ * Main data asset containing variables for ranged weapons
  */
 UCLASS()
 class COMPLY_API UComplyWeaponData : public UPrimaryDataAsset

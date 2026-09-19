@@ -11,8 +11,9 @@ class AComplyGameModeBase;
 class AComplyPlayerController;
 class UImage;
 class UButton;
+
 /**
- * 
+ * Widget that displays the character selection options. Calls an RPC to actually equip it.
  */
 UCLASS()
 class COMPLY_API UComplyCharacterSelectionWidget : public UUserWidget

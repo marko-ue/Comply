@@ -11,8 +11,9 @@
 #include "ComplyEnemyDamageData.generated.h"
 
 class UGameplayEffect;
+
 /**
- * 
+ * Data asset used for enemy damage.
  */
 UCLASS()
 class COMPLY_API UComplyEnemyDamageData : public UPrimaryDataAsset

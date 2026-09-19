@@ -7,9 +7,7 @@
 #include "GrapplingHookData.generated.h"
 
 class UCurveVector;
-/**
- * 
- */
+
 UCLASS()
 class COMPLY_API UGrapplingHookData : public UComplyUtilityData
 {

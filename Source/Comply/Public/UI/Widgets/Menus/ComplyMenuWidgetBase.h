@@ -9,7 +9,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSettingsMenuClosed);
 
 /**
- * 
+ * Main menu. Contains all other menu widgets as elements and a close button.
  */
 UCLASS()
 class COMPLY_API UComplyMenuWidgetBase : public UUserWidget

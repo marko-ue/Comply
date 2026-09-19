@@ -15,6 +15,9 @@ GAMEPLAYATTRIBUTE_VALUE_GETTER(PropertyName) \
 GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
+/**
+ * Attribute set containing core attributes.
+ */
 UCLASS()
 class COMPLY_API UComplyAttributeSet : public UAttributeSet
 {

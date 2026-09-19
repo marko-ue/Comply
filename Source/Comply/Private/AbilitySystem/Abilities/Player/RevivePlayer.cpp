@@ -75,6 +75,7 @@ void URevivePlayer::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	MontageTask->OnCancelled.AddDynamic(this, &URevivePlayer::OnMontageCancelled);
 	MontageTask->ReadyForActivation();
 	
+	// Adds the Reviving tag. A widget listens for this tag and is shown to display the remaining time until revive finishes
 	GetAbilitySystemComponentFromActorInfo()->AddLooseGameplayTag(ComplyTags::States::State_Reviving);
 	
 	FGameplayCueParameters CueParams;

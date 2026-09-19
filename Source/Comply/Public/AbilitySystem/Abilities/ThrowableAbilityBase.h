@@ -10,8 +10,10 @@ class UComplyGrenadeData;
 class UComplyAbilitySystemComponent;
 class IWeaponInterface;
 class AThrowablePreviewBase;
+
 /**
- * 
+ * Base class for all throwable abilities.
+ * Handles spawning a preview, checking for charges, and server/client logic.
  */
 UCLASS(Abstract)
 class COMPLY_API UThrowableAbilityBase : public UDamageAbilityBase

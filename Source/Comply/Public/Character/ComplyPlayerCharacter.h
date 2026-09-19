@@ -26,6 +26,10 @@ class UCameraComponent;
 class USpringArmComponent;
 class USoundCue;
 
+/**
+ * Class that all player characters use.
+ * Contains various common shared information.
+ */
 UCLASS()
 class COMPLY_API AComplyPlayerCharacter : public AComplyCharacterBase, public IPlayerInterface, public ITargetableInterface, public IWeaponInterface
 {

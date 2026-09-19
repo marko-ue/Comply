@@ -8,6 +8,9 @@
 
 class UCableComponent;
 
+/**
+ * Class inherited to add a cable and scene component only for the Enforcer that uses a grappling hook.
+ */
 UCLASS()
 class COMPLY_API AEnforcerCharacter : public AComplyPlayerCharacter
 {

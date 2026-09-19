@@ -8,8 +8,9 @@
 
 class UTextBlock;
 class UDamageNumbersWidget;
+
 /**
- * 
+ * Widget that displays the amount of damage done to an enemy. Handles pooling.
  */
 UCLASS()
 class COMPLY_API UDamageNumberEntryWidget : public UUserWidget

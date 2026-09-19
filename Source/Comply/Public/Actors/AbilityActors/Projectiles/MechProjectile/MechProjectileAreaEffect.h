@@ -15,6 +15,9 @@ class USphereComponent;
 class UNiagaraComponent;
 class UAbilitySystemComponent;
 
+/**
+ * Area effect actor spawned by the mech projectile that deals damage over time to players inside it.
+ */
 UCLASS()
 class COMPLY_API AMechProjectileAreaEffect : public AActor
 {

@@ -6,9 +6,6 @@
 
 #include "RangerData.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class COMPLY_API URangerData : public UComplyPlayerData
 {

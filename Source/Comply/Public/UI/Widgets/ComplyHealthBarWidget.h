@@ -6,15 +6,14 @@
 
 #include "ComplyHealthBarWidget.generated.h"
 
-/**
- * 
- */
-
 struct FOnAttributeChangeData;
 class UProgressBar;
 class UTextBlock;
 class UAbilitySystemComponent;
 
+/**
+ * Widget that displays the player's health bar.
+ */
 UCLASS()
 class COMPLY_API UComplyHealthBarWidget : public UUserWidget
 {

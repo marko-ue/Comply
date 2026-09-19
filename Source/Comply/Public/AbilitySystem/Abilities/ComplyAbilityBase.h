@@ -9,6 +9,10 @@
 class UComplyAbilityData;
 class UAbilityTask_PlayMontageAndWait;
 
+/**
+ * Base class for all Comply abilities. 
+ * Used to get abilities' cost and cooldown GE's from data assets.
+ */
 UCLASS(Abstract)
 class COMPLY_API UComplyAbilityBase : public UGameplayAbility
 {

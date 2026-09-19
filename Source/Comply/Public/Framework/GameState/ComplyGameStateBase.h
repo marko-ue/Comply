@@ -6,9 +6,6 @@
 
 #include "ComplyGameStateBase.generated.h"
 
-/**
- * 
- */
 USTRUCT()
 struct FComplyVoteKickState
 {

@@ -6,6 +6,9 @@
 
 #include "DecoyGrenadePreview.generated.h"
 
+/**
+ * Shows preview trajectory of the grenade by predicting projectile path.
+ */
 UCLASS()
 class COMPLY_API ADecoyGrenadePreview : public AThrowablePreviewBase
 {

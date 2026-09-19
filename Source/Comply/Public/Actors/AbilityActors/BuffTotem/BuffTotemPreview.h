@@ -6,6 +6,9 @@
 
 #include "BuffTotemPreview.generated.h"
 
+/**
+ * Buff totem preview that shows up when clicking once but not confirming input. Shows different material based on if placement is valid or not.
+ */
 UCLASS()
 class COMPLY_API ABuffTotemPreview : public AUtilityPreviewBase
 {

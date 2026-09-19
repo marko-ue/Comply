@@ -7,7 +7,7 @@
 #include "ChargeAttack_Tank.generated.h"
 
 /**
- * 
+ * Handles the Tank's charge attack, which charges through the player it's near to.
  */
 UCLASS()
 class COMPLY_API UChargeAttack_Tank : public UEnemyAbilityBase

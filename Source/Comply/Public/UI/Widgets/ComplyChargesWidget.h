@@ -15,6 +15,9 @@ class UTextBlock;
 class UImage;
 class UTexture2D;
  
+/**
+ * Widget that displays the current amount of charges for that player's throwable.
+ */
 UCLASS()
 class COMPLY_API UComplyChargeWidget : public UUserWidget
 {

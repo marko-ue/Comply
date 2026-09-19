@@ -12,9 +12,7 @@
 class UNiagaraSystem;
 class UGameplayEffect;
 class USoundCue;
-/**
- * 
- */
+
 UCLASS()
 class COMPLY_API UPlasmaGrenadeData : public UComplyGrenadeData
 {

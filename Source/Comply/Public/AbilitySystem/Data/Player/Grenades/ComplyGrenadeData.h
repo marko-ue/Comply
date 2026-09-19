@@ -7,8 +7,9 @@
 #include "ComplyGrenadeData.generated.h"
 
 class UGameplayEffect;
+
 /**
- * 
+ * Data asset containing general variables for grenades
  */
 UCLASS()
 class COMPLY_API UComplyGrenadeData : public UPrimaryDataAsset

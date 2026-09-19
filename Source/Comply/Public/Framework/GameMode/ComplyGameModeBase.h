@@ -8,9 +8,6 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerSelectionChanged);
 
-/**
- * 
- */
 UCLASS()
 class COMPLY_API AComplyGameModeBase : public AGameModeBase
 {

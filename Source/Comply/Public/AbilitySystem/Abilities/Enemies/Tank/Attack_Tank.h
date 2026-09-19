@@ -7,7 +7,7 @@
 #include "Attack_Tank.generated.h"
 
 /**
- * 
+ * Handles the Tank's regular attack (a wide sweep in front).
  */
 UCLASS()
 class COMPLY_API UAttack_Tank : public UEnemyAbilityBase

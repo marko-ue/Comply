@@ -7,8 +7,9 @@
 #include "ComplyEnemyAbilityData.generated.h"
 
 class UComplyEnemyDamageData;
+
 /**
- * 
+ * Data asset used for enemy abilities.
  */
 UCLASS()
 class COMPLY_API UComplyEnemyAbilityData : public UPrimaryDataAsset

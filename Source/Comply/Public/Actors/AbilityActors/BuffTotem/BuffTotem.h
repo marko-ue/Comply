@@ -2,8 +2,11 @@
 
 #pragma once
 
-#include "ActiveGameplayEffectHandle.h"
 #include "GameFramework/Actor.h"
+
+// UE
+#include "ActiveGameplayEffectHandle.h"
+
 #include "BuffTotem.generated.h"
 
 class UBuffTotemUtilityData;

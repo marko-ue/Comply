@@ -2,9 +2,8 @@
 
 #pragma once
 
-#include "GameFramework/Actor.h"
-#include "Interface/TargetableInterface.h"
 #include "Actors/TargetableActorsBase.h"
+
 #include "DeployableTurret.generated.h"
 
 class UDeployableTurretAbilityData;

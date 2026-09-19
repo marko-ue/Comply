@@ -2,8 +2,11 @@
 
 #pragma once
 
-#include "GameplayTagContainer.h"
 #include "Blueprint/UserWidget.h"
+
+// UE
+#include "GameplayTagContainer.h"
+
 #include "ComplyReviveProgressWidget.generated.h"
 
 class UProgressBar;

@@ -2,10 +2,11 @@
 
 #pragma once
 
-#include "AbilitySystemComponent.h"
 #include "Blueprint/UserWidget.h"
+
 #include "ComplyTeamStatusPanelsWidget.generated.h"
 
+class UAbilitySystemComponent;
 class AComplyPlayerState;
 class AComplyPlayerCharacter;
 class UComplyTeammatePanelWidget;
@@ -25,8 +26,7 @@ protected:
 	virtual void NativeConstruct() override;
 	void StartPanelRetryTimer();
 	void RetryPendingPanels();
-	void AddPanelForPlayer(AComplyPlayerState* ComplyPS, AComplyPlayerCharacter* Character,
-	                       UAbilitySystemComponent* ASC);
+	void AddPanelForPlayer(AComplyPlayerState* ComplyPS, AComplyPlayerCharacter* Character, UAbilitySystemComponent* ASC);
 	virtual void NativeDestruct() override;
 	
 private:

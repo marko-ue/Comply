@@ -4,6 +4,7 @@
 
 #include "GameplayEffectTypes.h"
 #include "Abilities/GameplayAbilityTargetTypes.h"
+
 #include "ComplyAbilityTypes.generated.h"
 
 USTRUCT(BlueprintType)

@@ -3,9 +3,10 @@
 #pragma once
 
 #include "Blueprint/UserWidget.h"
-#include "Framework/GameInstance/ComplyGameInstance.h"
+
 #include "ComplyMissionSelectionWidget.generated.h"
 
+class UComplyGameInstance;
 class UCheckBox;
 class AComplyPlayerController;
 class AComplyGameStateBase;

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
+
 #include "ThrowablePreviewBase.generated.h"
 
 UCLASS(Abstract)

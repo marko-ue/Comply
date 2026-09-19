@@ -3,6 +3,7 @@
 #pragma once
 
 #include "GameFramework/SaveGame.h"
+
 #include "ComplySettingsSaveGame.generated.h"
 
 /**

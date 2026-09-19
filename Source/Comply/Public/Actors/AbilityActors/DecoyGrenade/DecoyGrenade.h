@@ -2,9 +2,11 @@
 
 #pragma once
 
-#include "ActiveGameplayEffectHandle.h"
-#include "GameplayTagContainer.h"
 #include "GameFramework/Actor.h"
+
+// UE
+#include "ActiveGameplayEffectHandle.h"
+
 #include "DecoyGrenade.generated.h"
 
 class UDecoyGrenadeData;

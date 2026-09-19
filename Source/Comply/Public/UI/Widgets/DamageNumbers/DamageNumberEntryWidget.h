@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Blueprint/UserWidget.h"
+
 #include "DamageNumberEntryWidget.generated.h"
 
 class UTextBlock;

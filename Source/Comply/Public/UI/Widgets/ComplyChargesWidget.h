@@ -2,10 +2,12 @@
 
 #pragma once
 
-#include "AttributeSet.h"
 #include "Blueprint/UserWidget.h"
-#include "ComplyChargesWidget.generated.h"
 
+// UE
+#include "AttributeSet.h"
+
+#include "ComplyChargesWidget.generated.h"
 
 class UThrowableAbilityBase;
 struct FOnAttributeChangeData;

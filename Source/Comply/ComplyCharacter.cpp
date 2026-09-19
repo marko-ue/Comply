@@ -1,17 +1,21 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright © 2026 Marko. All rights reserved.
 
 #include "ComplyCharacter.h"
-#include "Engine/LocalPlayer.h"
-#include "Camera/CameraComponent.h"
+
+// Comply
+#include "Comply.h"
+
+// UE
 #include "Components/CapsuleComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/SpringArmComponent.h"
-#include "GameFramework/Controller.h"
+#include "Engine/LocalPlayer.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "InputActionValue.h"
-#include "Comply.h"
 #include "Framework/GameInstance/ComplyGameInstance.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/Controller.h"
+#include "InputActionValue.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyCharacter)
 
 AComplyCharacter::AComplyCharacter()
 {

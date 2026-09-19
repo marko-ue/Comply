@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ComplyMenuWidgetBase.h"
+
 #include "ComplyCreditsMenuWidget.generated.h"
 
 class UButton;

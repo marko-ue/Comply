@@ -4,10 +4,12 @@
 
 #include "AbilitySystemInterface.h"
 #include "ComplyCharacter.h"
-#include "GameplayTagContainer.h"
 #include "Interface/CombatantInterface.h"
-#include "ComplyCharacterBase.generated.h"
 
+// UE
+#include "GameplayTagContainer.h"
+
+#include "ComplyCharacterBase.generated.h"
 
 class UGameplayAbility;
 class UGameplayEffect;

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "BehaviorTree/BTService.h"
+
 #include "BTService_FaceTarget.generated.h"
 
 /**

@@ -2,16 +2,17 @@
 
 #pragma once
 
-#include "ActiveGameplayEffectHandle.h"
 #include "Character/ComplyCharacterBase.h"
 #include "Interface/Player/PlayerInterface.h"
-#include "GameplayEffectTypes.h"
-#include "AbilitySystem/Abilities/ThrowableAbilityBase.h"
 #include "Interface/TargetableInterface.h"
 #include "Interface/Player/WeaponInterface.h"
+
+// UE
+#include "GameplayEffectTypes.h"
+
 #include "ComplyPlayerCharacter.generated.h"
 
-
+class UThrowableAbilityBase;
 class UUtilityAbilityBase;
 class UComplyWeaponData;
 class UComplyInputData;

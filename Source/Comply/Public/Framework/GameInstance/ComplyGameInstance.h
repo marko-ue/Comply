@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Engine/GameInstance.h"
+
 #include "ComplyGameInstance.generated.h"
 
 class AComplyPlayerCharacter;

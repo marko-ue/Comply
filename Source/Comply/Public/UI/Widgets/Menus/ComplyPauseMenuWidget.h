@@ -3,7 +3,7 @@
 #pragma once
 
 #include "ComplyMenuWidgetBase.h"
-#include "Blueprint/UserWidget.h"
+
 #include "ComplyPauseMenuWidget.generated.h"
 
 class UComplySettingsMenuWidget;

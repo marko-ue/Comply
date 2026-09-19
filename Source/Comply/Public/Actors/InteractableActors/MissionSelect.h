@@ -3,6 +3,7 @@
 #pragma once
 
 #include "InteractableActorBase.h"
+
 #include "MissionSelect.generated.h"
 
 UCLASS()

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ComplyUtilityData.h"
+
 #include "BuffTotemUtilityData.generated.h"
 
 class UNiagaraSystem;

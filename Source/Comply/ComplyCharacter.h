@@ -1,10 +1,9 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright © 2026 Marko. All rights reserved.
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Logging/LogMacros.h"
+
 #include "ComplyCharacter.generated.h"
 
 class USpringArmComponent;
@@ -22,10 +21,8 @@ UCLASS(abstract)
 class AComplyCharacter : public ACharacter
 {
 	GENERATED_BODY()
-
 	
 protected:
-
 	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* JumpAction;
@@ -43,17 +40,14 @@ protected:
 	UInputAction* MouseLookAction;
 
 public:
-
 	/** Constructor */
 	AComplyCharacter();	
 
 protected:
-
 	/** Initialize input action bindings */
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
-
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 
@@ -61,7 +55,6 @@ protected:
 	void Look(const FInputActionValue& Value);
 
 public:
-
 	/** Handles move inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoMove(float Right, float Forward);
@@ -78,4 +71,3 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoJumpEnd();
 };
-

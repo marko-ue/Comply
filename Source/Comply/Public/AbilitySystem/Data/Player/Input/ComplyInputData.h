@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Engine/DataAsset.h"
+
 #include "ComplyInputData.generated.h"
 
 class UInputAction;

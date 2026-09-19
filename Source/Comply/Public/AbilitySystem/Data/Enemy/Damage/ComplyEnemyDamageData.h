@@ -2,9 +2,12 @@
 
 #pragma once
 
+#include "Engine/DataAsset.h"
+
+// UE
 #include "GameplayTagContainer.h"
 #include "ScalableFloat.h"
-#include "Engine/DataAsset.h"
+
 #include "ComplyEnemyDamageData.generated.h"
 
 class UGameplayEffect;

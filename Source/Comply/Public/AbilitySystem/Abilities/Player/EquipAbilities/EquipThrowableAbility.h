@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "AbilitySystem/Abilities/ComplyAbilityBase.h"
+
 #include "EquipThrowableAbility.generated.h"
 
 /**

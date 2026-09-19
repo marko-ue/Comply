@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Actors/UtilityActors/UtilityPreviewBase.h"
+
 #include "BuffTotemPreview.generated.h"
 
 UCLASS()

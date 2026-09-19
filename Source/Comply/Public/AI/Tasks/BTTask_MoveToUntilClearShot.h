@@ -3,6 +3,7 @@
 #pragma once
 
 #include "BehaviorTree/BTTaskNode.h"
+
 #include "BTTask_MoveToUntilClearShot.generated.h"
 
 /**

@@ -2,9 +2,11 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "AbilitySystem/Abilities/ThrowableAbilityBase.h"
+
+// Comply
 #include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
+
 #include "Throwable_Enforcer.generated.h"
 
 class UDeployableTurretAbilityData;

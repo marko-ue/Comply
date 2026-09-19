@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "AbilitySystem/Abilities/UtilityAbilityBase.h"
+
 #include "Utility_Disruptor.generated.h"
 
 class ABuffTotem;

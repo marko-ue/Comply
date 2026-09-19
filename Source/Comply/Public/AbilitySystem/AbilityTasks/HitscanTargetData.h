@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Abilities/Tasks/AbilityTask.h"
+
 #include "HitscanTargetData.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHitscanTargetDataSignature, const FGameplayAbilityTargetDataHandle&, DataHandle);

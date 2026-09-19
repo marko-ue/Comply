@@ -836,7 +836,7 @@ void AComplyPlayerCharacter::OnDistractedTagChanged(const FGameplayTag Tag, int3
 	if (NewCount <= 0) return;
 	if (!IsLocallyControlled()) return;
 	
-	UComplyGameInstance* GI = GetWorld()->GetGameState<UComplyGameInstance>();
+	UComplyGameInstance* GI = GetWorld()->GetGameInstance<UComplyGameInstance>();
 	if (GI && GI->bFriendlyFire)
 	{
 		if (AComplyPlayerController* PC = Cast<AComplyPlayerController>(GetController())) PC->ShowFlashbangEffect();

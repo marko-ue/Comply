@@ -5,6 +5,7 @@
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Actor.h"
 #include "Interface/TargetableInterface.h"
+
 #include "TargetableActorsBase.generated.h"
 
 class UNiagaraSystem;

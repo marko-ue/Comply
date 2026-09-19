@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ComplyAbilityBase.h"
+
 #include "UtilityAbilityBase.generated.h"
 
 class UComplyUtilityData;

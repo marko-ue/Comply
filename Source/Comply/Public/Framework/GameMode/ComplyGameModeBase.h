@@ -3,14 +3,14 @@
 #pragma once
 
 #include "GameFramework/GameModeBase.h"
+
 #include "ComplyGameModeBase.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerSelectionChanged);
 
 /**
  * 
  */
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerSelectionChanged);
-
 UCLASS()
 class COMPLY_API AComplyGameModeBase : public AGameModeBase
 {

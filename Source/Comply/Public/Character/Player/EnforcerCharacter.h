@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Character/ComplyPlayerCharacter.h"
+
 #include "EnforcerCharacter.generated.h"
 
 class UCableComponent;

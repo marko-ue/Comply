@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ComplyGrenadeData.h"
+
 #include "DecoyGrenadeData.generated.h"
 
 class UNiagaraSystem;

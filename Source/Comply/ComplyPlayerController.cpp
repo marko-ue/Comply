@@ -1,15 +1,11 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright © 2026 Marko. All rights reserved.
 
-
-#include "ComplyPlayerController.h"
-#include "EnhancedInputSubsystems.h"
-#include "Engine/LocalPlayer.h"
-#include "InputMappingContext.h"
-#include "Blueprint/UserWidget.h"
-#include "Comply.h"
+// Comply
 #include "AbilitySystem/ComplyAbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/Data/Player/ComplyPlayerData.h"
 #include "Character/ComplyPlayerCharacter.h"
+#include "Comply.h"
+#include "ComplyPlayerController.h"
 #include "Framework/GameInstance/ComplyGameInstance.h"
 #include "Framework/GameMode/ComplyGameModeBase.h"
 #include "Framework/GameState/ComplyGameStateBase.h"
@@ -19,8 +15,15 @@
 #include "UI/Widgets/ComplyVoteKickWidget.h"
 #include "UI/Widgets/Chat/ComplyChatBoxWidget.h"
 #include "UI/Widgets/DamageNumbers/DamageNumbersWidget.h"
+
+// UE
+#include "Blueprint/UserWidget.h"
+#include "EnhancedInputSubsystems.h"
+#include "Engine/LocalPlayer.h"
+#include "InputMappingContext.h"
 #include "Widgets/Input/SVirtualJoystick.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyPlayerController)
 
 AComplyPlayerController::AComplyPlayerController()
 {

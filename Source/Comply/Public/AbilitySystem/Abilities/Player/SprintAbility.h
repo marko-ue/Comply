@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
+
 #include "SprintAbility.generated.h"
 
 /**

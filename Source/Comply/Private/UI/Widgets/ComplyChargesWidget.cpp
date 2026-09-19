@@ -3,6 +3,7 @@
 #include "UI/Widgets/ComplyChargesWidget.h"
 
 // Comply
+#include "AbilitySystem/Abilities/ThrowableAbilityBase.h"
 #include "AbilitySystem/Data/Player/Grenades/ComplyGrenadeData.h"
 #include "Character/ComplyPlayerCharacter.h"
 

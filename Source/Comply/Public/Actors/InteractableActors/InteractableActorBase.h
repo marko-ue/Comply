@@ -4,6 +4,7 @@
 
 #include "GameFramework/Actor.h"
 #include "Interface/Player/InteractableInterface.h"
+
 #include "InteractableActorBase.generated.h"
 
 class UWidgetComponent;

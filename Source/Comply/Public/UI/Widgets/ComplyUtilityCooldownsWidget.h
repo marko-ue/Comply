@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Blueprint/UserWidget.h"
+
 #include "ComplyUtilityCooldownsWidget.generated.h"
 
 class UTextBlock;

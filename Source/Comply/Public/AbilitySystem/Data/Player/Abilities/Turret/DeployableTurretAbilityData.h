@@ -2,8 +2,11 @@
 
 #pragma once
 
-#include "GameplayTagContainer.h"
 #include "Engine/DataAsset.h"
+
+// UE
+#include "GameplayTagContainer.h"
+
 #include "DeployableTurretAbilityData.generated.h"
 
 class UNiagaraSystem;

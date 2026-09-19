@@ -2,8 +2,11 @@
 
 #pragma once
 
-#include "GameplayAbilitySpecHandle.h"
 #include "BehaviorTree/BTTaskNode.h"
+
+// UE
+#include "GameplayAbilitySpecHandle.h"
+
 #include "BTTask_ActivateAbility.generated.h"
 
 class UAbilitySystemComponent;

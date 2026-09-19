@@ -3,7 +3,10 @@
 #pragma once
 
 #include "AttributeSet.h"
+
+// UE
 #include "AbilitySystemComponent.h"
+
 #include "WeaponAttributeSet.generated.h"
 
 #define ATTRIBUTE_ACCESSORS(ClassName, PropertyName) \

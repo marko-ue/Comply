@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Blueprint/UserWidget.h"
+
 #include "ComplyChatMessageWidget.generated.h"
 
 class UTextBlock;

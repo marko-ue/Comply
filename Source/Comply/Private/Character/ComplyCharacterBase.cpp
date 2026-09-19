@@ -4,6 +4,7 @@
 
 // Comply
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
+#include "AbilitySystem/Abilities/ThrowableAbilityBase.h"
 #include "AbilitySystem/Abilities/UtilityAbilityBase.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "Character/ComplyPlayerCharacter.h"

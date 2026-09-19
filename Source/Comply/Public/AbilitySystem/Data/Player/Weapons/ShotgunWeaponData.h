@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ComplyWeaponData.h"
+
 #include "ShotgunWeaponData.generated.h"
 
 /**

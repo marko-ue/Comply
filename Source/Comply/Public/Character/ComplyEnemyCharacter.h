@@ -4,6 +4,7 @@
 
 #include "Character/ComplyCharacterBase.h"
 #include "Interface/Enemy/EnemyInterface.h"
+
 #include "ComplyEnemyCharacter.generated.h"
 
 class UWidgetComponent;

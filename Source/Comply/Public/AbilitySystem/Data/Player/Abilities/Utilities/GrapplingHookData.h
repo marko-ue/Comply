@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ComplyUtilityData.h"
+
 #include "GrapplingHookData.generated.h"
 
 class UCurveVector;

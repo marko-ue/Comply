@@ -3,8 +3,7 @@
 #pragma once
 
 #include "InteractableActorBase.h"
-#include "GameFramework/Actor.h"
-#include "Interface/Player/InteractableInterface.h"
+
 #include "CharacterSelection.generated.h"
 
 UCLASS()

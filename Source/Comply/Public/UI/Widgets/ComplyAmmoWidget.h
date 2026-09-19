@@ -2,8 +2,11 @@
 
 #pragma once
 
-#include "AttributeSet.h"
 #include "Blueprint/UserWidget.h"
+
+// UE
+#include "AttributeSet.h"
+
 #include "ComplyAmmoWidget.generated.h"
 
 struct FOnAttributeChangeData;

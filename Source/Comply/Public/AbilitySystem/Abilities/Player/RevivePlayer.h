@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
+
 #include "RevivePlayer.generated.h"
 
 class UAbilityTask_PlayMontageAndWait;

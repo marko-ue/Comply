@@ -3,9 +3,8 @@
 #pragma once
 
 #include "AbilitySystem/Data/ComplyCharacterStatData.h"
-#include "Engine/DataAsset.h"
-#include "ComplyPlayerData.generated.h"
 
+#include "ComplyPlayerData.generated.h"
 
 // If override width is disabled, the width option can't be changed and width will not be overridden in the widget's size box
 USTRUCT(BlueprintType)

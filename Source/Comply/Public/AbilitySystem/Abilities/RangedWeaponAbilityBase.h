@@ -3,7 +3,10 @@
 #pragma once
 
 #include "DamageAbilityBase.h"
+
+// Comply
 #include "AbilitySystem/Data/Player/Weapons/ComplyWeaponData.h"
+
 #include "RangedWeaponAbilityBase.generated.h"
 
 class AComplyCharacterBase;

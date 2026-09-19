@@ -3,9 +3,8 @@
 #pragma once
 
 #include "ComplyMenuWidgetBase.h"
-#include "Blueprint/UserWidget.h"
-#include "ComplySettingsMenuWidget.generated.h"
 
+#include "ComplySettingsMenuWidget.generated.h"
 
 class UComboBoxString;
 class UWidgetSwitcher;

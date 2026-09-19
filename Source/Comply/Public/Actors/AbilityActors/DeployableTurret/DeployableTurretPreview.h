@@ -3,6 +3,7 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
+
 #include "DeployableTurretPreview.generated.h"
 
 class UDeployableTurretAbilityData;

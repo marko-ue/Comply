@@ -3,6 +3,7 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
+
 #include "MechProjectile.generated.h"
 
 class UMechProjectileData;

@@ -3,8 +3,8 @@
 #pragma once
 
 #include "UObject/Interface.h"
-#include "PlayerInterface.generated.h"
 
+#include "PlayerInterface.generated.h"
 
 UINTERFACE()
 class UPlayerInterface : public UInterface

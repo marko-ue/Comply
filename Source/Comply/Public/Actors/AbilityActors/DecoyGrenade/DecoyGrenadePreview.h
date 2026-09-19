@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Actors/AbilityActors/ThrowablePreviewBase.h"
+
 #include "DecoyGrenadePreview.generated.h"
 
 UCLASS()

@@ -3,12 +3,12 @@
 #pragma once
 
 #include "GameFramework/GameState.h"
+
 #include "ComplyGameStateBase.generated.h"
 
 /**
  * 
  */
-
 USTRUCT()
 struct FComplyVoteKickState
 {

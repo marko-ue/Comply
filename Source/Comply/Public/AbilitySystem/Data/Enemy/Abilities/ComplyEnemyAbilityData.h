@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Engine/DataAsset.h"
+
 #include "ComplyEnemyAbilityData.generated.h"
 
 class UComplyEnemyDamageData;

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Abilities/GameplayAbility.h"
+
 #include "ComplyAbilityBase.generated.h"
 
 class UComplyAbilityData;

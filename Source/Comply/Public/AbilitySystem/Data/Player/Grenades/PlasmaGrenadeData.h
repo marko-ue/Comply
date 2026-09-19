@@ -3,8 +3,10 @@
 #pragma once
 
 #include "ComplyGrenadeData.h"
+
+// UE
 #include "GameplayTagContainer.h"
-#include "ScalableFloat.h"
+
 #include "PlasmaGrenadeData.generated.h"
 
 class UNiagaraSystem;

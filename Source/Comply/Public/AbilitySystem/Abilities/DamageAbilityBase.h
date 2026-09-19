@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ComplyAbilityBase.h"
+
 #include "DamageAbilityBase.generated.h"
 
 struct FComplyGameplayEffectContext;

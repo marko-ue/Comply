@@ -1,9 +1,9 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright © 2026 Marko. All rights reserved.
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+
 #include "ComplyGameMode.generated.h"
 
 /**
@@ -15,7 +15,6 @@ class AComplyGameMode : public AGameModeBase
 	GENERATED_BODY()
 
 public:
-	
 	/** Constructor */
 	AComplyGameMode();
 };

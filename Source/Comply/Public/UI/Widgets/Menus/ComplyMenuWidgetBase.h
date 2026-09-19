@@ -3,8 +3,8 @@
 #pragma once
 
 #include "Blueprint/UserWidget.h"
-#include "ComplyMenuWidgetBase.generated.h"
 
+#include "ComplyMenuWidgetBase.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSettingsMenuClosed);
 

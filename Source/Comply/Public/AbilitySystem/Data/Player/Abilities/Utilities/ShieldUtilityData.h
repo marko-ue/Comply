@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ComplyUtilityData.h"
+
 #include "ShieldUtilityData.generated.h"
 
 class UGameplayAbility;

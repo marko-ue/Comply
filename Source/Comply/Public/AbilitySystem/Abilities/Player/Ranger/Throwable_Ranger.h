@@ -2,9 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "AbilitySystem/Abilities/ThrowableAbilityBase.h"
+
+// Comply
 #include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
+
+
 #include "Throwable_Ranger.generated.h"
 
 class UPlasmaGrenadeData;

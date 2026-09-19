@@ -1,9 +1,9 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright © 2026 Marko. All rights reserved.
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+
 #include "ComplyPlayerController.generated.h"
 
 class UComplyChatBoxWidget;
@@ -16,7 +16,6 @@ class UComplyHUDWidget;
 class AComplyPlayerCharacter;
 class UInputMappingContext;
 class UUserWidget;
-
 /**
  *
  */

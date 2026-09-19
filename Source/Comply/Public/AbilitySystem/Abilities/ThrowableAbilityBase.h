@@ -3,6 +3,7 @@
 #pragma once
 
 #include "DamageAbilityBase.h"
+
 #include "ThrowableAbilityBase.generated.h"
 
 class UComplyGrenadeData;

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "AbilitySystem/Data/Player/ComplyPlayerData.h"
+
 #include "DisruptorData.generated.h"
 
 /**

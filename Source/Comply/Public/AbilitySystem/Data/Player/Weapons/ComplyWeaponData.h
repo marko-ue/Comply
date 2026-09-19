@@ -3,9 +3,11 @@
 #pragma once
 
 #include "Engine/DataAsset.h"
-#include "AbilitySystem/Data/Player/Weapons/ComplyWeaponTypes.h"
-#include "ComplyWeaponData.generated.h"
 
+// Comply
+#include "AbilitySystem/Data/Player/Weapons/ComplyWeaponTypes.h"
+
+#include "ComplyWeaponData.generated.h"
 
 class UNiagaraSystem;
 class UGameplayAbility;

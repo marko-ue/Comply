@@ -3,8 +3,8 @@
 #pragma once
 
 #include "AbilitySystem/Data/ComplyCharacterStatData.h"
-#include "ComplyEnemyData.generated.h"
 
+#include "ComplyEnemyData.generated.h"
 
 /**
  * 

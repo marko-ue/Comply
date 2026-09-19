@@ -2,10 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
+
+// Comply
 #include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
+#include "AbilitySystem/ComplyTags.h"
+
 #include "Primary_Disruptor.generated.h"
 
 class UShotgunWeaponData;

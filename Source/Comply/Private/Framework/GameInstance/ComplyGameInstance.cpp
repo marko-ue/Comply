@@ -1,11 +1,13 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "Framework/GameInstance/ComplyGameInstance.h"
 
+// Comply
+#include "SaveGame/ComplySettingsSaveGame.h"
+
+// UE
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
-#include "SaveGame/ComplySettingsSaveGame.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyGameInstance)
 

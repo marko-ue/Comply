@@ -1,7 +1,9 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
+// Comply
 #include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
+
+// UE
 #include "GameplayEffectExtension.h"
 #include "Net/UnrealNetwork.h"
 

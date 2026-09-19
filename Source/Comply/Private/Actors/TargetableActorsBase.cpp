@@ -1,12 +1,14 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "Actors/TargetableActorsBase.h"
 
-#include "AbilitySystemComponent.h"
+// Comply
+#include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "AbilitySystem/ComplyTags.h"
-#include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
+
+// UE
+#include "AbilitySystemComponent.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(TargetableActorsBase)
 

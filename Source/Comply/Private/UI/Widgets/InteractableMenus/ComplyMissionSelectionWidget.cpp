@@ -1,18 +1,20 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "UI/Widgets/InteractableMenus/ComplyMissionSelectionWidget.h"
 
+// Comply
 #include "ComplyPlayerController.h"
-#include "Components/TextBlock.h"
-#include "Components/Button.h"
-#include "Kismet/GameplayStatics.h"
-#include "Blueprint/WidgetBlueprintLibrary.h"
-#include "Components/CheckBox.h"
 #include "Framework/GameInstance/ComplyGameInstance.h"
-#include "GameFramework/Pawn.h"
 #include "Framework/GameMode/ComplyGameModeBase.h"
 #include "Framework/GameState/ComplyGameStateBase.h"
+
+// UE
+#include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Components/Button.h"
+#include "Components/CheckBox.h"
+#include "Components/TextBlock.h"
+#include "GameFramework/Pawn.h"
+#include "Kismet/GameplayStatics.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyMissionSelectionWidget)
 

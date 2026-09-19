@@ -1,11 +1,13 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "UI/Widgets/ComplyUtilityCooldownsWidget.h"
 
+// Comply
 #include "AbilitySystem/Abilities/UtilityAbilityBase.h"
 #include "AbilitySystem/Data/Player/Abilities/Utilities/ComplyUtilityData.h"
 #include "Character/ComplyPlayerCharacter.h"
+
+// UE
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 

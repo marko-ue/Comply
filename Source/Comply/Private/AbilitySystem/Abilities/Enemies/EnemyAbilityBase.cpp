@@ -1,10 +1,12 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "AbilitySystem/Abilities/Enemies/EnemyAbilityBase.h"
 
-#include "AbilitySystemComponent.h"
+// Comply
 #include "AbilitySystem/ComplyTags.h"
+
+// UE
+#include "AbilitySystemComponent.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(EnemyAbilityBase)
 

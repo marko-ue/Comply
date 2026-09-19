@@ -1,13 +1,16 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "UI/Widgets/ComplyAmmoWidget.h"
+
+// Comply
+#include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
+#include "Character/ComplyPlayerCharacter.h"
+
+// UE
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
-#include "Components/TextBlock.h"
-#include "Character/ComplyPlayerCharacter.h"
-#include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "Components/Image.h"
+#include "Components/TextBlock.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyAmmoWidget)
 

@@ -1,11 +1,14 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "UI/Widgets/ComplyHealthBarWidget.h"
+
+// Comply
+#include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
+
+// UE
+#include "AbilitySystemComponent.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
-#include "AbilitySystemComponent.h"
-#include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyHealthBarWidget)
 

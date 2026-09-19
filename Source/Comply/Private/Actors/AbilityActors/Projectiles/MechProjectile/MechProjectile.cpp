@@ -1,10 +1,12 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "Actors/AbilityActors/Projectiles/MechProjectile/MechProjectile.h"
 
-#include "AbilitySystem/Data/Enemy/Abilities/Mech/MechProjectileData.h"
+// Comply
 #include "Actors/AbilityActors/Projectiles/MechProjectile/MechProjectileAreaEffect.h"
+#include "AbilitySystem/Data/Enemy/Abilities/Mech/MechProjectileData.h"
+
+// UE
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"

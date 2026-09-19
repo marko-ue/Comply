@@ -1,17 +1,21 @@
 // Copyright © 2026 Marko. All rights reserved.
 
 #include "Actors/AbilityActors/ShieldDome/ShieldDome.h"
-#include "AbilitySystemComponent.h"
-#include "AbilitySystemInterface.h"
-#include "NiagaraComponent.h"
-#include "NiagaraFunctionLibrary.h"
+
+// Comply
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/Data/Player/Abilities/Utilities/ShieldUtilityData.h"
-#include "Components/AudioComponent.h"
 #include "Interface/Player/PlayerInterface.h"
+
+// UE
+#include "AbilitySystemComponent.h"
+#include "AbilitySystemInterface.h"
+#include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Sound/SoundCue.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ShieldDome)

@@ -1,10 +1,12 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "Actors/AbilityActors/BuffTotem/BuffTotemPreview.h"
 
+// Comply
 #include "AbilitySystem/ComplyAbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/Data/Player/Abilities/Utilities/BuffTotemUtilityData.h"
+
+// UE
 #include "GameFramework/Character.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(BuffTotemPreview)

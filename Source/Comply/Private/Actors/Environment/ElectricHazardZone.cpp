@@ -2,21 +2,22 @@
 
 #include "Actors/Environment/ElectricHazardZone.h"
 
-#include "AbilitySystemBlueprintLibrary.h"
-#include "AbilitySystemComponent.h"
-#include "AbilitySystemInterface.h"
-#include "GameplayCueNotifyTypes.h"
-#include "NiagaraComponent.h"
+// Comply
 #include "AbilitySystem/ComplyAbilityTypes.h"
 #include "AbilitySystem/Data/Environment/ElectricHazardZoneData.h"
 #include "Character/ComplyPlayerCharacter.h"
+#include "Interface/Player/PlayerInterface.h"
+
+// UE
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
+#include "AbilitySystemInterface.h"
+#include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Interface/Player/PlayerInterface.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ElectricHazardZone)
-
 
 AElectricHazardZone::AElectricHazardZone()
 {

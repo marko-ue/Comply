@@ -1,11 +1,14 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "UI/Widgets/ComplyChargesWidget.h"
-#include "AbilitySystemComponent.h"
-#include "AbilitySystemGlobals.h"
+
+// Comply
 #include "AbilitySystem/Data/Player/Grenades/ComplyGrenadeData.h"
 #include "Character/ComplyPlayerCharacter.h"
+
+// UE
+#include "AbilitySystemComponent.h"
+#include "AbilitySystemGlobals.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 

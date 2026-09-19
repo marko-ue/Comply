@@ -1,13 +1,16 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "Actors/AbilityActors/DecoyGrenade/DecoyGrenade.h"
+
+// Comply
+#include "AbilitySystem/ComplyTags.h"
+#include "AbilitySystem/Data/Player/Grenades/DecoyGrenadeData.h"
+#include "Comply.h"
+
+// UE
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "AIController.h"
-#include "Comply.h"
-#include "AbilitySystem/ComplyTags.h"
-#include "AbilitySystem/Data/Player/Grenades/DecoyGrenadeData.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Engine/OverlapResult.h"
 #include "GameFramework/ProjectileMovementComponent.h"

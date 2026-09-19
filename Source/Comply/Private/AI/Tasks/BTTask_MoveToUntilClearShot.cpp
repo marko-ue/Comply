@@ -1,14 +1,16 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "AI/Tasks/BTTask_MoveToUntilClearShot.h"
 
+// Comply
+#include "AbilitySystem/ComplyTags.h"
+#include "Comply.h"
+#include "Interface/TargetableInterface.h"
+
+// UE
 #include "AbilitySystemComponent.h"
 #include "AIController.h"
-#include "Comply.h"
-#include "AbilitySystem/ComplyTags.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Interface/TargetableInterface.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(BTTask_MoveToUntilClearShot)
 

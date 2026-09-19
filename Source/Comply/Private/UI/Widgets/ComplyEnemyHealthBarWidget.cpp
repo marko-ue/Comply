@@ -1,9 +1,11 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "UI/Widgets/ComplyEnemyHealthBarWidget.h"
 
+// Comply
 #include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
+
+// UE
 #include "Components/CanvasPanel.h"
 #include "Components/ProgressBar.h"
 

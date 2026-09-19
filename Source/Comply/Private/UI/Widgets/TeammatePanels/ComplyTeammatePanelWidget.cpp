@@ -2,14 +2,16 @@
 
 #include "UI/Widgets/TeammatePanels/ComplyTeammatePanelWidget.h"
 
+// Comply
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
 #include "Character/ComplyPlayerCharacter.h"
+#include "Framework/PlayerState/ComplyPlayerState.h"
+
+// UE
 #include "Components/Image.h"
 #include "Components/ProgressBar.h"
-#include "Framework/PlayerState/ComplyPlayerState.h"
 #include "Engine/Texture2D.h"
-#include "Framework/GameInstance/ComplyGameInstance.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyTeammatePanelWidget)
 

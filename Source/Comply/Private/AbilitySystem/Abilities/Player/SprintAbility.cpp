@@ -1,7 +1,8 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "AbilitySystem/Abilities/Player/SprintAbility.h"
+
+// UE
 #include "AbilitySystemComponent.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(SprintAbility)

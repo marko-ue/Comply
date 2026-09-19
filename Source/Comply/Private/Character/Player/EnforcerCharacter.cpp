@@ -1,7 +1,8 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "Character/Player/EnforcerCharacter.h"
+
+// UE
 #include "CableComponent.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(EnforcerCharacter)

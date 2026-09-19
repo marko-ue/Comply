@@ -1,12 +1,15 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "ExecCalc/ExecCalc_Damage.h"
-#include "AbilitySystem/ComplyTags.h"
-#include "AbilitySystemComponent.h"
-#include "AbilitySystem/ComplyAbilityTypes.h"
+
+// Comply
 #include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
+#include "AbilitySystem/ComplyAbilityTypes.h"
+#include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/Data/ComplyDamageCalculationConfig.h"
+
+// UE
+#include "AbilitySystemComponent.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ExecCalc_Damage)
 

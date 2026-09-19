@@ -1,11 +1,15 @@
 // Copyright © 2026 Marko. All rights reserved.
 
 #include "AbilitySystem/AbilityTasks/HitscanTargetData.h"
-#include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
-#include "AbilitySystemComponent.h"
-#include "AbilitySystem/ComplyAbilityTypes.h"
+
+// Comply
 #include "AbilitySystem/Abilities/Player/Disruptor/Primary_Disruptor.h"
+#include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
+#include "AbilitySystem/ComplyAbilityTypes.h"
 #include "AbilitySystem/Data/Player/Weapons/ShotgunWeaponData.h"
+
+// UE
+#include "AbilitySystemComponent.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(HitscanTargetData)
 

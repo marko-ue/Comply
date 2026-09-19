@@ -1,10 +1,12 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "UI/Widgets/ComplyCrosshairWidget.h"
 
-#include "Components/Image.h"
+// Comply
 #include "Framework/GameInstance/ComplyGameInstance.h"
+
+// UE
+#include "Components/Image.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyCrosshairWidget)
 

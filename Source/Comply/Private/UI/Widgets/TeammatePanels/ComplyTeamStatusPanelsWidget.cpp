@@ -1,14 +1,16 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "UI/Widgets/TeammatePanels/ComplyTeamStatusPanelsWidget.h"
 
+// Comply
 #include "Character/ComplyPlayerCharacter.h"
-#include "Components/VerticalBox.h"
-#include "Components/VerticalBoxSlot.h"
 #include "Framework/GameState/ComplyGameStateBase.h"
 #include "Framework/PlayerState/ComplyPlayerState.h"
 #include "UI/Widgets/TeammatePanels/ComplyTeammatePanelWidget.h"
+
+// UE
+#include "Components/VerticalBox.h"
+#include "Components/VerticalBoxSlot.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyTeamStatusPanelsWidget)
 

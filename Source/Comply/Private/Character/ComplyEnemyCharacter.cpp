@@ -1,17 +1,19 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "Character/ComplyEnemyCharacter.h"
 
-#include "AbilitySystemBlueprintLibrary.h"
+// Comply
+#include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "AbilitySystem/ComplyTags.h"
-#include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
 #include "AbilitySystem/Data/Enemy/Stats/ComplyEnemyData.h"
+#include "UI/Widgets/ComplyEnemyHealthBarWidget.h"
+
+// UE
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "UI/Widgets/ComplyEnemyHealthBarWidget.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyEnemyCharacter)
 

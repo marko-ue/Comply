@@ -1,17 +1,20 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "AbilitySystem/Abilities/DamageAbilityBase.h"
-#include "AbilitySystemComponent.h"
-#include "AbilitySystem/ComplyAbilityTypes.h"
-#include "AbilitySystemBlueprintLibrary.h"
+
+// Comply
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
+#include "AbilitySystem/ComplyAbilityTypes.h"
 #include "AbilitySystem/Data/Enemy/Abilities/ComplyEnemyAbilityData.h"
 #include "AbilitySystem/Data/Enemy/Damage/ComplyEnemyDamageData.h"
 #include "AbilitySystem/Data/Player/Damage/ComplyDamageData.h"
 #include "AbilitySystem/Data/Player/Weapons/ComplyWeaponData.h"
 #include "Character/ComplyEnemyCharacter.h"
 #include "Character/ComplyPlayerCharacter.h"
+
+// UE
+#include "AbilitySystemComponent.h"
+#include "AbilitySystemBlueprintLibrary.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(DamageAbilityBase)
 

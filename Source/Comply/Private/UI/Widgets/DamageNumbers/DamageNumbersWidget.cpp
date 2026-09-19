@@ -1,13 +1,16 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "UI/Widgets/DamageNumbers/DamageNumbersWidget.h"
+
+// Comply
+#include "UI/Widgets/DamageNumbers/DamageNumberEntryWidget.h"
+
+// UE
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
-#include "UI/Widgets/DamageNumbers/DamageNumberEntryWidget.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(DamageNumbersWidget)
 

@@ -1,12 +1,8 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "AbilitySystem/Abilities/ThrowableAbilityBase.h"
 
-#include "AbilitySystemComponent.h"
-#include "GameplayCueManager.h"
-#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
-#include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
+// Comply
 #include "AbilitySystem/ComplyAbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "AbilitySystem/ComplyTags.h"
@@ -14,6 +10,12 @@
 #include "AbilitySystem/Data/Player/Grenades/ComplyGrenadeData.h"
 #include "Actors/AbilityActors/ThrowablePreviewBase.h"
 #include "Interface/Player/WeaponInterface.h"
+
+// UE
+#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
+#include "AbilitySystemComponent.h"
+#include "GameplayCueManager.h"
 #include "Kismet/GameplayStatics.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ThrowableAbilityBase)

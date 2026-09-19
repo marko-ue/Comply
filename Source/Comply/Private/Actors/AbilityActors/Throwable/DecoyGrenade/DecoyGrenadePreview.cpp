@@ -1,11 +1,12 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "Actors/AbilityActors/DecoyGrenade/DecoyGrenadePreview.h"
 
+// Comply
 #include "AbilitySystem/ComplyAbilitySystemBlueprintLibrary.h"
+
+// UE
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/GameplayStaticsTypes.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(DecoyGrenadePreview)
 

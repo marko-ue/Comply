@@ -1,17 +1,20 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "Character/ComplyCharacterBase.h"
-#include "AbilitySystemComponent.h"
-#include "Comply.h"
-#include "GameplayEffect.h"
-#include "AbilitySystem/ComplyTags.h"
+
+// Comply
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
 #include "AbilitySystem/Abilities/UtilityAbilityBase.h"
+#include "AbilitySystem/ComplyTags.h"
 #include "Character/ComplyPlayerCharacter.h"
+#include "Comply.h"
+#include "Interface/Enemy/EnemyInterface.h"
+
+// UE
+#include "AbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Interface/Enemy/EnemyInterface.h"
+#include "GameplayEffect.h"
 #include "Net/UnrealNetwork.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyCharacterBase)

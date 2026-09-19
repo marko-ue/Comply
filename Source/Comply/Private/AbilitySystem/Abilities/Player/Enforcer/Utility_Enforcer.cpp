@@ -1,21 +1,23 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "AbilitySystem/Abilities/Player/Enforcer/Utility_Enforcer.h"
-#include "AbilitySystemComponent.h"
-#include "CableComponent.h"
-#include "Comply.h"
-#include "GameplayCueManager.h"
-#include "Abilities/Tasks/AbilityTask_ApplyRootMotionMoveToForce.h"
+
+// Comply
 #include "AbilitySystem/ComplyAbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/Data/Player/Abilities/Utilities/GrapplingHookData.h"
 #include "Character/Player/EnforcerCharacter.h"
+#include "Comply.h"
+
+// UE
+#include "AbilitySystemComponent.h"
+#include "CableComponent.h"
+#include "GameplayCueManager.h"
+#include "Abilities/Tasks/AbilityTask_ApplyRootMotionMoveToForce.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(Utility_Enforcer)
-
 
 void UUtility_Enforcer::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                         const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,

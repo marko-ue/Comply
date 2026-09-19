@@ -2,16 +2,18 @@
 
 #include "AbilitySystem/Abilities/Player/Ranger/Utility_Ranger.h"
 
-#include "AbilitySystemComponent.h"
-#include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
+// Comply
 #include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/Data/Player/Abilities/Utilities/ComplyUtilityData.h"
 #include "AbilitySystem/Data/Player/Abilities/Utilities/ShieldUtilityData.h"
 #include "Actors/AbilityActors/ShieldDome/ShieldDome.h"
+
+// UE
+#include "AbilitySystemComponent.h"
+#include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
 #include "Kismet/GameplayStatics.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(Utility_Ranger)
-
 
 void UUtility_Ranger::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {

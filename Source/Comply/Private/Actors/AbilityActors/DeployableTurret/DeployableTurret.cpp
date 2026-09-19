@@ -1,24 +1,25 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "Actors/AbilityActors/DeployableTurret/DeployableTurret.h"
-#include <Interface/Enemy/EnemyInterface.h>
+
+// Comply
+#include "AbilitySystem/ComplyTags.h"
+#include "AbilitySystem/Data/Player/Abilities/Turret/DeployableTurretAbilityData.h"
+#include "Character/ComplyPlayerCharacter.h"
+#include "Framework/GameState/ComplyGameStateBase.h"
+#include "Interface/Enemy/EnemyInterface.h"
+
+// UE
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
-#include "AbilitySystem/ComplyTags.h"
-#include "AbilitySystem/Data/Player/Abilities/Turret/DeployableTurretAbilityData.h"
-#include "Character/ComplyPlayerCharacter.h"
 #include "Components/ArrowComponent.h"
 #include "Components/SphereComponent.h"
-#include "Framework/GameMode/ComplyGameModeBase.h"
-#include "Framework/GameState/ComplyGameStateBase.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(DeployableTurret)
-
 
 ADeployableTurret::ADeployableTurret()
 {

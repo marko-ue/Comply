@@ -2,21 +2,24 @@
 
 #include "Actors/AbilityActors/Projectiles/MechProjectile/MechProjectileAreaEffect.h"
 
-#include "AbilitySystemBlueprintLibrary.h"
-#include "AbilitySystemComponent.h"
-#include "AbilitySystemInterface.h"
-#include "NiagaraComponent.h"
-#include "NiagaraFunctionLibrary.h"
+// Comply
 #include "AbilitySystem/ComplyAbilityTypes.h"
 #include "AbilitySystem/Data/Enemy/Abilities/Mech/MechProjectileData.h"
 #include "AbilitySystem/Data/Enemy/Damage/ComplyEnemyDamageData.h"
 #include "Character/ComplyPlayerCharacter.h"
+#include "Interface/Player/PlayerInterface.h"
+
+// UE
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
+#include "AbilitySystemInterface.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Interface/Player/PlayerInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Sound/SoundCue.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(MechProjectileAreaEffect)

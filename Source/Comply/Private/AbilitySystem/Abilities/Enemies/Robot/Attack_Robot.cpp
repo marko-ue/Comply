@@ -1,10 +1,16 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "AbilitySystem/Abilities/Enemies/Robot/Attack_Robot.h"
-#include "AbilitySystemComponent.h"
-#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+
+// Comply
 #include "AbilitySystem/ComplyTags.h"
+#include "AbilitySystem/Data/Enemy/Abilities/ComplyEnemyAbilityData.h"
+#include "AbilitySystem/Data/Enemy/Damage/ComplyEnemyDamageData.h"
+#include "Character/ComplyEnemyCharacter.h"
+
+// UE
+#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "AbilitySystemComponent.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(Attack_Robot)
 

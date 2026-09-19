@@ -1,11 +1,12 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "UI/Widgets/ComplyVoteKickWidget.h"
 
-#include "ComplyPlayerController.h"
-#include "Components/TextBlock.h"
+// Comply
 #include "Framework/GameState/ComplyGameStateBase.h"
+
+// UE
+#include "Components/TextBlock.h"
 #include "GameFramework/PlayerState.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyVoteKickWidget)

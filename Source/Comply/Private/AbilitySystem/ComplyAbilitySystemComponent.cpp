@@ -1,28 +1,30 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
-#include "Actors/AbilityActors/PlasmaGrenade/PlasmaGrenade.h"
-#include "AbilitySystemBlueprintLibrary.h"
+
+// Comply
 #include "AbilitySystem/Abilities/Player/Disruptor/Throwable_Disruptor.h"
 #include "AbilitySystem/Abilities/Player/Disruptor/Utility_Disruptor.h"
 #include "AbilitySystem/Abilities/Player/Enforcer/Throwable_Enforcer.h"
 #include "AbilitySystem/Abilities/Player/Ranger/Throwable_Ranger.h"
 #include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
+#include "Actors/AbilityActors/PlasmaGrenade/PlasmaGrenade.h"
+#include "Actors/AbilityActors/BuffTotem/BuffTotem.h"
+#include "Actors/AbilityActors/DecoyGrenade/DecoyGrenade.h"
+#include "Actors/AbilityActors/DeployableTurret/DeployableTurret.h"
 #include "AbilitySystem/Data/Player/Abilities/Turret/DeployableTurretAbilityData.h"
 #include "AbilitySystem/Data/Player/Abilities/Utilities/BuffTotemUtilityData.h"
 #include "AbilitySystem/Data/Player/Abilities/Utilities/ComplyUtilityData.h"
 #include "AbilitySystem/Data/Player/Grenades/ComplyGrenadeData.h"
 #include "AbilitySystem/Data/Player/Grenades/DecoyGrenadeData.h"
 #include "AbilitySystem/Data/Player/Grenades/PlasmaGrenadeData.h"
-#include "Actors/AbilityActors/BuffTotem/BuffTotem.h"
-#include "Actors/AbilityActors/DecoyGrenade/DecoyGrenade.h"
-#include "Actors/AbilityActors/DeployableTurret/DeployableTurret.h"
 #include "Interface/Player/WeaponInterface.h"
+
+// UE
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyAbilitySystemComponent)
-
 
 UComplyAbilitySystemComponent::UComplyAbilitySystemComponent()
 {

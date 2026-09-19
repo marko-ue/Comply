@@ -1,16 +1,17 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "AbilitySystem/Abilities/UtilityAbilityBase.h"
 
-#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
-#include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
+// Comply
 #include "AbilitySystem/Data/Player/Abilities/Utilities/ComplyUtilityData.h"
 #include "Actors/AbilityActors/BuffTotem/BuffTotemPreview.h"
+
+// UE
+#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
 #include "GameFramework/Character.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(UtilityAbilityBase)
-
 
 void UUtilityAbilityBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,

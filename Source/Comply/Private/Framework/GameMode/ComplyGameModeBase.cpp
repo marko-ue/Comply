@@ -1,16 +1,18 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "Framework/GameMode/ComplyGameModeBase.h"
 
-#include "ComplyPlayerController.h"
-#include "EngineUtils.h"
+// Comply
 #include "Character/ComplyPlayerCharacter.h"
+#include "ComplyPlayerController.h"
 #include "Framework/GameInstance/ComplyGameInstance.h"
 #include "Framework/GameState/ComplyGameStateBase.h"
 #include "Framework/PlayerState/ComplyPlayerState.h"
 #include "UI/Widgets/ComplyHUDWidget.h"
 #include "UI/Widgets/TeammatePanels/ComplyTeamStatusPanelsWidget.h"
+
+// UE
+#include "EngineUtils.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyGameModeBase)
 

@@ -1,14 +1,16 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "AbilitySystem/Abilities/Player/Disruptor/Throwable_Disruptor.h"
 
-#include "AbilitySystemBlueprintLibrary.h"
-#include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
+// Comply
 #include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
 #include "AbilitySystem/Data/Player/Grenades/DecoyGrenadeData.h"
 #include "Actors/AbilityActors/DecoyGrenade/DecoyGrenade.h"
+
+// UE
+#include "AbilitySystemBlueprintLibrary.h"
+#include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
 #include "Kismet/GameplayStatics.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(Throwable_Disruptor)

@@ -1,14 +1,16 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
-#include "Framework/GameMode/ComplyGameModeBase.h"
-#include "GameplayEffectExtension.h"
+
+// Comply
 #include "Framework/GameState/ComplyGameStateBase.h"
 #include "Interface/CombatantInterface.h"
 #include "Interface/TargetableInterface.h"
 #include "Interface/Enemy/EnemyInterface.h"
 #include "Interface/Player/PlayerInterface.h"
+
+// UE
+#include "GameplayEffectExtension.h"
 #include "Net/UnrealNetwork.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyAttributeSet)

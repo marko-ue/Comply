@@ -1,26 +1,27 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "AbilitySystem/Abilities/RangedWeaponAbilityBase.h"
-#include "AbilitySystemComponent.h"
-#include "Comply.h"
-#include "GameplayCueManager.h"
-#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
-#include "Abilities/Tasks/AbilityTask_WaitDelay.h"
+
+// Comply
 #include "AbilitySystem/ComplyAbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/ComplyAbilityTypes.h"
 #include "AbilitySystem/AbilityTasks/HitscanTargetData.h"
-#include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/Abilities/Player/Disruptor/Primary_Disruptor.h"
+#include "AbilitySystem/ComplyTags.h"
 #include "AbilitySystem/Data/Player/Damage/ComplyDamageData.h"
 #include "AbilitySystem/Data/Player/Weapons/ShotgunWeaponData.h"
 #include "Character/ComplyCharacterBase.h"
 #include "Character/ComplyPlayerCharacter.h"
-#include "Framework/GameMode/ComplyGameModeBase.h"
+#include "Comply.h"
 #include "Framework/GameState/ComplyGameStateBase.h"
 
-#include UE_INLINE_GENERATED_CPP_BY_NAME(RangedWeaponAbilityBase)
+// UE
+#include "AbilitySystemComponent.h"
+#include "GameplayCueManager.h"
+#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(RangedWeaponAbilityBase)
 
 // Traces to the middle of the screen
 // This function is called in HitscanTargetData for transferring hitscan data from client to server

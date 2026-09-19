@@ -1,12 +1,15 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "UI/Widgets/Menus/ComplyPauseMenuWidget.h"
+
+// Comply
+#include "ComplyPlayerController.h"
+#include "UI/Widgets/Menus/ComplySettingsMenuWidget.h"
+
+// UE
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "ComplyPlayerController.h"
-#include "UI/Widgets/Menus/ComplySettingsMenuWidget.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyPauseMenuWidget)
 

@@ -1,10 +1,11 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "Framework/PlayerState/ComplyPlayerState.h"
-#include "AbilitySystem/ComplyAbilitySystemComponent.h"
+
+// Comply
 #include "AbilitySystem/AttributeSets/ComplyAttributeSet.h"
 #include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
+#include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "Character/ComplyPlayerCharacter.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyPlayerState)

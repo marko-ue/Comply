@@ -1,20 +1,23 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "UI/Widgets/Menus/ComplySettingsMenuWidget.h"
-#include "Components/Slider.h"
-#include "Components/CheckBox.h"
-#include "Components/Button.h"
-#include "Sound/SoundClass.h"
-#include "Kismet/GameplayStatics.h"
+
+// Comply
+#include "ComplyPlayerController.h"
 #include "Framework/GameInstance/ComplyGameInstance.h"
+#include "Framework/GameState/ComplyGameStateBase.h"
 #include "UI/Widgets/ComplyCrosshairWidget.h"
 #include "UI/Widgets/ComplyHUDWidget.h"
-#include "ComplyPlayerController.h"
+
+// UE
+#include "Components/Button.h"
+#include "Components/CheckBox.h"
 #include "Components/ComboBoxString.h"
+#include "Components/Slider.h"
 #include "Components/WidgetSwitcher.h"
-#include "Framework/GameState/ComplyGameStateBase.h"
 #include "GameFramework/PlayerState.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundClass.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ComplySettingsMenuWidget)
 

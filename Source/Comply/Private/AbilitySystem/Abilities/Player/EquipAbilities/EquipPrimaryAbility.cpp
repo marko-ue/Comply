@@ -1,11 +1,14 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "AbilitySystem/Abilities/Player/EquipAbilities/EquipPrimaryAbility.h"
-#include "AbilitySystemComponent.h"
-#include "GameplayTagContainer.h"
+
+// Comply
 #include "AbilitySystem/ComplyTags.h"
 #include "Interface/Player/WeaponInterface.h"
+
+// UE
+#include "AbilitySystemComponent.h"
+#include "GameplayTagContainer.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(EquipPrimaryAbility)
 

@@ -1,12 +1,15 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "UI/Widgets/Chat/ComplyChatBoxWidget.h"
+
+// Comply
+#include "ComplyPlayerController.h"
 #include "UI/Widgets/Chat/ComplyChatMessageWidget.h"
+
+// UE
 #include "Components/ScrollBox.h"
 #include "Components/VerticalBox.h"
 #include "Components/EditableTextBox.h"
-#include "ComplyPlayerController.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyChatBoxWidget)
 

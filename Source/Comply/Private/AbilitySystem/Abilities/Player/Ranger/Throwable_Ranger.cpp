@@ -1,16 +1,18 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "AbilitySystem/Abilities/Player/Ranger/Throwable_Ranger.h"
-#include "Abilities/Tasks/AbilityTask_WaitConfirm.h"
-#include "AbilitySystem/ComplyAbilitySystemComponent.h"
+
+// Comply
 #include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
+#include "AbilitySystem/ComplyAbilitySystemComponent.h"
 #include "AbilitySystem/Data/Player/Grenades/PlasmaGrenadeData.h"
 #include "Actors/AbilityActors/PlasmaGrenade/PlasmaGrenade.h"
+
+// UE
+#include "Abilities/Tasks/AbilityTask_WaitConfirm.h"
 #include "Kismet/GameplayStatics.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(Throwable_Ranger)
-
 
 void UThrowable_Ranger::ThrowOnServer(FVector LaunchVelocity, FVector SpawnPosition)
 {

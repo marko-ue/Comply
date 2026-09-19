@@ -1,13 +1,15 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "AbilitySystem/Abilities/Player/EquipAbilities/EquipUtilityAbility.h"
-#include "AbilitySystemComponent.h"
+
+// Comply
 #include "AbilitySystem/ComplyTags.h"
 #include "Interface/Player/WeaponInterface.h"
 
-#include UE_INLINE_GENERATED_CPP_BY_NAME(EquipUtilityAbility)
+// UE
+#include "AbilitySystemComponent.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(EquipUtilityAbility)
 
 UEquipUtilityAbility::UEquipUtilityAbility()
 {

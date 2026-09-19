@@ -1,12 +1,14 @@
 // Copyright © 2026 Marko. All rights reserved.
 
-
 #include "UI/Widgets/InteractableMenus/ComplyCharacterSelectionWidget.h"
 
-#include "ComplyPlayerController.h"
+// Comply
 #include "Character/ComplyPlayerCharacter.h"
-#include "Components/Button.h"
+#include "ComplyPlayerController.h"
 #include "Framework/GameMode/ComplyGameModeBase.h"
+
+// UE
+#include "Components/Button.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ComplyCharacterSelectionWidget)
 

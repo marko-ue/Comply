@@ -79,3 +79,7 @@ Content/Assets
 
 # JetBrains Rider plugin
 Plugins/Developer/RiderLink/
+
+# Local IDE files
+.idea/
+*.DotSettings.user

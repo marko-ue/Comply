@@ -23,13 +23,19 @@ void UBTService_FaceTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* N
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 	
 	AAIController* AIController = OwnerComp.GetAIOwner();
-	if (!AIController) return;
+	if (!AIController)
+	{
+		return;
+	}
 
 	APawn* ControlledPawn = AIController->GetPawn();
 	UBlackboardComponent* BB = OwnerComp.GetBlackboardComponent();
 	const AActor* Target = Cast<AActor>(BB->GetValueAsObject(TargetActorKey.SelectedKeyName));
 
-	if (!ControlledPawn || !Target) return;
+	if (!ControlledPawn || !Target)
+	{
+		return;
+	}
 
 	const FVector Direction = Target->GetActorLocation() - ControlledPawn->GetActorLocation();
 	FRotator TargetRotation = Direction.Rotation();

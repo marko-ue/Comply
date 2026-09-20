@@ -60,7 +60,10 @@ void UComplySettingsMenuWidget::NativeConstruct()
 void UComplySettingsMenuWidget::LoadCurrentSettings() const
 {
     const UComplyGameInstance* GI = GetGameInstance<UComplyGameInstance>();
-    if (!GI) return;
+    if (!GI)
+    {
+        return;
+    }
 
     Slider_SFXVolume->SetValue(GI->SFXVolume);
     Slider_MusicVolume->SetValue(GI->MusicVolume);
@@ -94,8 +97,11 @@ void UComplySettingsMenuWidget::OnAmbienceVolumeChanged(float Value)
 
 void UComplySettingsMenuWidget::ApplyVolume(USoundClass* SoundClass, const float Volume) const
 {
-    if (!MasterSoundMix || !SoundClass) return;
-    
+    if (!MasterSoundMix || !SoundClass)
+    {
+        return;
+    }
+
     UGameplayStatics::SetSoundMixClassOverride(
         GetWorld(),
         MasterSoundMix,
@@ -111,7 +117,10 @@ void UComplySettingsMenuWidget::ApplyVolume(USoundClass* SoundClass, const float
 void UComplySettingsMenuWidget::OnApplyClicked()
 {
     UComplyGameInstance* GI = GetGameInstance<UComplyGameInstance>();
-    if (!GI) return;
+    if (!GI)
+    {
+        return;
+    }
 
     // Persist values
     GI->SFXVolume       = Slider_SFXVolume->GetValue();
@@ -140,14 +149,23 @@ void UComplySettingsMenuWidget::ApplyCrosshairSettings() const
 {
     const UComplyGameInstance* GI = GetGameInstance<UComplyGameInstance>();
     const AComplyPlayerController* PC = GetOwningPlayer<AComplyPlayerController>();
-    if (!PC || !GI) return;
-    
+    if (!PC || !GI)
+    {
+        return;
+    }
+
     // HUD is not valid in the lobby
     UComplyHUDWidget* HUD = PC->HUDWidget;
-    if (!HUD) return;
-    
+    if (!HUD)
+    {
+        return;
+    }
+
     UComplyCrosshairWidget* CrosshairWidget = HUD->GetCrosshairWidget();
-    if (!CrosshairWidget) return;
+    if (!CrosshairWidget)
+    {
+        return;
+    }
 
     CrosshairWidget->SetCrosshairSize(GI->CrosshairSize);
     CrosshairWidget->SetCrosshairOpacity(GI->CrosshairOpacity);
@@ -157,10 +175,16 @@ void UComplySettingsMenuWidget::ApplyCrosshairSettings() const
 void UComplySettingsMenuWidget::ApplyHUDVisibility(bool bVisible) const
 {
     const AComplyPlayerController* PC = GetOwningPlayer<AComplyPlayerController>();
-    if (!PC) return;
-    
+    if (!PC)
+    {
+        return;
+    }
+
     UComplyHUDWidget* HUD = PC->HUDWidget;
-    if (!HUD) return;
+    if (!HUD)
+    {
+        return;
+    }
 
     HUD->SetVisibility(bVisible ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
 }
@@ -169,14 +193,20 @@ void UComplySettingsMenuWidget::PopulateVoteKickDropdown()
 {
     AComplyGameStateBase* GS = GetWorld()->GetGameState<AComplyGameStateBase>();
     const APlayerController* LocalPC = GetOwningPlayer();
-    if (!GS || !LocalPC) return;
+    if (!GS || !LocalPC)
+    {
+        return;
+    }
 
     ComboBox_VoteKickTarget->ClearOptions();
     KickablePlayerStates.Empty();
 
     for (APlayerState* PS : GS->PlayerArray)
     {
-        if (PS == LocalPC->PlayerState) continue;
+        if (PS == LocalPC->PlayerState)
+        {
+            continue;
+        }
 
         ComboBox_VoteKickTarget->AddOption(PS->GetPlayerName());
         KickablePlayerStates.Add(PS);
@@ -186,8 +216,11 @@ void UComplySettingsMenuWidget::PopulateVoteKickDropdown()
 // Re-evaluate what should be in the combo box when a vote kick resolves if the target was kicked
 void UComplySettingsMenuWidget::OnVoteKickResolved(bool bKicked, APlayerState* Target)
 {
-    if (!bKicked) return;
-    
+    if (!bKicked)
+    {
+        return;
+    }
+
     FTimerHandle RepopulateHandle;
     GetWorld()->GetTimerManager().SetTimer(RepopulateHandle, this,
         &UComplySettingsMenuWidget::PopulateVoteKickDropdown, 0.5f, false);
@@ -218,13 +251,22 @@ void UComplySettingsMenuWidget::OnTabSessionClicked()
 
 void UComplySettingsMenuWidget::OnVoteKickClicked()
 {
-    if (!VoteKickWidgetClass) return;
+    if (!VoteKickWidgetClass)
+    {
+        return;
+    }
 
     AComplyPlayerController* PC = Cast<AComplyPlayerController>(GetOwningPlayer());
-    if (!PC) return;
+    if (!PC)
+    {
+        return;
+    }
 
     const int32 SelectedIndex = ComboBox_VoteKickTarget->GetSelectedIndex();
-    if (!KickablePlayerStates.IsValidIndex(SelectedIndex)) return;
+    if (!KickablePlayerStates.IsValidIndex(SelectedIndex))
+    {
+        return;
+    }
 
     APlayerState* Target = KickablePlayerStates[SelectedIndex];
     PC->Server_InitiateVoteKick(Target);

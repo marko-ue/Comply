@@ -27,6 +27,9 @@ void ACharacterSelection::Tick(float DeltaTime)
 void ACharacterSelection::Interact(APlayerController* InstigatorPC)
 {
 	AComplyPlayerController* PC = Cast<AComplyPlayerController>(InstigatorPC);
-	if (!PC) return;
+	if (!PC)
+	{
+		return;
+	}
 	PC->OpenMenuWidget(CharacterSelectionWidgetClass);
 }

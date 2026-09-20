@@ -42,7 +42,10 @@ bool UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(const UObje
 		CrosshairLocation, CrosshairWorldPosition, OutDirection
 	);
 
-	if (!bScreenToWorld) return false;
+	if (!bScreenToWorld)
+	{
+		return false;
+	}
 
 	OutStart = CrosshairWorldPosition;
 	const float DistanceToCharacter = (Avatar->GetActorLocation() - OutStart).Size();

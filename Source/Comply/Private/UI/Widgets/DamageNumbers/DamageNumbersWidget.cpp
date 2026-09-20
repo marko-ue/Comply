@@ -33,7 +33,10 @@ UDamageNumberEntryWidget* UDamageNumbersWidget::GetPooledEntry()
 {
 	for (UDamageNumberEntryWidget* Entry : Pool)
 	{
-		if (!Entry->bActive) return Entry;
+		if (!Entry->bActive)
+		{
+			return Entry;
+		}
 	}
 	// Pool exhausted, drop the damage number
 	return nullptr;
@@ -42,7 +45,10 @@ UDamageNumberEntryWidget* UDamageNumbersWidget::GetPooledEntry()
 void UDamageNumbersWidget::ShowDamageNumber(const float DamageAmount, const FVector& WorldPos, const FLinearColor Color)
 {
 	UDamageNumberEntryWidget* Entry = GetPooledEntry();
-	if (!Entry) return;
+	if (!Entry)
+	{
+		return;
+	}
 
 	// Get the world location of where the hit happened to show the damage number there
 	FVector2D ScreenPos;
@@ -52,7 +58,10 @@ void UDamageNumbersWidget::ShowDamageNumber(const float DamageAmount, const FVec
 	ScreenPos /= DPIScale;
 
 	UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(Entry->Slot);
-	if (!CanvasSlot) return;
+	if (!CanvasSlot)
+	{
+		return;
+	}
 	CanvasSlot->SetPosition(ScreenPos);
 
 	Entry->DamageText->SetColorAndOpacity(Color);

@@ -41,7 +41,10 @@ void UComplyGameInstance::SaveSettings()
 	UComplySettingsSaveGame* Save = Cast<UComplySettingsSaveGame>(
 		UGameplayStatics::CreateSaveGameObject(UComplySettingsSaveGame::StaticClass()));
 
-	if (!Save) return;
+	if (!Save)
+	{
+		return;
+	}
 
 	Save->SFXVolume        = SFXVolume;
 	Save->MusicVolume      = MusicVolume;
@@ -62,7 +65,10 @@ void UComplyGameInstance::LoadSettings()
 	UComplySettingsSaveGame* Save = Cast<UComplySettingsSaveGame>(
 		UGameplayStatics::LoadGameFromSlot(TEXT("Settings"), 0));
 
-	if (!Save) return; // no save file yet, defaults stay
+	if (!Save)
+	{
+		return; // no save file yet, defaults stay
+	}
 
 	SFXVolume        = Save->SFXVolume;
 	MusicVolume      = Save->MusicVolume;
@@ -77,7 +83,10 @@ void UComplyGameInstance::LoadSettings()
 
 void UComplyGameInstance::ApplyAudioSettings() const
 {
-	if (!MasterSoundMix) return;
+	if (!MasterSoundMix)
+	{
+		return;
+	}
 
 	if (SFXSoundClass)
 		UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMix, SFXSoundClass, SFXVolume, 1.f, 0.f);

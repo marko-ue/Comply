@@ -29,8 +29,11 @@ void UChargeAttack_Tank::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 {
     Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
     
-    if (!CommitAbility(Handle, ActorInfo, ActivationInfo)) return;
-    
+    if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
+    {
+        return;
+    }
+
     FGameplayCueParameters CueParams;
     CueParams.Location = GetAvatarActorFromActorInfo()->GetActorLocation();
     GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(ComplyTags::GameplayCues::EnemyAttackTank, CueParams);
@@ -40,13 +43,22 @@ void UChargeAttack_Tank::ActivateAbility(const FGameplayAbilitySpecHandle Handle
         TargetActor = const_cast<AActor*>(TriggerEventData->Target.Get());
     }
 
-    if (!TargetActor) return;
+    if (!TargetActor)
+    {
+        return;
+    }
 
     AComplyEnemyCharacter* Enemy = Cast<AComplyEnemyCharacter>(GetAvatarActorFromActorInfo());
-    if (!Enemy) return;
+    if (!Enemy)
+    {
+        return;
+    }
 
     UCharacterMovementComponent* CMC = Enemy->GetCharacterMovement();
-    if (!CMC) return;
+    if (!CMC)
+    {
+        return;
+    }
 
     // Cache default values to restore later
     DefaultMaxFlySpeed = CMC->MaxFlySpeed;
@@ -113,13 +125,22 @@ void UChargeAttack_Tank::OnAttackAnimationFinished()
 // Restores all CMC settings to defaults. Called when the ability ends or gets canceled
 void UChargeAttack_Tank::RestoreMovement(const FGameplayAbilityActorInfo* ActorInfo) const
 {
-    if (!ActorInfo) return;
+    if (!ActorInfo)
+    {
+        return;
+    }
 
     const AComplyEnemyCharacter* Enemy = Cast<AComplyEnemyCharacter>(ActorInfo->AvatarActor.Get());
-    if (!Enemy) return;
+    if (!Enemy)
+    {
+        return;
+    }
 
     UCharacterMovementComponent* CMC = Enemy->GetCharacterMovement();
-    if (!CMC) return;
+    if (!CMC)
+    {
+        return;
+    }
 
     CMC->StopMovementImmediately();
     CMC->MaxFlySpeed = DefaultMaxFlySpeed;

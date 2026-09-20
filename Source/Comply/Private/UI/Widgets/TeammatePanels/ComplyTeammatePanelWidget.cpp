@@ -57,13 +57,22 @@ void UComplyTeammatePanelWidget::InitializePanel(UAbilitySystemComponent* InASC,
 
 bool UComplyTeammatePanelWidget::TryInitializeWeapon()
 {
-    if (!CachedCharacter || !ASC.IsValid()) return false;
+    if (!CachedCharacter || !ASC.IsValid())
+    {
+        return false;
+    }
 
     TSubclassOf<URangedWeaponAbilityBase> WeaponClass = CachedCharacter->EquippedPrimaryWeaponClass;
-    if (!WeaponClass) return false;
+    if (!WeaponClass)
+    {
+        return false;
+    }
 
     const URangedWeaponAbilityBase* WeaponCDO = WeaponClass->GetDefaultObject<URangedWeaponAbilityBase>();
-    if (!WeaponCDO || !WeaponCDO->WeaponData) return false;
+    if (!WeaponCDO || !WeaponCDO->WeaponData)
+    {
+        return false;
+    }
 
     if (LowAmmoImage)
     {
@@ -125,7 +134,10 @@ void UComplyTeammatePanelWidget::OnReserveAmmoChanged(const FOnAttributeChangeDa
 
 void UComplyTeammatePanelWidget::UpdateHealthBar()
 {
-    if (!HealthProgressBar) return;
+    if (!HealthProgressBar)
+    {
+        return;
+    }
 
     const float Percent = CurrentMaxHealth > 0.f ? CurrentHealth / CurrentMaxHealth : 0.f;
     HealthProgressBar->SetPercent(Percent);
@@ -134,7 +146,10 @@ void UComplyTeammatePanelWidget::UpdateHealthBar()
 // If the current reserve ammo is below the low ammo threshold, display the low ammo image and play its animation, otherwise hide it
 void UComplyTeammatePanelWidget::UpdateLowAmmoIndicator(float NewReserveAmmo)
 {
-    if (!LowAmmoImage || !LowAmmoFlashAnimation) return;
+    if (!LowAmmoImage || !LowAmmoFlashAnimation)
+    {
+        return;
+    }
 
     const float Ratio = NewReserveAmmo / CachedMaxReserveAmmo;
     const bool bIsLow = Ratio <= LowAmmoThreshold;

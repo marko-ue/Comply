@@ -35,7 +35,10 @@ void UDamageNumberEntryWidget::NativeTick(const FGeometry& MyGeometry, float InD
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
-	if (!bActive) return;
+	if (!bActive)
+	{
+		return;
+	}
 
 	FVector2D ScreenPos;
 	UGameplayStatics::ProjectWorldToScreen(GetOwningPlayer(), WorldPosition, ScreenPos);

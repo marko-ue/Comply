@@ -27,7 +27,10 @@ EBTNodeResult::Type UBTTask_MoveToUntilClearShot::ExecuteTask(UBehaviorTreeCompo
 	AAIController* AIController = OwnerComp.GetAIOwner();
 	AActor* Target = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(TargetActorKey.SelectedKeyName));
     
-	if (!AIController || !Target) return EBTNodeResult::Failed;
+	if (!AIController || !Target)
+	{
+		return EBTNodeResult::Failed;
+	}
 
 	AIController->MoveToActor(Target, 0.f);
 	return EBTNodeResult::InProgress;

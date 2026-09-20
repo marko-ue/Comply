@@ -48,21 +48,33 @@ void UComplyChargeWidget::TryInitializeCharge()
 void UComplyChargeWidget::InitializeCharge()
 {
 	const AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetOwningPlayerPawn());
-	if (!Character) return;
+	if (!Character)
+	{
+		return;
+	}
 
 	ActiveThrowable = Character->GetEquippedThrowable();
-	if (!ActiveThrowable || !ActiveThrowable->GrenadeData) return;
+	if (!ActiveThrowable || !ActiveThrowable->GrenadeData)
+	{
+		return;
+	}
 
 	ChargeImage->SetBrushFromTexture(ActiveThrowable->GrenadeData->ChargesIcon);
 
 	UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Character);
-	if (!ASC) return;
-	
+	if (!ASC)
+	{
+		return;
+	}
+
 	ChargeAttribute = ActiveThrowable->GetCurrentChargesAttribute();
-	if (!ChargeAttribute.IsValid()) return;
-	
+	if (!ChargeAttribute.IsValid())
+	{
+		return;
+	}
+
 	ChargeChangedHandle = ASC->GetGameplayAttributeValueChangeDelegate(ChargeAttribute)
-		.AddUObject(this, &UComplyChargeWidget::OnChargeChanged);
+	                         .AddUObject(this, &UComplyChargeWidget::OnChargeChanged);
 
 	bool bFound = false;
 	CachedCharge = ASC->GetGameplayAttributeValue(ChargeAttribute, bFound);

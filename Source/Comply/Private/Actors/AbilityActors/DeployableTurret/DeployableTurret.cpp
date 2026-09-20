@@ -81,7 +81,10 @@ void ADeployableTurret::Tick(float DeltaTime)
 void ADeployableTurret::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor->Implements<UEnemyInterface>()) TargetsInRange.AddUnique(OtherActor);
+	if (OtherActor->Implements<UEnemyInterface>())
+	{
+		TargetsInRange.AddUnique(OtherActor);
+	}
 }
 
 void ADeployableTurret::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -98,7 +101,10 @@ void ADeployableTurret::TryFire()
 		FVector TraceStart = GetActorLocation() + FVector(0.f, 0.f, 50.f);
 		FVector TraceEnd = Target->GetActorLocation() + FVector(0.f, 0.f, 50.f);
 		const bool bBlocked = GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility);
-		if (bBlocked) continue; // A wall is in the way
+		if (bBlocked)
+		{
+			continue; // A wall is in the way
+		}
 
 		CurrentTarget = Target;
 		Fire(Target);
@@ -110,10 +116,16 @@ void ADeployableTurret::TryFire()
 
 void ADeployableTurret::Fire(AActor* TargetActor)
 {
-	if (!SourceASC || !TurretData->DamageEffectClass) return;
+	if (!SourceASC || !TurretData->DamageEffectClass)
+	{
+		return;
+	}
 
 	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
-	if (!TargetASC) return;
+	if (!TargetASC)
+	{
+		return;
+	}
 
 	const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(TurretData->DamageEffectClass, 1.f, SourceASC->MakeEffectContext());
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, TurretData->DamageTypeTag, TurretData->Damage);
@@ -130,7 +142,10 @@ void ADeployableTurret::Fire(AActor* TargetActor)
 	// Don't show damage number if friendly fire is off or the character hit by the overlap is the player when friendly fire is on
 	if (const AComplyGameStateBase* GS = Cast<AComplyGameStateBase>(GetWorld()->GetGameState()))
 	{
-		if (!GS->bFriendlyFire && Cast<AComplyPlayerCharacter>(TargetActor)) return;
+		if (!GS->bFriendlyFire && Cast<AComplyPlayerCharacter>(TargetActor))
+		{
+			return;
+		}
 	}
 
 	if (const AComplyCharacterBase* HitCharacter = Cast<AComplyCharacterBase>(TargetActor))

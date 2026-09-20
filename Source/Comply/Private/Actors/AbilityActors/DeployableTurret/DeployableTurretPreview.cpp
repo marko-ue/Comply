@@ -47,11 +47,16 @@ void ADeployableTurretPreview::Tick(float DeltaTime)
 
 void ADeployableTurretPreview::UpdatePosition()
 {
-	if (!OwnerCharacter) return;
-	if (!bShouldUpdatePosition) return;
+	if (!OwnerCharacter || !bShouldUpdatePosition)
+	{
+		return;
+	}
 	
 	FVector TraceStart, TraceEnd, TraceDirection;
-	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, OwnerCharacter, 500.f, TraceStart, TraceEnd, TraceDirection)) return;
+	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, OwnerCharacter, 500.f, TraceStart, TraceEnd, TraceDirection))
+	{
+		return;
+	}
 
 	FHitResult Hit;
 	FCollisionQueryParams Params;

@@ -71,7 +71,11 @@ void AComplyEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (!IsValid(GetAbilitySystemComponent())) return;
+	if (!IsValid(GetAbilitySystemComponent())) 
+	{
+		return;
+	}
+	
 	GetAbilitySystemComponent()->InitAbilityActorInfo(this, this);
 	
 	if (HasAuthority())
@@ -91,7 +95,10 @@ void AComplyEnemyCharacter::BeginPlay()
 
 void AComplyEnemyCharacter::InitializeAttributes() const
 {
-	if (!EnemyData) return;
+	if (!EnemyData) 
+	{
+		return;
+	}
 
 	const FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
 	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(EnemyData->InitializeAttributesEffect, 1.f, ContextHandle);

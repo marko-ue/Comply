@@ -80,7 +80,10 @@ void ADecoyGrenade::Tick(float DeltaTime)
 
 void ADecoyGrenade::Explode()
 {
-	if (!HasAuthority()) return;
+	if (!HasAuthority())
+	{
+		return;
+	}
 
 	TArray<FOverlapResult> Overlaps;
 	const FCollisionShape Sphere = FCollisionShape::MakeSphere(GrenadeData->PullRadius);
@@ -89,11 +92,17 @@ void ADecoyGrenade::Explode()
 	for (const FOverlapResult& Overlap : Overlaps)
 	{
 		AActor* HitActor = Overlap.GetActor();
-		if (!HitActor) continue;
+		if (!HitActor)
+		{
+			continue;
+		}
 
 		UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitActor);
-		if (!TargetASC) continue;
-		
+		if (!TargetASC)
+		{
+			continue;
+		}
+
 		FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(ApplyDistractedEffectClass, 1.f, SourceASC->MakeEffectContext());
 		FActiveGameplayEffectHandle Handle = SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
 		
@@ -143,13 +152,19 @@ void ADecoyGrenade::Destroyed()
 	for (int32 i = 0; i < AffectedASCs.Num(); i++)
 	{
 		// Remove the distracted effect from all enemies as the grenade is now destroyed
-		if (AffectedASCs[i]) AffectedASCs[i]->RemoveActiveGameplayEffect(DistractedEffectHandles[i]);
+		if (AffectedASCs[i])
+		{
+			AffectedASCs[i]->RemoveActiveGameplayEffect(DistractedEffectHandles[i]);
+		}
 	}
 	
 	for (int32 i = 0; i < AffectedBBs.Num(); i++)
 	{
 		// Clear the value of DistractionLocation so enemies can go back to chasing the player
-		if (AffectedBBs[i]) AffectedBBs[i]->ClearValue("DistractionLocation");
+		if (AffectedBBs[i])
+		{
+			AffectedBBs[i]->ClearValue("DistractionLocation");
+		}
 	}
 	
 	Super::Destroyed();

@@ -36,10 +36,19 @@ void UComplyHUDWidget::InitializeLayout(const FComplyHUDLayout& Layout)
 	// Lambda helper that clears the width override if it's disabled in the data asset
 	auto ApplySizeOverride = [](USizeBox* Box, const FComplyWidgetSizeOverride& Override)
 	{
-		if (!Box) return;
-    
-		if (Override.bOverrideWidth) Box->SetWidthOverride(Override.Width);
-		else Box->ClearWidthOverride();
+		if (!Box)
+		{
+			return;
+		}
+
+		if (Override.bOverrideWidth)
+		{
+			Box->SetWidthOverride(Override.Width);
+		}
+		else
+		{
+			Box->ClearWidthOverride();
+		}
 	};
 
 	// Applies width overrides after

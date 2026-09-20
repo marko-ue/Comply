@@ -19,10 +19,16 @@ void UPrimary_Disruptor::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 bool UPrimary_Disruptor::Fire()
 {
 	const AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
-	if (!Character) return false;
+	if (!Character)
+	{
+		return false;
+	}
 
 	const URangedWeaponAbilityBase* Weapon = Character->GetEquippedPrimaryWeapon();
-	if (!Weapon) return false;
+	if (!Weapon)
+	{
+		return false;
+	}
 
 	bool bFound = false;
 	const float CurrentAmmo = GetAbilitySystemComponentFromActorInfo()->GetGameplayAttributeValue(Weapon->GetCurrentAmmoAttribute(), bFound);
@@ -39,7 +45,10 @@ bool UPrimary_Disruptor::Fire()
 		return false;
 	}
 
-	if (!Super::Fire()) return false;
+	if (!Super::Fire())
+	{
+		return false;
+	}
 
 	PlayAnimationBasedOnState();
 	return true;

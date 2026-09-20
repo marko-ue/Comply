@@ -47,8 +47,11 @@ void UComplyAbilitySystemComponent::Server_ThrowPlasmaGrenade_Implementation(FGa
 	FGameplayAbilitySpec* Spec = FindAbilitySpecFromHandle(AbilityHandle);
 	UThrowable_Ranger* Ability = Cast<UThrowable_Ranger>(Spec->GetPrimaryInstance());
 	
-	if (!Spec || !Ability) return;
-	
+	if (!Spec || !Ability)
+	{
+		return;
+	}
+
 	checkf(Ability->GrenadeData, TEXT("GrenadeData not set on %s"), *GetName());
 	
 	bool bFound = false;
@@ -57,7 +60,10 @@ void UComplyAbilitySystemComponent::Server_ThrowPlasmaGrenade_Implementation(FGa
 	);
     
 	// Don't spawn a grenade if there are no charges
-	if (GrenadeCurrentCharges <= 0.f) return;
+	if (GrenadeCurrentCharges <= 0.f)
+	{
+		return;
+	}
 
 	// Cost is applied in the RPC, so the next RPC will see the updated data
 	FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(Ability->GrenadeData->CostEffectClass, 1.f, MakeEffectContext());
@@ -101,8 +107,11 @@ void UComplyAbilitySystemComponent::Server_ThrowDecoyGrenade_Implementation(FGam
 	FGameplayAbilitySpec* Spec = FindAbilitySpecFromHandle(AbilityHandle);
 	UThrowable_Disruptor* Ability = Cast<UThrowable_Disruptor>(Spec->GetPrimaryInstance());
 	
-	if (!Spec || !Ability) return;
-	
+	if (!Spec || !Ability)
+	{
+		return;
+	}
+
 	checkf(Ability->GrenadeData, TEXT("GrenadeData not set on %s"), *GetName());
 	
 	bool bFound = false;
@@ -111,7 +120,10 @@ void UComplyAbilitySystemComponent::Server_ThrowDecoyGrenade_Implementation(FGam
 	);
     
 	// Don't spawn a grenade if there are no charges
-	if (GrenadeCurrentCharges <= 0.f) return;
+	if (GrenadeCurrentCharges <= 0.f)
+	{
+		return;
+	}
 
 	// Cost is applied in the RPC, so the next RPC will see the updated data
 	FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(Ability->GrenadeData->CostEffectClass, 1.f, MakeEffectContext());
@@ -154,8 +166,11 @@ void UComplyAbilitySystemComponent::Server_PlaceTurret_Implementation(FGameplayA
 	const FGameplayAbilitySpec* Spec = FindAbilitySpecFromHandle(AbilityHandle);
 	UThrowable_Enforcer* Ability = Cast<UThrowable_Enforcer>(Spec->GetPrimaryInstance());
 	
-	if (!Spec || !Ability) return;
-	
+	if (!Spec || !Ability)
+	{
+		return;
+	}
+
 	checkf(Ability->TurretData, TEXT("TurretData not set on %s"), *GetName());
 	
 	// Commit cost and cooldown server-side before doing anything else
@@ -192,8 +207,11 @@ void UComplyAbilitySystemComponent::Server_PlaceBuffTotem_Implementation(FGamepl
 	const FGameplayAbilitySpec* Spec = FindAbilitySpecFromHandle(AbilityHandle);
 	UUtilityAbilityBase* Ability = Cast<UUtilityAbilityBase>(Spec->GetPrimaryInstance());
 	
-	if (!Spec || !Ability) return;
-	
+	if (!Spec || !Ability)
+	{
+		return;
+	}
+
 	checkf(Ability->UtilityData, TEXT("UtilityData not set on %s"), *GetName());
 	
 	// Commit cost and cooldown server-side before doing anything else

@@ -13,8 +13,11 @@
 
 void UComplyStatusEffectsWidget::InitializeStatusEffects(UAbilitySystemComponent* InASC)
 {
-	if (!InASC) return;
- 
+	if (!InASC)
+	{
+		return;
+	}
+
 	ASC = InASC;
 	RegisterTagEvents();
 }
@@ -27,8 +30,11 @@ void UComplyStatusEffectsWidget::NativeDestruct()
 
 void UComplyStatusEffectsWidget::RegisterTagEvents()
 {
-	if (!ASC) return;
- 
+	if (!ASC)
+	{
+		return;
+	}
+
 	// Registers a listener for every tag that has an icon entry in the map
 	for (const TPair<FGameplayTag, TObjectPtr<UTexture2D>>& Entry : StatusEffectIcons)
 	{
@@ -42,8 +48,11 @@ void UComplyStatusEffectsWidget::RegisterTagEvents()
 // Unregisters all tag events if the widget gets destroyed
 void UComplyStatusEffectsWidget::UnregisterTagEvents()
 {
-	if (!ASC) return;
-	
+	if (!ASC)
+	{
+		return;
+	}
+
 	int32 HandleIndex = 0;
 	for (const TPair<FGameplayTag, TObjectPtr<UTexture2D>>& Entry : StatusEffectIcons)
 	{
@@ -74,11 +83,17 @@ void UComplyStatusEffectsWidget::OnTagChanged(const FGameplayTag Tag, int32 NewC
 void UComplyStatusEffectsWidget::AddIconForTag(const FGameplayTag& Tag)
 {
 	// Guard against double-adding if the tag count goes 1->2 (for stacking GEs)
-	if (ActiveIconWidgets.Contains(Tag)) return;
- 
+	if (ActiveIconWidgets.Contains(Tag))
+	{
+		return;
+	}
+
 	const TObjectPtr<UTexture2D>* Texture = StatusEffectIcons.Find(Tag);
-	if (!Texture || !(*Texture)) return;
- 
+	if (!Texture || !(*Texture))
+	{
+		return;
+	}
+
 	UImage* Icon = NewObject<UImage>(this);
  
 	FSlateBrush Brush;
@@ -96,8 +111,11 @@ void UComplyStatusEffectsWidget::AddIconForTag(const FGameplayTag& Tag)
 void UComplyStatusEffectsWidget::RemoveIconForTag(const FGameplayTag& Tag)
 {
 	const TObjectPtr<UImage>* Icon = ActiveIconWidgets.Find(Tag);
-	if (!Icon || !(*Icon)) return;
- 
+	if (!Icon || !(*Icon))
+	{
+		return;
+	}
+
 	(*Icon)->RemoveFromParent();
 	ActiveIconWidgets.Remove(Tag);
  

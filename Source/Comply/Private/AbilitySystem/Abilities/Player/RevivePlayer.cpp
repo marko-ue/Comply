@@ -26,7 +26,11 @@ void URevivePlayer::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
 	AComplyPlayerCharacter* Avatar = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
-	if (!Avatar) { EndAbility(Handle, ActorInfo, ActivationInfo, true, false); return; }
+	if (!Avatar)
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, false); 
+		return;
+	}
 	
 	FVector TraceStart, TraceEnd, TraceDirection;
 	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, Avatar, TraceLength, TraceStart, TraceEnd, TraceDirection))

@@ -47,15 +47,24 @@ void UComplyAmmoWidget::TryInitializeAmmo()
 void UComplyAmmoWidget::InitializeAmmo()
 {
     const AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetOwningPlayerPawn());
-    if (!Character) return;
+    if (!Character)
+    {
+        return;
+    }
 
     ActiveWeapon = Character->GetEquippedPrimaryWeapon();
-    if (!ActiveWeapon || !ActiveWeapon->WeaponData) return;
-    
+    if (!ActiveWeapon || !ActiveWeapon->WeaponData)
+    {
+        return;
+    }
+
     BulletImage->SetBrushFromTexture(ActiveWeapon->WeaponData->BulletIcon);
     
     UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Character);
-    if (!ASC) return;
+    if (!ASC)
+    {
+        return;
+    }
 
     // Mag ammo
     ActiveAmmoAttribute = ActiveWeapon->GetCurrentAmmoAttribute();

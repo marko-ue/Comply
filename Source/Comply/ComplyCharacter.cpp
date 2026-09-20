@@ -102,7 +102,10 @@ void AComplyCharacter::DoMove(float Right, float Forward)
 
 void AComplyCharacter::DoLook(float Yaw, float Pitch)
 {
-	if (GetController() == nullptr) return;
+	if (GetController() == nullptr)
+	{
+		return;
+	}
 	
 	// Checks if Y look should be inverted if the player chose that setting
 	UComplyGameInstance* GI = GetGameInstance<UComplyGameInstance>();

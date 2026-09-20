@@ -30,8 +30,11 @@ void UComplyTeamStatusPanelsWidget::NativeConstruct()
 
 void UComplyTeamStatusPanelsWidget::InitializeTeamStatusPanels()
 {
-    if (!GetWorld()) return;
-
+    if (!GetWorld())
+    {
+        return;
+    }
+    
     if (PanelsVerticalBox)
     {
         PanelsVerticalBox->ClearChildren();
@@ -39,20 +42,28 @@ void UComplyTeamStatusPanelsWidget::InitializeTeamStatusPanels()
     }
 
     const APlayerController* LocalPC = GetOwningPlayer();
-    if (!LocalPC) return;
+    if (!LocalPC)
+    {
+        return;
+    }
 
     AComplyGameStateBase* GS = GetWorld()->GetGameState<AComplyGameStateBase>();
     if (!GS)
     {
         FTimerHandle RetryHandle;
         GetWorld()->GetTimerManager().SetTimer(RetryHandle, this,
-            &UComplyTeamStatusPanelsWidget::InitializeTeamStatusPanels, 0.5f, false);
+            &UComplyTeamStatusPanelsWidget::InitializeTeamStatusPanels, 0.5f, false
+        );
+        
         return;
     }
 
     for (APlayerState* PS : GS->PlayerArray)
     {
-        if (PS == LocalPC->PlayerState) continue;
+        if (PS == LocalPC->PlayerState)
+        {
+            continue;
+        }
 
         AComplyPlayerState* ComplyPS = Cast<AComplyPlayerState>(PS);
         
@@ -62,7 +73,10 @@ void UComplyTeamStatusPanelsWidget::InitializeTeamStatusPanels()
 
         UComplyTeammatePanelWidget* Panel = CreateWidget<UComplyTeammatePanelWidget>(GetOwningPlayer(), TeammatePanelWidgetClass);
         
-        if (!ComplyPS || !Character || !ASC || !Panel ) continue;
+        if (!ComplyPS || !Character || !ASC || !Panel )
+        {
+            continue;
+        }
 
         Panel->InitializePanel(ASC, Character, ComplyPS);
 
@@ -78,8 +92,14 @@ void UComplyTeamStatusPanelsWidget::InitializeTeamStatusPanels()
 void UComplyTeamStatusPanelsWidget::StartPanelRetryTimer()
 {
     APlayerController* PC = GetOwningPlayer();
-    if (!PC) return;
-    if (PC->GetWorldTimerManager().IsTimerActive(PanelRetryTimerHandle)) return;
+    if (!PC)
+    {
+        return;
+    }
+    if (PC->GetWorldTimerManager().IsTimerActive(PanelRetryTimerHandle))
+    {
+        return;
+    }
 
     PC->GetWorldTimerManager().SetTimer(
         PanelRetryTimerHandle, this, &UComplyTeamStatusPanelsWidget::RetryPendingPanels, 0.5f, true
@@ -89,17 +109,29 @@ void UComplyTeamStatusPanelsWidget::StartPanelRetryTimer()
 void UComplyTeamStatusPanelsWidget::RetryPendingPanels()
 {
     const APlayerController* LocalPC = GetOwningPlayer();
-    if (!LocalPC || !LocalPC->IsLocalController()) return;
+    if (!LocalPC || !LocalPC->IsLocalController())
+    {
+        return;
+    }
 
     AComplyGameStateBase* GS = GetWorld()->GetGameState<AComplyGameStateBase>();
-    if (!GS) return;
+    if (!GS)
+    {
+        return;
+    }
 
     for (APlayerState* PS : GS->PlayerArray)
     {
-        if (PS == LocalPC->PlayerState) continue;
+        if (PS == LocalPC->PlayerState)
+        {
+            continue;
+        }
 
         AComplyPlayerState* ComplyPS = Cast<AComplyPlayerState>(PS);
-        if (!ComplyPS) continue;
+        if (!ComplyPS)
+        {
+            continue;
+        }
 
         // Skip if there's already a panel for this player
         bool bAlreadyAdded = false;
@@ -111,11 +143,17 @@ void UComplyTeamStatusPanelsWidget::RetryPendingPanels()
                 break;
             }
         }
-        if (bAlreadyAdded) continue;
+        if (bAlreadyAdded)
+        {
+            continue;
+        }
 
         AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(PS->GetPawn());
         UAbilitySystemComponent* ASC = ComplyPS->GetAbilitySystemComponent();
-        if (!Character || !ASC) continue;
+        if (!Character || !ASC)
+        {
+            continue;
+        }
 
         AddPanelForPlayer(ComplyPS, Character, ASC);
     }
@@ -124,7 +162,10 @@ void UComplyTeamStatusPanelsWidget::RetryPendingPanels()
 void UComplyTeamStatusPanelsWidget::AddPanelForPlayer(AComplyPlayerState* ComplyPS, AComplyPlayerCharacter* Character, UAbilitySystemComponent* ASC)
 {
     UComplyTeammatePanelWidget* Panel = CreateWidget<UComplyTeammatePanelWidget>(GetOwningPlayer(), TeammatePanelWidgetClass);
-    if (!Panel) return;
+    if (!Panel) 
+    {
+        return;
+    }
 
     Panel->InitializePanel(ASC, Character, ComplyPS);
 
@@ -139,7 +180,10 @@ void UComplyTeamStatusPanelsWidget::AddPanelForPlayer(AComplyPlayerState* Comply
 // When the vote kick resolves, if the target was kicked, remove its panel
 void UComplyTeamStatusPanelsWidget::OnVoteKickResolved(bool bKicked, APlayerState* Target)
 {
-    if (!bKicked || !Target) return;
+    if (!bKicked || !Target)
+    {
+        return;
+    }
 
     for (UComplyTeammatePanelWidget* Panel : TeammateWidgets)
     {

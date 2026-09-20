@@ -63,7 +63,10 @@ void AMechProjectile::Tick(float DeltaTime)
 
 void AMechProjectile::LaunchProjectile()
 {
-	if (!TargetActor) return;
+	if (!TargetActor)
+	{
+		return;
+	}
 	
 	FVector StartLoc = GetActorLocation();
 	FVector TargetLoc = TargetActor->GetActorLocation();

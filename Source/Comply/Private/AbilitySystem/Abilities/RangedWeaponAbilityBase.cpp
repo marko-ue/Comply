@@ -29,10 +29,16 @@ void URangedWeaponAbilityBase::TraceToCrosshair(FHitResult& TraceHitResult, cons
 {
 	const AActor* Owner = GetOwningActorFromActorInfo();
 	const AActor* Avatar = GetAvatarActorFromActorInfo();
-	if (!Avatar || !Owner) return;
+	if (!Avatar || !Owner)
+	{
+		return;
+	}
 	
 	FVector TraceStart, TraceEnd, TraceDirection;
-	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, Avatar, TraceLength, TraceStart, TraceEnd, TraceDirection)) return;
+	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, Avatar, TraceLength, TraceStart, TraceEnd, TraceDirection))
+	{
+		return;
+	}
 	
 	FCollisionQueryParams CollisionParams;
 	FCollisionObjectQueryParams ObjectParams;
@@ -44,7 +50,10 @@ void URangedWeaponAbilityBase::TraceToCrosshair(FHitResult& TraceHitResult, cons
 	for (const FHitResult& Hit : MultiHitResults)
 	{
 		const AActor* HitActor = Hit.GetActor();
-		if (!HitActor) continue;
+		if (!HitActor)
+		{
+			continue;
+		}
 
 		if (HitActor->ActorHasTag(FName("Shield")))
 		{
@@ -84,10 +93,16 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 	AActor* Owner = GetOwningActorFromActorInfo();
 	AActor* Avatar = GetAvatarActorFromActorInfo();
 	const UPrimary_Disruptor* Ability = Cast<UPrimary_Disruptor>(GetCurrentAbilitySpec()->GetPrimaryInstance());
-	if (!Avatar || !Owner || !Ability) return;
+	if (!Avatar || !Owner || !Ability)
+	{
+		return;
+	}
 	
 	FVector TraceStart, TraceEnd, TraceDirection;
-	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, Avatar, TraceLength, TraceStart, TraceEnd, TraceDirection)) return;
+	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, Avatar, TraceLength, TraceStart, TraceEnd, TraceDirection))
+	{
+		return;
+	}
 	
 	FCollisionQueryParams CollisionParams;
 	FCollisionObjectQueryParams ObjectParams;
@@ -106,8 +121,11 @@ void URangedWeaponAbilityBase::PerformShotgunTraces(TArray<FHitResult>& OutHitRe
 		
 		for (const FHitResult& Hit : MultiHitResults)
 		{
-			if (!Hit.GetActor()) continue;
-			
+			if (!Hit.GetActor())
+			{
+				continue;
+			}
+
 			if (Hit.GetActor()->ActorHasTag(FName("Shield")))
 			{
 				// An out parameter boolean is set to true if the overlapping actor is the dome shield
@@ -323,8 +341,11 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
 
     for (const TSharedPtr<FGameplayAbilityTargetData>& Data : DataHandle.Data)
     {
-        if (!Data.IsValid()) continue;
-        
+        if (!Data.IsValid())
+        {
+	        continue;
+        }
+
         if (IsLocallyControlled())
         {
             Character->SpawnImpactEffectsLocal(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->ImpactNormal, MuzzleLocation, WeaponData);
@@ -405,9 +426,12 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
         {
             AActor* TargetActor = Data->GetHitResult()->GetActor();
             
-            if (!Data.IsValid() || !Data->GetHitResult()->bBlockingHit) continue;
-        	
-        	Character->Multicast_SpawnImpactEffects(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->ImpactNormal, MuzzleLocation, WeaponData);
+            if (!Data.IsValid() || !Data->GetHitResult()->bBlockingHit)
+            {
+	            continue;
+            }
+
+            Character->Multicast_SpawnImpactEffects(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->ImpactNormal, MuzzleLocation, WeaponData);
         	
         	if (const AComplyCharacterBase* HitCharacter = Cast<AComplyCharacterBase>(TargetActor))
         	{
@@ -432,12 +456,18 @@ void URangedWeaponAbilityBase::OnTargetDataReceived(const FGameplayAbilityTarget
 
 void URangedWeaponAbilityBase::OnFireDelayFinished()
 {
-	if (!FireDelayTask) return; // Already handled
-    
+	if (!FireDelayTask)
+	{
+		return; // Already handled
+	}
+
 	FireDelayTask = nullptr; // Clear before calling Fire to prevent re-entry
 
 	const AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetAvatarActorFromActorInfo());
-	if (!Character) return;
+	if (!Character)
+	{
+		return;
+	}
 
 	if (GetAbilitySystemComponentFromActorInfo()->IsOwnerActorAuthoritative())
 	{

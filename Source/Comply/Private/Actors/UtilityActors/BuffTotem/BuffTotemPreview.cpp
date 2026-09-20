@@ -47,11 +47,17 @@ void ABuffTotemPreview::InitPreviewData(ACharacter* OwnerChar, const UComplyUtil
 
 void ABuffTotemPreview::UpdatePosition()
 {
-	if (!OwnerCharacter) return;
+	if (!OwnerCharacter)
+	{
+		return;
+	}
 	
 	FVector TraceStart, TraceEnd, TraceDirection;
-	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, OwnerCharacter, 500.f, TraceStart, TraceEnd, TraceDirection)) return;
-
+	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, OwnerCharacter, 500.f, TraceStart, TraceEnd, TraceDirection))
+	{
+		return;
+	}
+	
 	FHitResult Hit;
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(OwnerCharacter);

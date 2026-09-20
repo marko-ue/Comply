@@ -128,7 +128,10 @@ void UMultiplayerSessionsSubsystem::DestroySession()
 
 void UMultiplayerSessionsSubsystem::StartSession()
 {
-	if (!IsValidSessionInterface()) return;
+	if (!IsValidSessionInterface())
+	{
+		return;
+	}
 
 	StartSessionCompleteDelegateHandle = SessionInterface->AddOnStartSessionCompleteDelegate_Handle(StartSessionCompleteDelegate);
 	SessionInterface->StartSession(NAME_GameSession);

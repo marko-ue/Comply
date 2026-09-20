@@ -25,11 +25,17 @@ UAttack_Tank::UAttack_Tank()
 void UAttack_Tank::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	if (!CommitAbility(Handle, ActorInfo, ActivationInfo)) return; 
-	
+	if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
+	{
+		return;
+	}
+
 	const AComplyEnemyCharacter* Enemy = Cast<AComplyEnemyCharacter>(GetAvatarActorFromActorInfo());
-	if (!Enemy) return;
-	
+	if (!Enemy)
+	{
+		return;
+	}
+
 	checkf(Enemy->EnemyAbilityData, TEXT("EnemyAbilityData not set on %s"), *Enemy->GetName());
 	checkf(Enemy->EnemyAbilityData->EnemyDamageData, TEXT("EnemyDamageData not set on %s"), *Enemy->GetName());
 	
@@ -85,8 +91,11 @@ void UAttack_Tank::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 
 			if (Enemy && DotProduct >= ConeHalfAngleDot)
 			{
-				if (!Enemy->EnemyAbilityData || !Enemy->EnemyAbilityData->EnemyDamageData) return;
-				
+				if (!Enemy->EnemyAbilityData || !Enemy->EnemyAbilityData->EnemyDamageData)
+				{
+					return;
+				}
+
 				CauseDamage(Candidate, Enemy->EnemyAbilityData->EnemyDamageData->Damage.GetValueAtLevel(GetAbilityLevel()));
 				bHitAnything = true;
 			}

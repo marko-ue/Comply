@@ -87,8 +87,11 @@ void UComplyCharacterSelectionWidget::HandleCloseClicked()
 
 void UComplyCharacterSelectionWidget::ConfirmSelection(TSubclassOf<AComplyPlayerCharacter> SelectedClass)
 {
-	if (!ComplyPlayerController || !SelectedClass) return; 
-	
+	if (!ComplyPlayerController || !SelectedClass)
+	{
+		return;
+	}
+
 	// Selects the chosen character by calling the server RPC directly
 	ComplyPlayerController->Server_SelectCharacter(SelectedClass);
 

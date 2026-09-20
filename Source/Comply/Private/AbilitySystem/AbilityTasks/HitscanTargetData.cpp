@@ -21,7 +21,10 @@ UHitscanTargetData* UHitscanTargetData::CreateHitScanData(UGameplayAbility* Owni
 void UHitscanTargetData::Activate()
 {
 	const URangedWeaponAbilityBase* RangedWeaponBase = Cast<URangedWeaponAbilityBase>(Ability);
-	if (!RangedWeaponBase) return;
+	if (!RangedWeaponBase)
+	{
+		return;
+	}
 	checkf(RangedWeaponBase->WeaponData, TEXT("WeaponData not set on %s"), *GetName());
 
 	if (Ability->GetCurrentActorInfo()->IsLocallyControlled())

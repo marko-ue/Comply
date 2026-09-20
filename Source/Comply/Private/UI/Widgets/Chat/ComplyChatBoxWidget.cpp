@@ -29,8 +29,11 @@ void UComplyChatBoxWidget::NativeConstruct()
 // Adds the message broadcasted by the client RPC to the message list
 void UComplyChatBoxWidget::AddMessage(const FString& PlayerName, const FString& Message)
 {
-    if (!MessageWidgetClass || !MessageListVerticalBox) return;
-    
+    if (!MessageWidgetClass || !MessageListVerticalBox)
+    {
+        return;
+    }
+
     ResetHideTimer();
 
     // Trim oldest message if over cap
@@ -40,7 +43,10 @@ void UComplyChatBoxWidget::AddMessage(const FString& PlayerName, const FString& 
     }
 
     UComplyChatMessageWidget* MsgWidget = CreateWidget<UComplyChatMessageWidget>(GetOwningPlayer(), MessageWidgetClass);
-    if (!MsgWidget) return;
+    if (!MsgWidget)
+    {
+        return;
+    }
 
     // Pass in the name and message to the widget and add it to the chat box by adding the widget itself (which is just a text block)
     MsgWidget->InitializeMessage(PlayerName, Message);
@@ -55,8 +61,11 @@ void UComplyChatBoxWidget::AddMessage(const FString& PlayerName, const FString& 
 // This function is called whenever the input for using chat is pressed. It shows the input widget and allows the user to put in text
 void UComplyChatBoxWidget::OpenInput()
 {
-    if (!ChatInput) return;
-    
+    if (!ChatInput)
+    {
+        return;
+    }
+
     ResetHideTimer();
     
     ChatInput->SetVisibility(ESlateVisibility::Visible);

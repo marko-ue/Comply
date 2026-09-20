@@ -27,7 +27,10 @@ void UEquipThrowableAbility::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
-	if (!ASC) return;
+	if (!ASC)
+	{
+		return;
+	}
 
 	// Reset all block counts first
 	FGameplayTagContainer AllWeaponTags;

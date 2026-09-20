@@ -16,10 +16,16 @@
 void UComplyUtilityCooldownsWidget::InitializeUtilityCooldown()
 {
 	const AComplyPlayerCharacter* Character = Cast<AComplyPlayerCharacter>(GetOwningPlayerPawn());
-	if (!Character) return;
+	if (!Character)
+	{
+		return;
+	}
 
 	ActiveUtility = Character->GetEquippedUtility();
-	if (!ActiveUtility || !ActiveUtility->UtilityData) return;
+	if (!ActiveUtility || !ActiveUtility->UtilityData)
+	{
+		return;
+	}
 
 	UtilityImage->SetBrushFromTexture(ActiveUtility->UtilityData->UtilityIcon, true);
 	CooldownText->SetVisibility(ESlateVisibility::Hidden); // Initially the ability will not be on cooldown
@@ -49,7 +55,10 @@ void UComplyUtilityCooldownsWidget::NativeTick(const FGeometry& MyGeometry, floa
 
 void UComplyUtilityCooldownsWidget::RefreshCooldown() const
 {
-	if (!ActiveUtility) return;
+	if (!ActiveUtility)
+	{
+		return;
+	}
 
 	// Get the equipped utility ability's cooldown and store it
 	float TimeRemaining = 0.f;

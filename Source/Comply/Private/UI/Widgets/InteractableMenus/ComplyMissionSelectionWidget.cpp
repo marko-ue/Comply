@@ -71,10 +71,16 @@ void UComplyMissionSelectionWidget::OnPlayerSelectionChanged()
 void UComplyMissionSelectionWidget::OnSelectDataExtractionPressed()
 {
     AComplyPlayerController* PC = GetComplyPlayerController();
-    if (!PC || !PC->HasAuthority()) return;
+    if (!PC || !PC->HasAuthority())
+    {
+        return;
+    }
 
     const AComplyGameStateBase* GS = GetComplyGameState();
-    if (!GS || !GS->bAllPlayersHaveUniqueClasses) return;
+    if (!GS || !GS->bAllPlayersHaveUniqueClasses)
+    {
+        return;
+    }
 
     UWidgetBlueprintLibrary::SetInputMode_GameOnly(PC);
 
@@ -104,8 +110,11 @@ void UComplyMissionSelectionWidget::OnFriendlyFireChanged(bool bIsChecked)
 void UComplyMissionSelectionWidget::UpdateStartButtonText() const
 {
     const AComplyGameStateBase* GS = GetComplyGameState();
-    if (!GS) return;
-    
+    if (!GS)
+    {
+        return;
+    }
+
     const bool bCanStart = GS->bAllPlayersHaveUniqueClasses;
 
     SelectDataExtractionButton->SetIsEnabled(bCanStart);

@@ -31,25 +31,37 @@ void UComplyPauseMenuWidget::OnResumeClicked()
 
 void UComplyPauseMenuWidget::OnSettingsClicked()
 {
-	if (!SettingsMenuClass) return;
-	
+	if (!SettingsMenuClass)
+	{
+		return;
+	}
+
 	OpenSubMenu(SettingsMenuClass);
 }
 
 void UComplyPauseMenuWidget::OnCreditsClicked()
 {
-	if (CreditsMenuClass) return;
-	
+	if (CreditsMenuClass)
+	{
+		return;
+	}
+
 	OpenSubMenu(CreditsMenuClass);
 }
 
 // Handles adding the specific sub menu to the viewport and hiding the pause menu as long as it's opened
 void UComplyPauseMenuWidget::OpenSubMenu(const TSubclassOf<UComplyMenuWidgetBase> SubMenuClass)
 {
-	if (!SubMenuClass) return;
+	if (!SubMenuClass)
+	{
+		return;
+	}
 
 	UComplyMenuWidgetBase* SubMenu = CreateWidget<UComplyMenuWidgetBase>(GetOwningPlayer(), SubMenuClass);
-	if (!SubMenu) return;
+	if (!SubMenu)
+	{
+		return;
+	}
 
 	SubMenu->OnClosed.AddDynamic(this, &UComplyPauseMenuWidget::OnSubMenuClosed);
 	SubMenu->AddToViewport(11);
@@ -76,7 +88,10 @@ void UComplyPauseMenuWidget::OnQuitGameClicked()
 void UComplyPauseMenuWidget::CloseWidget() const
 {
 	AComplyPlayerController* PC = GetOwningPlayer<AComplyPlayerController>();
-	if (!PC) return;
+	if (!PC)
+	{
+		return;
+	}
 
 	PC->CloseMenuWidget();
 }

@@ -36,7 +36,10 @@ void UUtility_Ranger::ConfirmPlacement()
 void UUtility_Ranger::TraceAndSpawn()
 {
 	AActor* Avatar = GetCurrentActorInfo()->AvatarActor.Get();
-	if (!Avatar) return;
+	if (!Avatar)
+	{
+		return;
+	}
 
 	FVector Forward = Avatar->GetActorForwardVector();
 	FVector Start = Avatar->GetActorLocation() + Forward * 150.f;

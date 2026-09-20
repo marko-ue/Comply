@@ -39,7 +39,10 @@ void UUtilityAbilityBase::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 void UUtilityAbilityBase::SpawnPreview()
 {
 	AActor* Avatar = GetCurrentActorInfo()->AvatarActor.Get();
-	if (!Avatar) return;
+	if (!Avatar)
+	{
+		return;
+	}
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = Avatar;

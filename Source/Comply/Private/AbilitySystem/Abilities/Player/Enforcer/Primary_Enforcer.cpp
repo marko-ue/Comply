@@ -18,8 +18,11 @@ void UPrimary_Enforcer::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 bool UPrimary_Enforcer::Fire()
 {
-	if (!Super::Fire()) return false;
-	
+	if (!Super::Fire())
+	{
+		return false;
+	}
+
 	PlayAnimationBasedOnState();
 	
 	return true;

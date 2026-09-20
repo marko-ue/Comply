@@ -27,11 +27,13 @@ void ADecoyGrenadePreview::Tick(float DeltaTime)
 	FVector LaunchVelocity = FVector::ZeroVector;
 	
 	FVector TraceStart, TraceEnd, TraceDirection;
-	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, OwningPawn, 0.f, TraceStart, TraceEnd, TraceDirection)) return;
+	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, OwningPawn, 0.f, TraceStart, TraceEnd, TraceDirection)) 
 	{
-		LaunchVelocity = TraceDirection * ThrowSpeed;
+		return;
 	}
-
+	
+	LaunchVelocity = TraceDirection * ThrowSpeed;
+	
 	FPredictProjectilePathParams PredictParams;
 	PredictParams.StartLocation = OwningPawn->GetActorLocation() + FVector(0.f, 0.f, 60.f);
 	PredictParams.LaunchVelocity = LaunchVelocity;

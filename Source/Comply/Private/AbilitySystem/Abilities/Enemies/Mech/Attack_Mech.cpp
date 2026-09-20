@@ -24,7 +24,10 @@ UAttack_Mech::UAttack_Mech()
 void UAttack_Mech::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	if (!CommitAbility(Handle, ActorInfo, ActivationInfo)) return; 
+	if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
+	{
+		return;
+	}
 	checkf(ProjectileData, TEXT("ProjectileData not set on %s"), *GetName());
 	
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);

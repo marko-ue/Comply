@@ -58,7 +58,10 @@ void AComplyPlayerController::BeginPlay()
 		SelectedCharacterClass = PS->LastSelectedCharacterClass ? PS->LastSelectedCharacterClass : DefaultCharacterClass;
 	}
 	
-	if (!IsLocalController()) return;
+	if (!IsLocalController())
+	{
+		return;
+	}
 
 	AComplyGameStateBase* GS = GetWorld()->GetGameState<AComplyGameStateBase>();
 	if (GS)
@@ -98,17 +101,26 @@ void AComplyPlayerController::OnRep_PlayerState()
 	}
 
 	const AComplyPlayerState* PS = GetPlayerState<AComplyPlayerState>();
-	if (!PS) return;
+	if (!PS)
+	{
+		return;
+	}
 
 	UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
-	if (!ASC) return;
+	if (!ASC)
+	{
+		return;
+	}
 
 	const FComplyHUDLayout* Layout = nullptr;
 	if (SelectedCharacterClass)
 	{
 		if (const AComplyPlayerCharacter* CDO = SelectedCharacterClass->GetDefaultObject<AComplyPlayerCharacter>())
 		{
-			if (CDO->PlayerData) Layout = &CDO->PlayerData->HUDLayout;
+			if (CDO->PlayerData)
+			{
+				Layout = &CDO->PlayerData->HUDLayout;
+			}
 		}
 	}
 
@@ -124,11 +136,17 @@ void AComplyPlayerController::Tick(float DeltaSeconds)
 
 void AComplyPlayerController::TickRevivePromptCheck()
 {
-	if (!IsLocalController()) return;
-	if (!RevivePromptWidget) return;
+	if (!IsLocalController() || !RevivePromptWidget)
+	{
+		return;
+	}
+	
     
 	const AComplyPlayerCharacter* LocalPlayer = Cast<AComplyPlayerCharacter>(GetPawn());
-	if (!LocalPlayer) return;
+	if (!LocalPlayer)
+	{
+		return;
+	}
 
 	FVector TraceStart, TraceEnd, TraceDirection;
 	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(
@@ -162,13 +180,12 @@ void AComplyPlayerController::AcknowledgePossession(class APawn* P)
 	AddMappingContexts();
 
 	AComplyPlayerCharacter* ComplyCharacter = Cast<AComplyPlayerCharacter>(P);
-	if (!ComplyCharacter) return;
-
 	const AComplyPlayerState* PS = ComplyCharacter->GetPlayerState<AComplyPlayerState>();
-	if (!PS) return;
-
 	UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
-	if (!ASC) return;
+	if (!ComplyCharacter || !PS || !ASC)
+	{
+		return;
+	}
 
 	const FComplyHUDLayout* Layout = ComplyCharacter->PlayerData ? &ComplyCharacter->PlayerData->HUDLayout : nullptr;
 
@@ -178,10 +195,17 @@ void AComplyPlayerController::AcknowledgePossession(class APawn* P)
 
 void AComplyPlayerController::TryInitializeHUD(UAbilitySystemComponent* ASC, const FComplyHUDLayout* Layout)
 {
-	if (HUDWidget) return;
+	if (HUDWidget)
+	{
+		return;
+	}
+		
 
 	const FString MapName = GetWorld()->GetMapName();
-	if (MapName.Contains("Lobby")) return;
+	if (MapName.Contains("Lobby"))
+	{
+		return;
+	}
 
 	HUDWidget = CreateWidget<UComplyHUDWidget>(this, HUDWidgetClass);
 	HUDWidget->AddToViewport();
@@ -197,10 +221,16 @@ void AComplyPlayerController::TryInitializeHUD(UAbilitySystemComponent* ASC, con
 
 void AComplyPlayerController::TryInitializeDamageNumbers()
 {
-	if (DamageNumbersWidget) return;
-
+	if (DamageNumbersWidget)
+	{
+		return;
+	}
+	
 	const FString MapName = GetWorld()->GetMapName();
-	if (MapName.Contains("Lobby")) return;
+	if (MapName.Contains("Lobby"))
+	{
+		return;
+	}
 
 	DamageNumbersWidget = CreateWidget<UDamageNumbersWidget>(this, DamageNumbersWidgetClass);
 	DamageNumbersWidget->AddToViewport();
@@ -212,16 +242,23 @@ void AComplyPlayerController::TryInitializeDamageNumbers()
 	{
 		GetWorld()->GetTimerManager().SetTimer(DamageNumbersSizeRetryHandle, [this]()
 		{
-			if (!DamageNumbersWidget) return;
+			if (!DamageNumbersWidget)
+			{
+				return;
+			}
 
 			FVector2D Size;
 			GetWorld()->GetGameViewport()->GetViewportSize(Size);
-			if (Size.IsZero()) return;
+			if (Size.IsZero())
+			{
+				return;
+			}
 
 			DamageNumbersWidget->SetPositionInViewport(FVector2D(0.f, 0.f));
 			DamageNumbersWidget->SetDesiredSizeInViewport(Size);
 			GetWorld()->GetTimerManager().ClearTimer(DamageNumbersSizeRetryHandle);
 		}, 0.1f, true);
+		
 		return;
 	}
 
@@ -288,12 +325,18 @@ void AComplyPlayerController::AddMappingContexts()
 void AComplyPlayerController::Server_SendChatMessage_Implementation(const FString& Message)
 {
 	const FString TrimmedMessage = Message.TrimStartAndEnd();
-	if (TrimmedMessage.IsEmpty()) return;
-
+	if (TrimmedMessage.IsEmpty())
+	{
+		return;
+	}
+	
 	const FString SenderName = PlayerState ? PlayerState->GetPlayerName() : TEXT("Unknown");
 
 	AGameStateBase* GS = GetWorld()->GetGameState();
-	if (!GS) return;
+	if (!GS)
+	{
+		return;
+	}
 
 	for (const APlayerState* PS : GS->PlayerArray)
 	{
@@ -316,8 +359,10 @@ void AComplyPlayerController::Client_ReceiveChatMessage_Implementation(const FSt
 // Adds the widget and initializes it, and binds input for approving or denying the vote
 void AComplyPlayerController::OnVoteKickInitiated(APlayerState* Target)
 {
-	if (!IsLocalController()) return;
-	if (!VoteKickWidgetClass) return;
+	if (!IsLocalController() || !VoteKickWidgetClass)
+	{
+		return;
+	}
 
 	VoteKickWidget = CreateWidget<UComplyVoteKickWidget>(this, VoteKickWidgetClass);
 	if (VoteKickWidget)
@@ -360,17 +405,25 @@ void AComplyPlayerController::Server_SubmitVote_Implementation(APlayerState* Vot
 
 void AComplyPlayerController::ShowFlashbangEffect()
 {
-	if (!FlashbangWidgetClass) return;
+	if (!FlashbangWidgetClass)
+	{
+		return;
+	}
     
 	// This widget displays a white image which fades out over 3 seconds, at which point the widget gets removed
 	FlashbangWidget = CreateWidget<UUserWidget>(this, FlashbangWidgetClass);
-	if (FlashbangWidget) FlashbangWidget->AddToViewport();
+	if (FlashbangWidget)
+	{
+		FlashbangWidget->AddToViewport();
+	}
 }
 
 void AComplyPlayerController::OpenMenuWidget(TSubclassOf<UUserWidget> WidgetClass)
 {
 	if (ActiveMenuWidget)
+	{
 		ActiveMenuWidget->RemoveFromParent();
+	}
 
 	ActiveMenuWidget = CreateWidget<UUserWidget>(this, WidgetClass);
 	ActiveMenuWidget->AddToViewport();
@@ -405,7 +458,10 @@ void AComplyPlayerController::Server_SelectCharacter_Implementation(TSubclassOf<
 	
 	UnPossess();
 	
-	if (PreviousCharacterPawn) { PreviousCharacterPawn->Destroy(); }
+	if (PreviousCharacterPawn)
+	{
+		PreviousCharacterPawn->Destroy();
+	}
 	
 	if (SelectedCharacter)
 	{

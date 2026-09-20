@@ -56,7 +56,10 @@ void UThrowable_Enforcer::SpawnPreview()
 	WaitConfirm->ReadyForActivation();
 	
 	AActor* Avatar = GetCurrentActorInfo()->AvatarActor.Get();
-	if (!Avatar) return;
+	if (!Avatar)
+	{
+		return;
+	}
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = Avatar;
@@ -157,11 +160,17 @@ void UThrowable_Enforcer::OnTargetDataReceived(const FGameplayAbilityTargetDataH
 		GetCurrentActivationInfo().GetActivationPredictionKey()
 	);
 
-	if (!DataHandle.IsValid(0)) return;
+	if (!DataHandle.IsValid(0))
+	{
+		return;
+	}
 
 	const FHitResult* HitResult = DataHandle.Get(0)->GetHitResult();
-	if (!HitResult) return;
-	
+	if (!HitResult)
+	{
+		return;
+	}
+
 	AActor* Avatar = GetCurrentActorInfo()->AvatarActor.Get();
 
 	FActorSpawnParameters SpawnParams;
@@ -217,11 +226,17 @@ void UThrowable_Enforcer::ConfirmPlace()
 void UThrowable_Enforcer::PlaceTurret()
 {
 	AActor* Avatar = GetAvatarActorFromActorInfo();
-	if (!Avatar) return;
-	
+	if (!Avatar)
+	{
+		return;
+	}
+
 	FVector TraceStart, TraceEnd, TraceDirection;
-	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, Avatar, 0.f, TraceStart, TraceEnd, TraceDirection)) return;
-	
+	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, Avatar, 0.f, TraceStart, TraceEnd, TraceDirection))
+	{
+		return;
+	}
+
 	FVector Start = TraceDirection;
 	
 	if (Avatar)

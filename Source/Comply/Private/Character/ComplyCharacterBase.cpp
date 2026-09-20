@@ -70,7 +70,10 @@ void AComplyCharacterBase::InitializeAttributes() const
 
 void AComplyCharacterBase::GiveStartupAbilities()
 {
-	if (!GetAbilitySystemComponent()) return;
+	if (!GetAbilitySystemComponent())
+	{
+		return;
+	}
 	
 	for (const FAbilitySet& Set: StartupAbilities)
 	{
@@ -106,7 +109,10 @@ void AComplyCharacterBase::GiveStartupAbilities()
 
 void AComplyCharacterBase::ClearStartupAbilities()
 {
-	if (!GetAbilitySystemComponent()) return;
+	if (!GetAbilitySystemComponent())
+	{
+		return;
+	}
 
 	for (const FAbilitySet& Set : StartupAbilities)
 	{
@@ -119,7 +125,10 @@ void AComplyCharacterBase::ClearStartupAbilities()
 
 void AComplyCharacterBase::HandleHit(const AActor* HitActor)
 {
-	if (bIsDead) return;
+	if (bIsDead)
+	{
+		return;
+	}
 	
 	if (HitActor && HitActor->Implements<UPlayerInterface>())
 	{
@@ -145,7 +154,11 @@ void AComplyCharacterBase::Die(AActor* DeadActor)
 	{
 		if (GetAbilitySystemComponent())
 		{
-			if (bIsDead) return;
+			if (bIsDead)
+			{
+				return;
+			}
+			
 			bIsDead = true;
 			
 			FGameplayCueParameters CueParams;
@@ -161,7 +174,11 @@ void AComplyCharacterBase::Die(AActor* DeadActor)
 	else if (DeadActor && DeadActor->Implements<UEnemyInterface>())
 	{
 		// Prevents multiple cues and function calls if multiple sources kill the enemy in the same frame (like shotgun pellets)
-		if (bIsDead) return;
+		if (bIsDead)
+		{
+			return;
+		}
+			
 		bIsDead = true; // Replicated variable triggers OnRep
 		
 		FGameplayCueParameters CueParams;
@@ -192,7 +209,10 @@ void AComplyCharacterBase::OnRep_IsDead()
 void AComplyCharacterBase::ActivateInitialAbility() const
 {
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
-	if (!ASC) return;
+	if (!ASC)
+	{
+		return;
+	}
 
 	// Reset all block counts first
 	FGameplayTagContainer AllWeaponTags;

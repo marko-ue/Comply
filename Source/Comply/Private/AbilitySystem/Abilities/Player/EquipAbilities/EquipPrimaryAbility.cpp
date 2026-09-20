@@ -25,8 +25,11 @@ void UEquipPrimaryAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
-	if (!ASC) return;
-	
+	if (!ASC)
+	{
+		return;
+	}
+
 	// Reset all block counts first
 	FGameplayTagContainer AllWeaponTags;
 	AllWeaponTags.AddTag(ComplyTags::ComplyAbilities::Primary);

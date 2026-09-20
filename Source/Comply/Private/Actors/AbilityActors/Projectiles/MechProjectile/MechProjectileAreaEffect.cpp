@@ -66,7 +66,11 @@ void AMechProjectileAreaEffect::Tick(float DeltaTime)
 
 void AMechProjectileAreaEffect::ApplyEffectToTarget(AActor* OverlappingActor, UAbilitySystemComponent* TargetASC)
 {
-	if (AffectedActors.Contains(OverlappingActor)) return;
+	if (AffectedActors.Contains(OverlappingActor))
+	{
+		return;
+	}
+		
 	AffectedActors.Add(OverlappingActor);
 
 	ApplyDamageToTarget(OverlappingActor, TargetASC);
@@ -80,7 +84,10 @@ void AMechProjectileAreaEffect::ApplyDamageToTarget(AActor* OverlappingActor, UA
 	ContextHandle.AddSourceObject(this);
 
 	const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(ProjectileData->EnemyDamageData->DamageEffectClass, 1.f, ContextHandle);
-	if (!SpecHandle.IsValid()) return;
+	if (!SpecHandle.IsValid())
+	{
+		return;
+	}
 
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
 		SpecHandle, ProjectileData->EnemyDamageData->DamageType, ProjectileData->EnemyDamageData->Damage.GetValueAtLevel(1.f)
@@ -92,13 +99,19 @@ void AMechProjectileAreaEffect::ApplyDamageToTarget(AActor* OverlappingActor, UA
 
 void AMechProjectileAreaEffect::ApplySlowToTarget(AActor* OverlappingActor, UAbilitySystemComponent* TargetASC)
 {
-	if (!SourceASC || !TargetASC || !ProjectileData->SlowEffectClass) return;
+	if (!SourceASC || !TargetASC || !ProjectileData->SlowEffectClass)
+	{
+		return;
+	}
 
 	FGameplayEffectContextHandle ContextHandle = SourceASC->MakeEffectContext();
 	ContextHandle.AddSourceObject(SourceASC->GetAvatarActor());
 
 	const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(ProjectileData->SlowEffectClass, 1.f, ContextHandle);
-	if (!SpecHandle.IsValid()) return;
+	if (!SpecHandle.IsValid())
+	{
+		return;
+	}
 
 	const FActiveGameplayEffectHandle Handle = SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
 	ActiveSlowEffectHandles.Add(OverlappingActor, Handle);
@@ -110,7 +123,10 @@ void AMechProjectileAreaEffect::OnComponentBeginOverlap(UPrimitiveComponent* Ove
 	const bool bIsPlayer = OtherActor->Implements<UPlayerInterface>();
 	const bool bIsTargetable = OtherActor->Implements<UTargetableInterface>();
     
-	if (!bIsPlayer && !bIsTargetable) return;
+	if (!bIsPlayer && !bIsTargetable)
+	{
+		return;
+	}
 
 	if (bIsPlayer)
 	{
@@ -128,7 +144,10 @@ void AMechProjectileAreaEffect::OnComponentBeginOverlap(UPrimitiveComponent* Ove
 	{
 		if (UAbilitySystemComponent* TargetASC = ASCInterface->GetAbilitySystemComponent())
 		{
-			if (!SourceASC || !TargetASC || !ProjectileData->EnemyDamageData->DamageEffectClass) return;
+			if (!SourceASC || !TargetASC || !ProjectileData->EnemyDamageData->DamageEffectClass)
+			{
+				return;
+			}
 			ApplyEffectToTarget(OtherActor, TargetASC);
 		}
 	}

@@ -58,10 +58,12 @@ UAbilitySystemComponent* AElectricHazardZone::GetAbilitySystemComponent() const
 	return ASC;
 }
 
-void AElectricHazardZone::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                                  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AElectricHazardZone::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (!OtherActor->Implements<UPlayerInterface>()) return;
+	if (!OtherActor->Implements<UPlayerInterface>())
+	{
+		return;
+	}
 	
 	// Immediately reduce speed on the local client
 	if (AComplyPlayerCharacter* PlayerCharacter = Cast<AComplyPlayerCharacter>(OtherActor))
@@ -77,7 +79,10 @@ void AElectricHazardZone::OnComponentBeginOverlap(UPrimitiveComponent* Overlappe
 	{
 		if (UAbilitySystemComponent* TargetASC = ASCInterface->GetAbilitySystemComponent())
 		{
-			if (!GetAbilitySystemComponent() || !TargetASC || !ElectricHazardZoneData->DamageEffectClass) return;
+			if (!GetAbilitySystemComponent() || !TargetASC || !ElectricHazardZoneData->DamageEffectClass) 
+			{
+				return;
+			}
 
 			ApplyEffectToTarget(OtherActor, TargetASC);
 			
@@ -133,9 +138,16 @@ void AElectricHazardZone::OnComponentEndOverlap(UPrimitiveComponent* OverlappedC
 
 void AElectricHazardZone::ApplyEffectToTarget(AActor* OverlappingActor, UAbilitySystemComponent* TargetASC)
 {
-	if (!TargetASC || !ElectricHazardZoneData->DamageEffectClass) return;
+	if (!TargetASC || !ElectricHazardZoneData->DamageEffectClass)
+	{
+		return;
+	}
 	
-	if (AffectedActors.Contains(OverlappingActor)) return;
+	if (AffectedActors.Contains(OverlappingActor))
+	{
+		return;
+	}
+		
 	AffectedActors.Add(OverlappingActor);
 	
 	ApplyDamageToTarget(OverlappingActor, TargetASC);
@@ -144,8 +156,11 @@ void AElectricHazardZone::ApplyEffectToTarget(AActor* OverlappingActor, UAbility
 
 void AElectricHazardZone::ApplyStunToTarget(AActor* OverlappingActor, UAbilitySystemComponent* TargetASC)
 {
-	if (!GetAbilitySystemComponent() || !TargetASC || !ElectricHazardZoneData->StunEffectClass) return;
-	
+	if (!GetAbilitySystemComponent() || !TargetASC || !ElectricHazardZoneData->StunEffectClass)
+	{
+		return;
+	}
+
 	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
 	ContextHandle.AddSourceObject(GetAbilitySystemComponent()->GetAvatarActor());
 
@@ -164,8 +179,11 @@ void AElectricHazardZone::ApplyDamageToTarget(AActor* OverlappingActor, UAbility
 	ContextHandle.AddSourceObject(this);
 
 	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(ElectricHazardZoneData->DamageEffectClass, 1.f, ContextHandle);
-	if (!SpecHandle.IsValid()) return;
-
+	if (!SpecHandle.IsValid())
+	{
+		return;
+	}
+	
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, ElectricHazardZoneData->DamageType, ElectricHazardZoneData->Damage.GetValueAtLevel(1.f));
 
 	const FActiveGameplayEffectHandle Handle = GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);

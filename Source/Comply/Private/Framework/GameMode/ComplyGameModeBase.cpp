@@ -59,7 +59,10 @@ bool AComplyGameModeBase::AllPlayersHaveUniqueCharacters() const
 	for (APlayerController* PC : TActorRange<APlayerController>(GetWorld()))
 	{
 		const AComplyPlayerController* ComplyPC = Cast<AComplyPlayerController>(PC);
-		if (!ComplyPC) continue;
+		if (!ComplyPC)
+		{
+			continue;
+		}
 
 		// If a player hasn't selected a character, block travel too
 		if (!ComplyPC->SelectedCharacterClass)
@@ -91,7 +94,10 @@ UClass* AComplyGameModeBase::GetDefaultPawnClassForController_Implementation(ACo
 				FString PlayerID = FString::FromInt(PS->GetPlayerId());
 				if (TSubclassOf<AComplyPlayerCharacter>* Found = GI->PlayerCharacterSelections.Find(PlayerID))
 				{
-					if (*Found) return *Found;
+					if (*Found)
+					{
+						return *Found;
+					}
 				}
 			}
 		}

@@ -127,7 +127,10 @@ void AComplyPlayerCharacter::PossessedBy(AController* NewController)
 	checkf(PlayerData, TEXT("PlayerData not set on %s"), *GetName());
 	checkf(InputData, TEXT("InputData not set on %s"), *GetName());
 	
-	if (!GetAbilitySystemComponent() || !HasAuthority()) return;
+	if (!GetAbilitySystemComponent() || !HasAuthority())
+	{
+		return;
+	}
 	
 	GetAbilitySystemComponent()->InitAbilityActorInfo(GetPlayerState(), this);
 	WeaponMesh->SetStaticMesh(PlayerData->PrimaryMesh);
@@ -165,7 +168,10 @@ void AComplyPlayerCharacter::OnRep_PlayerState()
 	checkf(PlayerData, TEXT("PlayerData not set on %s"), *GetName());
 	checkf(InputData, TEXT("InputData not set on %s"), *GetName());
 	
-	if (!GetAbilitySystemComponent()) return;
+	if (!GetAbilitySystemComponent())
+	{
+		return;
+	}
 	
 	GetAbilitySystemComponent()->InitAbilityActorInfo(GetPlayerState(), this);
 	
@@ -192,7 +198,10 @@ void AComplyPlayerCharacter::Tick(float DeltaTime)
 	
 	bIsAiming ? ZoomIn(DeltaTime) : ZoomOut(DeltaTime);
 	
-	if (IsLocallyControlled()) { TraceForInteractable(); }
+	if (IsLocallyControlled())
+	{
+		TraceForInteractable();
+	}
 	
 	RotatePlayerToLook(DeltaTime);
 	
@@ -207,14 +216,20 @@ void AComplyPlayerCharacter::Tick(float DeltaTime)
 UAbilitySystemComponent* AComplyPlayerCharacter::GetAbilitySystemComponent() const
 {
 	const AComplyPlayerState* ComplyPlayerState = Cast<AComplyPlayerState>(GetPlayerState());
-	if (!IsValid(ComplyPlayerState)) return nullptr;
-	
+	if (!IsValid(ComplyPlayerState))
+	{
+		return nullptr;
+	}
+
 	return ComplyPlayerState->GetAbilitySystemComponent();
 }
 
 void AComplyPlayerCharacter::InitializeAttributes() const
 {
-    if (!PlayerData) return;
+    if (!PlayerData)
+    {
+	    return;
+    }
 
     checkf(IsValid(PlayerData->InitializeAttributesEffect), TEXT("InitializeAttributesEffect not set"));
 
@@ -258,8 +273,11 @@ void AComplyPlayerCharacter::InitializeAttributes() const
 
 URangedWeaponAbilityBase* AComplyPlayerCharacter::GetEquippedPrimaryWeapon() const
 {
-	if (!GetAbilitySystemComponent()) return nullptr;
-	
+	if (!GetAbilitySystemComponent())
+	{
+		return nullptr;
+	}
+
 	for (const FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
 		if (Spec.Ability->GetClass() == EquippedPrimaryWeaponClass)
@@ -272,7 +290,10 @@ URangedWeaponAbilityBase* AComplyPlayerCharacter::GetEquippedPrimaryWeapon() con
 
 UThrowableAbilityBase* AComplyPlayerCharacter::GetEquippedThrowable() const
 {
-	if (!GetAbilitySystemComponent()) return nullptr;
+	if (!GetAbilitySystemComponent())
+	{
+		return nullptr;
+	}
 
 	for (const FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
@@ -287,7 +308,10 @@ UThrowableAbilityBase* AComplyPlayerCharacter::GetEquippedThrowable() const
 
 UUtilityAbilityBase* AComplyPlayerCharacter::GetEquippedUtility() const
 {
-	if (!GetAbilitySystemComponent()) return nullptr;
+	if (!GetAbilitySystemComponent())
+	{
+		return nullptr;
+	}
 
 	for (const FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
@@ -302,9 +326,15 @@ UUtilityAbilityBase* AComplyPlayerCharacter::GetEquippedUtility() const
 
 void AComplyPlayerCharacter::DownPlayer()
 {
-	if (!GetAbilitySystemComponent()) return;
+	if (!GetAbilitySystemComponent()) 
+	{
+		return;
+	}
 	
-	if (GetAbilitySystemComponent()->HasMatchingGameplayTag(ComplyTags::States::State_Downed)) return;
+	if (GetAbilitySystemComponent()->HasMatchingGameplayTag(ComplyTags::States::State_Downed)) 
+	{
+		return;
+	}
     
 	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
 	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(DownedEffectClass, 1.f, ContextHandle);
@@ -381,11 +411,17 @@ void AComplyPlayerCharacter::RevivePlayer()
 
 void AComplyPlayerCharacter::SpawnImpactEffectsLocal(const FVector& ImpactPoint, const FVector& ImpactNormal, const FVector& MuzzleLocation, UComplyWeaponData* WeaponData)
 {
-	if (!WeaponData) return;
+	if (!WeaponData) 
+	{
+		return;
+	}
 
 	// Spawns a random decal from an array
 	const TArray<TObjectPtr<UMaterialInstance>>& Decals = WeaponData->BulletImpactDecals;
-	if (Decals.IsEmpty()) return;
+	if (Decals.IsEmpty()) 
+	{
+		return;
+	}
 
 	const int32 DecalIndex = FMath::RandRange(0, Decals.Num() - 1);
 	UDecalComponent* Decal = UGameplayStatics::SpawnDecalAtLocation(
@@ -422,7 +458,10 @@ void AComplyPlayerCharacter::Client_ShowDamageNumber_Implementation(const float 
 
 void AComplyPlayerCharacter::ApplyFiringFeedback(const UComplyWeaponData* WeaponData)
 {
-	if (!WeaponData) return;
+	if (!WeaponData) 
+	{
+		return;
+	}
     
 	if (const APlayerController* PC = Cast<APlayerController>(GetController()))
 	{
@@ -455,7 +494,10 @@ void AComplyPlayerCharacter::Multicast_SpawnImpactEffects_Implementation(FVector
 	FVector MuzzleLocation, UComplyWeaponData* WeaponData)
 {
 	// Decal and effects are spawned locally for clients, don't multicast to them again
-	if (IsLocallyControlled()) return;
+	if (IsLocallyControlled()) 
+	{
+		return;
+	}
 	
 	SpawnImpactEffectsLocal(ImpactPoint, ImpactNormal, MuzzleLocation, WeaponData);
 }
@@ -463,17 +505,26 @@ void AComplyPlayerCharacter::Multicast_SpawnImpactEffects_Implementation(FVector
 // Server RPC called from the revive ability
 void AComplyPlayerCharacter::Server_ReviveTarget_Implementation(AComplyPlayerCharacter* Target)
 {
-	if (!Target) return;
+	if (!Target) 
+	{
+		return;
+	}
+	
 	Target->bIsDowned = false; // Variable handles replicating to client via OnRep
 	Target->RevivePlayer(); // Runs the function on the server
 }
 
 void AComplyPlayerCharacter::Server_FaceTarget_Implementation(ACharacter* Target)
 {
-	if (!Target) return;
+	if (!Target) 
+	{
+		return;
+	}
+	
 	bUseControllerRotationYaw = false;
 	const FRotator LookAt = UKismetMathLibrary::FindLookAtRotation(
-		GetActorLocation(), Target->GetActorLocation());
+		GetActorLocation(), Target->GetActorLocation()
+	);
 	SetActorRotation(FRotator(0.f, LookAt.Yaw, 0.f));
 }
 
@@ -494,7 +545,10 @@ void AComplyPlayerCharacter::SetEquippedUtility(TSubclassOf<UThrowableAbilityBas
 
 void AComplyPlayerCharacter::PrimaryActionPressed()
 {
-	if (!GetAbilitySystemComponent()) return;
+	if (!GetAbilitySystemComponent()) 
+	{
+		return;
+	}
 	
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
@@ -554,7 +608,10 @@ void AComplyPlayerCharacter::PrimaryActionPressed()
 
 void AComplyPlayerCharacter::PrimaryActionReleased()
 {
-	if (!GetAbilitySystemComponent()) return;
+	if (!GetAbilitySystemComponent())
+	{
+		return;
+	}
     
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
@@ -601,7 +658,10 @@ void AComplyPlayerCharacter::SecondaryActionPressed()
 
 void AComplyPlayerCharacter::SecondaryActionReleased()
 {
-	if (!GetAbilitySystemComponent()) return;
+	if (!GetAbilitySystemComponent())
+	{
+		return;
+	}
 	bIsAiming = false;
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
@@ -615,10 +675,16 @@ void AComplyPlayerCharacter::SecondaryActionReleased()
 
 void AComplyPlayerCharacter::InteractActionPressed()
 {
-	if (!GetAbilitySystemComponent()) return;
-	
+	if (!GetAbilitySystemComponent())
+	{
+		return;
+	}
+
 	// Call the interact function on the current focused interactable, passing in the player's controller
-	if (CurrentFocusedInteractable) { CurrentFocusedInteractable->Interact(GetController<APlayerController>()); }
+	if (CurrentFocusedInteractable)
+	{
+		CurrentFocusedInteractable->Interact(GetController<APlayerController>());
+	}
 	
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
@@ -631,8 +697,11 @@ void AComplyPlayerCharacter::InteractActionPressed()
 
 void AComplyPlayerCharacter::InteractActionReleased()
 {
-	if (!GetAbilitySystemComponent()) return;
-	
+	if (!GetAbilitySystemComponent())
+	{
+		return;
+	}
+
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
 		// For interact abilities that require holding (like reviving the player)
@@ -649,8 +718,11 @@ void AComplyPlayerCharacter::InteractActionReleased()
 
 void AComplyPlayerCharacter::SprintActionPressed()
 {
-	if (GetCharacterMovement()->IsFalling()) return;
-	
+	if (GetCharacterMovement()->IsFalling())
+	{
+		return;
+	}
+
 	if (GetAbilitySystemComponent())
 	{
 		FGameplayTagContainer Tag;
@@ -661,8 +733,11 @@ void AComplyPlayerCharacter::SprintActionPressed()
 
 void AComplyPlayerCharacter::SprintActionReleased()
 {
-	if (!GetAbilitySystemComponent()) return;
-	
+	if (!GetAbilitySystemComponent())
+	{
+		return;
+	}
+
 	// Predictively set max walk speed back to the base value on the client, since GE removal is not replicated
 	if (GetCharacterMovement() && IsLocallyControlled() && !HasAuthority())
 	{
@@ -684,8 +759,11 @@ void AComplyPlayerCharacter::SprintActionReleased()
 
 void AComplyPlayerCharacter::ReloadActionPressed()
 {
-	if (!GetAbilitySystemComponent()) return;
-	
+	if (!GetAbilitySystemComponent())
+	{
+		return;
+	}
+
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
 		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_Reload))
@@ -717,8 +795,11 @@ void AComplyPlayerCharacter::ReloadActionPressed()
 // If the ability is active and this input is pressed, cancel the input. This will properly cancel the ability client side and notify the server
 void AComplyPlayerCharacter::CancelPreviewActionPressed()
 {
-	if (!GetAbilitySystemComponent()) return;
-	
+	if (!GetAbilitySystemComponent())
+	{
+		return;
+	}
+
 	for (FGameplayAbilitySpec& Spec : GetAbilitySystemComponent()->GetActivatableAbilities())
 	{
 		if (Spec.GetDynamicSpecSourceTags().HasTagExact(ComplyTags::ComplyAbilities::InputTags::Input_Primary))
@@ -789,7 +870,11 @@ void AComplyPlayerCharacter::RotatePlayerToLook(float DeltaTime)
 
 void AComplyPlayerCharacter::ZoomIn(float DeltaTime) const
 {
-	if (!IsLocallyControlled()) return;
+	if (!IsLocallyControlled())
+	{
+		return;
+	}
+	
 	UCameraComponent* CameraComp = FindComponentByClass<UCameraComponent>();
 	CameraComp->FieldOfView = FMath::FInterpTo(
 		CameraComp->FieldOfView, PlayerData->AimFOV, DeltaTime, PlayerData->ZoomSpeed);
@@ -797,7 +882,11 @@ void AComplyPlayerCharacter::ZoomIn(float DeltaTime) const
 
 void AComplyPlayerCharacter::ZoomOut(float DeltaTime) const
 {
-	if (!IsLocallyControlled()) return;
+	if (!IsLocallyControlled())
+	{
+		return;
+	}
+	
 	UCameraComponent* CameraComp = FindComponentByClass<UCameraComponent>();
 	CameraComp->FieldOfView = FMath::FInterpTo(
 		CameraComp->FieldOfView, PlayerData->DefaultFOV, DeltaTime, PlayerData->ZoomSpeed);
@@ -807,8 +896,11 @@ void AComplyPlayerCharacter::ZoomOut(float DeltaTime) const
 void AComplyPlayerCharacter::TraceForInteractable()
 {
 	FVector TraceStart, TraceEnd, TraceDirection;
-	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, this, 200.f, TraceStart, TraceEnd, TraceDirection)) return;
-	
+	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, this, 200.f, TraceStart, TraceEnd, TraceDirection))
+	{
+		return;
+	}
+
 	FHitResult Hit;
 	const bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility);
 
@@ -817,11 +909,17 @@ void AComplyPlayerCharacter::TraceForInteractable()
 
 	if (Interactable != CurrentFocusedInteractable)
 	{
-		if (CurrentFocusedInteractable) CurrentFocusedInteractable->HideInteractionPrompt();
+		if (CurrentFocusedInteractable)
+		{
+			CurrentFocusedInteractable->HideInteractionPrompt();
+		}
 
 		CurrentFocusedInteractable = Interactable;
 
-		if (CurrentFocusedInteractable) CurrentFocusedInteractable->ShowInteractionPrompt();
+		if (CurrentFocusedInteractable)
+		{
+			CurrentFocusedInteractable->ShowInteractionPrompt();
+		}
 	}
 }
 
@@ -833,13 +931,18 @@ void AComplyPlayerCharacter::OnAimingTagChanged(const FGameplayTag Tag, int32 Ne
 // If friendly fire is on and the distracted tag was applied by the decoy grenade, apply flashbang effect to affected players
 void AComplyPlayerCharacter::OnDistractedTagChanged(const FGameplayTag Tag, int32 NewCount)
 {
-	if (NewCount <= 0) return;
-	if (!IsLocallyControlled()) return;
+	if (NewCount <= 0 || !IsLocallyControlled())
+	{
+		return;
+	}
 	
 	UComplyGameInstance* GI = GetWorld()->GetGameInstance<UComplyGameInstance>();
 	if (GI && GI->bFriendlyFire)
 	{
-		if (AComplyPlayerController* PC = Cast<AComplyPlayerController>(GetController())) PC->ShowFlashbangEffect();
+		if (AComplyPlayerController* PC = Cast<AComplyPlayerController>(GetController()))
+		{
+			PC->ShowFlashbangEffect();
+		}
 	}
 }
 
@@ -851,7 +954,10 @@ void AComplyPlayerCharacter::OnTotemBuffedTagChanged(const FGameplayTag Tag, int
 		GetAbilitySystemComponent()->RemoveActiveGameplayEffect(ActiveTotemSpeedBuffEffectHandle);
 	}
 
-	if (NewCount <= 0) return;
+	if (NewCount <= 0)
+	{
+		return;
+	}
 
 	// Apply the movement speed buff, stacking with the amount of buffs
 	const FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
@@ -894,7 +1000,10 @@ UStaticMesh* AComplyPlayerCharacter::GetMeshForSlot(EWeaponSlot Slot)
 
 void AComplyPlayerCharacter::OnWeaponEquipped(EWeaponSlot Slot)
 {
-	if (Slot == CurrentEquippedSlot) return;
+	if (Slot == CurrentEquippedSlot)
+	{
+		return;
+	}
 
 	CurrentEquippedSlot = Slot;
     
@@ -919,13 +1028,22 @@ void AComplyPlayerCharacter::OnWeaponEquipped(EWeaponSlot Slot)
 		default: break;
 	}
 
-	if (Montage) PlayAnimMontage(Montage);
+	if (Montage)
+	{
+		PlayAnimMontage(Montage);
+	}
 
-	if (!ensureMsgf(CrosshairTexture, TEXT("CrosshairTexture is null for slot %d. Check data asset."), static_cast<int32>(Slot))) return;
+	if (!ensureMsgf(CrosshairTexture, TEXT("CrosshairTexture is null for slot %d. Check data asset."), static_cast<int32>(Slot)))
+	{
+		return;
+	}
 
 	if (const AComplyPlayerController* PC = GetController<AComplyPlayerController>())
 	{
-		if (!PC->HUDWidget) return;
+		if (!PC->HUDWidget)
+		{
+			return;
+		}
 		if (UComplyCrosshairWidget* Crosshair = PC->HUDWidget->GetCrosshairWidget())
 		{
 			Crosshair->SetCrosshairTexture(CrosshairTexture);
@@ -944,7 +1062,10 @@ void AComplyPlayerCharacter::OnRep_CurrentEquippedSlot()
 		case EWeaponSlot::Utility:   Montage = PlayerData->UtilityEquipMontage;   break;
 		case EWeaponSlot::Throwable: Montage = PlayerData->ThrowableEquipMontage; break;
 	}
-	if (Montage) PlayAnimMontage(Montage);
+	if (Montage)
+	{
+		PlayAnimMontage(Montage);
+	}
 }
 
 // Called in player ABP when the anim notify broadcasts

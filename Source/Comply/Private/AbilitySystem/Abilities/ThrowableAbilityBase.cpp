@@ -133,7 +133,11 @@ void UThrowableAbilityBase::OnThrowMontageCompleted()
 {
 	const AActor* Avatar = GetAvatarActorFromActorInfo();
 	
-	if (SpawnedThrowablePreviewActor) SpawnedThrowablePreviewActor->Destroy(); SpawnedThrowablePreviewActor = nullptr;
+	if (SpawnedThrowablePreviewActor)
+	{
+		SpawnedThrowablePreviewActor->Destroy(); 
+		SpawnedThrowablePreviewActor = nullptr;
+	}
 	
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	
@@ -141,11 +145,17 @@ void UThrowableAbilityBase::OnThrowMontageCompleted()
 	{
 		const AActor* Owner = GetOwningActorFromActorInfo();
 	
-		if (!Avatar || !Owner) return;
-	
+		if (!Avatar || !Owner)
+		{
+			return;
+		}
+		
 		FVector TraceStart, TraceEnd, TraceDirection;
-		if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, Avatar, 0.f, TraceStart, TraceEnd, TraceDirection)) return;
-	
+		if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, Avatar, 0.f, TraceStart, TraceEnd, TraceDirection))
+		{
+			return;
+		}
+
 		const FVector LaunchVelocity = TraceDirection * GrenadeData->ThrowSpeed;
 		const FVector SpawnPosition = Avatar->GetActorLocation() + FVector(0.f, 0.f, 60.f) + TraceDirection * 40.f;
 

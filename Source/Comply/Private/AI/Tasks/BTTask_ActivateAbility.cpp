@@ -35,22 +35,40 @@ uint16 UBTTask_ActivateAbility::GetInstanceMemorySize() const
 EBTNodeResult::Type UBTTask_ActivateAbility::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
     const AAIController* AIController = OwnerComp.GetAIOwner();
-    if (!AIController) return EBTNodeResult::Failed;
+    if (!AIController)
+    {
+        return EBTNodeResult::Failed;
+    }
 
     APawn* Pawn = AIController->GetPawn();
-    if (!Pawn) return EBTNodeResult::Failed;
+    if (!Pawn)
+    {
+        return EBTNodeResult::Failed;
+    }
 
     const UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
     AActor* Target = Cast<AActor>(Blackboard->GetValueAsObject(TargetActorKey.SelectedKeyName));
-    if (!Target) return EBTNodeResult::Failed;
+    if (!Target)
+    {
+        return EBTNodeResult::Failed;
+    }
 
     const IAbilitySystemInterface* ASCInterface = Cast<IAbilitySystemInterface>(Pawn);
-    if (!ASCInterface) return EBTNodeResult::Failed;
+    if (!ASCInterface)
+    {
+        return EBTNodeResult::Failed;
+    }
 
     UAbilitySystemComponent* ASC = ASCInterface->GetAbilitySystemComponent();
-    if (!ASC) return EBTNodeResult::Failed;
+    if (!ASC)
+    {
+        return EBTNodeResult::Failed;
+    }
 
-    if (!ASC->FindAbilitySpecFromClass(AbilityToActivate)) return EBTNodeResult::Failed;
+    if (!ASC->FindAbilitySpecFromClass(AbilityToActivate))
+    {
+        return EBTNodeResult::Failed;
+    }
 
     // The ability is activated through a gameplay event so the target actor can be passed in
     FGameplayEventData EventData;
@@ -59,7 +77,10 @@ EBTNodeResult::Type UBTTask_ActivateAbility::ExecuteTask(UBehaviorTreeComponent&
     const int32 TriggeredCount = ASC->HandleGameplayEvent(AbilityEventTag, &EventData);
 
     // Ability wasn't triggered (on cooldown), fail so the ability cooldown gates the retry
-    if (TriggeredCount <= 0) return EBTNodeResult::Failed;
+    if (TriggeredCount <= 0)
+    {
+        return EBTNodeResult::Failed;
+    }
 
     return EBTNodeResult::Succeeded;
 }

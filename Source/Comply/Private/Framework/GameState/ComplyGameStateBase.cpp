@@ -38,7 +38,10 @@ void AComplyGameStateBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 // Function called when the vote kick is initiated by a player. All struct variables are filled now
 void AComplyGameStateBase::InitiateVoteKick(APlayerState* Initiator, APlayerState* Target)
 {
-	if (ActiveVote.bVoteActive || !Target) return;
+	if (ActiveVote.bVoteActive || !Target)
+	{
+		return;
+	}
 
 	ActiveVote.TargetPlayer = Target;
 	ActiveVote.ApproveCount = 1; // The initiator's vote is approved automatically
@@ -59,18 +62,35 @@ void AComplyGameStateBase::Multicast_ShowVoteKickWidget_Implementation(APlayerSt
 
 void AComplyGameStateBase::HandleVote(APlayerState* Voter, bool bApprove)
 {
-	if (!ActiveVote.bVoteActive || !Voter) return;
-	if (ActiveVote.VotersWhoVoted.Contains(Voter)) return; // No double voting
-	if (Voter == ActiveVote.TargetPlayer) return; // Target can't vote
+	if (!ActiveVote.bVoteActive || !Voter) 
+	{
+		return;
+	}
+
+	if (ActiveVote.VotersWhoVoted.Contains(Voter)) 
+	{
+		return; // No double voting
+	}
+
+	if (Voter == ActiveVote.TargetPlayer) 
+	{
+		return; // Target can't vote
+	}
 
 	ActiveVote.VotersWhoVoted.Add(Voter);
-	if (bApprove) ActiveVote.ApproveCount++;
+	if (bApprove)
+	{
+		ActiveVote.ApproveCount++;
+	}
 
 	// If 2 players vote to kick (excluding the target), remove that player, broadcast the resolve and reset the struct
 	if (ActiveVote.ApproveCount >= 2)
 	{
 		AComplyPlayerController* PC = Cast<AComplyPlayerController>(ActiveVote.TargetPlayer->GetOwner());
-		if (PC) PC->ClientTravel(TEXT("/Game/Maps/Lobby"), TRAVEL_Absolute);
+		if (PC)
+		{
+			PC->ClientTravel(TEXT("/Game/Maps/Lobby"), TRAVEL_Absolute);
+		}
 
 		Multicast_ResolveVote(true, ActiveVote.TargetPlayer);
 		ActiveVote = FComplyVoteKickState(); // Reset struct
@@ -80,8 +100,11 @@ void AComplyGameStateBase::HandleVote(APlayerState* Voter, bool bApprove)
 // If the vote kick timer expires, that means the vote failed. Pass in false to the multicast.
 void AComplyGameStateBase::OnVoteKickTimerExpired()
 {
-	if (!ActiveVote.bVoteActive) return;
-	
+	if (!ActiveVote.bVoteActive)
+	{
+		return;
+	}
+
 	Multicast_ResolveVote(false, ActiveVote.TargetPlayer);
 	ActiveVote = FComplyVoteKickState();
 }

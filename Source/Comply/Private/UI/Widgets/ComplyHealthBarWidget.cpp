@@ -14,7 +14,11 @@
 
 void UComplyHealthBarWidget::InitializeHealthBar(UAbilitySystemComponent* InASC)
 {
-	if (!InASC) return;
+	if (!InASC)
+	{
+		return;
+	}
+	
 	ASC = InASC;
 	
 	HealthChangedHandle = ASC->GetGameplayAttributeValueChangeDelegate(
@@ -45,13 +49,22 @@ void UComplyHealthBarWidget::NativeTick(const FGeometry& MyGeometry, float InDel
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 	
-	if (!GhostProgressBar) return;
+	if (!GhostProgressBar)
+	{
+		return;
+	}
 	// Don't interpolate if the ghost bar percent is the same (or less) than the health bar
-	if (GhostPercent <= HealthProgressBar->GetPercent()) return;
-	
+	if (GhostPercent <= HealthProgressBar->GetPercent())
+	{
+		return;
+	}
+
 	TimeSinceLastDamage += InDeltaTime;
 	// Don't interpolate if not enough time has passed since the ghost bar should start lowering percent
-	if (TimeSinceLastDamage < GhostDrainDelay) return;
+	if (TimeSinceLastDamage < GhostDrainDelay)
+	{
+		return;
+	}
 
 	// Interpolate the ghost bar percent to the new health percent
 	GhostPercent = FMath::FInterpConstantTo(GhostPercent, HealthProgressBar->GetPercent(), InDeltaTime, GhostDrainSpeed);
@@ -72,7 +85,10 @@ void UComplyHealthBarWidget::OnMaxHealthChanged(const FOnAttributeChangeData& Da
 
 void UComplyHealthBarWidget::UpdateBar()
 {
-	if (!HealthProgressBar || !GhostProgressBar || !HealthText) return;
+	if (!HealthProgressBar || !GhostProgressBar || !HealthText)
+	{
+		return;
+	}
 
 	const float Percent = CurrentMaxHealth > 0.f ? CurrentHealth / CurrentMaxHealth : 0.f;
 

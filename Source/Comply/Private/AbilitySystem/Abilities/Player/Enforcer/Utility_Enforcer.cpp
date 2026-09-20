@@ -67,10 +67,16 @@ void UUtility_Enforcer::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 bool UUtility_Enforcer::PerformGrappleTrace(FHitResult& OutHitResult, const float GrappleRange) const
 {
 	const AActor* Avatar = GetAvatarActorFromActorInfo();
-	if (!Avatar) return false;
-    
+	if (!Avatar)
+	{
+		return false;
+	}
+
 	FVector TraceStart, TraceEnd, TraceDirection;
-	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, Avatar, GrappleRange, TraceStart, TraceEnd, TraceDirection)) return false;
+	if (!UComplyAbilitySystemBlueprintLibrary::GetCrosshairTraceStartEnd(this, Avatar, GrappleRange, TraceStart, TraceEnd, TraceDirection))
+	{
+		return false;
+	}
 
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(Avatar);
@@ -86,8 +92,11 @@ void UUtility_Enforcer::OnTargetDataReceived(const FGameplayAbilityTargetDataHan
 		GetCurrentActivationInfo().GetActivationPredictionKey()
 	);
 	
-	if (!DataHandle.IsValid(0)) return;
-	
+	if (!DataHandle.IsValid(0))
+	{
+		return;
+	}
+
 	// Getting the hit result passed in by the client to check it against the tolerance
 	const FHitResult* ClientHit = DataHandle.Get(0)->GetHitResult();
 	if (!ClientHit)

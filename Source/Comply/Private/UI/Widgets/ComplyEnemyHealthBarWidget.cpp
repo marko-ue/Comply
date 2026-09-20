@@ -60,7 +60,10 @@ void UComplyEnemyHealthBarWidget::OnMaxHealthChanged(const FOnAttributeChangeDat
 
 void UComplyEnemyHealthBarWidget::UpdateBar()
 {
-	if (!HealthProgressBar) return;
+	if (!HealthProgressBar)
+	{
+		return;
+	}
 
 	const float Percent = CurrentMaxHealth > 0.f ? CurrentHealth / CurrentMaxHealth : 0.f;
 

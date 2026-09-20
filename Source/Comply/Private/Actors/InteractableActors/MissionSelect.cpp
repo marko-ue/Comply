@@ -27,7 +27,9 @@ void AMissionSelect::Tick(float DeltaTime)
 void AMissionSelect::Interact(APlayerController* InstigatorPC)
 {
 	AComplyPlayerController* PC = Cast<AComplyPlayerController>(InstigatorPC);
-	if (!PC) return;
-	PC->OpenMenuWidget(MissionSelectWidgetClass);
+	if (PC)
+	{
+		PC->OpenMenuWidget(MissionSelectWidgetClass);
+	}
 }
 

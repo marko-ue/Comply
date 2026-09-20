@@ -86,7 +86,10 @@ void UComplyAttributeSet::HandleIncomingDamage(const struct FGameplayEffectModCa
 {
 	const float LocalIncomingDamage = GetIncomingDamage();
     SetIncomingDamage(0);
-    if (LocalIncomingDamage <= 0) return;
+    if (LocalIncomingDamage <= 0)
+    {
+	    return;
+    }
 
     const AComplyGameStateBase* GS = GetWorld()->GetGameState<AComplyGameStateBase>();
 

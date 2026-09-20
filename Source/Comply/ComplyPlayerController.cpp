@@ -172,7 +172,7 @@ void AComplyPlayerController::TickRevivePromptCheck()
 	}
 }
 
-// Ensures mapping contexts are added on the client whenever a pawn is possessed
+// Ensures mapping contexts and HUD are added on the client whenever a pawn is possessed
 void AComplyPlayerController::AcknowledgePossession(class APawn* P)
 {
 	Super::AcknowledgePossession(P);
@@ -180,17 +180,19 @@ void AComplyPlayerController::AcknowledgePossession(class APawn* P)
 	AddMappingContexts();
 
 	AComplyPlayerCharacter* ComplyCharacter = Cast<AComplyPlayerCharacter>(P);
-	const AComplyPlayerState* PS = ComplyCharacter->GetPlayerState<AComplyPlayerState>();
-	UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
-	if (!ComplyCharacter || !PS || !ASC)
+	if (ComplyCharacter)
 	{
-		return;
+		const AComplyPlayerState* PS = ComplyCharacter->GetPlayerState<AComplyPlayerState>();
+		if (PS)
+		{
+			UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
+			
+			const FComplyHUDLayout* Layout = ComplyCharacter->PlayerData ? &ComplyCharacter->PlayerData->HUDLayout : nullptr;
+
+			TryInitializeHUD(ASC, Layout);
+			TryInitializeDamageNumbers();
+		}
 	}
-
-	const FComplyHUDLayout* Layout = ComplyCharacter->PlayerData ? &ComplyCharacter->PlayerData->HUDLayout : nullptr;
-
-	TryInitializeHUD(ASC, Layout);
-	TryInitializeDamageNumbers();
 }
 
 void AComplyPlayerController::TryInitializeHUD(UAbilitySystemComponent* ASC, const FComplyHUDLayout* Layout)

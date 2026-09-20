@@ -5,7 +5,6 @@
 #include "Character/ComplyCharacterBase.h"
 #include "Interface/Player/PlayerInterface.h"
 #include "Interface/TargetableInterface.h"
-#include "Interface/Player/WeaponInterface.h"
 
 // UE
 #include "GameplayEffectTypes.h"
@@ -31,7 +30,7 @@ class USoundCue;
  * Contains various common shared information.
  */
 UCLASS()
-class COMPLY_API AComplyPlayerCharacter : public AComplyCharacterBase, public IPlayerInterface, public ITargetableInterface, public IWeaponInterface
+class COMPLY_API AComplyPlayerCharacter : public AComplyCharacterBase, public IPlayerInterface, public ITargetableInterface
 {
 	GENERATED_BODY()
 	
@@ -227,15 +226,18 @@ private:
 	UFUNCTION()
 	void OnTotemBuffedTagChanged(const FGameplayTag Tag, int32 NewCount);
 	
+	// Will be called by equip abilities whenever a weapon is equipped
 	virtual void OnWeaponEquipped(EWeaponSlot Slot) override;
 	
 	UFUNCTION()
 	void OnRep_CurrentEquippedSlot();
 	
+	// The scale for the mesh for the relevant weapon (slot) will be returned
 	virtual FVector GetScaleForSlot(EWeaponSlot Slot) override;
 	
+	// The mesh for the relevant weapon (slot) will be returned
 	UFUNCTION(BlueprintCallable)
-	UStaticMesh* GetMeshForSlot(EWeaponSlot Slot) override;
+	virtual UStaticMesh* GetMeshForSlot(EWeaponSlot Slot) override;
 	
 	virtual void ClearEquippedWeapon() override;
 	

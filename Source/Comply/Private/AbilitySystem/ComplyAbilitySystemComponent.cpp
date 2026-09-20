@@ -18,7 +18,7 @@
 #include "AbilitySystem/Data/Player/Grenades/ComplyGrenadeData.h"
 #include "AbilitySystem/Data/Player/Grenades/DecoyGrenadeData.h"
 #include "AbilitySystem/Data/Player/Grenades/PlasmaGrenadeData.h"
-#include "Interface/Player/WeaponInterface.h"
+#include "Interface/Player/PlayerInterface.h"
 
 // UE
 #include "AbilitySystemBlueprintLibrary.h"
@@ -70,7 +70,7 @@ void UComplyAbilitySystemComponent::Server_ThrowPlasmaGrenade_Implementation(FGa
 	ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	
 	AActor* Avatar = GetAvatarActor();
-	IWeaponInterface* WeaponOwner = Cast<IWeaponInterface>(Avatar);
+	IPlayerInterface* WeaponOwner = Cast<IPlayerInterface>(Avatar);
 	Ability->EquipWeaponBasedOnCharges(WeaponOwner, this);
 	
 	// Makes EndAbility get called on clients 
@@ -130,7 +130,7 @@ void UComplyAbilitySystemComponent::Server_ThrowDecoyGrenade_Implementation(FGam
 	ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	
 	AActor* Avatar = GetAvatarActor();
-	IWeaponInterface* WeaponOwner = Cast<IWeaponInterface>(Avatar);
+	IPlayerInterface* WeaponOwner = Cast<IPlayerInterface>(Avatar);
 	Ability->EquipWeaponBasedOnCharges(WeaponOwner, this);
 	
 	// Makes EndAbility get called on clients 

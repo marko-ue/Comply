@@ -8,7 +8,7 @@
 
 class UComplyGrenadeData;
 class UComplyAbilitySystemComponent;
-class IWeaponInterface;
+class IPlayerInterface;
 class AThrowablePreviewBase;
 
 /**
@@ -30,7 +30,7 @@ public:
 	UFUNCTION()
 	virtual void ConfirmThrow();
 
-	virtual void EquipWeaponBasedOnCharges(IWeaponInterface* WeaponOwner, UAbilitySystemComponent* ASC);
+	virtual void EquipWeaponBasedOnCharges(IPlayerInterface* WeaponOwner, UAbilitySystemComponent* ASC);
 	
 	UPROPERTY(EditDefaultsOnly)
 	bool bUsesCustomPreviewLogic = false;

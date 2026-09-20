@@ -9,13 +9,13 @@
 #include "AbilitySystem/AttributeSets/WeaponAttributeSet.h"
 #include "AbilitySystem/Data/Player/Grenades/ComplyGrenadeData.h"
 #include "Actors/AbilityActors/ThrowablePreviewBase.h"
-#include "Interface/Player/WeaponInterface.h"
 
 // UE
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitConfirmCancel.h"
 #include "AbilitySystemComponent.h"
 #include "GameplayCueManager.h"
+#include "Interface/Player/PlayerInterface.h"
 #include "Kismet/GameplayStatics.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ThrowableAbilityBase)
@@ -119,7 +119,7 @@ void UThrowableAbilityBase::ThrowOnServer(FVector LaunchVelocity, FVector SpawnP
 	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 
 	AActor* Avatar = GetAvatarActorFromActorInfo();
-	IWeaponInterface* WeaponOwner = Cast<IWeaponInterface>(Avatar);
+	IPlayerInterface* WeaponOwner = Cast<IPlayerInterface>(Avatar);
 	EquipWeaponBasedOnCharges(WeaponOwner, GetAbilitySystemComponentFromActorInfo());
 }
 
@@ -179,7 +179,7 @@ void UThrowableAbilityBase::OnThrowMontageCompleted()
 	}
 }
 
-void UThrowableAbilityBase::EquipWeaponBasedOnCharges(IWeaponInterface* WeaponOwner, UAbilitySystemComponent* ASC)
+void UThrowableAbilityBase::EquipWeaponBasedOnCharges(IPlayerInterface* WeaponOwner, UAbilitySystemComponent* ASC)
 {
 	const UWeaponAttributeSet* WeaponAS = ASC->GetSet<UWeaponAttributeSet>();
 	bool bFound = false;

@@ -4,7 +4,7 @@
 
 // Comply
 #include "AbilitySystem/ComplyTags.h"
-#include "Interface/Player/WeaponInterface.h"
+#include "Interface/Player/PlayerInterface.h"
 
 // UE
 #include "AbilitySystemComponent.h"
@@ -46,7 +46,7 @@ void UEquipUtilityAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	
 	// Get the relevant weapon mesh from a weapon slot and set that weapon's mesh to be the new mesh
 	AActor* Avatar = GetAvatarActorFromActorInfo();
-	if (IWeaponInterface* WeaponOwner = Cast<IWeaponInterface>(Avatar))
+	if (IPlayerInterface* WeaponOwner = Cast<IPlayerInterface>(Avatar))
 	{
 		WeaponOwner->OnWeaponEquipped(EWeaponSlot::Utility);
 	}
